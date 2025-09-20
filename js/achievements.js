@@ -146,6 +146,116 @@ class AchievementsManager {
                 type: 'comeback',
                 requirement: { type: 'comeback_win', value: 3 },
                 rarity: 'rare'
+            },
+
+            // Fun & Quirky Achievements
+            {
+                id: 'speed_racer',
+                title: 'Speed Racer',
+                description: 'Complete Easy under 1 minute',
+                icon: 'fas fa-rocket',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'easy', value: 60 },
+                rarity: 'epic'
+            },
+            {
+                id: 'marathon_runner',
+                title: 'Marathon Runner',
+                description: 'Take over 30 minutes on Hard',
+                icon: 'fas fa-hourglass-end',
+                type: 'speed',
+                requirement: { type: 'time_over', difficulty: 'hard', value: 1800 },
+                rarity: 'common'
+            },
+            {
+                id: 'perfectionist_week',
+                title: 'Perfectionist Week',
+                description: 'Complete 7 consecutive days with 0 total errors',
+                icon: 'fas fa-diamond',
+                type: 'perfect',
+                requirement: { type: 'perfect_week', value: 7 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'triple_threat',
+                title: 'Triple Threat',
+                description: 'Complete all 3 difficulties in under 15 minutes total',
+                icon: 'fas fa-fire',
+                type: 'speed',
+                requirement: { type: 'total_time_under', value: 900 },
+                rarity: 'epic'
+            },
+            {
+                id: 'error_machine',
+                title: 'Learning Experience',
+                description: 'Make 20+ errors in a single day',
+                icon: 'fas fa-exclamation-triangle',
+                type: 'errors',
+                requirement: { type: 'total_errors_over', value: 20 },
+                rarity: 'common'
+            },
+            {
+                id: 'night_owl',
+                title: 'Night Owl',
+                description: 'Submit results after 11 PM',
+                icon: 'fas fa-moon',
+                type: 'time',
+                requirement: { type: 'late_submission', value: 23 },
+                rarity: 'rare'
+            },
+            {
+                id: 'early_bird',
+                title: 'Early Bird',
+                description: 'Submit results before 7 AM',
+                icon: 'fas fa-sun',
+                type: 'time',
+                requirement: { type: 'early_submission', value: 7 },
+                rarity: 'rare'
+            },
+            {
+                id: 'weekend_warrior',
+                title: 'Weekend Warrior',
+                description: 'Win both Saturday and Sunday',
+                icon: 'fas fa-calendar-weekend',
+                type: 'weekend',
+                requirement: { type: 'weekend_sweep', value: 1 },
+                rarity: 'common'
+            },
+            {
+                id: 'clutch_performer',
+                title: 'Clutch Performer',
+                description: 'Win by exactly 1 point',
+                icon: 'fas fa-crosshairs',
+                type: 'score',
+                requirement: { type: 'close_win', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'dominator_daily',
+                title: 'Daily Dominator',
+                description: 'Win with 2x opponent\'s score',
+                icon: 'fas fa-crown',
+                type: 'score',
+                requirement: { type: 'dominating_win', value: 2 },
+                rarity: 'epic'
+            },
+            {
+                id: 'consistency_king',
+                title: 'Consistency King',
+                description: 'Have all 3 difficulties within 10% of each other',
+                icon: 'fas fa-balance-scale',
+                type: 'consistency',
+                requirement: { type: 'balanced_times', value: 0.1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'dnf_survivor',
+                title: 'DNF Survivor',
+                description: 'Win despite having a DNF',
+                icon: 'fas fa-shield-alt',
+                type: 'comeback',
+                requirement: { type: 'win_with_dnf', value: 1 },
+                rarity: 'rare'
             }
         ];
 
@@ -156,11 +266,20 @@ class AchievementsManager {
         const newlyUnlocked = [];
 
         this.achievementDefinitions.forEach(achievement => {
-            if (this.isAchievementUnlocked(achievement.id)) return;
+            const playersWhoEarned = this.checkAchievementRequirement(achievement, newEntry, allEntries, streaks);
 
-            if (this.checkAchievementRequirement(achievement, newEntry, allEntries, streaks)) {
-                this.unlockAchievement(achievement);
-                newlyUnlocked.push(achievement);
+            if (playersWhoEarned && playersWhoEarned.length > 0) {
+                playersWhoEarned.forEach(player => {
+                    // Check if this player already has this achievement
+                    const alreadyHas = this.unlockedAchievements.some(a =>
+                        a.id === achievement.id && a.player === player
+                    );
+
+                    if (!alreadyHas) {
+                        this.unlockAchievement(achievement, player);
+                        newlyUnlocked.push({...achievement, player});
+                    }
+                });
             }
         });
 
@@ -187,6 +306,37 @@ class AchievementsManager {
             case 'time_under':
                 return this.checkTimeUnder(req, newEntry);
 
+            case 'time_over':
+                return this.checkTimeOver(req, newEntry);
+
+            case 'total_time_under':
+                return this.checkTotalTimeUnder(req, newEntry);
+
+            case 'total_errors_over':
+                return this.checkTotalErrorsOver(req, newEntry);
+
+            case 'late_submission':
+            case 'early_submission':
+                return this.checkSubmissionTime(req, newEntry);
+
+            case 'weekend_sweep':
+                return this.checkWeekendSweep(allEntries);
+
+            case 'close_win':
+                return this.checkCloseWin(req, newEntry);
+
+            case 'dominating_win':
+                return this.checkDominatingWin(req, newEntry);
+
+            case 'balanced_times':
+                return this.checkBalancedTimes(req, newEntry);
+
+            case 'win_with_dnf':
+                return this.checkWinWithDnf(req, newEntry);
+
+            case 'perfect_week':
+                return this.checkPerfectWeek(allEntries);
+
             case 'zero_errors_day':
                 return this.checkZeroErrorsDay(newEntry);
 
@@ -194,7 +344,7 @@ class AchievementsManager {
                 return this.checkZeroErrors(req, newEntry);
 
             case 'total_days':
-                return allEntries.length >= req.value;
+                return allEntries.length >= req.value ? ['faidao', 'filip'] : [];
 
             case 'daily_score':
                 return this.checkDailyScore(req.value, newEntry);
@@ -203,16 +353,19 @@ class AchievementsManager {
                 return this.checkComebackWin(req.value, allEntries);
 
             default:
-                return false;
+                return [];
         }
     }
 
     checkWinStreak(requiredStreak, streaks) {
-        return Math.max(streaks.faidao?.current || 0, streaks.filip?.current || 0) >= requiredStreak;
+        const players = [];
+        if ((streaks.faidao?.current || 0) >= requiredStreak) players.push('faidao');
+        if ((streaks.filip?.current || 0) >= requiredStreak) players.push('filip');
+        return players;
     }
 
     checkWeeklySweep(allEntries) {
-        if (allEntries.length < 7) return false;
+        if (allEntries.length < 7) return [];
 
         // Check if there's a 7-day period where one player won every day
         const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -236,19 +389,18 @@ class AchievementsManager {
                 const faidaoWins = weekEntries.filter(e => e.faidao.scores.total > e.filip.scores.total).length;
                 const filipWins = weekEntries.filter(e => e.filip.scores.total > e.faidao.scores.total).length;
 
-                if (faidaoWins === 7 || filipWins === 7) {
-                    return true;
-                }
+                if (faidaoWins === 7) return ['faidao'];
+                if (filipWins === 7) return ['filip'];
             }
         }
 
-        return false;
+        return [];
     }
 
     checkTimeUnder(req, entry) {
         const players = ['faidao', 'filip'];
 
-        return players.some(player => {
+        return players.filter(player => {
             const time = entry[player].times[req.difficulty];
             const dnf = entry[player].dnf[req.difficulty];
             return !dnf && time !== null && time < req.value;
@@ -259,7 +411,7 @@ class AchievementsManager {
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
 
-        return players.some(player => {
+        return players.filter(player => {
             const totalErrors = difficulties.reduce((sum, diff) => {
                 return sum + (entry[player].errors[diff] || 0);
             }, 0);
@@ -270,7 +422,7 @@ class AchievementsManager {
     checkZeroErrors(req, entry) {
         const players = ['faidao', 'filip'];
 
-        return players.some(player => {
+        return players.filter(player => {
             const errors = entry[player].errors[req.difficulty];
             const dnf = entry[player].dnf[req.difficulty];
             return !dnf && errors === 0;
@@ -278,11 +430,14 @@ class AchievementsManager {
     }
 
     checkDailyScore(requiredScore, entry) {
-        return entry.faidao.scores.total >= requiredScore || entry.filip.scores.total >= requiredScore;
+        const players = [];
+        if (entry.faidao.scores.total >= requiredScore) players.push('faidao');
+        if (entry.filip.scores.total >= requiredScore) players.push('filip');
+        return players;
     }
 
     checkComebackWin(lossStreak, allEntries) {
-        if (allEntries.length < lossStreak + 1) return false;
+        if (allEntries.length < lossStreak + 1) return [];
 
         const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
         const recentEntries = sortedEntries.slice(-lossStreak - 1);
@@ -292,21 +447,198 @@ class AchievementsManager {
         const latestFaidaoWon = latestEntry.faidao.scores.total > latestEntry.filip.scores.total;
         const latestFilipWon = latestEntry.filip.scores.total > latestEntry.faidao.scores.total;
 
-        if (!latestFaidaoWon && !latestFilipWon) return false; // Tie doesn't count
+        if (!latestFaidaoWon && !latestFilipWon) return []; // Tie doesn't count
 
         // Check if the previous entries were losses for the winner
         const previousEntries = recentEntries.slice(0, -1);
 
         if (latestFaidaoWon) {
-            return previousEntries.every(entry => entry.filip.scores.total > entry.faidao.scores.total);
+            const hasLossStreak = previousEntries.every(entry => entry.filip.scores.total > entry.faidao.scores.total);
+            return hasLossStreak ? ['faidao'] : [];
         } else {
-            return previousEntries.every(entry => entry.faidao.scores.total > entry.filip.scores.total);
+            const hasLossStreak = previousEntries.every(entry => entry.faidao.scores.total > entry.filip.scores.total);
+            return hasLossStreak ? ['filip'] : [];
         }
     }
 
-    unlockAchievement(achievement) {
+    checkTimeOver(req, entry) {
+        const players = ['faidao', 'filip'];
+
+        return players.filter(player => {
+            const time = entry[player].times[req.difficulty];
+            const dnf = entry[player].dnf[req.difficulty];
+            return !dnf && time !== null && time > req.value;
+        });
+    }
+
+    checkTotalTimeUnder(req, entry) {
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        return players.filter(player => {
+            const totalTime = difficulties.reduce((sum, diff) => {
+                const time = entry[player].times[diff];
+                const dnf = entry[player].dnf[diff];
+                return sum + (!dnf && time !== null ? time : 0);
+            }, 0);
+
+            // Only count if all difficulties were completed (no DNFs)
+            const allCompleted = difficulties.every(diff => !entry[player].dnf[diff] && entry[player].times[diff] !== null);
+            return allCompleted && totalTime < req.value;
+        });
+    }
+
+    checkTotalErrorsOver(req, entry) {
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        return players.filter(player => {
+            const totalErrors = difficulties.reduce((sum, diff) => {
+                return sum + (entry[player].errors[diff] || 0);
+            }, 0);
+            return totalErrors > req.value;
+        });
+    }
+
+    checkSubmissionTime(req, entry) {
+        const players = ['faidao', 'filip'];
+        const submissionTime = new Date().getHours();
+
+        // Check if this is a late or early submission
+        const isLateSubmission = req.type === 'late_submission' && submissionTime >= req.value;
+        const isEarlySubmission = req.type === 'early_submission' && submissionTime < req.value;
+
+        if (isLateSubmission || isEarlySubmission) {
+            // Return both players since submission time affects both
+            return players;
+        }
+        return [];
+    }
+
+    checkWeekendSweep(allEntries) {
+        if (allEntries.length < 2) return [];
+
+        const today = new Date();
+        const currentWeekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+
+        // Find Saturday and Sunday entries for current week
+        const weekendEntries = allEntries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            const dayOfWeek = entryDate.getDay();
+            return (dayOfWeek === 0 || dayOfWeek === 6) && entryDate >= currentWeekStart;
+        });
+
+        if (weekendEntries.length < 2) return [];
+
+        const saturdayEntry = weekendEntries.find(e => new Date(e.date).getDay() === 6);
+        const sundayEntry = weekendEntries.find(e => new Date(e.date).getDay() === 0);
+
+        if (!saturdayEntry || !sundayEntry) return [];
+
+        const players = [];
+        if (saturdayEntry.faidao.scores.total > saturdayEntry.filip.scores.total &&
+            sundayEntry.faidao.scores.total > sundayEntry.filip.scores.total) {
+            players.push('faidao');
+        }
+        if (saturdayEntry.filip.scores.total > saturdayEntry.faidao.scores.total &&
+            sundayEntry.filip.scores.total > sundayEntry.faidao.scores.total) {
+            players.push('filip');
+        }
+
+        return players;
+    }
+
+    checkCloseWin(req, entry) {
+        const scoreDiff = Math.abs(entry.faidao.scores.total - entry.filip.scores.total);
+        if (scoreDiff === req.value) {
+            if (entry.faidao.scores.total > entry.filip.scores.total) return ['faidao'];
+            if (entry.filip.scores.total > entry.faidao.scores.total) return ['filip'];
+        }
+        return [];
+    }
+
+    checkDominatingWin(req, entry) {
+        const players = [];
+        if (entry.faidao.scores.total >= entry.filip.scores.total * req.value) {
+            players.push('faidao');
+        }
+        if (entry.filip.scores.total >= entry.faidao.scores.total * req.value) {
+            players.push('filip');
+        }
+        return players;
+    }
+
+    checkBalancedTimes(req, entry) {
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        return players.filter(player => {
+            const times = difficulties.map(diff => entry[player].times[diff]).filter(t => t !== null);
+
+            if (times.length !== 3) return false; // Need all 3 times
+
+            const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
+            const maxDeviation = Math.max(...times.map(time => Math.abs(time - avgTime) / avgTime));
+
+            return maxDeviation <= req.value;
+        });
+    }
+
+    checkWinWithDnf(req, entry) {
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        return players.filter(player => {
+            const hasDnf = difficulties.some(diff => entry[player].dnf[diff]);
+            const isWinner = entry[player].scores.total > entry[player === 'faidao' ? 'filip' : 'faidao'].scores.total;
+            return hasDnf && isWinner;
+        });
+    }
+
+    checkPerfectWeek(allEntries) {
+        if (allEntries.length < 7) return [];
+
+        const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        // Check last 7 consecutive days
+        for (let i = sortedEntries.length - 7; i >= 0; i--) {
+            const weekEntries = sortedEntries.slice(i, i + 7);
+
+            // Verify consecutive days
+            let isConsecutive = true;
+            for (let j = 1; j < weekEntries.length; j++) {
+                const prevDate = new Date(weekEntries[j - 1].date);
+                const currDate = new Date(weekEntries[j].date);
+                const dayDiff = (currDate - prevDate) / (1000 * 60 * 60 * 24);
+                if (dayDiff !== 1) {
+                    isConsecutive = false;
+                    break;
+                }
+            }
+
+            if (isConsecutive) {
+                const players = ['faidao', 'filip'];
+                const qualifyingPlayers = [];
+
+                players.forEach(player => {
+                    const perfectWeek = weekEntries.every(entry => {
+                        return difficulties.every(diff => entry[player].errors[diff] === 0);
+                    });
+                    if (perfectWeek) qualifyingPlayers.push(player);
+                });
+
+                if (qualifyingPlayers.length > 0) return qualifyingPlayers;
+            }
+        }
+
+        return [];
+    }
+
+    unlockAchievement(achievement, player) {
         const unlock = {
             id: achievement.id,
+            player: player,
             unlockedAt: new Date().toISOString(),
             title: achievement.title,
             description: achievement.description
@@ -348,6 +680,26 @@ class AchievementsManager {
                 }
             });
 
+            // Determine border color based on who has the most unlocks
+            let borderClass = '';
+            if (isUnlocked) {
+                const playerEntries = Object.entries(playerStats);
+                if (playerEntries.length === 1) {
+                    // Only one player has this achievement
+                    borderClass = `${playerEntries[0][0]}-border`;
+                } else if (playerEntries.length === 2) {
+                    const [player1, stats1] = playerEntries[0];
+                    const [player2, stats2] = playerEntries[1];
+                    if (stats1.count > stats2.count) {
+                        borderClass = `${player1}-border`;
+                    } else if (stats2.count > stats1.count) {
+                        borderClass = `${player2}-border`;
+                    } else {
+                        borderClass = 'tie-border'; // Yellow for tie
+                    }
+                }
+            }
+
             const playerStatsHTML = Object.keys(playerStats).length > 0 ? `
                 <div class="achievement-players">
                     ${Object.entries(playerStats).map(([player, stats]) => `
@@ -361,7 +713,7 @@ class AchievementsManager {
             ` : '';
 
             return `
-                <div class="achievement-badge ${isUnlocked ? 'unlocked' : 'locked'}">
+                <div class="achievement-badge ${isUnlocked ? 'unlocked' : 'locked'} ${borderClass}">
                     <div class="badge-icon">
                         <i class="${achievement.icon}"></i>
                     </div>

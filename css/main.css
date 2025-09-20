@@ -5,6 +5,16 @@
     box-sizing: border-box;
 }
 
+/* Hide scrollbars but keep functionality */
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+*::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -14,7 +24,9 @@
     --darker-bg: #16213e;
     --card-bg: rgba(255, 255, 255, 0.1);
     --text-primary: #ffffff;
-    --text-secondary: #b0b8c1;
+    --text-secondary: #e2e8f0; /* Improved contrast */
+    --text-muted: #b0b8c1;
+    --focus-color: #87ceeb; /* High contrast focus indicator */
     --accent-blue: #4facfe;
     --accent-purple: #667eea;
     --accent-pink: #f5576c;
@@ -1104,6 +1116,22 @@ body {
     box-shadow: 0 0 30px rgba(254, 225, 64, 0.3);
 }
 
+/* Player-specific achievement borders */
+.achievement-badge.faidao-border {
+    border-color: var(--faidao-color) !important;
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.3) !important;
+}
+
+.achievement-badge.filip-border {
+    border-color: var(--filip-color) !important;
+    box-shadow: 0 0 30px rgba(78, 205, 196, 0.3) !important;
+}
+
+.achievement-badge.tie-border {
+    border-color: var(--accent-orange) !important;
+    box-shadow: 0 0 30px rgba(254, 225, 64, 0.3) !important;
+}
+
 .achievement-badge.locked {
     opacity: 0.5;
     filter: grayscale(1);
@@ -1228,6 +1256,41 @@ body {
 
     .nav-mobile-toggle {
         display: block;
+        z-index: 1001;
+        position: relative;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 80%;
+        max-width: 300px;
+        background: rgba(26, 26, 46, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 80px 2rem 2rem;
+        transition: right 0.3s ease;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+    }
+
+    .nav-links.mobile-active {
+        right: 0;
+    }
+
+    .nav-link {
+        width: 100%;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: left;
+    }
+
+    .nav-link:last-child {
+        border-bottom: none;
     }
 
     .main-content {
@@ -1349,5 +1412,85 @@ body {
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+/* Enhanced Focus and Accessibility Styles */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.nav-link:focus-visible,
+.tab-btn:focus-visible {
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Skip to main content for screen readers */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--accent-blue);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+    border-radius: 4px;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* High contrast improvements */
+@media (prefers-contrast: high) {
+    :root {
+        --text-secondary: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Improved button contrast */
+.btn:hover {
+    filter: brightness(1.1);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Better text contrast on cards */
+.card {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.achievement-badge .badge-description {
+    color: var(--text-secondary);
+    font-weight: 500; /* Improved readability */
+}
+
+/* Improved mobile accessibility */
+@media (max-width: 768px) {
+    .time-input,
+    .error-input,
+    .btn {
+        min-height: 44px; /* Minimum touch target size */
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
     }
 }

@@ -461,9 +461,50 @@
         </main>
     </div>
 
+    <!-- Authentication Check -->
+    <script>
+        // Check authentication before loading the app
+        if (sessionStorage.getItem('sudokuAuth') !== 'authenticated') {
+            window.location.href = 'auth.html';
+        }
+    </script>
+
     <script src="js/app.js"></script>
     <script src="js/achievements.js"></script>
     <script src="js/analytics.js"></script>
     <script src="js/challenges.js"></script>
+    <script src="js/github-sync.js"></script>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.querySelector('.nav-mobile-toggle');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (mobileToggle && navLinks) {
+                mobileToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('mobile-active');
+                    const icon = mobileToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('fa-bars');
+                        icon.classList.toggle('fa-times');
+                    }
+                });
+
+                // Close menu when clicking on a nav link
+                const navLinkElements = navLinks.querySelectorAll('.nav-link');
+                navLinkElements.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navLinks.classList.remove('mobile-active');
+                        const icon = mobileToggle.querySelector('i');
+                        if (icon) {
+                            icon.classList.add('fa-bars');
+                            icon.classList.remove('fa-times');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 </html>

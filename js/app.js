@@ -285,6 +285,14 @@ class SudokuChampionship {
     parseTimeToSeconds(timeString) {
         if (!timeString || timeString.trim() === '' || timeString === '0:00') return null;
 
+        // Handle raw seconds input (e.g., "330")
+        if (!timeString.includes(':')) {
+            const totalSeconds = parseInt(timeString);
+            if (isNaN(totalSeconds) || totalSeconds <= 0) return null;
+            return totalSeconds;
+        }
+
+        // Handle MM:SS format
         const parts = timeString.split(':');
         if (parts.length !== 2) return null;
 

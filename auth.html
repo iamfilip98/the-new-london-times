@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Championship - Login</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .auth-logo {
+            font-size: 4rem;
+            color: var(--accent-orange);
+            margin-bottom: 1rem;
+        }
+
+        .auth-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .auth-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .auth-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .auth-button {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-pink));
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.4);
+        }
+
+        .auth-error {
+            color: var(--accent-pink);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .auth-hint {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h1 class="auth-title">Championship Arena</h1>
+            <p class="auth-subtitle">Enter the battleground</p>
+
+            <form class="auth-form" id="authForm">
+                <input
+                    type="password"
+                    class="auth-input"
+                    id="passwordInput"
+                    placeholder="Enter password"
+                    required
+                    autocomplete="current-password"
+                >
+                <button type="submit" class="auth-button">
+                    <i class="fas fa-unlock"></i> Enter Arena
+                </button>
+            </form>
+
+            <div class="auth-error" id="authError">
+                <i class="fas fa-exclamation-triangle"></i> Invalid password. Try again.
+            </div>
+
+            <div class="auth-hint">
+                Hint: It's the champion's favorite puzzle 🧩
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password: sudoku2024
+        const correctPassword = 'sudoku2024';
+
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const password = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('authError');
+
+            if (password === correctPassword) {
+                // Store authentication in session
+                sessionStorage.setItem('sudokuAuth', 'authenticated');
+                // Redirect to main app
+                window.location.href = 'index.html';
+            } else {
+                errorDiv.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        });
+
+        // Check if already authenticated
+        if (sessionStorage.getItem('sudokuAuth') === 'authenticated') {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
