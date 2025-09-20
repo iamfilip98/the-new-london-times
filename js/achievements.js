@@ -326,8 +326,39 @@ class AchievementsManager {
         if (!achievementsGrid) return;
 
         achievementsGrid.innerHTML = this.achievementDefinitions.map(achievement => {
-            const isUnlocked = this.isAchievementUnlocked(achievement.id);
-            const unlockedData = this.unlockedAchievements.find(a => a.id === achievement.id);
+            const achievementInstances = this.unlockedAchievements.filter(a => a.id === achievement.id);
+            const isUnlocked = achievementInstances.length > 0;
+
+            // Group by player and count
+            const playerStats = {};
+            achievementInstances.forEach(instance => {
+                if (!playerStats[instance.player]) {
+                    playerStats[instance.player] = {
+                        count: 0,
+                        firstUnlocked: instance.unlockedAt,
+                        lastUnlocked: instance.unlockedAt
+                    };
+                }
+                playerStats[instance.player].count++;
+                if (new Date(instance.unlockedAt) < new Date(playerStats[instance.player].firstUnlocked)) {
+                    playerStats[instance.player].firstUnlocked = instance.unlockedAt;
+                }
+                if (new Date(instance.unlockedAt) > new Date(playerStats[instance.player].lastUnlocked)) {
+                    playerStats[instance.player].lastUnlocked = instance.unlockedAt;
+                }
+            });
+
+            const playerStatsHTML = Object.keys(playerStats).length > 0 ? `
+                <div class="achievement-players">
+                    ${Object.entries(playerStats).map(([player, stats]) => `
+                        <div class="player-achievement-stat">
+                            <span class="player-name ${player}-color">${player}</span>
+                            <span class="achievement-count">${stats.count}x</span>
+                            <span class="achievement-date">${new Date(stats.firstUnlocked).toLocaleDateString()}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : '';
 
             return `
                 <div class="achievement-badge ${isUnlocked ? 'unlocked' : 'locked'}">
@@ -338,8 +369,9 @@ class AchievementsManager {
                     <p class="badge-description">${achievement.description}</p>
                     <div class="badge-rarity ${achievement.rarity}">${achievement.rarity.toUpperCase()}</div>
                     ${isUnlocked ? `
-                        <div class="badge-unlocked-date">
-                            Unlocked: ${new Date(unlockedData.unlockedAt).toLocaleDateString()}
+                        <div class="badge-unlocked-info">
+                            <div class="total-unlocks">Unlocked ${achievementInstances.length} time${achievementInstances.length !== 1 ? 's' : ''}</div>
+                            ${playerStatsHTML}
                         </div>
                     ` : ''}
                 </div>
