@@ -23,6 +23,7 @@ class SudokuChampionship {
     initialize() {
         this.setupEventListeners();
         this.setupNavigation();
+        this.setupLeaderboardTabs();
         this.setCurrentDate();
         this.initializeScoreDisplay();
         this.updateScores(); // Initialize scores immediately
@@ -148,6 +149,28 @@ class SudokuChampionship {
 
                 // Update page content
                 this.updatePageContent(targetPage);
+            });
+        });
+    }
+
+    setupLeaderboardTabs() {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                const targetContent = document.getElementById(`${targetTab}-tab`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
             });
         });
     }
@@ -724,8 +747,200 @@ class SudokuChampionship {
     }
 
     updateLeaderboards() {
-        // This will be implemented when leaderboards are created
-        console.log('Updating leaderboards...');
+        this.updateMonthlyLeaderboard();
+        this.updateWeeklyLeaderboard();
+        this.updateRecords();
+    }
+
+    updateMonthlyLeaderboard() {
+        const monthlyContainer = document.getElementById('monthlyLeaderboard');
+        if (!monthlyContainer) return;
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const monthlyEntries = this.entries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+        });
+
+        if (monthlyEntries.length === 0) {
+            monthlyContainer.innerHTML = '<p class="no-data">No battles this month yet!</p>';
+            return;
+        }
+
+        const monthlyStats = this.calculatePlayerStats(monthlyEntries);
+        monthlyContainer.innerHTML = this.generateLeaderboardHTML(monthlyStats, 'This Month');
+    }
+
+    updateWeeklyLeaderboard() {
+        const weeklyContainer = document.getElementById('weeklyLeaderboard');
+        if (!weeklyContainer) return;
+
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+
+        const weeklyEntries = this.entries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= startOfWeek;
+        });
+
+        if (weeklyEntries.length === 0) {
+            weeklyContainer.innerHTML = '<p class="no-data">No battles this week yet!</p>';
+            return;
+        }
+
+        const weeklyStats = this.calculatePlayerStats(weeklyEntries);
+        weeklyContainer.innerHTML = this.generateLeaderboardHTML(weeklyStats, 'This Week');
+    }
+
+    updateRecords() {
+        const fastestTimesContainer = document.getElementById('fastestTimes');
+        const perfectGamesContainer = document.getElementById('perfectGames');
+
+        if (!fastestTimesContainer || !perfectGamesContainer) return;
+
+        // Fastest times by difficulty
+        const difficulties = ['easy', 'medium', 'hard'];
+        const fastestTimes = {};
+
+        difficulties.forEach(difficulty => {
+            const records = [];
+            ['faidao', 'filip'].forEach(player => {
+                const playerTimes = this.entries
+                    .filter(entry => !entry[player].dnf[difficulty] && entry[player].times[difficulty])
+                    .map(entry => ({
+                        time: entry[player].times[difficulty],
+                        date: entry.date,
+                        player: player
+                    }))
+                    .sort((a, b) => a.time - b.time);
+
+                if (playerTimes.length > 0) {
+                    records.push(playerTimes[0]);
+                }
+            });
+
+            fastestTimes[difficulty] = records.sort((a, b) => a.time - b.time);
+        });
+
+        fastestTimesContainer.innerHTML = this.generateRecordsHTML(fastestTimes);
+
+        // Perfect games (0 errors)
+        const perfectGames = this.entries.filter(entry => {
+            return ['faidao', 'filip'].some(player => {
+                const totalErrors = (entry[player].errors.easy || 0) +
+                                  (entry[player].errors.medium || 0) +
+                                  (entry[player].errors.hard || 0);
+                return totalErrors === 0;
+            });
+        }).slice(0, 10);
+
+        perfectGamesContainer.innerHTML = this.generatePerfectGamesHTML(perfectGames);
+    }
+
+    calculatePlayerStats(entries) {
+        const stats = {
+            faidao: { wins: 0, totalScore: 0, games: entries.length },
+            filip: { wins: 0, totalScore: 0, games: entries.length }
+        };
+
+        entries.forEach(entry => {
+            stats.faidao.totalScore += entry.faidao.scores.total;
+            stats.filip.totalScore += entry.filip.scores.total;
+
+            if (entry.faidao.scores.total > entry.filip.scores.total) {
+                stats.faidao.wins++;
+            } else if (entry.filip.scores.total > entry.faidao.scores.total) {
+                stats.filip.wins++;
+            }
+        });
+
+        stats.faidao.avgScore = stats.faidao.totalScore / entries.length || 0;
+        stats.filip.avgScore = stats.filip.totalScore / entries.length || 0;
+        stats.faidao.winRate = (stats.faidao.wins / entries.length) * 100 || 0;
+        stats.filip.winRate = (stats.filip.wins / entries.length) * 100 || 0;
+
+        return stats;
+    }
+
+    generateLeaderboardHTML(stats, period) {
+        const players = [
+            { name: 'Faidao', key: 'faidao', avatar: 'F', color: 'faidao-color' },
+            { name: 'Filip', key: 'filip', avatar: 'F', color: 'filip-color' }
+        ].sort((a, b) => stats[b.key].avgScore - stats[a.key].avgScore);
+
+        return players.map((player, index) => {
+            const playerStats = stats[player.key];
+            return `
+                <div class="leaderboard-card ${index === 0 ? 'winner' : ''}">
+                    <div class="rank">#${index + 1}</div>
+                    <div class="player-info">
+                        <div class="player-avatar ${player.color}">${player.avatar}</div>
+                        <div class="player-details">
+                            <h4>${player.name}</h4>
+                            <p>Avg Score: ${Math.round(playerStats.avgScore)}</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-value">${playerStats.wins}</span>
+                            <span class="stat-label">Wins</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">${Math.round(playerStats.winRate)}%</span>
+                            <span class="stat-label">Win Rate</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    generateRecordsHTML(fastestTimes) {
+        const difficulties = ['easy', 'medium', 'hard'];
+        return difficulties.map(difficulty => {
+            const records = fastestTimes[difficulty] || [];
+            const recordsHTML = records.map(record => `
+                <div class="record-item">
+                    <span class="player-name ${record.player}-color">${record.player}</span>
+                    <span class="record-time">${this.formatSecondsToTime(record.time)}</span>
+                    <span class="record-date">${new Date(record.date).toLocaleDateString()}</span>
+                </div>
+            `).join('') || '<div class="record-item">No records yet</div>';
+
+            return `
+                <div class="difficulty-records">
+                    <h4>${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</h4>
+                    ${recordsHTML}
+                </div>
+            `;
+        }).join('');
+    }
+
+    generatePerfectGamesHTML(perfectGames) {
+        if (perfectGames.length === 0) {
+            return '<div class="record-item">No perfect games yet!</div>';
+        }
+
+        return perfectGames.map(entry => {
+            const perfectPlayers = ['faidao', 'filip'].filter(player => {
+                const totalErrors = (entry[player].errors.easy || 0) +
+                                  (entry[player].errors.medium || 0) +
+                                  (entry[player].errors.hard || 0);
+                return totalErrors === 0;
+            });
+
+            return perfectPlayers.map(player => `
+                <div class="record-item">
+                    <span class="player-name ${player}-color">${player}</span>
+                    <span class="record-score">${Math.round(entry[player].scores.total)} pts</span>
+                    <span class="record-date">${new Date(entry.date).toLocaleDateString()}</span>
+                </div>
+            `).join('');
+        }).join('');
     }
 
     showAchievementNotification(achievement) {
