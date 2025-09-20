@@ -1,6 +1,7 @@
 # Sudoku Championship Arena 🏆
 
 
+
 A comprehensive web application for tracking daily Sudoku competition scores between two players: **Faidao** and **Filip**. This advanced competitor tracking system features achievements, analytics, challenges, and much more!
 
 ## 🎯 Core Features
