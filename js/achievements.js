@@ -277,7 +277,10 @@ class AchievementsManager {
             this.unlockedAchievements = await sudokuApp.loadAchievements() || [];
         } catch (error) {
             console.error('Failed to refresh achievements:', error);
-            this.unlockedAchievements = [];
+            // Keep existing achievements if database fails
+            if (!this.unlockedAchievements) {
+                this.unlockedAchievements = [];
+            }
         }
     }
 
@@ -295,11 +298,11 @@ class AchievementsManager {
 
         const newlyUnlocked = [];
 
-        this.achievementDefinitions.forEach(achievement => {
+        for (const achievement of this.achievementDefinitions) {
             const playersWhoEarned = this.checkAchievementRequirement(achievement, newEntry, allEntries, streaks);
 
             if (playersWhoEarned && playersWhoEarned.length > 0) {
-                playersWhoEarned.forEach(player => {
+                for (const player of playersWhoEarned) {
                     // Check if this player already has this achievement
                     const alreadyHas = this.unlockedAchievements.some(a =>
                         a.id === achievement.id && a.player === player
@@ -309,9 +312,9 @@ class AchievementsManager {
                         await this.unlockAchievement(achievement, player);
                         newlyUnlocked.push({...achievement, player});
                     }
-                });
+                }
             }
-        });
+        }
 
         // Show notifications for newly unlocked achievements
         newlyUnlocked.forEach((achievement, index) => {

@@ -1202,6 +1202,7 @@ class SudokuChampionship {
             return await response.json();
         } catch (error) {
             console.error('Failed to load achievements:', error);
+            // Return empty array as fallback - achievements will still show as locked
             return [];
         }
     }
