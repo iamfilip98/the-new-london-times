@@ -184,10 +184,21 @@ class SudokuChampionship {
             // Two digits: 45 → 0:45
             input.value = `0:${value}`;
         } else if (value.length === 3) {
-            // Three digits: 345 → 3:45
+            // Three digits: 345 → 3:45, 555 → 5:55
             const minutes = value[0];
             const seconds = value.substring(1);
-            input.value = `${minutes}:${seconds}`;
+
+            // Validate seconds don't exceed 59
+            const sec = parseInt(seconds);
+            if (sec >= 60) {
+                // Convert overflow: 555 (5:55) → 9:35 (5*60 + 55 = 355 seconds)
+                const totalSeconds = parseInt(minutes) * 60 + sec;
+                const finalMinutes = Math.floor(totalSeconds / 60);
+                const finalSecs = totalSeconds % 60;
+                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
+            } else {
+                input.value = `${minutes}:${seconds}`;
+            }
         } else if (value.length >= 4) {
             // Four or more digits: 1234 → 12:34
             const minutes = value.substring(0, value.length - 2);
