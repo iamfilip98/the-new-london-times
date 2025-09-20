@@ -140,7 +140,7 @@ class SudokuChampionship {
         const pages = document.querySelectorAll('.page');
 
         navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+            link.addEventListener('click', async (e) => {
                 e.preventDefault();
                 const targetPage = e.target.closest('.nav-link').dataset.page;
 
@@ -153,7 +153,7 @@ class SudokuChampionship {
                 document.getElementById(targetPage).classList.add('active');
 
                 // Update page content
-                this.updatePageContent(targetPage);
+                await this.updatePageContent(targetPage);
             });
         });
     }
@@ -606,7 +606,7 @@ class SudokuChampionship {
             this.records = this.calculateRecords();
 
             // Check for achievements
-            this.checkAchievements(entry);
+            await this.checkAchievements(entry);
 
             // Update all displays
             this.updateDashboard();
@@ -849,7 +849,7 @@ class SudokuChampionship {
         }
     }
 
-    updatePageContent(page) {
+    async updatePageContent(page) {
         switch (page) {
             case 'analytics':
                 if (window.analyticsManager) {
@@ -858,7 +858,7 @@ class SudokuChampionship {
                 break;
             case 'achievements':
                 if (window.achievementsManager) {
-                    window.achievementsManager.updateAchievements(this.entries, this.streaks, this.records);
+                    await window.achievementsManager.updateAchievements(this.entries, this.streaks, this.records);
                 }
                 break;
             case 'leaderboards':
@@ -1086,10 +1086,10 @@ class SudokuChampionship {
         document.getElementById('achievementNotification').classList.remove('show');
     }
 
-    checkAchievements(entry) {
+    async checkAchievements(entry) {
         // This will be implemented in achievements.js
         if (window.achievementsManager) {
-            window.achievementsManager.checkNewAchievements(entry, this.entries, this.streaks);
+            await window.achievementsManager.checkNewAchievements(entry, this.entries, this.streaks);
         }
     }
 

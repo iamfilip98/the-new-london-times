@@ -265,9 +265,18 @@ class AchievementsManager {
 
     async initializeAsync() {
         try {
-            this.unlockedAchievements = await sudokuApp.loadAchievements() || [];
+            await this.refreshAchievements();
         } catch (error) {
             console.error('Failed to load achievements:', error);
+            this.unlockedAchievements = [];
+        }
+    }
+
+    async refreshAchievements() {
+        try {
+            this.unlockedAchievements = await sudokuApp.loadAchievements() || [];
+        } catch (error) {
+            console.error('Failed to refresh achievements:', error);
             this.unlockedAchievements = [];
         }
     }
@@ -279,7 +288,9 @@ class AchievementsManager {
         }
     }
 
-    checkNewAchievements(newEntry, allEntries, streaks) {
+    async checkNewAchievements(newEntry, allEntries, streaks) {
+        // Always refresh achievements from database before checking
+        await this.refreshAchievements();
         this.ensureUnlockedAchievementsArray();
 
         const newlyUnlocked = [];
@@ -295,7 +306,7 @@ class AchievementsManager {
                     );
 
                     if (!alreadyHas) {
-                        this.unlockAchievement(achievement, player);
+                        await this.unlockAchievement(achievement, player);
                         newlyUnlocked.push({...achievement, player});
                     }
                 });
@@ -654,7 +665,7 @@ class AchievementsManager {
         return [];
     }
 
-    unlockAchievement(achievement, player) {
+    async unlockAchievement(achievement, player) {
         this.ensureUnlockedAchievementsArray();
 
         const unlock = {
@@ -666,15 +677,30 @@ class AchievementsManager {
         };
 
         this.unlockedAchievements.push(unlock);
-        sudokuApp.saveAchievements();
+
+        // Save immediately to database
+        try {
+            await fetch('/api/achievements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(unlock)
+            });
+        } catch (error) {
+            console.error('Failed to save achievement:', error);
+        }
     }
 
-    isAchievementUnlocked(achievementId) {
+    async isAchievementUnlocked(achievementId) {
+        await this.refreshAchievements();
         this.ensureUnlockedAchievementsArray();
         return this.unlockedAchievements.some(a => a.id === achievementId);
     }
 
-    updateAchievements(entries, streaks, records) {
+    async updateAchievements(entries, streaks, records) {
+        // Always refresh achievements from database before updating display
+        await this.refreshAchievements();
         this.ensureUnlockedAchievementsArray();
 
         const achievementsGrid = document.getElementById('achievementsGrid');
@@ -755,7 +781,8 @@ class AchievementsManager {
         }).join('');
     }
 
-    getAchievementStats() {
+    async getAchievementStats() {
+        await this.refreshAchievements();
         this.ensureUnlockedAchievementsArray();
 
         const total = this.achievementDefinitions.length;
@@ -778,7 +805,7 @@ class AchievementsManager {
     getUnlockedByRarity(rarity) {
         const totalByRarity = this.achievementDefinitions.filter(a => a.rarity === rarity).length;
         const unlockedByRarity = this.achievementDefinitions.filter(a =>
-            a.rarity === rarity && this.isAchievementUnlocked(a.id)
+            a.rarity === rarity && this.unlockedAchievements.some(ua => ua.id === a.id)
         ).length;
 
         return {
