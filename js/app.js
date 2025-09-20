@@ -1,10 +1,11 @@
 class SudokuChampionship {
     constructor() {
-        this.entries = this.loadFromStorage() || [];
-        this.achievements = this.loadAchievements() || [];
-        this.challenges = this.loadChallenges() || [];
-        this.streaks = this.loadStreaks() || { faidao: { current: 0, best: 0 }, filip: { current: 0, best: 0 } };
-        this.records = this.loadRecords() || { faidao: {}, filip: {} };
+        this.entries = [];
+        this.achievements = [];
+        this.challenges = [];
+        this.streaks = { faidao: { current: 0, best: 0 }, filip: { current: 0, best: 0 } };
+        this.records = { faidao: {}, filip: {} };
+        this.migrationDone = false;
 
         this.init();
     }
@@ -20,13 +21,17 @@ class SudokuChampionship {
         }
     }
 
-    initialize() {
+    async initialize() {
         this.setupEventListeners();
         this.setupNavigation();
         this.setupLeaderboardTabs();
         this.setCurrentDate();
         this.initializeScoreDisplay();
         this.updateScores(); // Initialize scores immediately
+
+        // Load data from database or migrate from localStorage
+        await this.loadData();
+
         this.updateDashboard();
         this.updateAllPages();
     }
@@ -413,7 +418,93 @@ class SudokuChampionship {
         filipText.textContent = filipTotal.toFixed(0);
     }
 
-    saveEntry() {
+    async loadData() {
+        try {
+            // Check if we have localStorage data to migrate
+            const localEntries = localStorage.getItem('sudokuChampionshipEntries');
+            const localAchievements = localStorage.getItem('sudokuChampionshipAchievements');
+            const localStreaks = localStorage.getItem('sudokuChampionshipStreaks');
+            const localChallenges = localStorage.getItem('sudokuChampionshipChallenges');
+
+            if (localEntries || localAchievements || localStreaks || localChallenges) {
+                // Migrate localStorage data to database
+                const migrationData = {
+                    entries: localEntries ? JSON.parse(localEntries) : [],
+                    achievements: localAchievements ? JSON.parse(localAchievements) : [],
+                    streaks: localStreaks ? JSON.parse(localStreaks) : null,
+                    challenges: localChallenges ? JSON.parse(localChallenges) : []
+                };
+
+                await fetch('/api/entries', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        migrate: true,
+                        migrationData
+                    })
+                });
+
+                // Clear localStorage after successful migration
+                localStorage.removeItem('sudokuChampionshipEntries');
+                localStorage.removeItem('sudokuChampionshipAchievements');
+                localStorage.removeItem('sudokuChampionshipStreaks');
+                localStorage.removeItem('sudokuChampionshipChallenges');
+                localStorage.removeItem('sudokuChampionshipRecords');
+
+                console.log('Successfully migrated localStorage data to database');
+            }
+
+            // Load data from database
+            this.entries = await this.loadFromStorage();
+            this.achievements = await this.loadAchievements();
+            this.streaks = await this.loadStreaks() || { faidao: { current: 0, best: 0 }, filip: { current: 0, best: 0 } };
+            this.challenges = await this.loadChallenges();
+
+            // Calculate records from entries
+            this.records = this.calculateRecords();
+
+        } catch (error) {
+            console.error('Failed to load data:', error);
+        }
+    }
+
+    calculateRecords() {
+        const records = { faidao: {}, filip: {} };
+
+        this.entries.forEach(entry => {
+            ['faidao', 'filip'].forEach(player => {
+                if (!records[player]) records[player] = {};
+
+                ['easy', 'medium', 'hard'].forEach(difficulty => {
+                    const time = entry[player].times[difficulty];
+                    const errors = entry[player].errors[difficulty];
+                    const dnf = entry[player].dnf[difficulty];
+
+                    if (!dnf && time !== null) {
+                        // Update fastest time record
+                        if (!records[player][`${difficulty}_fastest`] ||
+                            time < records[player][`${difficulty}_fastest`]) {
+                            records[player][`${difficulty}_fastest`] = time;
+                        }
+
+                        // Update perfect game record (0 errors)
+                        if (errors === 0) {
+                            if (!records[player][`${difficulty}_perfect`] ||
+                                time < records[player][`${difficulty}_perfect`]) {
+                                records[player][`${difficulty}_perfect`] = time;
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        return records;
+    }
+
+    async saveEntry() {
         const date = document.getElementById('entryDate').value;
         if (!date) {
             alert('Please select a date');
@@ -485,34 +576,49 @@ class SudokuChampionship {
             }
         };
 
-        // Remove existing entry for this date
-        this.entries = this.entries.filter(e => e.date !== date);
+        try {
+            // Save to database
+            const response = await fetch('/api/entries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    date,
+                    faidao: entry.faidao,
+                    filip: entry.filip
+                })
+            });
 
-        // Add new entry
-        this.entries.push(entry);
+            if (!response.ok) {
+                throw new Error('Failed to save entry');
+            }
 
-        // Sort by date (newest first)
-        this.entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Update local data
+            this.entries = this.entries.filter(e => e.date !== date);
+            this.entries.push(entry);
+            this.entries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        // Update streaks
-        this.updateStreaks();
+            // Update streaks
+            await this.updateStreaks();
 
-        // Update records
-        this.updateRecords(entry);
+            // Update records
+            this.records = this.calculateRecords();
 
-        // Check for achievements
-        this.checkAchievements(entry);
+            // Check for achievements
+            this.checkAchievements(entry);
 
-        // Save to storage
-        this.saveToStorage();
+            // Update all displays
+            this.updateDashboard();
 
-        // Update all displays
-        this.updateDashboard();
-
-        alert('Battle results saved successfully!');
+            alert('Battle results saved successfully!');
+        } catch (error) {
+            console.error('Failed to save entry:', error);
+            alert('Failed to save entry. Please try again.');
+        }
     }
 
-    updateStreaks() {
+    async updateStreaks() {
         if (this.entries.length === 0) return;
 
         // Sort entries by date (oldest first) for streak calculation
@@ -554,7 +660,7 @@ class SudokuChampionship {
             filip: { current: filipStreak, best: Math.max(filipBest, this.streaks.filip?.best || 0) }
         };
 
-        this.saveStreaks();
+        await this.saveStreaks();
     }
 
     updateRecords(entry) {
@@ -722,12 +828,24 @@ class SudokuChampionship {
         this.checkExistingEntry();
     }
 
-    deleteEntry(date) {
+    async deleteEntry(date) {
         if (confirm('Are you sure you want to delete this entry?')) {
-            this.entries = this.entries.filter(entry => entry.date !== date);
-            this.updateStreaks();
-            this.saveToStorage();
-            this.updateDashboard();
+            try {
+                const response = await fetch(`/api/entries?date=${date}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete entry');
+                }
+
+                this.entries = this.entries.filter(entry => entry.date !== date);
+                await this.updateStreaks();
+                this.updateDashboard();
+            } catch (error) {
+                console.error('Failed to delete entry:', error);
+                alert('Failed to delete entry. Please try again.');
+            }
         }
     }
 
@@ -980,50 +1098,144 @@ class SudokuChampionship {
         // Other page updates will be handled when those managers are loaded
     }
 
-    // Storage methods
-    saveToStorage() {
-        localStorage.setItem('sudokuChampionshipEntries', JSON.stringify(this.entries));
+    // API methods
+    async saveToStorage() {
+        try {
+            const response = await fetch('/api/entries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    migrate: true,
+                    migrationData: {
+                        entries: this.entries,
+                        achievements: this.achievements,
+                        streaks: this.streaks,
+                        challenges: this.challenges
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save data');
+            }
+        } catch (error) {
+            console.error('Failed to save to database:', error);
+        }
     }
 
-    loadFromStorage() {
-        const stored = localStorage.getItem('sudokuChampionshipEntries');
-        return stored ? JSON.parse(stored) : [];
+    async loadFromStorage() {
+        try {
+            const response = await fetch('/api/entries');
+            if (!response.ok) {
+                throw new Error('Failed to load entries');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to load from database:', error);
+            return [];
+        }
     }
 
-    saveStreaks() {
-        localStorage.setItem('sudokuChampionshipStreaks', JSON.stringify(this.streaks));
+    async saveStreaks() {
+        try {
+            await fetch('/api/stats', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: 'streaks',
+                    data: this.streaks
+                })
+            });
+        } catch (error) {
+            console.error('Failed to save streaks:', error);
+        }
     }
 
-    loadStreaks() {
-        const stored = localStorage.getItem('sudokuChampionshipStreaks');
-        return stored ? JSON.parse(stored) : null;
+    async loadStreaks() {
+        try {
+            const response = await fetch('/api/stats?type=streaks');
+            if (!response.ok) {
+                throw new Error('Failed to load streaks');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to load streaks:', error);
+            return null;
+        }
     }
 
     saveRecords() {
-        localStorage.setItem('sudokuChampionshipRecords', JSON.stringify(this.records));
+        // Records are calculated from entries, no separate storage needed
     }
 
     loadRecords() {
-        const stored = localStorage.getItem('sudokuChampionshipRecords');
-        return stored ? JSON.parse(stored) : null;
+        // Records are calculated from entries, no separate storage needed
+        return null;
     }
 
-    saveAchievements() {
-        localStorage.setItem('sudokuChampionshipAchievements', JSON.stringify(this.achievements));
+    async saveAchievements() {
+        try {
+            for (const achievement of this.achievements) {
+                await fetch('/api/achievements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(achievement)
+                });
+            }
+        } catch (error) {
+            console.error('Failed to save achievements:', error);
+        }
     }
 
-    loadAchievements() {
-        const stored = localStorage.getItem('sudokuChampionshipAchievements');
-        return stored ? JSON.parse(stored) : [];
+    async loadAchievements() {
+        try {
+            const response = await fetch('/api/achievements');
+            if (!response.ok) {
+                throw new Error('Failed to load achievements');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to load achievements:', error);
+            return [];
+        }
     }
 
-    saveChallenges() {
-        localStorage.setItem('sudokuChampionshipChallenges', JSON.stringify(this.challenges));
+    async saveChallenges() {
+        try {
+            for (const challenge of this.challenges) {
+                await fetch('/api/stats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'challenge',
+                        data: challenge
+                    })
+                });
+            }
+        } catch (error) {
+            console.error('Failed to save challenges:', error);
+        }
     }
 
-    loadChallenges() {
-        const stored = localStorage.getItem('sudokuChampionshipChallenges');
-        return stored ? JSON.parse(stored) : [];
+    async loadChallenges() {
+        try {
+            const response = await fetch('/api/stats?type=challenges');
+            if (!response.ok) {
+                throw new Error('Failed to load challenges');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to load challenges:', error);
+            return [];
+        }
     }
 }
 

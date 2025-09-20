@@ -53,11 +53,22 @@ class ChallengesManager {
             }
         ];
 
-        this.activeChallenges = sudokuApp.loadChallenges() || [];
-        this.completedChallenges = this.loadCompletedChallenges() || [];
+        this.activeChallenges = [];
+        this.completedChallenges = [];
 
-        // Initialize challenge rotation
-        this.initializeChallengeRotation();
+        // Initialize challenge rotation after loading data
+        this.initializeAsync();
+    }
+
+    async initializeAsync() {
+        try {
+            this.activeChallenges = await sudokuApp.loadChallenges() || [];
+            this.completedChallenges = await this.loadCompletedChallenges() || [];
+            this.initializeChallengeRotation();
+        } catch (error) {
+            console.error('Failed to initialize challenges:', error);
+            this.initializeChallengeRotation();
+        }
     }
 
     initializeChallengeRotation() {
@@ -511,13 +522,57 @@ class ChallengesManager {
         sudokuApp.saveChallenges();
     }
 
-    saveCompletedChallenges() {
-        localStorage.setItem('sudokuCompletedChallenges', JSON.stringify(this.completedChallenges));
+    async saveCompletedChallenges() {
+        try {
+            for (const challenge of this.completedChallenges) {
+                await fetch('/api/stats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'challenge',
+                        data: challenge
+                    })
+                });
+            }
+        } catch (error) {
+            console.error('Failed to save completed challenges:', error);
+        }
     }
 
-    loadCompletedChallenges() {
-        const stored = localStorage.getItem('sudokuCompletedChallenges');
-        return stored ? JSON.parse(stored) : [];
+    async loadCompletedChallenges() {
+        try {
+            // Check for localStorage data first (migration)
+            const localData = localStorage.getItem('sudokuCompletedChallenges');
+            if (localData) {
+                const challenges = JSON.parse(localData);
+                // Migrate to database
+                for (const challenge of challenges) {
+                    await fetch('/api/stats', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type: 'challenge',
+                            data: challenge
+                        })
+                    });
+                }
+                localStorage.removeItem('sudokuCompletedChallenges');
+                return challenges;
+            }
+
+            const response = await fetch('/api/stats?type=challenges');
+            if (!response.ok) {
+                throw new Error('Failed to load challenges');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to load completed challenges:', error);
+            return [];
+        }
     }
 }
 

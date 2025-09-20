@@ -102,3 +102,5 @@ build/
 # Local development files
 .local
 .cache
+.vercel
+.env*.local
