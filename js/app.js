@@ -10,11 +10,45 @@ class SudokuChampionship {
     }
 
     init() {
+        // Ensure DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initialize();
+            });
+        } else {
+            this.initialize();
+        }
+    }
+
+    initialize() {
         this.setupEventListeners();
         this.setupNavigation();
         this.setCurrentDate();
+        this.initializeScoreDisplay();
+        this.updateScores(); // Initialize scores immediately
         this.updateDashboard();
         this.updateAllPages();
+    }
+
+    initializeScoreDisplay() {
+        // Set all scores to 0 initially
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        players.forEach(player => {
+            difficulties.forEach(difficulty => {
+                const scoreElement = document.getElementById(`${player}-${difficulty}-score`);
+                if (scoreElement) scoreElement.textContent = '0';
+            });
+            const totalElement = document.getElementById(`${player}-total`);
+            if (totalElement) totalElement.textContent = '0';
+        });
+
+        // Initialize battle results
+        const winnerElement = document.getElementById('winnerAnnouncement');
+        if (winnerElement) {
+            winnerElement.querySelector('.winner-text').textContent = 'Enter scores to see winner!';
+        }
     }
 
     setupEventListeners() {
@@ -33,10 +67,21 @@ class SudokuChampionship {
                 this.formatTimeInput(e.target);
                 this.updateScores();
             });
+
+            // Also format on blur to catch any missed formatting
+            input.addEventListener('blur', (e) => {
+                this.formatTimeInput(e.target);
+                this.updateScores();
+            });
         });
 
         errorInputs.forEach(input => {
             input.addEventListener('input', () => {
+                this.updateScores();
+            });
+
+            // Also update on blur
+            input.addEventListener('blur', () => {
                 this.updateScores();
             });
         });
@@ -98,7 +143,29 @@ class SudokuChampionship {
     }
 
     formatTimeInput(input) {
-        let value = input.value.replace(/[^0-9]/g, '');
+        let value = input.value;
+
+        // If already in MM:SS format, validate and fix if needed
+        if (value.includes(':')) {
+            const parts = value.split(':');
+            if (parts.length === 2) {
+                const minutes = parseInt(parts[0]) || 0;
+                const seconds = parseInt(parts[1]) || 0;
+
+                if (seconds >= 60) {
+                    const totalSeconds = minutes * 60 + seconds;
+                    const finalMinutes = Math.floor(totalSeconds / 60);
+                    const finalSecs = totalSeconds % 60;
+                    input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
+                } else {
+                    input.value = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+                return;
+            }
+        }
+
+        // Strip everything except numbers
+        value = value.replace(/[^0-9]/g, '');
 
         if (value.length === 0) {
             input.value = '';
@@ -106,9 +173,18 @@ class SudokuChampionship {
         }
 
         // Convert raw numbers to MM:SS format
-        if (value.length <= 2) {
+        if (value.length === 1) {
             const seconds = parseInt(value);
-            input.value = `0:${seconds.toString().padStart(2, '0')}`;
+            input.value = `0:0${seconds}`;
+        } else if (value.length === 2) {
+            const seconds = parseInt(value);
+            if (seconds >= 60) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                input.value = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            } else {
+                input.value = `0:${seconds.toString().padStart(2, '0')}`;
+            }
         } else if (value.length === 3) {
             const minutes = parseInt(value[0]);
             const seconds = parseInt(value.substring(1));
@@ -155,13 +231,16 @@ class SudokuChampionship {
     }
 
     parseTimeToSeconds(timeString) {
-        if (!timeString || timeString.trim() === '') return null;
+        if (!timeString || timeString.trim() === '' || timeString === '0:00') return null;
 
         const parts = timeString.split(':');
         if (parts.length !== 2) return null;
 
         const minutes = parseInt(parts[0]) || 0;
         const seconds = parseInt(parts[1]) || 0;
+
+        // Return null for invalid times like 0:00
+        if (minutes === 0 && seconds === 0) return null;
 
         return minutes * 60 + seconds;
     }
@@ -672,7 +751,7 @@ class SudokuChampionship {
     }
 
     loadRecords() {
-        const stored = localStorage.setItem('sudokuChampionshipRecords');
+        const stored = localStorage.getItem('sudokuChampionshipRecords');
         return stored ? JSON.parse(stored) : null;
     }
 
