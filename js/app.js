@@ -64,7 +64,7 @@ class SudokuChampionship {
 
         timeInputs.forEach(input => {
             input.addEventListener('input', (e) => {
-                this.formatTimeInput(e.target);
+                this.handleTimeInput(e.target);
                 this.updateScores();
             });
 
@@ -89,6 +89,7 @@ class SudokuChampionship {
                     e.target.selectionStart === 0 &&
                     e.target.selectionEnd === e.target.value.length) {
                     e.target.value = '';
+                    e.target.dataset.rawValue = '';
                     this.updateScores();
                     e.preventDefault();
                 }
@@ -162,14 +163,26 @@ class SudokuChampionship {
         });
     }
 
-    formatTimeInput(input) {
+    handleTimeInput(input) {
         let value = input.value;
 
-        // Strip everything except numbers
-        value = value.replace(/[^0-9]/g, '');
+        // Strip everything except numbers to get raw input
+        const rawNumbers = value.replace(/[^0-9]/g, '');
+
+        // Store raw numbers for calculation purposes
+        input.dataset.rawValue = rawNumbers;
+
+        // Format and display
+        this.formatTimeInput(input);
+    }
+
+    formatTimeInput(input) {
+        // Use stored raw value if available, otherwise extract from current value
+        let value = input.dataset.rawValue || input.value.replace(/[^0-9]/g, '');
 
         if (value.length === 0) {
             input.value = '';
+            input.dataset.rawValue = '';
             return;
         }
 
@@ -177,13 +190,13 @@ class SudokuChampionship {
         let newCursorPos = input.value.length;
 
         if (value.length === 1) {
-            // Single digit: 5 → 0:05 (cursor at end)
+            // Single digit: 5 → 0:05
             input.value = `0:0${value}`;
-            newCursorPos = 4; // Position at end
+            newCursorPos = 4;
         } else if (value.length === 2) {
-            // Two digits: 45 → 0:45 (cursor at end)
+            // Two digits: 45 → 0:45
             input.value = `0:${value}`;
-            newCursorPos = 4; // Position at end
+            newCursorPos = 4;
         } else if (value.length === 3) {
             // Three digits: 345 → 3:45, 555 → 5:55
             const minutes = value[0];
@@ -200,7 +213,7 @@ class SudokuChampionship {
             } else {
                 input.value = `${minutes}:${seconds}`;
             }
-            newCursorPos = input.value.length; // Position at end
+            newCursorPos = input.value.length;
         } else if (value.length >= 4) {
             // Four or more digits: 1234 → 12:34
             const minutes = value.substring(0, value.length - 2);
@@ -218,7 +231,7 @@ class SudokuChampionship {
             } else {
                 input.value = `${minutes}:${seconds}`;
             }
-            newCursorPos = input.value.length; // Position at end
+            newCursorPos = input.value.length;
         }
 
         // Set cursor to end to prevent insertion at beginning
