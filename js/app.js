@@ -165,9 +165,6 @@ class SudokuChampionship {
     formatTimeInput(input) {
         let value = input.value;
 
-        // Store cursor position for better UX
-        const cursorPosition = input.selectionStart;
-
         // Strip everything except numbers
         value = value.replace(/[^0-9]/g, '');
 
@@ -176,13 +173,17 @@ class SudokuChampionship {
             return;
         }
 
-        // Convert raw numbers to MM:SS format
+        // Convert raw numbers to MM:SS format and set cursor position
+        let newCursorPos = input.value.length;
+
         if (value.length === 1) {
-            // Single digit: 5 → 0:05
+            // Single digit: 5 → 0:05 (cursor at end)
             input.value = `0:0${value}`;
+            newCursorPos = 4; // Position at end
         } else if (value.length === 2) {
-            // Two digits: 45 → 0:45
+            // Two digits: 45 → 0:45 (cursor at end)
             input.value = `0:${value}`;
+            newCursorPos = 4; // Position at end
         } else if (value.length === 3) {
             // Three digits: 345 → 3:45, 555 → 5:55
             const minutes = value[0];
@@ -199,6 +200,7 @@ class SudokuChampionship {
             } else {
                 input.value = `${minutes}:${seconds}`;
             }
+            newCursorPos = input.value.length; // Position at end
         } else if (value.length >= 4) {
             // Four or more digits: 1234 → 12:34
             const minutes = value.substring(0, value.length - 2);
@@ -216,14 +218,12 @@ class SudokuChampionship {
             } else {
                 input.value = `${minutes}:${seconds}`;
             }
+            newCursorPos = input.value.length; // Position at end
         }
 
-        // Restore cursor position (approximate)
+        // Set cursor to end to prevent insertion at beginning
         setTimeout(() => {
-            if (input.value.length > 0) {
-                const newPosition = Math.min(cursorPosition, input.value.length);
-                input.setSelectionRange(newPosition, newPosition);
-            }
+            input.setSelectionRange(newCursorPos, newCursorPos);
         }, 0);
     }
 
