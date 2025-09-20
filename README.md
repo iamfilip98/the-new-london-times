@@ -98,8 +98,8 @@ sudoku-champion/
 5. **Save Results**: Click "Save Battle Results" to store data
 
 ### **Scoring System**
-- **Formula**: `(10000 ÷ adjusted_seconds) × difficulty_multiplier`
-- **Error Penalty**: +10 seconds per error before calculation
+- **Formula**: `(1000 ÷ adjusted_minutes) × difficulty_multiplier`
+- **Error Penalty**: +30 seconds per error before calculation
 - **Multipliers**: Easy (×1), Medium (×1.5), Hard (×2)
 - **Winner**: Highest total score wins the day
 

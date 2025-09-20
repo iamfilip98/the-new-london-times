@@ -68,10 +68,30 @@ class SudokuChampionship {
                 this.updateScores();
             });
 
+            // Clear selection when focused for easy retyping
+            input.addEventListener('focus', (e) => {
+                // Select all text for easy replacement
+                setTimeout(() => {
+                    e.target.select();
+                }, 0);
+            });
+
             // Also format on blur to catch any missed formatting
             input.addEventListener('blur', (e) => {
                 this.formatTimeInput(e.target);
                 this.updateScores();
+            });
+
+            // Handle key events for better UX
+            input.addEventListener('keydown', (e) => {
+                // Allow easy clearing with Delete/Backspace when all text is selected
+                if ((e.key === 'Delete' || e.key === 'Backspace') &&
+                    e.target.selectionStart === 0 &&
+                    e.target.selectionEnd === e.target.value.length) {
+                    e.target.value = '';
+                    this.updateScores();
+                    e.preventDefault();
+                }
             });
         });
 
@@ -145,24 +165,8 @@ class SudokuChampionship {
     formatTimeInput(input) {
         let value = input.value;
 
-        // If already in MM:SS format, validate and fix if needed
-        if (value.includes(':')) {
-            const parts = value.split(':');
-            if (parts.length === 2) {
-                const minutes = parseInt(parts[0]) || 0;
-                const seconds = parseInt(parts[1]) || 0;
-
-                if (seconds >= 60) {
-                    const totalSeconds = minutes * 60 + seconds;
-                    const finalMinutes = Math.floor(totalSeconds / 60);
-                    const finalSecs = totalSeconds % 60;
-                    input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
-                } else {
-                    input.value = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                }
-                return;
-            }
-        }
+        // Store cursor position for better UX
+        const cursorPosition = input.selectionStart;
 
         // Strip everything except numbers
         value = value.replace(/[^0-9]/g, '');
@@ -174,40 +178,42 @@ class SudokuChampionship {
 
         // Convert raw numbers to MM:SS format
         if (value.length === 1) {
-            const seconds = parseInt(value);
-            input.value = `0:0${seconds}`;
+            // Single digit: 5 → 0:05
+            input.value = `0:0${value}`;
         } else if (value.length === 2) {
-            const seconds = parseInt(value);
-            if (seconds >= 60) {
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = seconds % 60;
-                input.value = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-            } else {
-                input.value = `0:${seconds.toString().padStart(2, '0')}`;
-            }
+            // Two digits: 45 → 0:45
+            input.value = `0:${value}`;
         } else if (value.length === 3) {
-            const minutes = parseInt(value[0]);
-            const seconds = parseInt(value.substring(1));
-            if (seconds >= 60) {
-                const totalSeconds = minutes * 60 + seconds;
-                const finalMinutes = Math.floor(totalSeconds / 60);
-                const finalSecs = totalSeconds % 60;
-                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
-            } else {
-                input.value = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }
+            // Three digits: 345 → 3:45
+            const minutes = value[0];
+            const seconds = value.substring(1);
+            input.value = `${minutes}:${seconds}`;
         } else if (value.length >= 4) {
-            const minutes = parseInt(value.substring(0, value.length - 2));
-            const seconds = parseInt(value.substring(value.length - 2));
-            if (seconds >= 60) {
-                const totalSeconds = minutes * 60 + seconds;
+            // Four or more digits: 1234 → 12:34
+            const minutes = value.substring(0, value.length - 2);
+            const seconds = value.substring(value.length - 2);
+
+            // Handle seconds overflow
+            const sec = parseInt(seconds);
+            const min = parseInt(minutes);
+
+            if (sec >= 60) {
+                const totalSeconds = min * 60 + sec;
                 const finalMinutes = Math.floor(totalSeconds / 60);
                 const finalSecs = totalSeconds % 60;
                 input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
             } else {
-                input.value = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                input.value = `${minutes}:${seconds}`;
             }
         }
+
+        // Restore cursor position (approximate)
+        setTimeout(() => {
+            if (input.value.length > 0) {
+                const newPosition = Math.min(cursorPosition, input.value.length);
+                input.setSelectionRange(newPosition, newPosition);
+            }
+        }, 0);
     }
 
     toggleInputs(checkbox) {
@@ -275,11 +281,12 @@ class SudokuChampionship {
                 let score = 0;
 
                 if (!dnf && time !== null) {
-                    // Add error penalty (10 seconds per error)
-                    const adjustedTime = time + (errors * 10);
+                    // Add error penalty (30 seconds per error)
+                    const adjustedTime = time + (errors * 30);
+                    const adjustedMinutes = adjustedTime / 60;
 
-                    // Calculate score: (10000 ÷ seconds) × multiplier
-                    score = (10000 / adjustedTime) * multipliers[difficulty];
+                    // Calculate score: (1000 ÷ minutes) × multiplier
+                    score = (1000 / adjustedMinutes) * multipliers[difficulty];
                     score = Math.round(score * 100) / 100;
                 }
 
