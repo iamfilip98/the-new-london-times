@@ -198,15 +198,15 @@ class SudokuChampionship {
             input.value = `0:${value}`;
             newCursorPos = 4;
         } else if (value.length === 3) {
-            // Three digits: 345 → 3:45, 555 → 5:55
-            const minutes = value[0];
+            // Three digits: 222 → 2:22, 345 → 3:45
+            const minutes = parseInt(value[0]);
             const seconds = value.substring(1);
 
             // Validate seconds don't exceed 59
             const sec = parseInt(seconds);
             if (sec >= 60) {
                 // Convert overflow: 555 (5:55) → 9:35 (5*60 + 55 = 355 seconds)
-                const totalSeconds = parseInt(minutes) * 60 + sec;
+                const totalSeconds = minutes * 60 + sec;
                 const finalMinutes = Math.floor(totalSeconds / 60);
                 const finalSecs = totalSeconds % 60;
                 input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
@@ -216,15 +216,14 @@ class SudokuChampionship {
             newCursorPos = input.value.length;
         } else if (value.length >= 4) {
             // Four or more digits: 1234 → 12:34
-            const minutes = value.substring(0, value.length - 2);
+            const minutes = parseInt(value.substring(0, value.length - 2));
             const seconds = value.substring(value.length - 2);
 
             // Handle seconds overflow
             const sec = parseInt(seconds);
-            const min = parseInt(minutes);
 
             if (sec >= 60) {
-                const totalSeconds = min * 60 + sec;
+                const totalSeconds = minutes * 60 + sec;
                 const finalMinutes = Math.floor(totalSeconds / 60);
                 const finalSecs = totalSeconds % 60;
                 input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
