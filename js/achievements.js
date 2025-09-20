@@ -259,10 +259,29 @@ class AchievementsManager {
             }
         ];
 
-        this.unlockedAchievements = sudokuApp.loadAchievements() || [];
+        this.unlockedAchievements = [];
+        this.initializeAsync();
+    }
+
+    async initializeAsync() {
+        try {
+            this.unlockedAchievements = await sudokuApp.loadAchievements() || [];
+        } catch (error) {
+            console.error('Failed to load achievements:', error);
+            this.unlockedAchievements = [];
+        }
+    }
+
+    // Helper method to ensure unlockedAchievements is always an array
+    ensureUnlockedAchievementsArray() {
+        if (!Array.isArray(this.unlockedAchievements)) {
+            this.unlockedAchievements = [];
+        }
     }
 
     checkNewAchievements(newEntry, allEntries, streaks) {
+        this.ensureUnlockedAchievementsArray();
+
         const newlyUnlocked = [];
 
         this.achievementDefinitions.forEach(achievement => {
@@ -636,6 +655,8 @@ class AchievementsManager {
     }
 
     unlockAchievement(achievement, player) {
+        this.ensureUnlockedAchievementsArray();
+
         const unlock = {
             id: achievement.id,
             player: player,
@@ -649,10 +670,13 @@ class AchievementsManager {
     }
 
     isAchievementUnlocked(achievementId) {
+        this.ensureUnlockedAchievementsArray();
         return this.unlockedAchievements.some(a => a.id === achievementId);
     }
 
     updateAchievements(entries, streaks, records) {
+        this.ensureUnlockedAchievementsArray();
+
         const achievementsGrid = document.getElementById('achievementsGrid');
 
         if (!achievementsGrid) return;
@@ -732,6 +756,8 @@ class AchievementsManager {
     }
 
     getAchievementStats() {
+        this.ensureUnlockedAchievementsArray();
+
         const total = this.achievementDefinitions.length;
         const unlocked = this.unlockedAchievements.length;
         const percentage = Math.round((unlocked / total) * 100);
