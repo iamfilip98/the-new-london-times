@@ -930,7 +930,9 @@ class SudokuChampionship {
 
         const now = new Date();
         const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay());
+        const dayOfWeek = now.getDay();
+        const daysFromMonday = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+        startOfWeek.setDate(now.getDate() - daysFromMonday);
 
         const weeklyEntries = this.entries.filter(entry => {
             const entryDate = new Date(entry.date);
