@@ -477,6 +477,9 @@ class SudokuChampionship {
             // Calculate records from entries
             this.records = this.calculateRecords();
 
+            // Recalculate streaks to ensure they match the current data
+            await this.updateStreaks();
+
         } catch (error) {
             console.error('Failed to load data:', error);
         }
@@ -632,21 +635,24 @@ class SudokuChampionship {
 
     async updateStreaks() {
         if (this.entries.length === 0) {
-            // If no entries exist, maintain current streaks from database
+            // If no entries exist, streaks should be 0
+            this.streaks = {
+                faidao: { current: 0, best: this.streaks.faidao?.best || 0 },
+                filip: { current: 0, best: this.streaks.filip?.best || 0 }
+            };
+            await this.saveStreaks();
             return;
         }
 
         // Sort entries by date (oldest first) for streak calculation
         const sortedEntries = [...this.entries].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        let faidaoStreak = 0;
-        let filipStreak = 0;
-        let faidaoBest = 0;
-        let filipBest = 0;
         let currentFaidaoStreak = 0;
         let currentFilipStreak = 0;
+        let faidaoBest = this.streaks.faidao?.best || 0;
+        let filipBest = this.streaks.filip?.best || 0;
 
-        sortedEntries.forEach((entry, index) => {
+        sortedEntries.forEach((entry) => {
             const faidaoWon = entry.faidao.scores.total > entry.filip.scores.total;
             const filipWon = entry.filip.scores.total > entry.faidao.scores.total;
 
@@ -659,38 +665,23 @@ class SudokuChampionship {
                 currentFaidaoStreak = 0;
                 filipBest = Math.max(filipBest, currentFilipStreak);
             } else {
+                // Ties break both streaks
                 currentFaidaoStreak = 0;
                 currentFilipStreak = 0;
             }
-
-            // If this is the most recent entry, save current streaks
-            if (index === sortedEntries.length - 1) {
-                faidaoStreak = currentFaidaoStreak;
-                filipStreak = currentFilipStreak;
-            }
         });
 
-        // Only update streaks if they've actually changed or improved
+        // Update streaks with calculated values
         const newStreaks = {
             faidao: {
-                current: faidaoStreak,
-                best: Math.max(faidaoBest, this.streaks.faidao?.best || 0)
+                current: currentFaidaoStreak,
+                best: faidaoBest
             },
             filip: {
-                current: filipStreak,
-                best: Math.max(filipBest, this.streaks.filip?.best || 0)
+                current: currentFilipStreak,
+                best: filipBest
             }
         };
-
-        // Check if today's date exists in entries - if not, preserve current streaks from yesterday
-        const today = new Date().toISOString().split('T')[0];
-        const todayEntry = this.entries.find(entry => entry.date === today);
-
-        if (!todayEntry) {
-            // No entry for today - keep current streaks from last known state
-            newStreaks.faidao.current = this.streaks.faidao?.current || 0;
-            newStreaks.filip.current = this.streaks.filip?.current || 0;
-        }
 
         this.streaks = newStreaks;
         await this.saveStreaks();
