@@ -1,15 +1,33 @@
 class AchievementsManager {
     constructor() {
         this.achievementDefinitions = [
-            // Win Streak Achievements
+            // STREAK ACHIEVEMENTS (10)
+            {
+                id: 'streak_3',
+                title: 'Hot Start',
+                description: 'Win 3 consecutive days',
+                icon: 'fas fa-fire',
+                type: 'streak',
+                requirement: { type: 'win_streak', value: 3 },
+                rarity: 'common'
+            },
             {
                 id: 'streak_5',
-                title: '5-Day Champion',
+                title: 'Five-peat',
                 description: 'Win 5 consecutive days',
                 icon: 'fas fa-fire',
                 type: 'streak',
                 requirement: { type: 'win_streak', value: 5 },
-                rarity: 'common'
+                rarity: 'rare'
+            },
+            {
+                id: 'streak_7',
+                title: 'Lucky Seven',
+                description: 'Win 7 consecutive days',
+                icon: 'fas fa-dice-seven',
+                type: 'streak',
+                requirement: { type: 'win_streak', value: 7 },
+                rarity: 'epic'
             },
             {
                 id: 'streak_10',
@@ -18,7 +36,43 @@ class AchievementsManager {
                 icon: 'fas fa-crown',
                 type: 'streak',
                 requirement: { type: 'win_streak', value: 10 },
-                rarity: 'rare'
+                rarity: 'epic'
+            },
+            {
+                id: 'streak_15',
+                title: 'Unstoppable Force',
+                description: 'Win 15 consecutive days',
+                icon: 'fas fa-meteor',
+                type: 'streak',
+                requirement: { type: 'win_streak', value: 15 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'streak_20',
+                title: 'Sudoku Overlord',
+                description: 'Win 20 consecutive days',
+                icon: 'fas fa-crown',
+                type: 'streak',
+                requirement: { type: 'win_streak', value: 20 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'streak_30',
+                title: 'Month of Madness',
+                description: 'Win 30 consecutive days',
+                icon: 'fas fa-dragon',
+                type: 'streak',
+                requirement: { type: 'win_streak', value: 30 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'streak_50',
+                title: 'Dimension Breaker',
+                description: 'Win 50 consecutive days (breaks the laws of probability)',
+                icon: 'fas fa-infinity',
+                type: 'streak',
+                requirement: { type: 'win_streak', value: 50 },
+                rarity: 'legendary'
             },
             {
                 id: 'perfect_week',
@@ -29,8 +83,26 @@ class AchievementsManager {
                 requirement: { type: 'weekly_sweep', value: 7 },
                 rarity: 'epic'
             },
+            {
+                id: 'weekend_warrior',
+                title: 'Weekend Warrior',
+                description: 'Win both Saturday and Sunday',
+                icon: 'fas fa-calendar-weekend',
+                type: 'weekend',
+                requirement: { type: 'weekend_sweep', value: 1 },
+                rarity: 'common'
+            },
 
-            // Speed Achievements
+            // SPEED ACHIEVEMENTS (12)
+            {
+                id: 'speed_walker_easy',
+                title: 'Speed Walker (Easy)',
+                description: 'Complete Easy under 3 minutes',
+                icon: 'fas fa-walking',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'easy', value: 180 },
+                rarity: 'common'
+            },
             {
                 id: 'speed_demon_easy',
                 title: 'Speed Demon (Easy)',
@@ -38,7 +110,25 @@ class AchievementsManager {
                 icon: 'fas fa-bolt',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'easy', value: 120 },
-                rarity: 'common'
+                rarity: 'rare'
+            },
+            {
+                id: 'speed_racer_easy',
+                title: 'Speed Racer (Easy)',
+                description: 'Complete Easy under 1 minute',
+                icon: 'fas fa-rocket',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'easy', value: 60 },
+                rarity: 'epic'
+            },
+            {
+                id: 'teleporter_easy',
+                title: 'Teleporter (Easy)',
+                description: 'Complete Easy under 30 seconds (almost impossible)',
+                icon: 'fas fa-magic',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'easy', value: 30 },
+                rarity: 'legendary'
             },
             {
                 id: 'speed_demon_medium',
@@ -50,6 +140,24 @@ class AchievementsManager {
                 rarity: 'rare'
             },
             {
+                id: 'speed_racer_medium',
+                title: 'Speed Racer (Medium)',
+                description: 'Complete Medium under 3 minutes',
+                icon: 'fas fa-rocket',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'medium', value: 180 },
+                rarity: 'epic'
+            },
+            {
+                id: 'teleporter_medium',
+                title: 'Teleporter (Medium)',
+                description: 'Complete Medium under 2 minutes (superhuman)',
+                icon: 'fas fa-magic',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'medium', value: 120 },
+                rarity: 'legendary'
+            },
+            {
                 id: 'speed_demon_hard',
                 title: 'Speed Demon (Hard)',
                 description: 'Complete Hard under 10 minutes',
@@ -58,17 +166,44 @@ class AchievementsManager {
                 requirement: { type: 'time_under', difficulty: 'hard', value: 600 },
                 rarity: 'epic'
             },
-
-            // Perfect Game Achievements
             {
-                id: 'perfectionist',
-                title: 'Perfectionist',
-                description: 'Complete a day with zero total errors',
-                icon: 'fas fa-gem',
-                type: 'perfect',
-                requirement: { type: 'zero_errors_day', value: 1 },
-                rarity: 'rare'
+                id: 'speed_racer_hard',
+                title: 'Speed Racer (Hard)',
+                description: 'Complete Hard under 5 minutes',
+                icon: 'fas fa-rocket',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'hard', value: 300 },
+                rarity: 'legendary'
             },
+            {
+                id: 'time_lord',
+                title: 'Time Lord',
+                description: 'Complete Hard under 3 minutes (defies physics)',
+                icon: 'fas fa-clock',
+                type: 'speed',
+                requirement: { type: 'time_under', difficulty: 'hard', value: 180 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'triple_threat',
+                title: 'Triple Threat',
+                description: 'Complete all 3 difficulties in under 15 minutes total',
+                icon: 'fas fa-fire',
+                type: 'speed',
+                requirement: { type: 'total_time_under', value: 900 },
+                rarity: 'epic'
+            },
+            {
+                id: 'lightning_round',
+                title: 'Lightning Round',
+                description: 'Complete all 3 difficulties in under 8 minutes total',
+                icon: 'fas fa-bolt',
+                type: 'speed',
+                requirement: { type: 'total_time_under', value: 480 },
+                rarity: 'legendary'
+            },
+
+            // PERFECTION ACHIEVEMENTS (8)
             {
                 id: 'flawless_easy',
                 title: 'Flawless (Easy)',
@@ -96,28 +231,62 @@ class AchievementsManager {
                 requirement: { type: 'zero_errors', difficulty: 'hard', value: 1 },
                 rarity: 'epic'
             },
-
-            // Consistency Achievements
             {
-                id: 'consistent_performer',
-                title: 'Consistent Performer',
-                description: 'Complete 30 days of competition',
-                icon: 'fas fa-calendar',
-                type: 'consistency',
-                requirement: { type: 'total_days', value: 30 },
+                id: 'perfectionist',
+                title: 'Perfectionist',
+                description: 'Complete a day with zero total errors',
+                icon: 'fas fa-gem',
+                type: 'perfect',
+                requirement: { type: 'zero_errors_day', value: 1 },
                 rarity: 'rare'
             },
             {
-                id: 'dedicated_competitor',
-                title: 'Dedicated Competitor',
-                description: 'Complete 100 days of competition',
-                icon: 'fas fa-medal',
-                type: 'consistency',
-                requirement: { type: 'total_days', value: 100 },
+                id: 'perfectionist_week',
+                title: 'Perfectionist Week',
+                description: 'Complete 7 consecutive days with 0 total errors',
+                icon: 'fas fa-diamond',
+                type: 'perfect',
+                requirement: { type: 'perfect_week', value: 7 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'perfectionist_month',
+                title: 'Perfectionist God',
+                description: 'Complete 30 consecutive days with 0 total errors',
+                icon: 'fas fa-crown',
+                type: 'perfect',
+                requirement: { type: 'perfect_month', value: 30 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'triple_perfect',
+                title: 'Triple Perfect',
+                description: 'Complete all 3 difficulties with 0 errors in one day',
+                icon: 'fas fa-trophy',
+                type: 'perfect',
+                requirement: { type: 'triple_perfect_day', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'machine_precision',
+                title: 'Machine Precision',
+                description: 'Get 10 perfect days in a row',
+                icon: 'fas fa-robot',
+                type: 'perfect',
+                requirement: { type: 'perfect_streak', value: 10 },
                 rarity: 'legendary'
             },
 
-            // Score Achievements
+            // SCORE ACHIEVEMENTS (6)
+            {
+                id: 'point_collector',
+                title: 'Point Collector',
+                description: 'Score over 750 points in a single day',
+                icon: 'fas fa-coins',
+                type: 'score',
+                requirement: { type: 'daily_score', value: 750 },
+                rarity: 'common'
+            },
             {
                 id: 'high_scorer',
                 title: 'High Scorer',
@@ -136,90 +305,14 @@ class AchievementsManager {
                 requirement: { type: 'daily_score', value: 1500 },
                 rarity: 'epic'
             },
-
-            // Comeback Achievements
             {
-                id: 'comeback_kid',
-                title: 'Comeback Kid',
-                description: 'Win after losing 3 days in a row',
-                icon: 'fas fa-undo',
-                type: 'comeback',
-                requirement: { type: 'comeback_win', value: 3 },
-                rarity: 'rare'
-            },
-
-            // Fun & Quirky Achievements
-            {
-                id: 'speed_racer',
-                title: 'Speed Racer',
-                description: 'Complete Easy under 1 minute',
-                icon: 'fas fa-rocket',
-                type: 'speed',
-                requirement: { type: 'time_under', difficulty: 'easy', value: 60 },
-                rarity: 'epic'
-            },
-            {
-                id: 'marathon_runner',
-                title: 'Marathon Runner',
-                description: 'Take over 30 minutes on Hard',
-                icon: 'fas fa-hourglass-end',
-                type: 'speed',
-                requirement: { type: 'time_over', difficulty: 'hard', value: 1800 },
-                rarity: 'common'
-            },
-            {
-                id: 'perfectionist_week',
-                title: 'Perfectionist Week',
-                description: 'Complete 7 consecutive days with 0 total errors',
-                icon: 'fas fa-diamond',
-                type: 'perfect',
-                requirement: { type: 'perfect_week', value: 7 },
+                id: 'point_overlord',
+                title: 'Point Overlord',
+                description: 'Score over 2000 points in a single day',
+                icon: 'fas fa-crown',
+                type: 'score',
+                requirement: { type: 'daily_score', value: 2000 },
                 rarity: 'legendary'
-            },
-            {
-                id: 'triple_threat',
-                title: 'Triple Threat',
-                description: 'Complete all 3 difficulties in under 15 minutes total',
-                icon: 'fas fa-fire',
-                type: 'speed',
-                requirement: { type: 'total_time_under', value: 900 },
-                rarity: 'epic'
-            },
-            {
-                id: 'error_machine',
-                title: 'Learning Experience',
-                description: 'Make 20+ errors in a single day',
-                icon: 'fas fa-exclamation-triangle',
-                type: 'errors',
-                requirement: { type: 'total_errors_over', value: 20 },
-                rarity: 'common'
-            },
-            {
-                id: 'night_owl',
-                title: 'Night Owl',
-                description: 'Submit results after 11 PM',
-                icon: 'fas fa-moon',
-                type: 'time',
-                requirement: { type: 'late_submission', value: 23 },
-                rarity: 'rare'
-            },
-            {
-                id: 'early_bird',
-                title: 'Early Bird',
-                description: 'Submit results before 7 AM',
-                icon: 'fas fa-sun',
-                type: 'time',
-                requirement: { type: 'early_submission', value: 7 },
-                rarity: 'rare'
-            },
-            {
-                id: 'weekend_warrior',
-                title: 'Weekend Warrior',
-                description: 'Win both Saturday and Sunday',
-                icon: 'fas fa-calendar-weekend',
-                type: 'weekend',
-                requirement: { type: 'weekend_sweep', value: 1 },
-                rarity: 'common'
             },
             {
                 id: 'clutch_performer',
@@ -239,6 +332,44 @@ class AchievementsManager {
                 requirement: { type: 'dominating_win', value: 2 },
                 rarity: 'epic'
             },
+
+            // CONSISTENCY & MILESTONE ACHIEVEMENTS (6)
+            {
+                id: 'getting_started',
+                title: 'Getting Started',
+                description: 'Complete 7 days of competition',
+                icon: 'fas fa-play',
+                type: 'consistency',
+                requirement: { type: 'total_days', value: 7 },
+                rarity: 'common'
+            },
+            {
+                id: 'consistent_performer',
+                title: 'Consistent Performer',
+                description: 'Complete 30 days of competition',
+                icon: 'fas fa-calendar',
+                type: 'consistency',
+                requirement: { type: 'total_days', value: 30 },
+                rarity: 'rare'
+            },
+            {
+                id: 'dedicated_competitor',
+                title: 'Dedicated Competitor',
+                description: 'Complete 100 days of competition',
+                icon: 'fas fa-medal',
+                type: 'consistency',
+                requirement: { type: 'total_days', value: 100 },
+                rarity: 'epic'
+            },
+            {
+                id: 'sudoku_veteran',
+                title: 'Sudoku Veteran',
+                description: 'Complete 365 days of competition',
+                icon: 'fas fa-shield',
+                type: 'consistency',
+                requirement: { type: 'total_days', value: 365 },
+                rarity: 'legendary'
+            },
             {
                 id: 'consistency_king',
                 title: 'Consistency King',
@@ -249,6 +380,35 @@ class AchievementsManager {
                 rarity: 'rare'
             },
             {
+                id: 'precision_machine',
+                title: 'Precision Machine',
+                description: 'Have all 3 difficulties within 5% of each other',
+                icon: 'fas fa-cog',
+                type: 'consistency',
+                requirement: { type: 'balanced_times', value: 0.05 },
+                rarity: 'epic'
+            },
+
+            // QUIRKY & FUN ACHIEVEMENTS (8)
+            {
+                id: 'comeback_kid',
+                title: 'Comeback Kid',
+                description: 'Win after losing 3 days in a row',
+                icon: 'fas fa-undo',
+                type: 'comeback',
+                requirement: { type: 'comeback_win', value: 3 },
+                rarity: 'rare'
+            },
+            {
+                id: 'comeback_legend',
+                title: 'Comeback Legend',
+                description: 'Win after losing 5 days in a row',
+                icon: 'fas fa-phoenix-squadron',
+                type: 'comeback',
+                requirement: { type: 'comeback_win', value: 5 },
+                rarity: 'epic'
+            },
+            {
                 id: 'dnf_survivor',
                 title: 'DNF Survivor',
                 description: 'Win despite having a DNF',
@@ -256,6 +416,51 @@ class AchievementsManager {
                 type: 'comeback',
                 requirement: { type: 'win_with_dnf', value: 1 },
                 rarity: 'rare'
+            },
+            {
+                id: 'error_magnet',
+                title: 'Error Magnet',
+                description: 'Make 20+ errors in a single day',
+                icon: 'fas fa-exclamation-triangle',
+                type: 'errors',
+                requirement: { type: 'total_errors_over', value: 20 },
+                rarity: 'common'
+            },
+            {
+                id: 'error_explosion',
+                title: 'Error Explosion',
+                description: 'Make 50+ errors in a single day (how is this possible?)',
+                icon: 'fas fa-bomb',
+                type: 'errors',
+                requirement: { type: 'total_errors_over', value: 50 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'methodical_solver',
+                title: 'Methodical Solver',
+                description: 'Take over 15 minutes on Hard (thinking it through)',
+                icon: 'fas fa-brain',
+                type: 'speed',
+                requirement: { type: 'time_over', difficulty: 'hard', value: 900 },
+                rarity: 'common'
+            },
+            {
+                id: 'perfectionist_patience',
+                title: 'Perfectionist Patience',
+                description: 'Take over 20 minutes on Hard (maximum dedication)',
+                icon: 'fas fa-clock',
+                type: 'speed',
+                requirement: { type: 'time_over', difficulty: 'hard', value: 1200 },
+                rarity: 'rare'
+            },
+            {
+                id: 'error_recovery',
+                title: 'Error Recovery Master',
+                description: 'Win a day despite making 10+ errors',
+                icon: 'fas fa-first-aid',
+                type: 'errors',
+                requirement: { type: 'win_with_errors', value: 10 },
+                rarity: 'epic'
             }
         ];
 
@@ -384,6 +589,18 @@ class AchievementsManager {
 
             case 'comeback_win':
                 return this.checkComebackWin(req.value, allEntries);
+
+            case 'perfect_month':
+                return this.checkPerfectMonth(allEntries);
+
+            case 'triple_perfect_day':
+                return this.checkTriplePerfectDay(newEntry);
+
+            case 'perfect_streak':
+                return this.checkPerfectStreak(req.value, allEntries);
+
+            case 'win_with_errors':
+                return this.checkWinWithErrors(req.value, newEntry);
 
             default:
                 return [];
@@ -666,6 +883,107 @@ class AchievementsManager {
         }
 
         return [];
+    }
+
+    checkPerfectMonth(allEntries) {
+        if (allEntries.length < 30) return [];
+
+        const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        // Check last 30 consecutive days
+        for (let i = sortedEntries.length - 30; i >= 0; i--) {
+            const monthEntries = sortedEntries.slice(i, i + 30);
+
+            // Verify consecutive days
+            let isConsecutive = true;
+            for (let j = 1; j < monthEntries.length; j++) {
+                const prevDate = new Date(monthEntries[j - 1].date);
+                const currDate = new Date(monthEntries[j].date);
+                const dayDiff = (currDate - prevDate) / (1000 * 60 * 60 * 24);
+                if (dayDiff !== 1) {
+                    isConsecutive = false;
+                    break;
+                }
+            }
+
+            if (isConsecutive) {
+                const players = ['faidao', 'filip'];
+                const qualifyingPlayers = [];
+
+                players.forEach(player => {
+                    const perfectMonth = monthEntries.every(entry => {
+                        return difficulties.every(diff => entry[player].errors[diff] === 0);
+                    });
+                    if (perfectMonth) qualifyingPlayers.push(player);
+                });
+
+                if (qualifyingPlayers.length > 0) return qualifyingPlayers;
+            }
+        }
+
+        return [];
+    }
+
+    checkTriplePerfectDay(entry) {
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        return players.filter(player => {
+            return difficulties.every(diff => {
+                const errors = entry[player].errors[diff];
+                const dnf = entry[player].dnf[diff];
+                return !dnf && errors === 0;
+            });
+        });
+    }
+
+    checkPerfectStreak(requiredStreak, allEntries) {
+        if (allEntries.length < requiredStreak) return [];
+
+        const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const difficulties = ['easy', 'medium', 'hard'];
+        const players = ['faidao', 'filip'];
+        const qualifyingPlayers = [];
+
+        players.forEach(player => {
+            // Check if the last N entries are all perfect for this player
+            const recentEntries = sortedEntries.slice(-requiredStreak);
+
+            // Verify consecutive days
+            let isConsecutive = true;
+            for (let j = 1; j < recentEntries.length; j++) {
+                const prevDate = new Date(recentEntries[j - 1].date);
+                const currDate = new Date(recentEntries[j].date);
+                const dayDiff = (currDate - prevDate) / (1000 * 60 * 60 * 24);
+                if (dayDiff !== 1) {
+                    isConsecutive = false;
+                    break;
+                }
+            }
+
+            if (isConsecutive) {
+                const perfectStreak = recentEntries.every(entry => {
+                    return difficulties.every(diff => entry[player].errors[diff] === 0);
+                });
+                if (perfectStreak) qualifyingPlayers.push(player);
+            }
+        });
+
+        return qualifyingPlayers;
+    }
+
+    checkWinWithErrors(minErrors, entry) {
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        return players.filter(player => {
+            const totalErrors = difficulties.reduce((sum, diff) => {
+                return sum + (entry[player].errors[diff] || 0);
+            }, 0);
+            const isWinner = entry[player].scores.total > entry[player === 'faidao' ? 'filip' : 'faidao'].scores.total;
+            return totalErrors >= minErrors && isWinner;
+        });
     }
 
     async unlockAchievement(achievement, player) {
