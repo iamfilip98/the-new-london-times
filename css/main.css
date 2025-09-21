@@ -1092,6 +1092,97 @@ body {
     padding: 2rem;
 }
 
+/* Achievements Summary */
+.achievements-summary {
+    margin-bottom: 3rem;
+}
+
+.summary-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 10px;
+    min-width: 180px;
+}
+
+.faidao-themed {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.filip-themed {
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(78, 205, 196, 0.05) 100%);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+.player-summary .player-name {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.achievement-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.count-number {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--accent-orange);
+}
+
+.count-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.vs-divider {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: var(--accent-orange);
+    background: var(--primary-gradient);
+    padding: 1rem 1.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--accent-orange);
+}
+
+.total-summary {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.total-summary span {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    color: var(--accent-orange);
+}
+
 /* Achievements Grid */
 .achievements-grid {
     display: grid;
@@ -1327,6 +1418,23 @@ body {
     .action-btn {
         width: 100%;
         max-width: 300px;
+    }
+
+    .summary-card {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .player-summary {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .vs-divider {
+        transform: rotate(90deg);
+        padding: 0.75rem 1rem;
+        font-size: 1.2rem;
     }
 
     .achievements-grid {

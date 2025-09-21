@@ -1024,6 +1024,9 @@ class AchievementsManager {
         await this.refreshAchievements();
         this.ensureUnlockedAchievementsArray();
 
+        // Update the achievements summary
+        this.updateAchievementsSummary();
+
         const achievementsGrid = document.getElementById('achievementsGrid');
 
         if (!achievementsGrid) return;
@@ -1134,6 +1137,46 @@ class AchievementsManager {
             unlocked: unlockedByRarity,
             percentage: totalByRarity > 0 ? Math.round((unlockedByRarity / totalByRarity) * 100) : 0
         };
+    }
+
+    updateAchievementsSummary() {
+        this.ensureUnlockedAchievementsArray();
+
+        // Count achievements per player
+        const playerCounts = {
+            faidao: 0,
+            filip: 0
+        };
+
+        // Count unique achievements per player (not individual unlocks)
+        const uniqueAchievements = new Set();
+        this.unlockedAchievements.forEach(achievement => {
+            const key = `${achievement.id}-${achievement.player}`;
+            if (!uniqueAchievements.has(key)) {
+                uniqueAchievements.add(key);
+                if (playerCounts.hasOwnProperty(achievement.player)) {
+                    playerCounts[achievement.player]++;
+                }
+            }
+        });
+
+        // Update DOM elements
+        const faidaoCountEl = document.getElementById('faidaoAchievementCount');
+        const filipCountEl = document.getElementById('filipAchievementCount');
+        const totalUnlockedEl = document.getElementById('totalAchievementsUnlocked');
+        const totalAchievementsEl = document.getElementById('totalAchievements');
+
+        if (faidaoCountEl) faidaoCountEl.textContent = playerCounts.faidao;
+        if (filipCountEl) filipCountEl.textContent = playerCounts.filip;
+        if (totalUnlockedEl) {
+            const totalUnlocked = playerCounts.faidao + playerCounts.filip;
+            totalUnlockedEl.textContent = totalUnlocked;
+        }
+        if (totalAchievementsEl) {
+            // Total possible achievements = definitions * 2 players
+            const totalPossible = this.achievementDefinitions.length * 2;
+            totalAchievementsEl.textContent = totalPossible;
+        }
     }
 }
 
