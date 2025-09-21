@@ -3,53 +3,99 @@ class ChallengesManager {
         this.challengeTypes = [
             {
                 id: 'error_free_week',
-                title: 'Error-Free Week',
-                description: 'Complete 7 consecutive days with minimal total errors (less than 5 per day)',
+                title: '💎 Precision Week',
+                description: 'Keep your mistakes under 5 errors per day for 7 straight days. Quality over speed!',
+                tip: 'Take your time and double-check before placing numbers',
                 icon: 'fas fa-gem',
                 duration: 7,
                 type: 'errors',
                 target: { maxErrorsPerDay: 5, consecutiveDays: 7 },
-                reward: { points: 500, title: 'Precision Master' }
+                reward: { points: 500, title: 'Precision Master' },
+                dailyGoal: 'Make fewer than 5 total errors today'
             },
             {
                 id: 'speed_week',
-                title: 'Speed Week',
-                description: 'Focus on fastest completion times - average under 10 minutes total',
+                title: '⚡ Lightning Round',
+                description: 'Complete all 3 puzzles in under 10 minutes total for 7 days straight. Quick thinking wins!',
+                tip: 'Use logical deduction patterns and avoid guessing',
                 icon: 'fas fa-bolt',
                 duration: 7,
                 type: 'speed',
                 target: { avgTotalTime: 600, consecutiveDays: 7 },
-                reward: { points: 400, title: 'Speed Demon' }
+                reward: { points: 400, title: 'Speed Demon' },
+                dailyGoal: 'Finish all puzzles in under 10 minutes'
             },
             {
                 id: 'consistency_challenge',
-                title: 'Consistency Challenge',
-                description: 'Maintain steady performance - daily scores within 20% of your average',
+                title: '📊 Steady Champion',
+                description: 'Keep your daily scores consistent for 10 days - stay within 20% of your average performance',
+                tip: 'Focus on maintaining your usual pace and accuracy',
                 icon: 'fas fa-chart-line',
                 duration: 10,
                 type: 'consistency',
                 target: { scoreVariation: 20, consecutiveDays: 10 },
-                reward: { points: 600, title: 'Steady Performer' }
+                reward: { points: 600, title: 'Steady Performer' },
+                dailyGoal: 'Keep your score close to your average'
             },
             {
                 id: 'perfect_streak',
-                title: 'Perfect Streak',
-                description: 'Complete 5 consecutive days without any DNFs',
+                title: '⭐ Never Give Up',
+                description: 'Complete every puzzle for 5 straight days - no giving up allowed!',
+                tip: 'If you get stuck, try working on easier cells first',
                 icon: 'fas fa-star',
                 duration: 5,
                 type: 'completion',
                 target: { noDNF: true, consecutiveDays: 5 },
-                reward: { points: 350, title: 'Completion Champion' }
+                reward: { points: 350, title: 'Completion Champion' },
+                dailyGoal: 'Finish all puzzles - no DNFs today'
             },
             {
                 id: 'improvement_challenge',
-                title: 'Improvement Challenge',
-                description: 'Show consistent improvement - each day better than the last for 5 days',
+                title: '📈 Rising Star',
+                description: 'Get better each day for 5 days - every day should beat the previous day\'s score',
+                tip: 'Focus on reducing both time and errors gradually',
                 icon: 'fas fa-trending-up',
                 duration: 5,
                 type: 'improvement',
                 target: { consecutiveImprovement: 5 },
-                reward: { points: 450, title: 'Rising Star' }
+                reward: { points: 450, title: 'Rising Star' },
+                dailyGoal: 'Score higher than yesterday'
+            },
+            {
+                id: 'marathon_month',
+                title: '🏃‍♂️ Sudoku Marathon',
+                description: 'Complete at least 1 puzzle every day for 30 days - build that habit!',
+                tip: 'Even a quick easy puzzle counts - consistency beats intensity',
+                icon: 'fas fa-running',
+                duration: 30,
+                type: 'marathon',
+                target: { minPuzzlesPerDay: 1, consecutiveDays: 30 },
+                reward: { points: 1000, title: 'Marathon Master' },
+                dailyGoal: 'Complete at least 1 puzzle today'
+            },
+            {
+                id: 'perfectionist_challenge',
+                title: '🎯 Perfectionist',
+                description: 'Achieve zero errors on all three difficulty levels in the same day, 3 times in a week',
+                tip: 'Take your time and think through each move carefully',
+                icon: 'fas fa-bullseye',
+                duration: 7,
+                type: 'perfectionist',
+                target: { perfectDays: 3, consecutiveDays: 7 },
+                reward: { points: 750, title: 'Flawless Master' },
+                dailyGoal: 'Get zero errors on all puzzles today'
+            },
+            {
+                id: 'speed_demon_weekend',
+                title: '🏎️ Weekend Speed Demon',
+                description: 'Beat your personal best times on all difficulty levels during a weekend',
+                tip: 'Use pattern recognition and advanced techniques',
+                icon: 'fas fa-rocket',
+                duration: 2,
+                type: 'weekend_speed',
+                target: { beatPersonalBests: 3 },
+                reward: { points: 400, title: 'Speed Master' },
+                dailyGoal: 'Beat your personal best time on at least one difficulty'
             }
         ];
 
@@ -179,6 +225,12 @@ class ChallengesManager {
                 return this.calculateCompletionProgress(challenge, entries);
             case 'improvement':
                 return this.calculateImprovementProgress(challenge, entries);
+            case 'marathon':
+                return this.calculateMarathonProgress(challenge, entries);
+            case 'perfectionist':
+                return this.calculatePerfectionistProgress(challenge, entries);
+            case 'weekend_speed':
+                return this.calculateWeekendSpeedProgress(challenge, entries);
             default:
                 return challenge.progress;
         }
@@ -358,9 +410,98 @@ class ChallengesManager {
         };
     }
 
+    calculateMarathonProgress(challenge, entries) {
+        let currentStreak = 0;
+        let bestStreak = 0;
+        let tempStreak = 0;
+
+        entries.forEach(entry => {
+            const faidaoCompleted = (entry.faidao.times.easy > 0 || entry.faidao.dnf.easy) ||
+                                   (entry.faidao.times.medium > 0 || entry.faidao.dnf.medium) ||
+                                   (entry.faidao.times.hard > 0 || entry.faidao.dnf.hard);
+            const filipCompleted = (entry.filip.times.easy > 0 || entry.filip.dnf.easy) ||
+                                  (entry.filip.times.medium > 0 || entry.filip.dnf.medium) ||
+                                  (entry.filip.times.hard > 0 || entry.filip.dnf.hard);
+
+            const meetsTarget = faidaoCompleted || filipCompleted;
+
+            if (meetsTarget) {
+                tempStreak++;
+                bestStreak = Math.max(bestStreak, tempStreak);
+            } else {
+                tempStreak = 0;
+            }
+        });
+
+        currentStreak = tempStreak;
+
+        return {
+            daysCompleted: entries.length,
+            currentStreak,
+            bestStreak,
+            milestones: this.generateMilestones(challenge, currentStreak),
+            percentage: Math.min((currentStreak / challenge.target.consecutiveDays) * 100, 100)
+        };
+    }
+
+    calculatePerfectionistProgress(challenge, entries) {
+        let perfectDays = 0;
+
+        entries.forEach(entry => {
+            const faidaoPerfect = (entry.faidao.errors.easy || 0) === 0 &&
+                                 (entry.faidao.errors.medium || 0) === 0 &&
+                                 (entry.faidao.errors.hard || 0) === 0;
+            const filipPerfect = (entry.filip.errors.easy || 0) === 0 &&
+                                (entry.filip.errors.medium || 0) === 0 &&
+                                (entry.filip.errors.hard || 0) === 0;
+
+            if (faidaoPerfect || filipPerfect) {
+                perfectDays++;
+            }
+        });
+
+        return {
+            daysCompleted: entries.length,
+            currentStreak: perfectDays,
+            bestStreak: Math.max(challenge.progress?.bestStreak || 0, perfectDays),
+            perfectDays,
+            milestones: this.generateMilestones(challenge, perfectDays),
+            percentage: Math.min((perfectDays / challenge.target.perfectDays) * 100, 100)
+        };
+    }
+
+    calculateWeekendSpeedProgress(challenge, entries) {
+        let personalBestsBeaten = 0;
+
+        // This would need access to historical data to determine personal bests
+        // For now, simplified version
+        entries.forEach(entry => {
+            // Simplified: count if they completed all puzzles quickly
+            const faidaoTotal = (entry.faidao.times.easy || 0) +
+                               (entry.faidao.times.medium || 0) +
+                               (entry.faidao.times.hard || 0);
+            const filipTotal = (entry.filip.times.easy || 0) +
+                              (entry.filip.times.medium || 0) +
+                              (entry.filip.times.hard || 0);
+
+            if (faidaoTotal > 0 && faidaoTotal < 600 || filipTotal > 0 && filipTotal < 600) {
+                personalBestsBeaten++;
+            }
+        });
+
+        return {
+            daysCompleted: entries.length,
+            currentStreak: personalBestsBeaten,
+            bestStreak: Math.max(challenge.progress?.bestStreak || 0, personalBestsBeaten),
+            personalBestsBeaten,
+            milestones: this.generateMilestones(challenge, personalBestsBeaten),
+            percentage: Math.min((personalBestsBeaten / challenge.target.beatPersonalBests) * 100, 100)
+        };
+    }
+
     generateMilestones(challenge, currentProgress) {
         const milestones = [];
-        const targetDays = challenge.target.consecutiveDays || challenge.target.consecutiveImprovement || challenge.duration;
+        const targetDays = challenge.target.consecutiveDays || challenge.target.consecutiveImprovement || challenge.target.perfectDays || challenge.target.beatPersonalBests || challenge.duration;
 
         for (let i = 1; i <= targetDays; i++) {
             milestones.push({
@@ -378,11 +519,16 @@ class ChallengesManager {
             case 'errors':
             case 'speed':
             case 'completion':
+            case 'marathon':
                 return progress.currentStreak >= challenge.target.consecutiveDays;
             case 'consistency':
                 return progress.currentStreak >= challenge.target.consecutiveDays;
             case 'improvement':
                 return progress.currentStreak >= challenge.target.consecutiveImprovement;
+            case 'perfectionist':
+                return progress.perfectDays >= challenge.target.perfectDays;
+            case 'weekend_speed':
+                return progress.personalBestsBeaten >= challenge.target.beatPersonalBests;
             default:
                 return false;
         }
@@ -412,6 +558,69 @@ class ChallengesManager {
         this.renderChallengeHistory();
     }
 
+    getDailyGoalText(challenge) {
+        if (challenge.dailyGoal) {
+            return challenge.dailyGoal;
+        }
+
+        // Fallback to generating goal text based on challenge type
+        switch (challenge.type) {
+            case 'errors':
+                return `Make fewer than ${challenge.target.maxErrorsPerDay} total errors today`;
+            case 'speed':
+                return `Finish all puzzles in under ${Math.floor(challenge.target.avgTotalTime / 60)} minutes`;
+            case 'completion':
+                return 'Complete all puzzles - no DNFs today';
+            case 'consistency':
+                return 'Keep your score close to your average';
+            case 'improvement':
+                return 'Score higher than yesterday';
+            case 'marathon':
+                return 'Complete at least 1 puzzle today';
+            case 'perfectionist':
+                return 'Get zero errors on all puzzles today';
+            case 'weekend_speed':
+                return 'Beat your personal best time on at least one difficulty';
+            default:
+                return 'Complete your daily puzzles';
+        }
+    }
+
+    getEncouragementText(challenge, progress) {
+        let target, current, unit;
+
+        switch (challenge.type) {
+            case 'perfectionist':
+                target = challenge.target.perfectDays;
+                current = progress.perfectDays || 0;
+                unit = 'perfect days';
+                break;
+            case 'weekend_speed':
+                target = challenge.target.beatPersonalBests;
+                current = progress.personalBestsBeaten || 0;
+                unit = 'personal bests';
+                break;
+            default:
+                target = challenge.target.consecutiveDays || challenge.target.consecutiveImprovement || challenge.duration;
+                current = progress.currentStreak;
+                unit = 'days';
+        }
+
+        const remaining = target - current;
+
+        if (current === 0) {
+            return "🚀 Ready to start your challenge? Today's the perfect day to begin!";
+        } else if (remaining === 1) {
+            return `🔥 Amazing! You're just ONE ${unit.slice(0, -1)} away from completing this challenge!`;
+        } else if (remaining === 2) {
+            return `💪 So close! Just 2 more ${unit} and you'll earn that reward!`;
+        } else if (current >= Math.floor(target / 2)) {
+            return `⭐ Great momentum! Keep it up for ${remaining} more ${unit}!`;
+        } else {
+            return `🎯 You're building progress! ${remaining} ${unit} to go!`;
+        }
+    }
+
     renderCurrentChallenge() {
         const container = document.getElementById('currentChallenge');
         if (!container) return;
@@ -438,7 +647,11 @@ class ChallengesManager {
                 </div>
                 <div class="challenge-info">
                     <h3>${activeChallenge.title}</h3>
-                    <p>${activeChallenge.description}</p>
+                    <p class="challenge-description">${activeChallenge.description}</p>
+                    <div class="daily-goal">
+                        <strong>Today's Goal:</strong> ${this.getDailyGoalText(activeChallenge)}
+                    </div>
+                    ${activeChallenge.tip ? `<div class="challenge-tip">💡 <em>${activeChallenge.tip}</em></div>` : ''}
                 </div>
             </div>
 
@@ -446,7 +659,10 @@ class ChallengesManager {
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: ${progress.percentage}%"></div>
                 </div>
-                <div class="progress-text">${Math.round(progress.percentage)}% Complete</div>
+                <div class="progress-text">
+                    ${Math.round(progress.percentage)}% Complete
+                    (${progress.currentStreak}/${activeChallenge.target.consecutiveDays || activeChallenge.target.consecutiveImprovement || activeChallenge.duration} days)
+                </div>
             </div>
 
             <div class="challenge-stats">
@@ -465,16 +681,28 @@ class ChallengesManager {
             </div>
 
             <div class="challenge-milestones">
-                <h4>Progress Milestones</h4>
+                <h4>Daily Progress Track</h4>
                 <div class="milestones-grid">
-                    ${progress.milestones.map(milestone => `
-                        <div class="milestone ${milestone.completed ? 'completed' : ''}">
+                    ${progress.milestones.map((milestone, index) => {
+                        const isToday = index === progress.daysCompleted;
+                        const isFuture = index > progress.daysCompleted;
+                        return `
+                        <div class="milestone ${milestone.completed ? 'completed' : ''} ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''}">
                             <div class="milestone-icon">
-                                ${milestone.completed ? '<i class="fas fa-check"></i>' : '<i class="fas fa-circle"></i>'}
+                                ${milestone.completed ? '<i class="fas fa-check-circle"></i>' :
+                                  isToday ? '<i class="fas fa-crosshairs"></i>' :
+                                  '<i class="fas fa-circle"></i>'}
                             </div>
-                            <span>${milestone.description}</span>
+                            <span class="milestone-label">
+                                ${isToday ? 'Today' : milestone.description}
+                                ${milestone.completed ? ' ✨' : ''}
+                            </span>
                         </div>
-                    `).join('')}
+                    `;
+                    }).join('')}
+                </div>
+                <div class="progress-encouragement">
+                    ${this.getEncouragementText(activeChallenge, progress)}
                 </div>
             </div>
 

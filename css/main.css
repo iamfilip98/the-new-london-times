@@ -32,6 +32,13 @@
     --accent-pink: #f5576c;
     --accent-orange: #fee140;
     --accent-green: #00f2fe;
+
+    /* RGB values for rgba usage */
+    --accent-blue-rgb: 79, 172, 254;
+    --accent-purple-rgb: 102, 126, 234;
+    --accent-pink-rgb: 245, 87, 108;
+    --accent-orange-rgb: 254, 225, 64;
+    --accent-green-rgb: 0, 242, 254;
     --faidao-color: #ff6b6b;
     --filip-color: #4ecdc4;
     --border-radius: 15px;
@@ -1305,6 +1312,209 @@ body {
     padding: 2rem;
     margin-bottom: 2rem;
     border: 2px solid var(--accent-pink);
+    position: relative;
+    overflow: hidden;
+}
+
+.current-challenge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
+}
+
+.challenge-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.challenge-icon {
+    font-size: 2.5rem;
+    color: var(--accent-pink);
+    min-width: 3rem;
+}
+
+.challenge-info {
+    flex: 1;
+}
+
+.challenge-info h3 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.challenge-description {
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+.daily-goal {
+    background: rgba(var(--accent-pink-rgb), 0.1);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-pink);
+    margin: 0.75rem 0;
+}
+
+.challenge-tip {
+    background: rgba(var(--accent-blue-rgb), 0.1);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-blue);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.challenge-progress {
+    margin: 1.5rem 0;
+}
+
+.progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    height: 12px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.challenge-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-pink);
+}
+
+.challenge-milestones h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.milestones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.milestone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.milestone.completed {
+    background: rgba(var(--accent-green-rgb), 0.2);
+    color: var(--accent-green);
+}
+
+.milestone.today {
+    background: rgba(var(--accent-pink-rgb), 0.2);
+    border: 2px solid var(--accent-pink);
+    transform: scale(1.05);
+}
+
+.milestone.future {
+    opacity: 0.6;
+}
+
+.milestone-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.milestone-label {
+    font-size: 0.8rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.progress-encouragement {
+    background: linear-gradient(135deg, rgba(var(--accent-pink-rgb), 0.1), rgba(var(--accent-blue-rgb), 0.1));
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-primary);
+    border: 1px solid rgba(var(--accent-pink-rgb), 0.3);
+}
+
+.challenge-reward {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.challenge-reward h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.reward-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.reward-points {
+    background: var(--accent-blue);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.reward-title {
+    background: var(--accent-pink);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
 }
 
 .challenge-list {
@@ -1318,6 +1528,17 @@ body {
     border-radius: var(--border-radius);
     padding: 1.5rem;
     border-left: 4px solid var(--accent-blue);
+}
+
+.no-challenge {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.no-challenge h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
 }
 
 /* Responsive Design */
