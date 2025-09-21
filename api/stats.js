@@ -4,7 +4,12 @@ const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  // Optimize connection pooling for better performance
+  max: 20, // maximum number of clients in the pool
+  idleTimeoutMillis: 30000, // close idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // return an error if connection takes longer than 2 seconds
+  maxUses: 7500, // close connections after this many uses
 });
 
 // Helper function to execute SQL queries
@@ -56,6 +61,54 @@ module.exports = async function handler(req, res) {
           });
 
           return res.status(200).json(streaks);
+        }
+
+        if (type === 'challenges') {
+          const result = await sql`
+            SELECT challenge_id, data
+            FROM challenges
+            ORDER BY created_at DESC
+          `;
+
+          return res.status(200).json(result.rows.map(row => ({
+            id: row.challenge_id,
+            ...row.data
+          })));
+        }
+
+        if (type === 'all') {
+          // Fetch all data in parallel for better performance
+          const [streaksResult, challengesResult, achievementsResult] = await Promise.all([
+            sql`SELECT player, current_streak, best_streak FROM streaks`,
+            sql`SELECT challenge_id, data FROM challenges ORDER BY created_at DESC`,
+            sql`SELECT achievement_id, player, unlocked_at, data FROM achievements ORDER BY unlocked_at DESC`
+          ]);
+
+          const streaks = {};
+          streaksResult.rows.forEach(row => {
+            streaks[row.player] = {
+              current: row.current_streak,
+              best: row.best_streak
+            };
+          });
+
+          const challenges = challengesResult.rows.map(row => ({
+            id: row.challenge_id,
+            ...row.data
+          }));
+
+          const achievements = achievementsResult.rows.map(row => ({
+            id: row.achievement_id,
+            player: row.player,
+            unlockedAt: row.unlocked_at.toISOString(),
+            ...row.data
+          }));
+
+          return res.status(200).json({
+            streaks,
+            challenges,
+            achievements
+          });
         }
 
         // Return empty for other types for now

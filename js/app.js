@@ -7,6 +7,13 @@ class SudokuChampionship {
         this.records = { faidao: {}, filip: {} };
         this.migrationDone = false;
 
+        // Add caching for better performance
+        this.cache = {
+            lastUpdate: null,
+            duration: 30000, // 30 seconds cache
+            data: null
+        };
+
         this.init();
     }
 
@@ -456,11 +463,16 @@ class SudokuChampionship {
                 console.log('Successfully migrated localStorage data to database');
             }
 
-            // Load data from database
-            this.entries = await this.loadFromStorage();
-            this.achievements = await this.loadAchievements();
-            this.streaks = await this.loadStreaks() || { faidao: { current: 0, best: 0 }, filip: { current: 0, best: 0 } };
-            this.challenges = await this.loadChallenges();
+            // Load data from database - optimized with parallel loading
+            const [entries, bulkData] = await Promise.all([
+                this.loadFromStorage(),
+                this.loadBulkData()
+            ]);
+
+            this.entries = entries;
+            this.achievements = bulkData.achievements || [];
+            this.streaks = bulkData.streaks || { faidao: { current: 0, best: 0 }, filip: { current: 0, best: 0 } };
+            this.challenges = bulkData.challenges || [];
 
             // Calculate records from entries
             this.records = this.calculateRecords();
@@ -1120,6 +1132,10 @@ class SudokuChampionship {
             if (!response.ok) {
                 throw new Error('Failed to save data');
             }
+
+            // Clear cache after successful save
+            this.cache.data = null;
+            this.cache.lastUpdate = null;
         } catch (error) {
             console.error('Failed to save to database:', error);
         }
@@ -1236,6 +1252,38 @@ class SudokuChampionship {
         } catch (error) {
             console.error('Failed to load challenges:', error);
             return [];
+        }
+    }
+
+    async loadBulkData() {
+        try {
+            // Check cache first
+            const now = Date.now();
+            if (this.cache.data && this.cache.lastUpdate &&
+                (now - this.cache.lastUpdate) < this.cache.duration) {
+                console.log('Using cached bulk data');
+                return this.cache.data;
+            }
+
+            const response = await fetch('/api/stats?type=all');
+            if (!response.ok) {
+                throw new Error('Failed to load bulk data');
+            }
+
+            const data = await response.json();
+
+            // Update cache
+            this.cache.data = data;
+            this.cache.lastUpdate = now;
+
+            return data;
+        } catch (error) {
+            console.error('Failed to load bulk data:', error);
+            return {
+                streaks: { faidao: { current: 0, best: 0 }, filip: { current: 0, best: 0 } },
+                challenges: [],
+                achievements: []
+            };
         }
     }
 }
