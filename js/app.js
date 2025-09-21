@@ -323,6 +323,14 @@ class SudokuChampionship {
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
+    isEntryComplete(entry) {
+        return ['faidao', 'filip'].every(player =>
+            ['easy', 'medium', 'hard'].every(difficulty =>
+                entry[player].dnf[difficulty] || entry[player].times[difficulty] !== null
+            )
+        );
+    }
+
     calculateScores() {
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
@@ -540,6 +548,13 @@ class SudokuChampionship {
             return;
         }
 
+        // Check if all 6 times are submitted (3 per player)
+        const allTimesSubmitted = ['faidao', 'filip'].every(player =>
+            ['easy', 'medium', 'hard'].every(difficulty =>
+                playerData[player][difficulty].dnf || playerData[player][difficulty].time !== null
+            )
+        );
+
         // Create entry
         const entry = {
             date,
@@ -614,19 +629,25 @@ class SudokuChampionship {
             this.entries.push(entry);
             this.entries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            // Update streaks
-            await this.updateStreaks();
+            // Only calculate head-to-head scores and achievements when all 6 times are submitted
+            if (allTimesSubmitted) {
+                // Update streaks
+                await this.updateStreaks();
 
-            // Update records
+                // Check for achievements
+                await this.checkAchievements(entry);
+            }
+
+            // Always update records regardless of completion status
             this.records = this.calculateRecords();
-
-            // Check for achievements
-            await this.checkAchievements(entry);
 
             // Update all displays
             this.updateDashboard();
 
-            alert('Battle results saved successfully!');
+            const message = allTimesSubmitted
+                ? 'Battle results saved successfully! Head-to-head scores and achievements updated.'
+                : 'Partial results saved successfully. Complete all 6 times to calculate head-to-head scores and achievements.';
+            alert(message);
         } catch (error) {
             console.error('Failed to save entry:', error);
             alert('Failed to save entry. Please try again.');
@@ -645,7 +666,10 @@ class SudokuChampionship {
         }
 
         // Sort entries by date (oldest first) for streak calculation
-        const sortedEntries = [...this.entries].sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Only consider entries where all 6 times are submitted
+        const completeEntries = this.entries.filter(entry => this.isEntryComplete(entry));
+
+        const sortedEntries = [...completeEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
 
         let currentFaidaoStreak = 0;
         let currentFilipStreak = 0;
@@ -796,7 +820,10 @@ class SudokuChampionship {
         let faidaoWins = 0;
         let filipWins = 0;
 
-        this.entries.forEach(entry => {
+        // Only count complete entries for overall record
+        const completeEntries = this.entries.filter(entry => this.isEntryComplete(entry));
+
+        completeEntries.forEach(entry => {
             if (entry.faidao.scores.total > entry.filip.scores.total) {
                 faidaoWins++;
             } else if (entry.filip.scores.total > entry.faidao.scores.total) {
@@ -817,8 +844,13 @@ class SudokuChampionship {
         }
 
         historyContainer.innerHTML = recentEntries.map(entry => {
-            const winner = entry.faidao.scores.total > entry.filip.scores.total ? 'Faidao' :
-                          entry.filip.scores.total > entry.faidao.scores.total ? 'Filip' : 'Tie';
+            // Check if entry is complete
+            const isComplete = this.isEntryComplete(entry);
+
+            const winner = isComplete
+                ? (entry.faidao.scores.total > entry.filip.scores.total ? 'Faidao' :
+                   entry.filip.scores.total > entry.faidao.scores.total ? 'Filip' : 'Tie')
+                : 'Incomplete';
 
             return `
                 <div class="history-card">
@@ -912,11 +944,14 @@ class SudokuChampionship {
 
         const monthlyEntries = this.entries.filter(entry => {
             const entryDate = new Date(entry.date);
-            return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+            const isCurrentMonth = entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+            // Only include complete entries in leaderboard
+            const isComplete = this.isEntryComplete(entry);
+            return isCurrentMonth && isComplete;
         });
 
         if (monthlyEntries.length === 0) {
-            monthlyContainer.innerHTML = '<p class="no-data">No battles this month yet!</p>';
+            monthlyContainer.innerHTML = '<p class="no-data">No complete battles this month yet!</p>';
             return;
         }
 
@@ -936,11 +971,14 @@ class SudokuChampionship {
 
         const weeklyEntries = this.entries.filter(entry => {
             const entryDate = new Date(entry.date);
-            return entryDate >= startOfWeek;
+            const isThisWeek = entryDate >= startOfWeek;
+            // Only include complete entries in leaderboard
+            const isComplete = this.isEntryComplete(entry);
+            return isThisWeek && isComplete;
         });
 
         if (weeklyEntries.length === 0) {
-            weeklyContainer.innerHTML = '<p class="no-data">No battles this week yet!</p>';
+            weeklyContainer.innerHTML = '<p class="no-data">No complete battles this week yet!</p>';
             return;
         }
 
