@@ -967,15 +967,42 @@ class SudokuChampionship {
 
         const now = new Date();
         const startOfWeek = new Date(now);
-        // Go back 6 days to include the last 7 days (today + previous 6 days)
-        startOfWeek.setDate(now.getDate() - 6);
-        startOfWeek.setHours(0, 0, 0, 0); // Set to beginning of day
+        const dayOfWeek = now.getDay();
+
+        // Calculate start of "current week" for leaderboard purposes
+        // If it's early in the week (Monday or Tuesday), include the previous weekend
+        // Otherwise, use the standard Monday of current week
+        let daysFromMonday;
+        if (dayOfWeek === 1 || dayOfWeek === 2) { // Monday or Tuesday
+            // Go back to previous Monday to include weekend results
+            daysFromMonday = dayOfWeek + 6;
+        } else {
+            // Standard Monday-Sunday week
+            daysFromMonday = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+        }
+
+        startOfWeek.setDate(now.getDate() - daysFromMonday);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        // Calculate end of week
+        const endOfWeek = new Date(startOfWeek);
+        if (dayOfWeek === 1 || dayOfWeek === 2) { // Monday or Tuesday
+            // End on today to include current early-week results
+            endOfWeek.setTime(now.getTime());
+            endOfWeek.setHours(23, 59, 59, 999);
+        } else {
+            // Standard Sunday end
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            endOfWeek.setHours(23, 59, 59, 999);
+        }
 
         const weeklyEntries = this.entries.filter(entry => {
             // Parse date and set to start of day in local timezone
             const entryDate = new Date(entry.date);
             entryDate.setHours(0, 0, 0, 0);
-            const isThisWeek = entryDate >= startOfWeek;
+
+            // Check if entry is within the Monday-Sunday week
+            const isThisWeek = entryDate >= startOfWeek && entryDate <= endOfWeek;
             // Only include complete entries in leaderboard
             const isComplete = this.isEntryComplete(entry);
             return isThisWeek && isComplete;
