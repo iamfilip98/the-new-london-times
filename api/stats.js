@@ -8,11 +8,11 @@ const pool = new Pool({
     rejectUnauthorized: false,
     checkServerIdentity: () => undefined
   },
-  // Optimize connection pooling for better performance
-  max: 3, // maximum number of clients in the pool
-  idleTimeoutMillis: 5000, // close idle clients after 5 seconds
-  connectionTimeoutMillis: 10000, // return an error if connection takes longer than 10 seconds
-  maxUses: 100 // close connections after this many uses
+  max: 2, // Reduce max connections to avoid hitting limits
+  idleTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000,
+  maxUses: 100, // Close connections after this many uses
+  acquireTimeoutMillis: 5000 // Timeout when acquiring connections
 });
 
 // Helper function to execute SQL queries
@@ -34,7 +34,67 @@ async function sql(strings, ...values) {
   return { rows: result.rows };
 }
 
+// Database initialization
+async function initDatabase() {
+  try {
+    // Create achievements table
+    await sql`
+      CREATE TABLE IF NOT EXISTS achievements (
+        id SERIAL PRIMARY KEY,
+        achievement_id VARCHAR(255) NOT NULL,
+        player VARCHAR(50) NOT NULL,
+        unlocked_at TIMESTAMP NOT NULL,
+        data JSONB,
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(achievement_id, player, unlocked_at)
+      )
+    `;
+
+    // Create streaks table
+    await sql`
+      CREATE TABLE IF NOT EXISTS streaks (
+        id SERIAL PRIMARY KEY,
+        player VARCHAR(50) UNIQUE NOT NULL,
+        current_streak INTEGER DEFAULT 0,
+        best_streak INTEGER DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `;
+
+    // Create challenges table
+    await sql`
+      CREATE TABLE IF NOT EXISTS challenges (
+        id SERIAL PRIMARY KEY,
+        challenge_id VARCHAR(255) UNIQUE NOT NULL,
+        data JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `;
+
+    // Initialize default streak records for both players
+    await sql`
+      INSERT INTO streaks (player, current_streak, best_streak)
+      VALUES ('faidao', 0, 0), ('filip', 0, 0)
+      ON CONFLICT (player) DO NOTHING
+    `;
+
+    return true;
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
+    throw error;
+  }
+}
+
 module.exports = async function handler(req, res) {
+  // Initialize database on first request
+  try {
+    await initDatabase();
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    return res.status(500).json({ error: 'Database initialization failed' });
+  }
+
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');

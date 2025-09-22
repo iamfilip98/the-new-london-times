@@ -8,9 +8,11 @@ const pool = new Pool({
     rejectUnauthorized: false,
     checkServerIdentity: () => undefined
   },
-  max: 3,
+  max: 2, // Reduce max connections to avoid hitting limits
   idleTimeoutMillis: 5000,
-  connectionTimeoutMillis: 10000
+  connectionTimeoutMillis: 10000,
+  maxUses: 100, // Close connections after this many uses
+  acquireTimeoutMillis: 5000 // Timeout when acquiring connections
 });
 
 // Helper function to execute SQL queries using template literals
@@ -66,6 +68,17 @@ async function initDatabase() {
         player VARCHAR(50) UNIQUE NOT NULL,
         current_streak INTEGER DEFAULT 0,
         best_streak INTEGER DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `;
+
+    // Create challenges table
+    await sql`
+      CREATE TABLE IF NOT EXISTS challenges (
+        id SERIAL PRIMARY KEY,
+        challenge_id VARCHAR(255) UNIQUE NOT NULL,
+        data JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
     `;
