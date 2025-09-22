@@ -860,6 +860,7 @@ class SudokuChampionship {
                             <div class="player-name">Faidao</div>
                             <div class="score-value">${entry.faidao.scores.total.toFixed(0)}</div>
                         </div>
+                        <div class="score-vs">VS</div>
                         <div class="history-score">
                             <div class="player-name">Filip</div>
                             <div class="score-value">${entry.filip.scores.total.toFixed(0)}</div>

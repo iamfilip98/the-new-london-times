@@ -789,6 +789,17 @@ body {
     display: inline-block;
 }
 
+.score-vs {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 0.9rem;
+    color: var(--accent-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+}
+
 .history-winner {
     font-weight: 700;
     padding: 0.5rem 1rem;
