@@ -943,7 +943,9 @@ class SudokuChampionship {
         const currentYear = now.getFullYear();
 
         const monthlyEntries = this.entries.filter(entry => {
+            // Parse date and set to start of day in local timezone
             const entryDate = new Date(entry.date);
+            entryDate.setHours(0, 0, 0, 0);
             const isCurrentMonth = entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
             // Only include complete entries in leaderboard
             const isComplete = this.isEntryComplete(entry);
@@ -965,12 +967,14 @@ class SudokuChampionship {
 
         const now = new Date();
         const startOfWeek = new Date(now);
-        const dayOfWeek = now.getDay();
-        const daysFromMonday = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
-        startOfWeek.setDate(now.getDate() - daysFromMonday);
+        // Go back 6 days to include the last 7 days (today + previous 6 days)
+        startOfWeek.setDate(now.getDate() - 6);
+        startOfWeek.setHours(0, 0, 0, 0); // Set to beginning of day
 
         const weeklyEntries = this.entries.filter(entry => {
+            // Parse date and set to start of day in local timezone
             const entryDate = new Date(entry.date);
+            entryDate.setHours(0, 0, 0, 0);
             const isThisWeek = entryDate >= startOfWeek;
             // Only include complete entries in leaderboard
             const isComplete = this.isEntryComplete(entry);
