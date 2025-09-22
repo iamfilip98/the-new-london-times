@@ -765,9 +765,9 @@ body {
 
 .history-scores {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .history-score {
