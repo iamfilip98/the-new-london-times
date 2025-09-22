@@ -788,9 +788,13 @@ body {
     font-weight: 700;
     padding: 0.5rem 1rem;
     border-radius: 20px;
-    background: var(--accent-green);
+    background: var(--faidao-color);
     color: white;
     font-size: 0.9rem;
+}
+
+.history-winner.filip-winner {
+    background: var(--filip-color);
 }
 
 .history-actions {
