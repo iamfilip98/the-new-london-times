@@ -865,7 +865,7 @@ class SudokuChampionship {
                             <div class="score-value">${entry.filip.scores.total.toFixed(0)}</div>
                         </div>
                     </div>
-                    <div class="history-winner">${winner}</div>
+                    <div class="history-winner${winner === 'Filip' ? ' filip-winner' : ''}">${winner}</div>
                     <div class="history-actions">
                         <button class="history-btn" onclick="sudokuApp.editEntry('${entry.date}')">
                             <i class="fas fa-edit"></i>
