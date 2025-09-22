@@ -1,10 +1,16 @@
+require('dotenv').config({ path: '.env.local' });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRES_PRISMA_URL,
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+    checkServerIdentity: () => undefined
+  },
+  max: 3,
+  idleTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000
 });
 
 // Helper function to execute SQL queries

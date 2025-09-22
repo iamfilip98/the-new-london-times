@@ -1,15 +1,18 @@
+require('dotenv').config({ path: '.env.local' });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRES_PRISMA_URL,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    checkServerIdentity: () => undefined
   },
   // Optimize connection pooling for better performance
-  max: 20, // maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // return an error if connection takes longer than 2 seconds
-  maxUses: 7500, // close connections after this many uses
+  max: 3, // maximum number of clients in the pool
+  idleTimeoutMillis: 5000, // close idle clients after 5 seconds
+  connectionTimeoutMillis: 10000, // return an error if connection takes longer than 10 seconds
+  maxUses: 100 // close connections after this many uses
 });
 
 // Helper function to execute SQL queries
