@@ -747,7 +747,7 @@ body {
     border-left: 4px solid var(--accent-blue);
     transition: var(--transition);
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: 120px 1fr 100px 80px;
     gap: 1rem;
     align-items: center;
 }
@@ -766,6 +766,8 @@ body {
 .history-scores {
     display: flex;
     gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .history-score {
@@ -782,6 +784,9 @@ body {
     font-family: 'Orbitron', monospace;
     font-weight: 700;
     color: var(--text-primary);
+    font-size: 1.1rem;
+    min-width: 50px;
+    display: inline-block;
 }
 
 .history-winner {
@@ -791,6 +796,9 @@ body {
     background: var(--faidao-color);
     color: white;
     font-size: 0.9rem;
+    text-align: center;
+    white-space: nowrap;
+    min-width: 80px;
 }
 
 .history-winner.filip-winner {
@@ -800,6 +808,8 @@ body {
 .history-actions {
     display: flex;
     gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .history-btn {
@@ -1705,7 +1715,13 @@ body {
     }
 
     .history-scores {
+        gap: 1rem;
         justify-content: center;
+    }
+
+    .history-winner {
+        min-width: auto;
+        align-self: center;
     }
 }
 
