@@ -290,9 +290,13 @@ body {
 
 .vs-divider {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
-.vs-circle {
+.vs-circle-container {
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -305,16 +309,15 @@ body {
     font-family: 'Orbitron', monospace;
     font-size: 1.5rem;
     font-weight: 900;
-    margin: 0 auto 1rem;
     color: var(--accent-orange);
     text-shadow: 0 0 20px rgba(254, 225, 64, 0.5);
     position: relative;
     overflow: hidden;
     transition: var(--transition);
+    margin: 0 auto 1rem;
 }
 
-.vs-circle::before {
-    content: '';
+.vs-circle-shine {
     position: absolute;
     top: 0;
     left: -100%;
@@ -322,9 +325,11 @@ body {
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(254, 225, 64, 0.3), transparent);
     animation: vsShine 3s linear infinite;
+    pointer-events: none;
+    z-index: 1;
 }
 
-.vs-circle::after {
+.vs-circle-container::after {
     content: '';
     position: absolute;
     top: -2px;
@@ -338,13 +343,13 @@ body {
     transition: var(--transition);
 }
 
-.vs-circle:hover {
+.vs-circle-container:hover {
     transform: translateY(-2px);
     border-color: var(--accent-orange);
     box-shadow: 0 10px 30px rgba(254, 225, 64, 0.4);
 }
 
-.vs-circle:hover::after {
+.vs-circle-container:hover::after {
     opacity: 1;
 }
 
