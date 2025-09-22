@@ -1077,7 +1077,7 @@ class SudokuChampionship {
         const players = [
             { name: 'Faidao', key: 'faidao', avatar: 'F', color: 'faidao-color' },
             { name: 'Filip', key: 'filip', avatar: 'F', color: 'filip-color' }
-        ].sort((a, b) => stats[b.key].avgScore - stats[a.key].avgScore);
+        ].sort((a, b) => stats[b.key].wins - stats[a.key].wins);
 
         return players.map((player, index) => {
             const playerStats = stats[player.key];
@@ -1088,7 +1088,7 @@ class SudokuChampionship {
                         <div class="player-avatar ${player.color}">${player.avatar}</div>
                         <div class="player-details">
                             <h4>${player.name}</h4>
-                            <p>Avg Score: ${Math.round(playerStats.avgScore)}</p>
+                            <p>${playerStats.wins} Wins</p>
                         </div>
                     </div>
                     <div class="stats">
@@ -1097,8 +1097,8 @@ class SudokuChampionship {
                             <span class="stat-label">Wins</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-value">${Math.round(playerStats.winRate)}%</span>
-                            <span class="stat-label">Win Rate</span>
+                            <span class="stat-value">${Math.round(playerStats.avgScore)}</span>
+                            <span class="stat-label">Avg Score</span>
                         </div>
                     </div>
                 </div>
