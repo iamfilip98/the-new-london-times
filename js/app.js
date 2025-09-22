@@ -969,32 +969,18 @@ class SudokuChampionship {
         const startOfWeek = new Date(now);
         const dayOfWeek = now.getDay();
 
-        // Calculate start of "current week" for leaderboard purposes
-        // If it's early in the week (Monday or Tuesday), include the previous weekend
-        // Otherwise, use the standard Monday of current week
-        let daysFromMonday;
-        if (dayOfWeek === 1 || dayOfWeek === 2) { // Monday or Tuesday
-            // Go back to previous Monday to include weekend results
-            daysFromMonday = dayOfWeek + 6;
-        } else {
-            // Standard Monday-Sunday week
-            daysFromMonday = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
-        }
-
+        // Calculate Monday of the current calendar week
+        // If today is Sunday (0), go back 6 days to get Monday
+        // If today is Monday (1), use today (go back 0 days)
+        // If today is Tuesday (2), go back 1 day to get Monday, etc.
+        const daysFromMonday = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
         startOfWeek.setDate(now.getDate() - daysFromMonday);
         startOfWeek.setHours(0, 0, 0, 0);
 
-        // Calculate end of week
+        // Calculate end of current week (Sunday)
         const endOfWeek = new Date(startOfWeek);
-        if (dayOfWeek === 1 || dayOfWeek === 2) { // Monday or Tuesday
-            // End on today to include current early-week results
-            endOfWeek.setTime(now.getTime());
-            endOfWeek.setHours(23, 59, 59, 999);
-        } else {
-            // Standard Sunday end
-            endOfWeek.setDate(startOfWeek.getDate() + 6);
-            endOfWeek.setHours(23, 59, 59, 999);
-        }
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
 
         const weeklyEntries = this.entries.filter(entry => {
             // Parse date and set to start of day in local timezone
