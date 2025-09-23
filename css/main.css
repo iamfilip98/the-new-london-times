@@ -74,6 +74,10 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.15),
+        0 1px 4px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .nav-brand {
@@ -222,6 +226,10 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     align-items: start;
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        0 3px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .streak-header {
@@ -260,7 +268,10 @@ body {
     font-size: 1.5rem;
     background: var(--faidao-color);
     color: white;
-    box-shadow: var(--box-shadow);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 3px 8px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .player-avatar.large {
@@ -425,6 +436,10 @@ body {
     backdrop-filter: blur(20px);
     padding: 2rem;
     border-radius: var(--border-radius);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .date-label {
@@ -450,7 +465,10 @@ body {
 .date-input:focus {
     outline: none;
     border-color: var(--accent-blue);
-    box-shadow: 0 0 20px rgba(79, 172, 254, 0.3);
+    box-shadow:
+        0 0 30px rgba(79, 172, 254, 0.4),
+        0 4px 15px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Players Container */
@@ -471,6 +489,11 @@ body {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 1px 4px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .player-section::before {
@@ -490,7 +513,11 @@ body {
 
 .player-section:hover {
     transform: translateY(-5px);
-    box-shadow: var(--box-shadow);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.25),
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -541,6 +568,10 @@ body {
     border-left: 4px solid var(--accent-green);
     transition: var(--transition);
     position: relative;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .difficulty-card.medium {
@@ -554,6 +585,10 @@ body {
 .difficulty-card:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: translateX(5px);
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.18),
+        0 4px 12px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .difficulty-title {
@@ -610,12 +645,18 @@ body {
 .error-input:focus {
     outline: none;
     border-color: var(--accent-blue);
-    box-shadow: 0 0 15px rgba(79, 172, 254, 0.3);
+    box-shadow:
+        0 0 25px rgba(79, 172, 254, 0.4),
+        0 3px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .error-input:focus {
     border-color: var(--accent-pink);
-    box-shadow: 0 0 15px rgba(245, 87, 108, 0.3);
+    box-shadow:
+        0 0 25px rgba(245, 87, 108, 0.4),
+        0 3px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .checkbox-group {
@@ -669,6 +710,10 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
     border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .total-label {
@@ -696,6 +741,10 @@ body {
     padding: 2rem;
     margin-bottom: 3rem;
     text-align: center;
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        0 3px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .results-header h3 {
@@ -807,21 +856,40 @@ body {
 .action-btn.primary {
     background: var(--success-gradient);
     color: white;
-    box-shadow: var(--box-shadow);
+    box-shadow:
+        0 10px 30px rgba(79, 172, 254, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 1px 4px rgba(0, 0, 0, 0.1);
     border-color: rgba(79, 172, 254, 0.3);
 }
 
 .action-btn.secondary {
     background: var(--warning-gradient);
     color: white;
-    box-shadow: var(--box-shadow);
+    box-shadow:
+        0 10px 30px rgba(245, 87, 108, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 1px 4px rgba(0, 0, 0, 0.1);
     border-color: rgba(245, 87, 108, 0.3);
 }
 
 .action-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.action-btn.primary:hover {
+    box-shadow:
+        0 15px 50px rgba(79, 172, 254, 0.4),
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn.secondary:hover {
+    box-shadow:
+        0 15px 50px rgba(245, 87, 108, 0.4),
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .action-btn:hover::before {
@@ -852,6 +920,10 @@ body {
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
     padding: 2rem;
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        0 3px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .recent-history h3 {
@@ -879,11 +951,17 @@ body {
     grid-template-columns: 120px 1fr 100px 80px;
     gap: 1rem;
     align-items: center;
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08),
+        0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .history-card:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: translateX(5px);
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .history-date {
