@@ -616,12 +616,38 @@ class SudokuEngine {
             this.stopTimer();
 
             const score = this.calculateFinalScore();
-            document.getElementById('gameStatus').innerHTML =
-                `<div class="status-message success">
+
+            // Check for theme-specific achievements
+            const themeAchievements = this.checkThemeAchievements();
+
+            let statusMessage = `
+                <div class="status-message success">
                     Congratulations! Puzzle completed!<br>
-                    Final Score: ${score}<br>
-                    Time: ${this.formatTime(this.timer)} | Hints: ${this.hints} | Errors: ${this.errors}
-                </div>`;
+                    Final Score: ${score}
+            `;
+
+            // Add theme multiplier info if active
+            if (window.themeManager) {
+                const themeInfo = window.themeManager.getThemeInfo();
+                if (themeInfo && themeInfo.multiplier > 1) {
+                    statusMessage += `<br><span class="theme-bonus">🎨 ${themeInfo.name} Bonus: ×${themeInfo.multiplier}</span>`;
+                }
+            }
+
+            statusMessage += `<br>Time: ${this.formatTime(this.timer)} | Hints: ${this.hints} | Errors: ${this.errors}`;
+
+            // Add achievement notifications
+            if (themeAchievements.length > 0) {
+                statusMessage += `<br><div class="achievements-unlocked">`;
+                themeAchievements.forEach(achievement => {
+                    statusMessage += `<div class="achievement-unlock">🏆 ${achievement.name}</div>`;
+                });
+                statusMessage += `</div>`;
+            }
+
+            statusMessage += `</div>`;
+
+            document.getElementById('gameStatus').innerHTML = statusMessage;
 
             this.saveCompletedGame(score);
         }
@@ -637,7 +663,14 @@ class SudokuEngine {
 
         if (adjustedMinutes === 0) return 0;
 
-        const score = (1000 / adjustedMinutes) * multipliers[this.currentDifficulty];
+        let score = (1000 / adjustedMinutes) * multipliers[this.currentDifficulty];
+
+        // Apply theme multiplier if theme manager is available
+        if (window.themeManager) {
+            const themeMultiplier = window.themeManager.getCurrentMultiplier();
+            score *= themeMultiplier;
+        }
+
         return Math.round(score);
     }
 
@@ -1118,6 +1151,51 @@ class SudokuEngine {
             this.playerGrid[this.selectedCell.row][this.selectedCell.col] = 0;
             this.updateDisplay();
         }
+    }
+
+    checkThemeAchievements() {
+        const achievements = [];
+
+        if (!window.themeManager) return achievements;
+
+        const currentTheme = window.themeManager.currentTheme;
+        const gameData = {
+            time: this.timer,
+            errors: this.errors,
+            hints: this.hints,
+            difficulty: this.currentDifficulty
+        };
+
+        // Use theme manager's achievement checking
+        const themeAchievements = window.themeManager.checkThemeAchievements(gameData);
+        achievements.push(...themeAchievements);
+
+        // Additional Sudoku-specific themed achievements
+        if (currentTheme === 'halloween' && this.errors === 0 && this.hints === 0) {
+            achievements.push({
+                id: 'spooky_master',
+                name: 'Spooky Master',
+                description: 'Complete a Halloween puzzle with no errors or hints'
+            });
+        }
+
+        if (currentTheme === 'christmas' && this.timer < 180) { // Under 3 minutes
+            achievements.push({
+                id: 'christmas_lightning',
+                name: 'Christmas Lightning',
+                description: 'Complete a Christmas puzzle in under 3 minutes'
+            });
+        }
+
+        if (currentTheme === 'newYear' && this.currentDifficulty === 'hard' && this.errors <= 1) {
+            achievements.push({
+                id: 'new_year_resolution',
+                name: 'New Year Resolution',
+                description: 'Complete a Hard New Year puzzle with minimal errors'
+            });
+        }
+
+        return achievements;
     }
 
     destroy() {
