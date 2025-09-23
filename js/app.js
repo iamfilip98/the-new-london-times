@@ -1095,7 +1095,7 @@ class SudokuChampionship {
                     <div class="stats">
                         <div class="stat">
                             <span class="stat-value">${playerStats.wins}</span>
-                            <span class="stat-label">Wins</span>
+                            <span class="stat-label">${playerStats.wins === 1 ? 'Win' : 'Wins'}</span>
                         </div>
                         <div class="stat">
                             <span class="stat-value">${Math.round(playerStats.avgScore)}</span>
