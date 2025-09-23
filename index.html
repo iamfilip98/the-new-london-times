@@ -38,6 +38,16 @@
                     <i class="fas fa-fire"></i>
                     <span>Challenges</span>
                 </a>
+                <a href="#" class="nav-link" data-page="sudoku">
+                    <i class="fas fa-puzzle-piece"></i>
+                    <span>Play Sudoku</span>
+                </a>
+            </div>
+            <div class="nav-user">
+                <span class="current-player" id="currentPlayerDisplay"></span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
             <div class="nav-mobile-toggle">
                 <i class="fas fa-bars"></i>
@@ -528,6 +538,37 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Sudoku Game Page -->
+            <div class="page" id="sudoku">
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-puzzle-piece"></i>
+                        Today's Sudoku Challenge
+                    </h1>
+                    <div class="sudoku-player-indicator" id="sudokuPlayerIndicator"></div>
+                </div>
+
+                <div class="sudoku-content">
+                    <div class="sudoku-game-container">
+                        <!-- Sudoku game will be built here -->
+                        <div class="sudoku-placeholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-puzzle-piece"></i>
+                                <h2>NYT Sudoku Coming Soon!</h2>
+                                <p>Full Sudoku game interface will be implemented here</p>
+                                <ul>
+                                    <li>✓ Daily puzzles for both players</li>
+                                    <li>✓ Real-time timer and scoring</li>
+                                    <li>✓ Hint system with penalty</li>
+                                    <li>✓ Auto-save and resume</li>
+                                    <li>✓ NYT-style interface</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -537,12 +578,57 @@
         if (sessionStorage.getItem('sudokuAuth') !== 'authenticated') {
             window.location.href = 'auth.html';
         }
+
+        // Display current player and add logout functionality
+        function initializePlayerSession() {
+            const currentPlayer = sessionStorage.getItem('currentPlayer');
+            const playerDisplay = document.getElementById('currentPlayerDisplay');
+            const sudokuPlayerIndicator = document.getElementById('sudokuPlayerIndicator');
+
+            if (currentPlayer && playerDisplay) {
+                const playerName = currentPlayer === 'faidao' ? 'Faidao' : 'Filip';
+                const playerSubtitle = currentPlayer === 'faidao' ? 'The Challenger' : 'The Champion';
+                playerDisplay.innerHTML = `
+                    <div class="player-info">
+                        <span class="player-name">${playerName}</span>
+                        <span class="player-subtitle">${playerSubtitle}</span>
+                    </div>
+                `;
+
+                if (sudokuPlayerIndicator) {
+                    sudokuPlayerIndicator.innerHTML = `
+                        <div class="current-player-card ${currentPlayer}">
+                            <div class="player-avatar ${currentPlayer}-avatar">
+                                ${playerName.charAt(0)}
+                            </div>
+                            <div class="player-details">
+                                <span class="player-name">${playerName}</span>
+                                <span class="player-subtitle">${playerSubtitle}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('sudokuAuth');
+                sessionStorage.removeItem('currentPlayer');
+                window.location.href = 'auth.html';
+            }
+        }
+
+        // Initialize player session when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializePlayerSession);
     </script>
 
     <script src="js/app.js"></script>
     <script src="js/achievements.js"></script>
     <script src="js/analytics.js"></script>
     <script src="js/challenges.js"></script>
+    <script src="js/sudoku.js"></script>
 
     <!-- Mobile Menu Toggle Script -->
     <script>

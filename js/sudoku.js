@@ -1,0 +1,933 @@
+class SudokuEngine {
+    constructor() {
+        this.grid = Array(9).fill().map(() => Array(9).fill(0));
+        this.solution = Array(9).fill().map(() => Array(9).fill(0));
+        this.initialGrid = Array(9).fill().map(() => Array(9).fill(0));
+        this.playerGrid = Array(9).fill().map(() => Array(9).fill(0));
+        this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+        this.selectedCell = null;
+        this.timer = 0;
+        this.timerInterval = null;
+        this.hints = 0;
+        this.errors = 0;
+        this.currentDifficulty = 'easy';
+        this.gameStarted = false;
+        this.gameCompleted = false;
+        this.candidateMode = false;
+        this.autoSaveInterval = null;
+    }
+
+    // Initialize Sudoku UI and game
+    init() {
+        this.createSudokuInterface();
+        this.loadDailyPuzzles();
+        this.setupEventListeners();
+        this.loadGameState();
+    }
+
+    createSudokuInterface() {
+        const sudokuContainer = document.querySelector('.sudoku-game-container');
+        if (!sudokuContainer) return;
+
+        // Replace placeholder with actual game interface
+        sudokuContainer.innerHTML = `
+            <div class="sudoku-game">
+                <!-- Difficulty Selection -->
+                <div class="difficulty-selector">
+                    <h3>Choose Difficulty</h3>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn active" data-difficulty="easy">
+                            <i class="fas fa-seedling"></i>
+                            <span>Easy</span>
+                        </button>
+                        <button class="difficulty-btn" data-difficulty="medium">
+                            <i class="fas fa-bolt"></i>
+                            <span>Medium</span>
+                        </button>
+                        <button class="difficulty-btn" data-difficulty="hard">
+                            <i class="fas fa-fire"></i>
+                            <span>Hard</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Info Panel -->
+                <div class="game-info-panel">
+                    <div class="timer-section">
+                        <i class="fas fa-clock"></i>
+                        <span class="timer-display" id="timerDisplay">0:00</span>
+                    </div>
+                    <div class="stats-section">
+                        <div class="stat-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <span class="hints-count" id="hintsCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span class="errors-count" id="errorsCount">0</span>
+                        </div>
+                    </div>
+                    <div class="score-section">
+                        <div class="current-score">
+                            Score: <span id="currentScore">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sudoku Grid -->
+                <div class="sudoku-grid-container">
+                    <div class="sudoku-grid" id="sudokuGrid">
+                        ${this.generateGridHTML()}
+                    </div>
+                </div>
+
+                <!-- Game Controls -->
+                <div class="game-controls">
+                    <div class="number-input">
+                        <div class="number-buttons">
+                            ${Array.from({length: 9}, (_, i) =>
+                                `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
+                            ).join('')}
+                            <button class="number-btn erase-btn" data-number="0">
+                                <i class="fas fa-eraser"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn hint-btn" id="hintBtn">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Hint</span>
+                        </button>
+                        <button class="action-btn undo-btn" id="undoBtn">
+                            <i class="fas fa-undo"></i>
+                            <span>Undo</span>
+                        </button>
+                        <button class="action-btn candidate-btn" id="candidateBtn">
+                            <i class="fas fa-pencil-alt"></i>
+                            <span>Notes</span>
+                        </button>
+                        <button class="action-btn save-btn" id="saveBtn">
+                            <i class="fas fa-save"></i>
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Status -->
+                <div class="game-status" id="gameStatus">
+                    <div class="status-message">
+                        Select a difficulty to start playing!
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    generateGridHTML() {
+        let html = '';
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const cellClass = this.getCellClasses(row, col);
+                html += `
+                    <div class="sudoku-cell ${cellClass}"
+                         data-row="${row}"
+                         data-col="${col}"
+                         tabindex="0">
+                        <div class="cell-value"></div>
+                        <div class="cell-candidates"></div>
+                    </div>
+                `;
+            }
+        }
+        return html;
+    }
+
+    getCellClasses(row, col) {
+        let classes = [];
+
+        // Add region classes for visual separation
+        if (row % 3 === 2 && row < 8) classes.push('bottom-thick');
+        if (col % 3 === 2 && col < 8) classes.push('right-thick');
+        if (row % 3 === 0 && row > 0) classes.push('top-thick');
+        if (col % 3 === 0 && col > 0) classes.push('left-thick');
+
+        return classes.join(' ');
+    }
+
+    setupEventListeners() {
+        // Difficulty selection
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.changeDifficulty(e.target.dataset.difficulty || e.target.closest('.difficulty-btn').dataset.difficulty);
+            });
+        });
+
+        // Grid cell clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.sudoku-cell')) {
+                const cell = e.target.closest('.sudoku-cell');
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                this.selectCell(row, col);
+            }
+        });
+
+        // Number input
+        document.querySelectorAll('.number-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const number = parseInt(e.target.dataset.number || e.target.closest('.number-btn').dataset.number);
+                this.inputNumber(number);
+            });
+        });
+
+        // Action buttons
+        document.getElementById('hintBtn')?.addEventListener('click', () => this.getHint());
+        document.getElementById('undoBtn')?.addEventListener('click', () => this.undo());
+        document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
+        document.getElementById('saveBtn')?.addEventListener('click', () => this.saveGameState());
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => this.handleKeyInput(e));
+
+        // Auto-save every 10 seconds
+        this.autoSaveInterval = setInterval(() => {
+            if (this.gameStarted && !this.gameCompleted) {
+                this.saveGameState();
+            }
+        }, 10000);
+    }
+
+    changeDifficulty(difficulty) {
+        // Save current game if in progress
+        if (this.gameStarted && !this.gameCompleted) {
+            this.saveGameState();
+        }
+
+        this.currentDifficulty = difficulty;
+
+        // Update UI
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-difficulty="${difficulty}"]`).classList.add('active');
+
+        // Load puzzle for this difficulty
+        this.loadPuzzle(difficulty);
+
+        // Update candidate mode based on difficulty
+        if (difficulty === 'easy') {
+            this.candidateMode = false;
+        } else {
+            this.candidateMode = true;
+        }
+        this.updateCandidateModeUI();
+    }
+
+    async loadDailyPuzzles() {
+        try {
+            // For now, generate puzzles client-side
+            // In production, these would come from the server
+            this.dailyPuzzles = {
+                easy: this.generatePuzzle('easy'),
+                medium: this.generatePuzzle('medium'),
+                hard: this.generatePuzzle('hard')
+            };
+        } catch (error) {
+            console.error('Failed to load daily puzzles:', error);
+            // Generate fallback puzzles
+            this.generateFallbackPuzzles();
+        }
+    }
+
+    generatePuzzle(difficulty) {
+        // Simplified puzzle generation - in production would use advanced algorithm
+        const puzzle = Array(9).fill().map(() => Array(9).fill(0));
+        const solution = Array(9).fill().map(() => Array(9).fill(0));
+
+        // Generate a complete solution first
+        this.generateCompleteSolution(solution);
+
+        // Remove numbers based on difficulty
+        const cellsToRemove = {
+            easy: 45,    // ~36 given numbers
+            medium: 55,  // ~26 given numbers
+            hard: 65     // ~16 given numbers
+        };
+
+        // Copy solution to puzzle
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                puzzle[i][j] = solution[i][j];
+            }
+        }
+
+        // Remove cells to create puzzle
+        let removed = 0;
+        while (removed < cellsToRemove[difficulty]) {
+            const row = Math.floor(Math.random() * 9);
+            const col = Math.floor(Math.random() * 9);
+
+            if (puzzle[row][col] !== 0) {
+                puzzle[row][col] = 0;
+                removed++;
+            }
+        }
+
+        return { puzzle, solution };
+    }
+
+    generateCompleteSolution(grid) {
+        // Simple backtracking solver to generate a complete solution
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (grid[row][col] === 0) {
+                    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                    this.shuffle(numbers);
+
+                    for (let num of numbers) {
+                        if (this.isValidMove(grid, row, col, num)) {
+                            grid[row][col] = num;
+
+                            if (this.generateCompleteSolution(grid)) {
+                                return true;
+                            }
+
+                            grid[row][col] = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    isValidMove(grid, row, col, num) {
+        // Check row
+        for (let x = 0; x < 9; x++) {
+            if (grid[row][x] === num) return false;
+        }
+
+        // Check column
+        for (let x = 0; x < 9; x++) {
+            if (grid[x][col] === num) return false;
+        }
+
+        // Check 3x3 box
+        const startRow = row - row % 3;
+        const startCol = col - col % 3;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (grid[i + startRow][j + startCol] === num) return false;
+            }
+        }
+
+        return true;
+    }
+
+    loadPuzzle(difficulty) {
+        if (!this.dailyPuzzles || !this.dailyPuzzles[difficulty]) {
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message error">Failed to load puzzle. Please try again.</div>';
+            return;
+        }
+
+        const puzzleData = this.dailyPuzzles[difficulty];
+        this.initialGrid = puzzleData.puzzle.map(row => [...row]);
+        this.solution = puzzleData.solution.map(row => [...row]);
+        this.playerGrid = puzzleData.puzzle.map(row => [...row]);
+
+        // Reset game state
+        this.timer = 0;
+        this.hints = 0;
+        this.errors = 0;
+        this.gameStarted = true;
+        this.gameCompleted = false;
+        this.selectedCell = null;
+
+        this.updateDisplay();
+        this.startTimer();
+
+        document.getElementById('gameStatus').innerHTML =
+            '<div class="status-message">Game started! Good luck!</div>';
+    }
+
+    updateDisplay() {
+        const grid = document.getElementById('sudokuGrid');
+        if (!grid) return;
+
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const cell = grid.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                const valueDiv = cell.querySelector('.cell-value');
+                const candidatesDiv = cell.querySelector('.cell-candidates');
+
+                // Clear existing classes
+                cell.classList.remove('given', 'user-input', 'error', 'selected', 'highlighted');
+
+                if (this.playerGrid[row][col] !== 0) {
+                    valueDiv.textContent = this.playerGrid[row][col];
+                    candidatesDiv.innerHTML = '';
+
+                    // Mark as given or user input
+                    if (this.initialGrid[row][col] !== 0) {
+                        cell.classList.add('given');
+                    } else {
+                        cell.classList.add('user-input');
+
+                        // Check for errors
+                        if (!this.isValidMove(this.playerGrid, row, col, this.playerGrid[row][col])) {
+                            cell.classList.add('error');
+                        }
+                    }
+                } else {
+                    valueDiv.textContent = '';
+
+                    // Show candidates if in candidate mode
+                    if (this.candidateMode && this.candidates[row][col].size > 0) {
+                        candidatesDiv.innerHTML = Array.from(this.candidates[row][col])
+                            .sort((a, b) => a - b)
+                            .map(num => `<span class="candidate-num">${num}</span>`)
+                            .join('');
+                    } else {
+                        candidatesDiv.innerHTML = '';
+                    }
+                }
+
+                // Highlight selected cell and related cells
+                if (this.selectedCell && this.selectedCell.row === row && this.selectedCell.col === col) {
+                    cell.classList.add('selected');
+                } else if (this.selectedCell && (
+                    this.selectedCell.row === row ||
+                    this.selectedCell.col === col ||
+                    this.isInSameBox(row, col, this.selectedCell.row, this.selectedCell.col)
+                )) {
+                    cell.classList.add('highlighted');
+                }
+            }
+        }
+
+        // Update stats display
+        document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
+        document.getElementById('hintsCount').textContent = this.hints;
+        document.getElementById('errorsCount').textContent = this.errors;
+        document.getElementById('currentScore').textContent = this.calculateCurrentScore();
+    }
+
+    isInSameBox(row1, col1, row2, col2) {
+        return Math.floor(row1 / 3) === Math.floor(row2 / 3) &&
+               Math.floor(col1 / 3) === Math.floor(col2 / 3);
+    }
+
+    selectCell(row, col) {
+        this.selectedCell = { row, col };
+        this.updateDisplay();
+    }
+
+    inputNumber(number) {
+        if (!this.selectedCell || !this.gameStarted || this.gameCompleted) return;
+
+        const { row, col } = this.selectedCell;
+
+        // Don't allow changing given numbers
+        if (this.initialGrid[row][col] !== 0) return;
+
+        if (number === 0) {
+            // Erase
+            this.playerGrid[row][col] = 0;
+            this.candidates[row][col].clear();
+        } else if (this.candidateMode) {
+            // Toggle candidate
+            if (this.candidates[row][col].has(number)) {
+                this.candidates[row][col].delete(number);
+            } else {
+                this.candidates[row][col].add(number);
+            }
+        } else {
+            // Place number
+            this.playerGrid[row][col] = number;
+            this.candidates[row][col].clear();
+
+            // Check for errors
+            if (!this.isValidMove(this.playerGrid, row, col, number)) {
+                this.errors++;
+            }
+        }
+
+        this.updateDisplay();
+        this.checkCompletion();
+    }
+
+    toggleCandidateMode() {
+        this.candidateMode = !this.candidateMode;
+        this.updateCandidateModeUI();
+        this.updateDisplay();
+    }
+
+    updateCandidateModeUI() {
+        const candidateBtn = document.getElementById('candidateBtn');
+        if (candidateBtn) {
+            candidateBtn.classList.toggle('active', this.candidateMode);
+        }
+    }
+
+    getHint() {
+        if (!this.gameStarted || this.gameCompleted) return;
+
+        // Find best hint using deterministic algorithm
+        const hintCell = this.findBestHint();
+
+        if (hintCell) {
+            const { row, col, value, technique } = hintCell;
+
+            // Provide the hint
+            this.playerGrid[row][col] = value;
+            this.candidates[row][col].clear();
+            this.hints++;
+
+            // Select the hinted cell
+            this.selectCell(row, col);
+            this.updateDisplay();
+
+            // Show hint explanation
+            document.getElementById('gameStatus').innerHTML =
+                `<div class="status-message hint">Hint: ${technique} - Cell R${row + 1}C${col + 1} = ${value}</div>`;
+
+            this.checkCompletion();
+        } else {
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">No hints available right now.</div>';
+        }
+    }
+
+    findBestHint() {
+        // Deterministic hint finding - always returns same hint for same board state
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0) {
+                    // Find cells that can be solved with naked singles
+                    const possibleValues = this.getPossibleValues(row, col);
+                    if (possibleValues.length === 1) {
+                        return {
+                            row,
+                            col,
+                            value: possibleValues[0],
+                            technique: 'Naked single'
+                        };
+                    }
+                }
+            }
+        }
+
+        // If no naked singles, find hidden singles
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0) {
+                    const possibleValues = this.getPossibleValues(row, col);
+                    for (let value of possibleValues) {
+                        if (this.isHiddenSingle(row, col, value)) {
+                            return {
+                                row,
+                                col,
+                                value,
+                                technique: 'Hidden single'
+                            };
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    getPossibleValues(row, col) {
+        const possible = [];
+        for (let num = 1; num <= 9; num++) {
+            if (this.isValidMove(this.playerGrid, row, col, num)) {
+                possible.push(num);
+            }
+        }
+        return possible;
+    }
+
+    isHiddenSingle(row, col, value) {
+        // Check if this value can only go in this cell in its row, column, or box
+
+        // Check row
+        let canPlaceInRow = 0;
+        for (let c = 0; c < 9; c++) {
+            if (this.playerGrid[row][c] === 0 && this.isValidMove(this.playerGrid, row, c, value)) {
+                canPlaceInRow++;
+            }
+        }
+        if (canPlaceInRow === 1) return true;
+
+        // Check column
+        let canPlaceInCol = 0;
+        for (let r = 0; r < 9; r++) {
+            if (this.playerGrid[r][col] === 0 && this.isValidMove(this.playerGrid, r, col, value)) {
+                canPlaceInCol++;
+            }
+        }
+        if (canPlaceInCol === 1) return true;
+
+        // Check box
+        const startRow = row - row % 3;
+        const startCol = col - col % 3;
+        let canPlaceInBox = 0;
+        for (let r = startRow; r < startRow + 3; r++) {
+            for (let c = startCol; c < startCol + 3; c++) {
+                if (this.playerGrid[r][c] === 0 && this.isValidMove(this.playerGrid, r, c, value)) {
+                    canPlaceInBox++;
+                }
+            }
+        }
+        if (canPlaceInBox === 1) return true;
+
+        return false;
+    }
+
+    checkCompletion() {
+        let completed = true;
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0) {
+                    completed = false;
+                    break;
+                }
+            }
+            if (!completed) break;
+        }
+
+        if (completed) {
+            this.gameCompleted = true;
+            this.stopTimer();
+
+            const score = this.calculateFinalScore();
+            document.getElementById('gameStatus').innerHTML =
+                `<div class="status-message success">
+                    Congratulations! Puzzle completed!<br>
+                    Final Score: ${score}<br>
+                    Time: ${this.formatTime(this.timer)} | Hints: ${this.hints} | Errors: ${this.errors}
+                </div>`;
+
+            this.saveCompletedGame(score);
+        }
+    }
+
+    calculateCurrentScore() {
+        if (!this.gameStarted) return 0;
+
+        // Use existing scoring formula with hint penalty
+        const adjustedTime = this.timer + (this.errors * 30) + (this.hints * 15);
+        const adjustedMinutes = adjustedTime / 60;
+        const multipliers = { easy: 1, medium: 1.5, hard: 2 };
+
+        if (adjustedMinutes === 0) return 0;
+
+        const score = (1000 / adjustedMinutes) * multipliers[this.currentDifficulty];
+        return Math.round(score);
+    }
+
+    calculateFinalScore() {
+        return this.calculateCurrentScore();
+    }
+
+    startTimer() {
+        this.stopTimer();
+        this.timerInterval = setInterval(() => {
+            this.timer++;
+            document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
+            document.getElementById('currentScore').textContent = this.calculateCurrentScore();
+        }, 1000);
+    }
+
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    handleKeyInput(e) {
+        if (!this.gameStarted || this.gameCompleted) return;
+
+        // Number keys
+        if (e.key >= '1' && e.key <= '9') {
+            e.preventDefault();
+            this.inputNumber(parseInt(e.key));
+        }
+
+        // Delete/Backspace
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            e.preventDefault();
+            this.inputNumber(0);
+        }
+
+        // Arrow keys for navigation
+        if (this.selectedCell && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+            const { row, col } = this.selectedCell;
+            let newRow = row, newCol = col;
+
+            switch (e.key) {
+                case 'ArrowUp': newRow = Math.max(0, row - 1); break;
+                case 'ArrowDown': newRow = Math.min(8, row + 1); break;
+                case 'ArrowLeft': newCol = Math.max(0, col - 1); break;
+                case 'ArrowRight': newCol = Math.min(8, col + 1); break;
+            }
+
+            this.selectCell(newRow, newCol);
+        }
+
+        // Space or Enter to toggle candidate mode
+        if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            this.toggleCandidateMode();
+        }
+    }
+
+    saveGameState() {
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        if (!currentPlayer) return;
+
+        const gameState = {
+            playerGrid: this.playerGrid,
+            candidates: this.candidates.map(row => row.map(cell => Array.from(cell))),
+            timer: this.timer,
+            hints: this.hints,
+            errors: this.errors,
+            difficulty: this.currentDifficulty,
+            gameStarted: this.gameStarted,
+            gameCompleted: this.gameCompleted,
+            candidateMode: this.candidateMode,
+            selectedCell: this.selectedCell,
+            lastSaved: Date.now()
+        };
+
+        const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
+        localStorage.setItem(key, JSON.stringify(gameState));
+    }
+
+    loadGameState() {
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        if (!currentPlayer) return;
+
+        const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
+        const savedState = localStorage.getItem(key);
+
+        if (savedState) {
+            try {
+                const gameState = JSON.parse(savedState);
+
+                this.playerGrid = gameState.playerGrid || this.playerGrid;
+                this.candidates = gameState.candidates ?
+                    gameState.candidates.map(row => row.map(cell => new Set(cell))) :
+                    this.candidates;
+                this.timer = gameState.timer || 0;
+                this.hints = gameState.hints || 0;
+                this.errors = gameState.errors || 0;
+                this.gameStarted = gameState.gameStarted || false;
+                this.gameCompleted = gameState.gameCompleted || false;
+                this.candidateMode = gameState.candidateMode || false;
+                this.selectedCell = gameState.selectedCell;
+
+                if (this.gameStarted && !this.gameCompleted) {
+                    this.startTimer();
+                }
+
+                this.updateDisplay();
+                this.updateCandidateModeUI();
+
+                document.getElementById('gameStatus').innerHTML =
+                    '<div class="status-message">Game state restored!</div>';
+
+            } catch (error) {
+                console.error('Failed to load game state:', error);
+            }
+        }
+    }
+
+    async saveCompletedGame(score) {
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        if (!currentPlayer) return;
+
+        try {
+            // Integration with existing scoring system will be implemented
+            // For now, just save to localStorage for testing
+            const completedGame = {
+                date: this.getTodayDateString(),
+                player: currentPlayer,
+                difficulty: this.currentDifficulty,
+                time: this.timer,
+                hints: this.hints,
+                errors: this.errors,
+                score: score,
+                completed: true,
+                timestamp: Date.now()
+            };
+
+            const key = `completed_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
+            localStorage.setItem(key, JSON.stringify(completedGame));
+
+            console.log('Game completed and saved:', completedGame);
+
+        } catch (error) {
+            console.error('Failed to save completed game:', error);
+        }
+    }
+
+    getTodayDateString() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    generateFallbackPuzzles() {
+        // Simple fallback puzzles if generation fails
+        this.dailyPuzzles = {
+            easy: {
+                puzzle: [
+                    [5,3,0,0,7,0,0,0,0],
+                    [6,0,0,1,9,5,0,0,0],
+                    [0,9,8,0,0,0,0,6,0],
+                    [8,0,0,0,6,0,0,0,3],
+                    [4,0,0,8,0,3,0,0,1],
+                    [7,0,0,0,2,0,0,0,6],
+                    [0,6,0,0,0,0,2,8,0],
+                    [0,0,0,4,1,9,0,0,5],
+                    [0,0,0,0,8,0,0,7,9]
+                ],
+                solution: [
+                    [5,3,4,6,7,8,9,1,2],
+                    [6,7,2,1,9,5,3,4,8],
+                    [1,9,8,3,4,2,5,6,7],
+                    [8,5,9,7,6,1,4,2,3],
+                    [4,2,6,8,5,3,7,9,1],
+                    [7,1,3,9,2,4,8,5,6],
+                    [9,6,1,5,3,7,2,8,4],
+                    [2,8,7,4,1,9,6,3,5],
+                    [3,4,5,2,8,6,1,7,9]
+                ]
+            },
+            medium: {
+                puzzle: [
+                    [0,0,0,6,0,0,4,0,0],
+                    [7,0,0,0,0,3,6,0,0],
+                    [0,0,0,0,9,1,0,8,0],
+                    [0,0,0,0,0,0,0,0,0],
+                    [0,5,0,1,8,0,0,0,3],
+                    [0,0,0,3,0,6,0,4,5],
+                    [0,4,0,2,0,0,0,6,0],
+                    [9,0,3,0,0,0,0,0,0],
+                    [0,2,0,0,0,0,1,0,0]
+                ],
+                solution: [
+                    [1,3,9,6,7,8,4,5,2],
+                    [7,8,4,5,2,3,6,1,9],
+                    [6,2,5,4,9,1,3,8,7],
+                    [3,9,2,8,1,4,5,7,6],
+                    [4,5,6,1,8,7,9,2,3],
+                    [8,1,7,3,2,6,8,4,5],
+                    [5,4,1,2,3,9,7,6,8],
+                    [9,6,3,7,4,5,2,3,1],
+                    [2,7,8,9,6,2,1,3,4]
+                ]
+            },
+            hard: {
+                puzzle: [
+                    [0,0,0,0,0,0,0,1,0],
+                    [4,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,6,0,2],
+                    [0,0,0,0,0,3,0,7,0],
+                    [0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0],
+                    [0,6,0,5,0,0,0,0,0],
+                    [0,0,3,0,0,0,0,0,5],
+                    [0,0,0,0,0,0,0,0,0]
+                ],
+                solution: [
+                    [6,7,2,3,4,8,5,1,9],
+                    [4,1,5,6,9,7,2,8,3],
+                    [3,8,9,1,5,2,6,4,7],
+                    [2,5,8,4,6,3,1,7,8],
+                    [7,3,6,8,1,5,4,9,2],
+                    [1,9,4,2,7,9,8,3,6],
+                    [8,6,1,5,2,4,3,7,9],
+                    [9,2,3,7,8,6,7,5,1],
+                    [5,4,7,9,3,1,9,6,4]
+                ]
+            }
+        };
+    }
+
+    undo() {
+        // Simple undo - could be enhanced with full history
+        if (this.selectedCell && this.playerGrid[this.selectedCell.row][this.selectedCell.col] !== 0) {
+            this.playerGrid[this.selectedCell.row][this.selectedCell.col] = 0;
+            this.updateDisplay();
+        }
+    }
+
+    destroy() {
+        // Cleanup when switching pages
+        this.stopTimer();
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+        }
+    }
+}
+
+// Global Sudoku instance
+window.sudokuEngine = null;
+
+// Initialize Sudoku when page is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize if we're on the sudoku page
+    if (document.getElementById('sudoku')) {
+        const initSudoku = () => {
+            if (window.sudokuEngine) {
+                window.sudokuEngine.destroy();
+            }
+            window.sudokuEngine = new SudokuEngine();
+            window.sudokuEngine.init();
+        };
+
+        // Initialize immediately if sudoku page is active
+        if (document.getElementById('sudoku').classList.contains('active')) {
+            initSudoku();
+        }
+
+        // Listen for page changes
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const sudokuPage = document.getElementById('sudoku');
+                    if (sudokuPage && sudokuPage.classList.contains('active')) {
+                        setTimeout(initSudoku, 100); // Small delay to ensure DOM is ready
+                    } else if (window.sudokuEngine) {
+                        window.sudokuEngine.destroy();
+                    }
+                }
+            });
+        });
+
+        const sudokuPage = document.getElementById('sudoku');
+        if (sudokuPage) {
+            observer.observe(sudokuPage, { attributes: true });
+        }
+    }
+});

@@ -114,9 +114,14 @@
                 <i class="fas fa-trophy"></i>
             </div>
             <h1 class="auth-title">Championship Arena</h1>
-            <p class="auth-subtitle">Enter the battleground</p>
+            <p class="auth-subtitle">Choose your champion</p>
 
             <form class="auth-form" id="authForm">
+                <select class="auth-input" id="playerSelect" required>
+                    <option value="">Select Player</option>
+                    <option value="faidao">Faidao - The Challenger</option>
+                    <option value="filip">Filip - The Champion</option>
+                </select>
                 <input
                     type="password"
                     class="auth-input"
@@ -126,33 +131,38 @@
                     autocomplete="current-password"
                 >
                 <button type="submit" class="auth-button">
-                    <i class="fas fa-unlock"></i> Enter Arena
+                    <i class="fas fa-gamepad"></i> Enter Battle Arena
                 </button>
             </form>
 
             <div class="auth-error" id="authError">
-                <i class="fas fa-exclamation-triangle"></i> Invalid password. Try again.
+                <i class="fas fa-exclamation-triangle"></i> Invalid credentials. Try again.
             </div>
 
             <div class="auth-hint">
-                Hint: It's the champion's favorite puzzle 🧩
+                Password: sudoku2024 🧩
             </div>
         </div>
     </div>
 
     <script>
-        // Password: sudoku2024
-        const correctPassword = 'sudoku2024';
+        // Authentication credentials
+        const validCredentials = {
+            'faidao': 'sudoku2024',
+            'filip': 'sudoku2024'
+        };
 
         document.getElementById('authForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
+            const player = document.getElementById('playerSelect').value;
             const password = document.getElementById('passwordInput').value;
             const errorDiv = document.getElementById('authError');
 
-            if (password === correctPassword) {
-                // Store authentication in session
+            if (player && validCredentials[player] && password === validCredentials[player]) {
+                // Store authentication and player identity in session
                 sessionStorage.setItem('sudokuAuth', 'authenticated');
+                sessionStorage.setItem('currentPlayer', player);
                 // Redirect to main app
                 window.location.href = 'index.html';
             } else {
@@ -166,6 +176,13 @@
         if (sessionStorage.getItem('sudokuAuth') === 'authenticated') {
             window.location.href = 'index.html';
         }
+
+        // Add logout functionality for testing
+        window.logout = function() {
+            sessionStorage.removeItem('sudokuAuth');
+            sessionStorage.removeItem('currentPlayer');
+            window.location.href = 'auth.html';
+        };
     </script>
 </body>
 </html>
