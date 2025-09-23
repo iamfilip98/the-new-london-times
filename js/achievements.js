@@ -1021,8 +1021,7 @@ class AchievementsManager {
             player: player,
             unlockedAt: new Date().toISOString(),
             title: achievement.title,
-            description: achievement.description,
-            oneTime: achievement.oneTime || false
+            description: achievement.description
         };
 
         this.unlockedAchievements.push(unlock);
