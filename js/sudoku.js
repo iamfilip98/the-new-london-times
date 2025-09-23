@@ -226,13 +226,16 @@ class SudokuEngine {
 
     async loadDailyPuzzles() {
         try {
-            // For now, generate puzzles client-side
-            // In production, these would come from the server
-            this.dailyPuzzles = {
-                easy: this.generatePuzzle('easy'),
-                medium: this.generatePuzzle('medium'),
-                hard: this.generatePuzzle('hard')
-            };
+            // Load daily puzzles from server API
+            const today = this.getTodayDateString();
+            const response = await fetch(`/api/puzzles?date=${today}`);
+
+            if (response.ok) {
+                this.dailyPuzzles = await response.json();
+                console.log('Loaded daily puzzles from server:', this.dailyPuzzles);
+            } else {
+                throw new Error('Failed to fetch daily puzzles');
+            }
         } catch (error) {
             console.error('Failed to load daily puzzles:', error);
             // Generate fallback puzzles
@@ -702,7 +705,7 @@ class SudokuEngine {
         }
     }
 
-    saveGameState() {
+    async saveGameState() {
         const currentPlayer = sessionStorage.getItem('currentPlayer');
         if (!currentPlayer) return;
 
@@ -720,21 +723,59 @@ class SudokuEngine {
             lastSaved: Date.now()
         };
 
+        // Save to localStorage for immediate access
         const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
         localStorage.setItem(key, JSON.stringify(gameState));
+
+        // Also save to server for persistence across devices
+        try {
+            await fetch('/api/puzzles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'save',
+                    player: currentPlayer,
+                    date: this.getTodayDateString(),
+                    difficulty: this.currentDifficulty,
+                    state: gameState
+                })
+            });
+        } catch (error) {
+            console.error('Failed to save game state to server:', error);
+        }
     }
 
-    loadGameState() {
+    async loadGameState() {
         const currentPlayer = sessionStorage.getItem('currentPlayer');
         if (!currentPlayer) return;
 
-        const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
-        const savedState = localStorage.getItem(key);
+        try {
+            // Try to load from server first
+            const response = await fetch(`/api/puzzles?player=${currentPlayer}&date=${this.getTodayDateString()}&difficulty=${this.currentDifficulty}`);
 
-        if (savedState) {
-            try {
-                const gameState = JSON.parse(savedState);
+            let gameState = null;
 
+            if (response.ok) {
+                const serverState = await response.json();
+                if (serverState) {
+                    gameState = serverState;
+                    console.log('Loaded game state from server');
+                }
+            }
+
+            // Fallback to localStorage if server fails
+            if (!gameState) {
+                const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
+                const savedState = localStorage.getItem(key);
+                if (savedState) {
+                    gameState = JSON.parse(savedState);
+                    console.log('Loaded game state from localStorage');
+                }
+            }
+
+            if (gameState) {
                 this.playerGrid = gameState.playerGrid || this.playerGrid;
                 this.candidates = gameState.candidates ?
                     gameState.candidates.map(row => row.map(cell => new Set(cell))) :
@@ -756,10 +797,10 @@ class SudokuEngine {
 
                 document.getElementById('gameStatus').innerHTML =
                     '<div class="status-message">Game state restored!</div>';
-
-            } catch (error) {
-                console.error('Failed to load game state:', error);
             }
+
+        } catch (error) {
+            console.error('Failed to load game state:', error);
         }
     }
 
@@ -768,8 +809,7 @@ class SudokuEngine {
         if (!currentPlayer) return;
 
         try {
-            // Integration with existing scoring system will be implemented
-            // For now, just save to localStorage for testing
+            // Save completed game data for integration with existing analytics
             const completedGame = {
                 date: this.getTodayDateString(),
                 player: currentPlayer,
@@ -782,14 +822,212 @@ class SudokuEngine {
                 timestamp: Date.now()
             };
 
+            // Store in localStorage for immediate access
             const key = `completed_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
             localStorage.setItem(key, JSON.stringify(completedGame));
 
-            console.log('Game completed and saved:', completedGame);
+            // Integrate with existing analytics system
+            await this.integrateWithAnalytics(completedGame);
+
+            console.log('Game completed and integrated with analytics:', completedGame);
 
         } catch (error) {
             console.error('Failed to save completed game:', error);
         }
+    }
+
+    async integrateWithAnalytics(gameData) {
+        try {
+            // Check if we have all 3 difficulties completed for today
+            const todayCompleted = this.getTodayCompletedGames();
+
+            // Update the analytics if this is the last game or if we want to show partial progress
+            if (todayCompleted.length >= 3 || this.shouldUpdateAnalytics()) {
+                await this.updateExistingAnalytics(todayCompleted);
+            }
+
+            // Trigger real-time update for the opponent
+            this.notifyOpponentProgress(gameData);
+
+        } catch (error) {
+            console.error('Failed to integrate with analytics:', error);
+        }
+    }
+
+    getTodayCompletedGames() {
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        const today = this.getTodayDateString();
+        const completed = [];
+
+        ['easy', 'medium', 'hard'].forEach(difficulty => {
+            const key = `completed_${currentPlayer}_${today}_${difficulty}`;
+            const gameData = localStorage.getItem(key);
+            if (gameData) {
+                completed.push(JSON.parse(gameData));
+            }
+        });
+
+        return completed;
+    }
+
+    shouldUpdateAnalytics() {
+        // Update analytics immediately for demo purposes
+        // In production, might want to wait for all 3 games
+        return true;
+    }
+
+    async updateExistingAnalytics(completedGames) {
+        if (completedGames.length === 0) return;
+
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        const today = this.getTodayDateString();
+
+        // Convert Sudoku game data to existing analytics format
+        const analyticsEntry = this.convertToAnalyticsFormat(completedGames, today, currentPlayer);
+
+        // Get opponent's data for the same date
+        const opponentData = this.getOpponentDataForDate(today, currentPlayer);
+
+        // Create complete entry for existing system if both players have data
+        if (this.canCreateCompleteEntry(analyticsEntry, opponentData)) {
+            await this.saveToExistingSystem(today, analyticsEntry, opponentData);
+        } else {
+            // Save partial entry
+            await this.savePartialEntry(today, currentPlayer, analyticsEntry);
+        }
+    }
+
+    convertToAnalyticsFormat(completedGames, date, player) {
+        const entry = {
+            times: { easy: null, medium: null, hard: null },
+            errors: { easy: 0, medium: 0, hard: 0 },
+            dnf: { easy: false, medium: false, hard: false },
+            scores: { easy: 0, medium: 0, hard: 0, total: 0 },
+            hints: { easy: 0, medium: 0, hard: 0 }  // Add hints tracking
+        };
+
+        let totalScore = 0;
+
+        completedGames.forEach(game => {
+            const diff = game.difficulty;
+            entry.times[diff] = game.time;
+            entry.errors[diff] = game.errors;
+            entry.hints[diff] = game.hints;  // Store hints used
+            entry.scores[diff] = game.score;
+            totalScore += game.score;
+        });
+
+        entry.scores.total = totalScore;
+        return entry;
+    }
+
+    getOpponentDataForDate(date, currentPlayer) {
+        const opponent = currentPlayer === 'faidao' ? 'filip' : 'faidao';
+        const completed = [];
+
+        ['easy', 'medium', 'hard'].forEach(difficulty => {
+            const key = `completed_${opponent}_${date}_${difficulty}`;
+            const gameData = localStorage.getItem(key);
+            if (gameData) {
+                completed.push(JSON.parse(gameData));
+            }
+        });
+
+        if (completed.length > 0) {
+            return this.convertToAnalyticsFormat(completed, date, opponent);
+        }
+        return null;
+    }
+
+    canCreateCompleteEntry(playerData, opponentData) {
+        // For now, create entry even with partial data to show progress
+        return true;
+    }
+
+    async saveToExistingSystem(date, playerData, opponentData) {
+        try {
+            const currentPlayer = sessionStorage.getItem('currentPlayer');
+            const opponent = currentPlayer === 'faidao' ? 'filip' : 'faidao';
+
+            // Create entry in existing system format
+            const entryData = {
+                [currentPlayer]: playerData
+            };
+
+            if (opponentData) {
+                entryData[opponent] = opponentData;
+            } else {
+                // Create empty opponent data
+                entryData[opponent] = {
+                    times: { easy: null, medium: null, hard: null },
+                    errors: { easy: 0, medium: 0, hard: 0 },
+                    dnf: { easy: false, medium: false, hard: false },
+                    scores: { easy: 0, medium: 0, hard: 0, total: 0 }
+                };
+            }
+
+            // Save to database using existing API
+            const response = await fetch('/api/entries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    date: date,
+                    [currentPlayer]: entryData[currentPlayer],
+                    [opponent]: entryData[opponent]
+                })
+            });
+
+            if (response.ok) {
+                console.log('Successfully integrated with existing analytics system');
+
+                // Trigger dashboard update if we're on main app
+                if (window.sudokuApp) {
+                    await window.sudokuApp.loadData();
+                    window.sudokuApp.updateDashboard();
+                }
+            }
+
+        } catch (error) {
+            console.error('Failed to save to existing system:', error);
+        }
+    }
+
+    async savePartialEntry(date, player, playerData) {
+        // Store partial data for later completion
+        const key = `partial_entry_${date}_${player}`;
+        localStorage.setItem(key, JSON.stringify({
+            date,
+            player,
+            data: playerData,
+            timestamp: Date.now()
+        }));
+    }
+
+    notifyOpponentProgress(gameData) {
+        // Store progress notification for opponent
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        const opponent = currentPlayer === 'faidao' ? 'filip' : 'faidao';
+
+        const notification = {
+            from: currentPlayer,
+            difficulty: gameData.difficulty,
+            score: gameData.score,
+            time: gameData.time,
+            errors: gameData.errors,
+            hints: gameData.hints,
+            timestamp: Date.now()
+        };
+
+        const key = `opponent_progress_${opponent}_${this.getTodayDateString()}`;
+        const existing = localStorage.getItem(key);
+        const notifications = existing ? JSON.parse(existing) : [];
+
+        notifications.push(notification);
+        localStorage.setItem(key, JSON.stringify(notifications));
+
+        console.log('Notified opponent of progress:', notification);
     }
 
     getTodayDateString() {

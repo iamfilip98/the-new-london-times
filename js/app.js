@@ -848,6 +848,8 @@ class SudokuChampionship {
         this.updateStreakDisplay();
         this.updateOverallRecord();
         this.updateRecentHistory();
+        this.updateTodayProgress();
+        this.updateProgressNotifications();
     }
 
     updateStreakDisplay() {
@@ -1397,6 +1399,95 @@ class SudokuChampionship {
                 achievements: []
             };
         }
+    }
+
+    updateTodayProgress() {
+        const today = new Date().toISOString().split('T')[0];
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        players.forEach(player => {
+            difficulties.forEach(difficulty => {
+                const progressElement = document.getElementById(`${player}-${difficulty}-progress`);
+                if (!progressElement) return;
+
+                const statusElement = progressElement.querySelector('.progress-status');
+                const key = `completed_${player}_${today}_${difficulty}`;
+                const gameData = localStorage.getItem(key);
+
+                if (gameData) {
+                    const game = JSON.parse(gameData);
+                    const time = this.formatSecondsToTime(game.time);
+                    statusElement.innerHTML = `
+                        <span class="completed">✓ ${time}</span>
+                        <span class="score">${game.score}pts</span>
+                    `;
+                    progressElement.classList.add('completed');
+                } else {
+                    statusElement.textContent = 'Not started';
+                    progressElement.classList.remove('completed');
+                }
+            });
+        });
+    }
+
+    updateProgressNotifications() {
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        if (!currentPlayer) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        const key = `opponent_progress_${currentPlayer}_${today}`;
+        const notifications = localStorage.getItem(key);
+
+        const container = document.getElementById('notificationsContainer');
+        if (!container) return;
+
+        if (notifications) {
+            const notificationList = JSON.parse(notifications);
+            const recentNotifications = notificationList
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .slice(0, 5);
+
+            if (recentNotifications.length > 0) {
+                container.innerHTML = recentNotifications.map(notification => {
+                    const opponent = currentPlayer === 'faidao' ? 'Filip' : 'Faidao';
+                    const time = this.formatSecondsToTime(notification.time);
+                    const timeAgo = this.getTimeAgo(notification.timestamp);
+
+                    return `
+                        <div class="notification-item ${notification.from}">
+                            <div class="notification-header">
+                                <strong>${opponent}</strong> completed <span class="difficulty">${notification.difficulty}</span>
+                                <span class="time-ago">${timeAgo}</span>
+                            </div>
+                            <div class="notification-details">
+                                Time: ${time} | Score: ${notification.score} | Errors: ${notification.errors} | Hints: ${notification.hints}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = '<div class="no-notifications">No recent updates from your opponent.</div>';
+            }
+        } else {
+            container.innerHTML = '<div class="no-notifications">Complete puzzles to see live updates from your opponent!</div>';
+        }
+    }
+
+    getTimeAgo(timestamp) {
+        const now = Date.now();
+        const diff = now - timestamp;
+        const minutes = Math.floor(diff / 60000);
+
+        if (minutes < 1) return 'Just now';
+        if (minutes === 1) return '1 minute ago';
+        if (minutes < 60) return `${minutes} minutes ago`;
+
+        const hours = Math.floor(minutes / 60);
+        if (hours === 1) return '1 hour ago';
+        if (hours < 24) return `${hours} hours ago`;
+
+        return 'Earlier today';
     }
 }
 
