@@ -1089,13 +1089,13 @@ class SudokuChampionship {
                         <div class="player-avatar ${player.color}">${player.avatar}</div>
                         <div class="player-details">
                             <h4>${player.name}</h4>
-                            <p>${playerStats.wins} Wins</p>
+                            <p>${playerStats.wins} Win${playerStats.wins === 1 ? '' : 's'}</p>
                         </div>
                     </div>
                     <div class="stats">
                         <div class="stat">
                             <span class="stat-value">${playerStats.wins}</span>
-                            <span class="stat-label">Wins</span>
+                            <span class="stat-label">Win${playerStats.wins === 1 ? '' : 's'}</span>
                         </div>
                         <div class="stat">
                             <span class="stat-value">${Math.round(playerStats.avgScore)}</span>
