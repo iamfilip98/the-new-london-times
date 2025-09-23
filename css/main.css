@@ -873,6 +873,16 @@ body {
     border-color: rgba(245, 87, 108, 0.3);
 }
 
+.action-btn.tertiary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow:
+        0 10px 30px rgba(102, 126, 234, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 1px 4px rgba(0, 0, 0, 0.1);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
 .action-btn:hover {
     transform: translateY(-3px);
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
@@ -888,6 +898,13 @@ body {
 .action-btn.secondary:hover {
     box-shadow:
         0 15px 50px rgba(245, 87, 108, 0.4),
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn.tertiary:hover {
+    box-shadow:
+        0 15px 50px rgba(102, 126, 234, 0.4),
         0 8px 20px rgba(0, 0, 0, 0.2),
         0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -912,6 +929,10 @@ body {
 
 .action-btn.secondary:focus-visible {
     box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.3), var(--box-shadow);
+}
+
+.action-btn.tertiary:focus-visible {
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3), var(--box-shadow);
 }
 
 /* Recent History */

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Time Input Debug</title>
+</head>
+<body>
+    <h1>Time Input Debug</h1>
+    <input type="text" id="testInput" placeholder="Type 611">
+    <div id="output"></div>
+
+    <script>
+        function formatTimeInput(input) {
+            let value = input.dataset.rawValue || input.value.replace(/[^0-9]/g, '');
+
+            console.log('Raw value:', value, 'Length:', value.length);
+
+            if (value.length === 0) {
+                input.value = '';
+                input.dataset.rawValue = '';
+                return;
+            }
+
+            if (value.length === 1) {
+                input.value = `0:0${value}`;
+                console.log('1 digit result:', input.value);
+            } else if (value.length === 2) {
+                input.value = `0:${value}`;
+                console.log('2 digit result:', input.value);
+            } else if (value.length === 3) {
+                const minutes = parseInt(value[0]);
+                const seconds = value.substring(1);
+
+                console.log('3 digit - minutes:', minutes, 'seconds:', seconds);
+
+                const sec = parseInt(seconds);
+                if (sec >= 60) {
+                    const totalSeconds = minutes * 60 + sec;
+                    const finalMinutes = Math.floor(totalSeconds / 60);
+                    const finalSecs = totalSeconds % 60;
+                    input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
+                    console.log('3 digit overflow result:', input.value);
+                } else {
+                    input.value = `${minutes}:${seconds}`;
+                    console.log('3 digit normal result:', input.value);
+                }
+            } else if (value.length >= 4) {
+                const minutes = parseInt(value.substring(0, value.length - 2));
+                const seconds = value.substring(value.length - 2);
+
+                console.log('4+ digit - minutes:', minutes, 'seconds:', seconds);
+
+                const sec = parseInt(seconds);
+                if (sec >= 60) {
+                    const totalSeconds = minutes * 60 + sec;
+                    const finalMinutes = Math.floor(totalSeconds / 60);
+                    const finalSecs = totalSeconds % 60;
+                    input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
+                    console.log('4+ digit overflow result:', input.value);
+                } else {
+                    input.value = `${minutes}:${seconds.padStart(2, '0')}`;
+                    console.log('4+ digit normal result:', input.value);
+                }
+            }
+        }
+
+        function handleTimeInput(input) {
+            let value = input.value;
+            const rawNumbers = value.replace(/[^0-9]/g, '');
+            input.dataset.rawValue = rawNumbers;
+            formatTimeInput(input);
+        }
+
+        document.getElementById('testInput').addEventListener('input', function() {
+            handleTimeInput(this);
+            document.getElementById('output').innerHTML = `
+                <p>Input value: ${this.value}</p>
+                <p>Raw value: ${this.dataset.rawValue}</p>
+            `;
+        });
+    </script>
+</body>
+</html>

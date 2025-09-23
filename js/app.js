@@ -29,6 +29,9 @@ class SudokuChampionship {
     }
 
     async initialize() {
+        // Scroll to top on page load/refresh
+        window.scrollTo(0, 0);
+
         this.setupEventListeners();
         this.setupNavigation();
         this.setupLeaderboardTabs();
@@ -89,9 +92,9 @@ class SudokuChampionship {
                 }, 0);
             });
 
-            // Also format on blur to catch any missed formatting
+            // Also format on blur to catch any missed formatting and apply overflow logic
             input.addEventListener('blur', (e) => {
-                this.formatTimeInput(e.target);
+                this.formatTimeInputWithOverflow(e.target);
                 this.updateScores();
             });
 
@@ -157,7 +160,12 @@ class SudokuChampionship {
 
                 // Update active page
                 pages.forEach(page => page.classList.remove('active'));
-                document.getElementById(targetPage).classList.add('active');
+                const targetPageElement = document.getElementById(targetPage);
+                targetPageElement.classList.add('active');
+
+                // Scroll to top of page when switching
+                targetPageElement.scrollTop = 0;
+                window.scrollTo(0, 0);
 
                 // Update page content
                 await this.updatePageContent(targetPage);
@@ -182,6 +190,8 @@ class SudokuChampionship {
                 const targetContent = document.getElementById(`${targetTab}-tab`);
                 if (targetContent) {
                     targetContent.classList.add('active');
+                    // Scroll to top of tab content when switching tabs
+                    targetContent.scrollTop = 0;
                 }
             });
         });
@@ -204,10 +214,10 @@ class SudokuChampionship {
         // Strip everything except numbers to get raw input
         const rawNumbers = value.replace(/[^0-9]/g, '');
 
-        // Store raw numbers for calculation purposes
+        // Store raw numbers for calculation purposes - ensure we don't process already formatted values
         input.dataset.rawValue = rawNumbers;
 
-        // Format and display
+        // Format and display only if raw value actually changed
         this.formatTimeInput(input);
     }
 
@@ -229,42 +239,20 @@ class SudokuChampionship {
             input.value = `0:0${value}`;
             newCursorPos = 4;
         } else if (value.length === 2) {
-            // Two digits: 45 → 0:45
+            // Two digits: 45 → 0:45, 61 → 0:61 (no overflow conversion during typing)
             input.value = `0:${value}`;
             newCursorPos = 4;
         } else if (value.length === 3) {
-            // Three digits: 222 → 2:22, 345 → 3:45
+            // Three digits: 611 → 6:11, 345 → 3:45 (no overflow during typing)
             const minutes = parseInt(value[0]);
             const seconds = value.substring(1);
-
-            // Validate seconds don't exceed 59
-            const sec = parseInt(seconds);
-            if (sec >= 60) {
-                // Convert overflow: 555 (5:55) → 9:35 (5*60 + 55 = 355 seconds)
-                const totalSeconds = minutes * 60 + sec;
-                const finalMinutes = Math.floor(totalSeconds / 60);
-                const finalSecs = totalSeconds % 60;
-                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
-            } else {
-                input.value = `${minutes}:${seconds}`;
-            }
+            input.value = `${minutes}:${seconds}`;
             newCursorPos = input.value.length;
         } else if (value.length >= 4) {
-            // Four or more digits: 1234 → 12:34
+            // Four or more digits: 1234 → 12:34 (no overflow during typing)
             const minutes = parseInt(value.substring(0, value.length - 2));
             const seconds = value.substring(value.length - 2);
-
-            // Handle seconds overflow
-            const sec = parseInt(seconds);
-
-            if (sec >= 60) {
-                const totalSeconds = minutes * 60 + sec;
-                const finalMinutes = Math.floor(totalSeconds / 60);
-                const finalSecs = totalSeconds % 60;
-                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
-            } else {
-                input.value = `${minutes}:${seconds}`;
-            }
+            input.value = `${minutes}:${seconds.padStart(2, '0')}`;
             newCursorPos = input.value.length;
         }
 
@@ -272,6 +260,59 @@ class SudokuChampionship {
         setTimeout(() => {
             input.setSelectionRange(newCursorPos, newCursorPos);
         }, 0);
+    }
+
+    formatTimeInputWithOverflow(input) {
+        // This version applies overflow logic - used on blur when user is done typing
+        let value = input.dataset.rawValue || input.value.replace(/[^0-9]/g, '');
+
+        if (value.length === 0) {
+            input.value = '';
+            input.dataset.rawValue = '';
+            return;
+        }
+
+        if (value.length === 1) {
+            input.value = `0:0${value}`;
+        } else if (value.length === 2) {
+            // Two digits with overflow: 61 → 1:01
+            const sec = parseInt(value);
+            if (sec >= 60) {
+                const minutes = Math.floor(sec / 60);
+                const seconds = sec % 60;
+                input.value = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                input.value = `0:${value}`;
+            }
+        } else if (value.length === 3) {
+            // Three digits: 611 → 6:11
+            const minutes = parseInt(value[0]);
+            const seconds = value.substring(1);
+            const sec = parseInt(seconds);
+
+            if (sec >= 60) {
+                const totalSeconds = minutes * 60 + sec;
+                const finalMinutes = Math.floor(totalSeconds / 60);
+                const finalSecs = totalSeconds % 60;
+                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
+            } else {
+                input.value = `${minutes}:${seconds}`;
+            }
+        } else if (value.length >= 4) {
+            // Four or more digits: 1234 → 12:34
+            const minutes = parseInt(value.substring(0, value.length - 2));
+            const seconds = value.substring(value.length - 2);
+            const sec = parseInt(seconds);
+
+            if (sec >= 60) {
+                const totalSeconds = minutes * 60 + sec;
+                const finalMinutes = Math.floor(totalSeconds / 60);
+                const finalSecs = totalSeconds % 60;
+                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
+            } else {
+                input.value = `${minutes}:${seconds.padStart(2, '0')}`;
+            }
+        }
     }
 
     toggleInputs(checkbox) {

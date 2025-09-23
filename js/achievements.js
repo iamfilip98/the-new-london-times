@@ -1,5 +1,6 @@
 class AchievementsManager {
     constructor() {
+        this.needsInitialCleanup = true; // Flag to run cleanup once per session
         this.achievementDefinitions = [
             // STREAK ACHIEVEMENTS (10)
             {
@@ -475,6 +476,13 @@ class AchievementsManager {
     async initializeAsync() {
         try {
             await this.refreshAchievements();
+
+            // Run automatic cleanup once per session to fix any inconsistencies
+            if (this.needsInitialCleanup) {
+                console.log('🔧 Running automatic achievement cleanup...');
+                await this.performAutomaticCleanup();
+                this.needsInitialCleanup = false;
+            }
         } catch (error) {
             console.error('Failed to load achievements:', error);
             this.unlockedAchievements = [];
@@ -483,13 +491,20 @@ class AchievementsManager {
 
     async refreshAchievements() {
         try {
+            // Always load from database, never from localStorage
             this.unlockedAchievements = await sudokuApp.loadAchievements() || [];
-        } catch (error) {
-            console.error('Failed to refresh achievements:', error);
-            // Keep existing achievements if database fails
-            if (!this.unlockedAchievements) {
+
+            // Extra safeguard: ensure we're working with database data only
+            if (!Array.isArray(this.unlockedAchievements)) {
+                console.warn('Invalid achievements data from database, resetting to empty array');
                 this.unlockedAchievements = [];
             }
+
+            console.log(`Loaded ${this.unlockedAchievements.length} achievements from database`);
+        } catch (error) {
+            console.error('Failed to refresh achievements:', error);
+            // Reset to empty array if database fails to ensure clean state
+            this.unlockedAchievements = [];
         }
     }
 
@@ -507,11 +522,13 @@ class AchievementsManager {
             a.id === achievementId && a.player === player
         ).length;
 
-        // Count how many days this player has played
-        const daysPlayed = allEntries.length;
+        // Count how many complete days this player has played (only complete entries count)
+        const completeDaysPlayed = allEntries.filter(entry =>
+            sudokuApp.isEntryComplete && sudokuApp.isEntryComplete(entry)
+        ).length;
 
-        // Don't allow more unlocks than days played
-        return existingUnlocks < daysPlayed;
+        // Don't allow more unlocks than complete days played
+        return existingUnlocks < completeDaysPlayed;
     }
 
     async checkNewAchievements(newEntry, allEntries, streaks) {
@@ -536,13 +553,32 @@ class AchievementsManager {
                         );
                         shouldUnlock = !alreadyHas;
                     } else {
-                        // For repeatable achievements, apply safety check
-                        shouldUnlock = this.shouldAllowRepeatableAchievement(achievement.id, player, allEntries);
+                        // For repeatable achievements, only unlock once per entry date
+                        const alreadyUnlockedForThisEntry = this.unlockedAchievements.some(a =>
+                            a.id === achievement.id &&
+                            a.player === player &&
+                            a.unlockedAt.startsWith(newEntry.date)
+                        );
+                        shouldUnlock = !alreadyUnlockedForThisEntry;
+
+                        // Additional safety check: don't unlock if player already has too many of this achievement
+                        if (shouldUnlock) {
+                            const existingCount = this.unlockedAchievements.filter(a =>
+                                a.id === achievement.id && a.player === player
+                            ).length;
+
+                            // Conservative limit: no more achievements than total entries
+                            if (existingCount >= allEntries.length) {
+                                console.warn(`🚫 Blocking ${achievement.id} for ${player}: already has ${existingCount} (max ${allEntries.length})`);
+                                shouldUnlock = false;
+                            }
+                        }
                     }
 
                     if (shouldUnlock) {
                         await this.unlockAchievement(achievement, player);
                         newlyUnlocked.push({...achievement, player});
+                        console.log(`🆕 New achievement: ${achievement.title} for ${player}`);
                     }
                 }
             }
@@ -680,7 +716,14 @@ class AchievementsManager {
         return players.filter(player => {
             const time = entry[player].times[req.difficulty];
             const dnf = entry[player].dnf[req.difficulty];
-            return !dnf && time !== null && time < req.value;
+            const qualifies = !dnf && time !== null && time < req.value;
+
+            // Add debugging for speed achievements
+            if (req.difficulty === 'easy' && req.value === 120) {
+                console.log(`Speed Demon Easy check for ${player}: time=${time}s, dnf=${dnf}, qualifies=${qualifies} (need <${req.value}s)`);
+            }
+
+            return qualifies;
         });
     }
 
@@ -1169,11 +1212,11 @@ class AchievementsManager {
     }
 
     async refreshAllAchievements() {
-        console.log('Starting achievement refresh...');
+        console.log('🔄 Starting complete achievement refresh...');
 
         try {
             // Step 1: Clear all existing achievements from database
-            console.log('Clearing existing achievements...');
+            console.log('🗑️ Clearing all existing achievements...');
             await fetch('/api/achievements', {
                 method: 'DELETE',
                 headers: {
@@ -1182,31 +1225,42 @@ class AchievementsManager {
             });
 
             // Step 2: Load all game entries and streaks
-            console.log('Loading game data...');
+            console.log('📊 Loading game data...');
             const allEntries = await sudokuApp.loadFromStorage() || [];
             const streaks = await sudokuApp.loadStreaks() || {};
 
             // Step 3: Clear local achievements
             this.unlockedAchievements = [];
 
-            // Step 4: Process each game entry chronologically
-            console.log(`Processing ${allEntries.length} game entries...`);
+            // Step 4: Process each game entry chronologically with proper validation
+            console.log(`🎯 Processing ${allEntries.length} game entries...`);
             const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let processedCount = 0;
+            const processedDates = new Set(); // Track processed dates to avoid duplicates
+
             for (const entry of sortedEntries) {
+                // Skip if we've already processed this date
+                if (processedDates.has(entry.date)) {
+                    console.log(`⚠️ Skipping duplicate entry for ${entry.date}`);
+                    continue;
+                }
+                processedDates.add(entry.date);
+
                 // Get entries up to this point for context
                 const entriesUpToNow = sortedEntries.slice(0, sortedEntries.indexOf(entry) + 1);
 
-                // Check achievements for this entry
-                await this.checkNewAchievements(entry, entriesUpToNow, streaks);
+                console.log(`Processing entry ${entry.date}...`);
+
+                // Check achievements for this entry with detailed logging
+                const newAchievements = await this.checkNewAchievementsClean(entry, entriesUpToNow, streaks);
 
                 processedCount++;
-                console.log(`Processed ${processedCount}/${sortedEntries.length} entries`);
+                console.log(`✅ Processed ${processedCount}/${sortedEntries.length} entries, awarded ${newAchievements.length} achievements`);
             }
 
-            console.log('Achievement refresh completed!');
-            console.log(`Total achievements awarded: ${this.unlockedAchievements.length}`);
+            console.log('🎉 Achievement refresh completed!');
+            console.log(`📈 Total achievements awarded: ${this.unlockedAchievements.length}`);
 
             // Update the UI
             await this.updateAchievements(allEntries, streaks, {});
@@ -1214,15 +1268,113 @@ class AchievementsManager {
             return {
                 success: true,
                 totalAchievements: this.unlockedAchievements.length,
-                processedEntries: sortedEntries.length
+                processedEntries: processedCount
             };
 
         } catch (error) {
-            console.error('Achievement refresh failed:', error);
+            console.error('❌ Achievement refresh failed:', error);
             return {
                 success: false,
                 error: error.message
             };
+        }
+    }
+
+    // Clean version that doesn't interfere with normal achievement checking
+    async checkNewAchievementsClean(entry, allEntries, streaks) {
+        const newlyUnlocked = [];
+
+        for (const achievement of this.achievementDefinitions) {
+            const playersWhoEarned = this.checkAchievementRequirement(achievement, entry, allEntries, streaks);
+
+            if (playersWhoEarned && playersWhoEarned.length > 0) {
+                for (const player of playersWhoEarned) {
+                    // Only check if not already unlocked for this specific requirement
+                    let shouldUnlock = false;
+
+                    if (achievement.oneTime) {
+                        // For one-time achievements, check if player has ANY instance
+                        const alreadyHas = this.unlockedAchievements.some(a =>
+                            a.id === achievement.id && a.player === player
+                        );
+                        shouldUnlock = !alreadyHas;
+                    } else {
+                        // For repeatable achievements, only unlock once per entry date
+                        const alreadyUnlockedForThisEntry = this.unlockedAchievements.some(a =>
+                            a.id === achievement.id &&
+                            a.player === player &&
+                            a.unlockedAt.startsWith(entry.date)
+                        );
+                        shouldUnlock = !alreadyUnlockedForThisEntry;
+                    }
+
+                    if (shouldUnlock) {
+                        await this.unlockAchievementClean(achievement, player, entry.date);
+                        newlyUnlocked.push({...achievement, player});
+                        console.log(`🏆 Unlocked: ${achievement.title} for ${player} on ${entry.date}`);
+                    }
+                }
+            }
+        }
+
+        return newlyUnlocked;
+    }
+
+    async unlockAchievementClean(achievement, player, entryDate) {
+        const unlock = {
+            id: achievement.id,
+            player: player,
+            unlockedAt: `${entryDate}T12:00:00.000Z`, // Use entry date, not current time
+            title: achievement.title,
+            description: achievement.description
+        };
+
+        this.unlockedAchievements.push(unlock);
+
+        // Save immediately to database
+        try {
+            await fetch('/api/achievements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(unlock)
+            });
+        } catch (error) {
+            console.error('Failed to save achievement:', error);
+        }
+    }
+
+    async performAutomaticCleanup() {
+        try {
+            // Check if achievements need cleanup by looking for excessive counts
+            const achievementCounts = {};
+            this.unlockedAchievements.forEach(a => {
+                const key = `${a.id}-${a.player}`;
+                achievementCounts[key] = (achievementCounts[key] || 0) + 1;
+            });
+
+            // Get total number of entries
+            const allEntries = await sudokuApp.loadFromStorage() || [];
+            const totalEntries = allEntries.length;
+
+            // Find achievements with excessive counts
+            const excessiveAchievements = Object.entries(achievementCounts).filter(([key, count]) => {
+                // Allow some flexibility but catch obvious errors (more than 2x entries)
+                return count > Math.max(totalEntries * 2, 10);
+            });
+
+            if (excessiveAchievements.length > 0) {
+                console.log(`⚠️ Found ${excessiveAchievements.length} achievement types with excessive counts. Running full refresh...`);
+                await this.refreshAllAchievements();
+                console.log('✅ Automatic cleanup completed');
+            } else {
+                console.log('✅ Achievement counts look reasonable, no cleanup needed');
+            }
+
+        } catch (error) {
+            console.error('❌ Automatic cleanup failed:', error);
+            // Don't throw error to avoid breaking app initialization
         }
     }
 

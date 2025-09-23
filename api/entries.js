@@ -97,6 +97,87 @@ async function initDatabase() {
   }
 }
 
+function normalizeEntryData(data) {
+  const normalized = { date: data.date };
+
+  ['faidao', 'filip'].forEach(player => {
+    const playerData = data[player];
+    if (!playerData) return;
+
+    // Check if this is old format (has easyErrors, mediumErrors, etc.)
+    if (playerData.easyErrors !== undefined || playerData.easy !== undefined) {
+      // Convert old format to new format
+      normalized[player] = {
+        times: {
+          easy: playerData.easy ? parseTimeToSeconds(playerData.easy) : null,
+          medium: playerData.medium ? parseTimeToSeconds(playerData.medium) : null,
+          hard: playerData.hard ? parseTimeToSeconds(playerData.hard) : null
+        },
+        errors: {
+          easy: playerData.easyErrors || 0,
+          medium: playerData.mediumErrors || 0,
+          hard: playerData.hardErrors || 0
+        },
+        dnf: {
+          easy: false,
+          medium: false,
+          hard: false
+        },
+        scores: {
+          easy: 0,
+          medium: 0,
+          hard: 0,
+          total: 0
+        }
+      };
+
+      // Calculate scores for old format entries
+      const difficulties = ['easy', 'medium', 'hard'];
+      const multipliers = { easy: 1, medium: 1.5, hard: 2 };
+      let totalScore = 0;
+
+      difficulties.forEach(difficulty => {
+        const time = normalized[player].times[difficulty];
+        const errors = normalized[player].errors[difficulty];
+
+        if (time && time > 0) {
+          const adjustedTime = time + (errors * 30);
+          const adjustedMinutes = adjustedTime / 60;
+          const score = (1000 / adjustedMinutes) * multipliers[difficulty];
+          normalized[player].scores[difficulty] = Math.round(score * 100) / 100;
+          totalScore += normalized[player].scores[difficulty];
+        }
+      });
+
+      normalized[player].scores.total = Math.round(totalScore * 100) / 100;
+    } else {
+      // Already in new format
+      normalized[player] = playerData;
+    }
+  });
+
+  return normalized;
+}
+
+function parseTimeToSeconds(timeString) {
+  if (!timeString || timeString.trim() === '') return null;
+
+  // Handle MM:SS format
+  if (timeString.includes(':')) {
+    const parts = timeString.split(':');
+    if (parts.length !== 2) return null;
+
+    const minutes = parseInt(parts[0]) || 0;
+    const seconds = parseInt(parts[1]) || 0;
+
+    return minutes * 60 + seconds;
+  }
+
+  // Handle raw seconds
+  const totalSeconds = parseInt(timeString);
+  return isNaN(totalSeconds) ? null : totalSeconds;
+}
+
 async function getAllEntries() {
   try {
     const result = await sql`
@@ -105,10 +186,13 @@ async function getAllEntries() {
       ORDER BY date DESC
     `;
 
-    return result.rows.map(row => ({
-      date: row.date.toISOString().split('T')[0],
-      ...row.data
-    }));
+    return result.rows.map(row => {
+      const rawData = {
+        date: row.date.toISOString().split('T')[0],
+        ...row.data
+      };
+      return normalizeEntryData(rawData);
+    });
   } catch (error) {
     console.error('Failed to get entries:', error);
     throw error;
