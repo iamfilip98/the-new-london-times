@@ -228,8 +228,18 @@ class AnalyticsManager {
     }
 
     updateWinRateStats(entries) {
-        const statsContainer = document.getElementById('winRateStats');
-        if (!statsContainer) return;
+        const numberEl = document.getElementById('winRateNumber');
+        const subtextEl = document.getElementById('winRateSubtext');
+        const trendEl = document.getElementById('winRateTrend');
+
+        if (!numberEl || !subtextEl || !trendEl) return;
+
+        if (entries.length === 0) {
+            numberEl.textContent = '--';
+            subtextEl.textContent = 'No games played yet';
+            trendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
+            return;
+        }
 
         let faidaoWins = 0;
         let filipWins = 0;
@@ -249,80 +259,89 @@ class AnalyticsManager {
         const faidaoWinRate = totalGames > 0 ? Math.round((faidaoWins / totalGames) * 100) : 0;
         const filipWinRate = totalGames > 0 ? Math.round((filipWins / totalGames) * 100) : 0;
 
-        statsContainer.innerHTML = `
-            <div class="win-rate-item">
-                <span class="player-name faidao-color">Faidao</span>
-                <span class="win-rate">${faidaoWinRate}%</span>
-                <span class="win-count">(${faidaoWins}/${totalGames})</span>
-            </div>
-            <div class="win-rate-item">
-                <span class="player-name filip-color">Filip</span>
-                <span class="win-rate">${filipWinRate}%</span>
-                <span class="win-count">(${filipWins}/${totalGames})</span>
-            </div>
-            <div class="win-rate-item">
-                <span class="player-name">Ties</span>
-                <span class="win-rate">${Math.round((ties / totalGames) * 100)}%</span>
-                <span class="win-count">(${ties}/${totalGames})</span>
-            </div>
-        `;
+        // Show the overall winner's win rate as the main number
+        const overallWinRate = faidaoWins > filipWins ? faidaoWinRate : filipWinRate;
+        const leader = faidaoWins > filipWins ? 'Faidao' : (filipWins > faidaoWins ? 'Filip' : 'Tied');
+
+        numberEl.textContent = `${overallWinRate}%`;
+        subtextEl.textContent = `${leader} leads • ${totalGames} games total`;
+
+        // Calculate trend from recent games
+        const recentGames = entries.slice(0, Math.min(10, entries.length));
+        if (recentGames.length >= 5) {
+            const recentFaidaoWins = recentGames.filter(entry =>
+                entry.faidao.scores.total > entry.filip.scores.total).length;
+            const recentWinRate = Math.round((recentFaidaoWins / recentGames.length) * 100);
+            const trend = recentWinRate - faidaoWinRate;
+
+            trendEl.className = `stat-trend ${trend > 0 ? 'positive' : trend < 0 ? 'negative' : 'neutral'}`;
+            const icon = trend > 0 ? 'fa-arrow-up' : trend < 0 ? 'fa-arrow-down' : 'fa-minus';
+            trendEl.innerHTML = `<i class="fas ${icon}"></i><span>${Math.abs(trend)}%</span>`;
+        } else {
+            trendEl.className = 'stat-trend neutral';
+            trendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
+        }
     }
 
     updatePerformanceStats(entries) {
-        const statsContainer = document.getElementById('avgPerformanceStats');
-        if (!statsContainer) return;
+        const numberEl = document.getElementById('avgPerformanceNumber');
+        const subtextEl = document.getElementById('avgPerformanceSubtext');
+        const trendEl = document.getElementById('avgPerformanceTrend');
+
+        if (!numberEl || !subtextEl || !trendEl) return;
 
         if (entries.length === 0) {
-            statsContainer.innerHTML = '<p>No data available</p>';
+            numberEl.textContent = '--';
+            subtextEl.textContent = 'No games played yet';
+            trendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
             return;
         }
 
-        // Calculate averages
-        const players = ['faidao', 'filip'];
-        const difficulties = ['easy', 'medium', 'hard'];
+        // Calculate combined average score
+        const totalScore = entries.reduce((sum, entry) =>
+            sum + entry.faidao.scores.total + entry.filip.scores.total, 0);
+        const avgScore = Math.round(totalScore / (entries.length * 2));
 
-        const stats = {};
-        players.forEach(player => {
-            const totalScore = entries.reduce((sum, entry) => sum + entry[player].scores.total, 0);
-            const avgScore = totalScore / entries.length;
+        // Calculate individual averages for comparison
+        const faidaoAvg = Math.round(entries.reduce((sum, entry) =>
+            sum + entry.faidao.scores.total, 0) / entries.length);
+        const filipAvg = Math.round(entries.reduce((sum, entry) =>
+            sum + entry.filip.scores.total, 0) / entries.length);
 
-            const totalErrors = entries.reduce((sum, entry) => {
-                return sum + (entry[player].errors.easy || 0) +
-                       (entry[player].errors.medium || 0) +
-                       (entry[player].errors.hard || 0);
-            }, 0);
-            const avgErrors = totalErrors / entries.length;
+        numberEl.textContent = avgScore;
+        subtextEl.textContent = `Faidao: ${faidaoAvg} • Filip: ${filipAvg}`;
 
-            stats[player] = {
-                avgScore: Math.round(avgScore),
-                avgErrors: Math.round(avgErrors * 100) / 100
-            };
-        });
+        // Calculate trend from recent performance
+        if (entries.length >= 10) {
+            const recentEntries = entries.slice(0, 5);
+            const oldEntries = entries.slice(-5);
 
-        statsContainer.innerHTML = `
-            <div class="performance-item">
-                <h5>Average Score</h5>
-                <div class="performance-comparison">
-                    <span class="faidao-color">Faidao: ${stats.faidao.avgScore}</span>
-                    <span class="filip-color">Filip: ${stats.filip.avgScore}</span>
-                </div>
-            </div>
-            <div class="performance-item">
-                <h5>Average Errors</h5>
-                <div class="performance-comparison">
-                    <span class="faidao-color">Faidao: ${stats.faidao.avgErrors}</span>
-                    <span class="filip-color">Filip: ${stats.filip.avgErrors}</span>
-                </div>
-            </div>
-        `;
+            const recentAvg = Math.round(recentEntries.reduce((sum, entry) =>
+                sum + entry.faidao.scores.total + entry.filip.scores.total, 0) / (recentEntries.length * 2));
+            const oldAvg = Math.round(oldEntries.reduce((sum, entry) =>
+                sum + entry.faidao.scores.total + entry.filip.scores.total, 0) / (oldEntries.length * 2));
+
+            const trend = recentAvg - oldAvg;
+            trendEl.className = `stat-trend ${trend > 0 ? 'positive' : trend < 0 ? 'negative' : 'neutral'}`;
+            const icon = trend > 0 ? 'fa-arrow-up' : trend < 0 ? 'fa-arrow-down' : 'fa-minus';
+            trendEl.innerHTML = `<i class="fas ${icon}"></i><span>${Math.abs(trend)}</span>`;
+        } else {
+            trendEl.className = 'stat-trend neutral';
+            trendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
+        }
     }
 
     updateImprovementStats(entries) {
-        const statsContainer = document.getElementById('improvementStats');
-        if (!statsContainer) return;
+        const numberEl = document.getElementById('improvementNumber');
+        const subtextEl = document.getElementById('improvementSubtext');
+        const trendEl = document.getElementById('improvementTrend');
 
-        if (entries.length < 2) {
-            statsContainer.innerHTML = '<p>Need more data to show improvement</p>';
+        if (!numberEl || !subtextEl || !trendEl) return;
+
+        if (entries.length < 10) {
+            numberEl.textContent = '--';
+            subtextEl.textContent = 'Need more games for improvement tracking';
+            trendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
             return;
         }
 
@@ -330,33 +349,33 @@ class AnalyticsManager {
         const firstEntries = entries.slice(-5); // Oldest 5
         const lastEntries = entries.slice(0, 5); // Newest 5
 
-        const getAvgScore = (entryGroup, player) => {
-            const total = entryGroup.reduce((sum, entry) => sum + entry[player].scores.total, 0);
-            return total / entryGroup.length;
+        const getAvgScore = (entryGroup) => {
+            const total = entryGroup.reduce((sum, entry) =>
+                sum + entry.faidao.scores.total + entry.filip.scores.total, 0);
+            return total / (entryGroup.length * 2);
         };
 
-        const faidaoOld = getAvgScore(firstEntries, 'faidao');
-        const faidaoNew = getAvgScore(lastEntries, 'faidao');
-        const filipOld = getAvgScore(firstEntries, 'filip');
-        const filipNew = getAvgScore(lastEntries, 'filip');
+        const oldAvg = getAvgScore(firstEntries);
+        const newAvg = getAvgScore(lastEntries);
+        const overallImprovement = ((newAvg - oldAvg) / oldAvg) * 100;
+
+        // Individual improvements
+        const faidaoOld = firstEntries.reduce((sum, entry) => sum + entry.faidao.scores.total, 0) / firstEntries.length;
+        const faidaoNew = lastEntries.reduce((sum, entry) => sum + entry.faidao.scores.total, 0) / lastEntries.length;
+        const filipOld = firstEntries.reduce((sum, entry) => sum + entry.filip.scores.total, 0) / firstEntries.length;
+        const filipNew = lastEntries.reduce((sum, entry) => sum + entry.filip.scores.total, 0) / lastEntries.length;
 
         const faidaoImprovement = ((faidaoNew - faidaoOld) / faidaoOld) * 100;
         const filipImprovement = ((filipNew - filipOld) / filipOld) * 100;
 
-        statsContainer.innerHTML = `
-            <div class="improvement-item">
-                <span class="player-name faidao-color">Faidao</span>
-                <span class="improvement ${faidaoImprovement >= 0 ? 'positive' : 'negative'}">
-                    ${faidaoImprovement >= 0 ? '+' : ''}${Math.round(faidaoImprovement)}%
-                </span>
-            </div>
-            <div class="improvement-item">
-                <span class="player-name filip-color">Filip</span>
-                <span class="improvement ${filipImprovement >= 0 ? 'positive' : 'negative'}">
-                    ${filipImprovement >= 0 ? '+' : ''}${Math.round(filipImprovement)}%
-                </span>
-            </div>
-        `;
+        numberEl.textContent = `${overallImprovement >= 0 ? '+' : ''}${Math.round(overallImprovement)}%`;
+        subtextEl.textContent = `Faidao: ${faidaoImprovement >= 0 ? '+' : ''}${Math.round(faidaoImprovement)}% • Filip: ${filipImprovement >= 0 ? '+' : ''}${Math.round(filipImprovement)}%`;
+
+        // Show the better performer's trend
+        const betterImprovement = Math.max(faidaoImprovement, filipImprovement);
+        trendEl.className = `stat-trend ${betterImprovement > 0 ? 'positive' : betterImprovement < 0 ? 'negative' : 'neutral'}`;
+        const icon = betterImprovement > 0 ? 'fa-arrow-up' : betterImprovement < 0 ? 'fa-arrow-down' : 'fa-minus';
+        trendEl.innerHTML = `<i class="fas ${icon}"></i><span>${Math.abs(Math.round(betterImprovement))}%</span>`;
     }
 
     showNoDataMessage() {

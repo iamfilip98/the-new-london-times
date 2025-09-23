@@ -365,16 +365,49 @@
 
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <h4>Win Rate</h4>
-                            <div class="stat-content" id="winRateStats"></div>
+                            <h4 data-icon="trophy">Win Rate</h4>
+                            <div class="stat-content">
+                                <div class="stat-number" id="winRateNumber">--</div>
+                                <div class="stat-label">Overall Success</div>
+                                <div class="stat-sublabel" id="winRateSubtext">Loading statistics...</div>
+                            </div>
+                            <div class="stat-footer">
+                                <span>Last 30 days</span>
+                                <div class="stat-trend" id="winRateTrend">
+                                    <i class="fas fa-minus"></i>
+                                    <span>--</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="stat-card">
-                            <h4>Average Performance</h4>
-                            <div class="stat-content" id="avgPerformanceStats"></div>
+                            <h4 data-icon="chart">Average Performance</h4>
+                            <div class="stat-content">
+                                <div class="stat-number" id="avgPerformanceNumber">--</div>
+                                <div class="stat-label">Score Per Game</div>
+                                <div class="stat-sublabel" id="avgPerformanceSubtext">Loading statistics...</div>
+                            </div>
+                            <div class="stat-footer">
+                                <span>All-time avg</span>
+                                <div class="stat-trend" id="avgPerformanceTrend">
+                                    <i class="fas fa-minus"></i>
+                                    <span>--</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="stat-card">
-                            <h4>Improvement</h4>
-                            <div class="stat-content" id="improvementStats"></div>
+                            <h4 data-icon="trend">Improvement</h4>
+                            <div class="stat-content">
+                                <div class="stat-number" id="improvementNumber">--</div>
+                                <div class="stat-label">Progress Rate</div>
+                                <div class="stat-sublabel" id="improvementSubtext">Loading statistics...</div>
+                            </div>
+                            <div class="stat-footer">
+                                <span>vs last month</span>
+                                <div class="stat-trend" id="improvementTrend">
+                                    <i class="fas fa-minus"></i>
+                                    <span>--</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
