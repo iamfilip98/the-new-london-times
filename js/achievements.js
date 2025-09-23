@@ -1183,7 +1183,7 @@ class AchievementsManager {
 
             // Step 2: Load all game entries and streaks
             console.log('Loading game data...');
-            const allEntries = await sudokuApp.loadEntries() || [];
+            const allEntries = await sudokuApp.loadFromStorage() || [];
             const streaks = await sudokuApp.loadStreaks() || {};
 
             // Step 3: Clear local achievements
