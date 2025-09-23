@@ -1468,14 +1468,17 @@ body {
 }
 
 .record-item .player-name {
+    font-family: 'Orbitron', monospace;
     font-weight: 600;
     text-transform: capitalize;
     justify-self: start;
+    color: var(--text-primary);
 }
 
 .record-item .record-time,
 .record-item .record-score {
     font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--accent-blue);
     justify-self: center;
