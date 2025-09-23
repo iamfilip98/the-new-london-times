@@ -353,9 +353,18 @@ body {
     border-radius: calc(var(--border-radius) - 3px);
 }
 
+.vs-circle-container {
+    position: relative;
+    z-index: 1;
+}
+
 .vs-circle-container span:not(.vs-circle-shine) {
     position: relative;
     z-index: 3;
+}
+
+.vs-circle-container::before {
+    z-index: 1;
 }
 
 @keyframes vsShine {
