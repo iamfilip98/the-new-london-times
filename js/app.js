@@ -1095,7 +1095,7 @@ class SudokuChampionship {
                     <div class="stats">
                         <div class="stat">
                             <span class="stat-value">${playerStats.wins}</span>
-                            <span class="stat-label">Win${playerStats.wins === 1 ? '' : 's'}</span>
+                            <span class="stat-label">Wins</span>
                         </div>
                         <div class="stat">
                             <span class="stat-value">${Math.round(playerStats.avgScore)}</span>
@@ -1117,7 +1117,7 @@ class SudokuChampionship {
                     <span class="record-time">${this.formatSecondsToTime(record.time)}</span>
                     <span class="record-date">${new Date(record.date).toLocaleDateString()}</span>
                 </div>
-            `).join('') || '<div class="record-item">No records yet</div>';
+            `).join('') || '<div class="record-item">No records set yet!</div>';
 
             return `
                 <div class="difficulty-records">
@@ -1130,7 +1130,7 @@ class SudokuChampionship {
 
     generatePerfectGamesHTML(perfectGames) {
         if (perfectGames.length === 0) {
-            return '<div class="record-item">No perfect games yet!</div>';
+            return '<div class="record-item">No perfect games recorded yet!</div>';
         }
 
         return perfectGames.map(entry => {
