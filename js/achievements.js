@@ -1168,6 +1168,64 @@ class AchievementsManager {
         };
     }
 
+    async refreshAllAchievements() {
+        console.log('Starting achievement refresh...');
+
+        try {
+            // Step 1: Clear all existing achievements from database
+            console.log('Clearing existing achievements...');
+            await fetch('/api/achievements', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Step 2: Load all game entries and streaks
+            console.log('Loading game data...');
+            const allEntries = await sudokuApp.loadEntries() || [];
+            const streaks = await sudokuApp.loadStreaks() || {};
+
+            // Step 3: Clear local achievements
+            this.unlockedAchievements = [];
+
+            // Step 4: Process each game entry chronologically
+            console.log(`Processing ${allEntries.length} game entries...`);
+            const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            let processedCount = 0;
+            for (const entry of sortedEntries) {
+                // Get entries up to this point for context
+                const entriesUpToNow = sortedEntries.slice(0, sortedEntries.indexOf(entry) + 1);
+
+                // Check achievements for this entry
+                await this.checkNewAchievements(entry, entriesUpToNow, streaks);
+
+                processedCount++;
+                console.log(`Processed ${processedCount}/${sortedEntries.length} entries`);
+            }
+
+            console.log('Achievement refresh completed!');
+            console.log(`Total achievements awarded: ${this.unlockedAchievements.length}`);
+
+            // Update the UI
+            await this.updateAchievements(allEntries, streaks, {});
+
+            return {
+                success: true,
+                totalAchievements: this.unlockedAchievements.length,
+                processedEntries: sortedEntries.length
+            };
+
+        } catch (error) {
+            console.error('Achievement refresh failed:', error);
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+
     updateAchievementsSummary() {
         this.ensureUnlockedAchievementsArray();
 
@@ -1211,3 +1269,21 @@ class AchievementsManager {
 
 // Initialize achievements manager
 window.achievementsManager = new AchievementsManager();
+
+// Add global refresh function for easy access
+window.refreshAchievements = async function() {
+    console.log('🔄 Starting achievement refresh...');
+    const result = await window.achievementsManager.refreshAllAchievements();
+
+    if (result.success) {
+        console.log('✅ Achievement refresh completed!');
+        console.log(`📊 Processed ${result.processedEntries} game entries`);
+        console.log(`🏆 Awarded ${result.totalAchievements} total achievements`);
+        alert(`Achievement refresh completed!\n\nProcessed: ${result.processedEntries} game entries\nTotal achievements: ${result.totalAchievements}`);
+    } else {
+        console.error('❌ Achievement refresh failed:', result.error);
+        alert(`Achievement refresh failed: ${result.error}`);
+    }
+
+    return result;
+};
