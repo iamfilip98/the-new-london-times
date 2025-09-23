@@ -1112,7 +1112,7 @@ class SudokuChampionship {
         return difficulties.map(difficulty => {
             const records = fastestTimes[difficulty] || [];
             const recordsHTML = records.map(record => `
-                <div class="record-item">
+                <div class="record-item ${difficulty}">
                     <span class="player-name ${record.player}-color">${record.player}</span>
                     <span class="record-time">${this.formatSecondsToTime(record.time)}</span>
                     <span class="record-date">${new Date(record.date).toLocaleDateString()}</span>
