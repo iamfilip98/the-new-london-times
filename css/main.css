@@ -1407,6 +1407,8 @@ body {
     align-items: center;
     gap: 1rem;
     transition: var(--transition);
+    min-width: 0; /* Allow flex items to shrink */
+    overflow-x: auto; /* Handle overflow on mobile */
 }
 
 .leaderboard-card.winner {
@@ -2268,6 +2270,23 @@ body {
         flex-direction: column;
     }
 
+    .leaderboard-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .leaderboard-card .player-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .leaderboard-card .stats {
+        justify-content: center;
+        gap: 2rem;
+    }
+
     .achievement-notification {
         width: 300px;
         right: -320px;
@@ -2300,13 +2319,31 @@ body {
     .history-card {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 0.5rem;
+        gap: 1rem;
+        padding: 1rem;
     }
 
-    .history-scores {
+    .history-card .history-scores {
+        order: 2;
+        justify-content: center;
+        flex-wrap: nowrap;
         gap: 1rem;
+    }
+
+    .history-card .history-date {
+        order: 1;
+    }
+
+    .history-card .history-winner {
+        order: 3;
+        margin: 0 auto;
+    }
+
+    .history-card .history-actions {
+        order: 4;
         justify-content: center;
     }
+
 
     .history-winner {
         min-width: auto;
