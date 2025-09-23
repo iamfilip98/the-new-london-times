@@ -1458,7 +1458,8 @@ body {
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
     padding: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--accent-orange);
+    box-shadow: 0 0 20px rgba(254, 225, 64, 0.3);
     display: grid;
     grid-template-columns: 1fr auto auto;
     gap: 1rem;
