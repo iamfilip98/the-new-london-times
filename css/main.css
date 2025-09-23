@@ -2208,8 +2208,16 @@ body {
         gap: 1rem;
     }
 
+    .streak-card.faidao {
+        order: 1;
+    }
+
     .vs-divider {
         order: 2;
+    }
+
+    .streak-card.filip {
+        order: 3;
     }
 
     .players-container {
