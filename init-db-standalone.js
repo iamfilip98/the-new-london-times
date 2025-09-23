@@ -1,4 +1,5 @@
 require('dotenv').config({ path: '.env.local' });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
 
 async function initializeDatabase() {
@@ -6,9 +7,10 @@ async function initializeDatabase() {
     console.log('Using POSTGRES_URL:', process.env.POSTGRES_URL ? 'Set' : 'Not set');
 
     const pool = new Pool({
-        connectionString: process.env.POSTGRES_URL,
+        connectionString: process.env.POSTGRES_PRISMA_URL,
         ssl: {
-            rejectUnauthorized: false
+            rejectUnauthorized: false,
+            checkServerIdentity: () => undefined
         },
         max: 5,
         idleTimeoutMillis: 30000,
@@ -62,6 +64,19 @@ async function initializeDatabase() {
         `);
         console.log('✅ Streaks table created/verified');
 
+        // Create challenges table
+        console.log('Creating challenges table...');
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS challenges (
+                id SERIAL PRIMARY KEY,
+                challenge_id VARCHAR(255) UNIQUE NOT NULL,
+                data JSONB NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW(),
+                updated_at TIMESTAMP DEFAULT NOW()
+            )
+        `);
+        console.log('✅ Challenges table created/verified');
+
         // Initialize default streak records
         console.log('Initializing default streak records...');
         await pool.query(`
@@ -77,7 +92,7 @@ async function initializeDatabase() {
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'
-            AND table_name IN ('entries', 'achievements', 'streaks')
+            AND table_name IN ('entries', 'achievements', 'streaks', 'challenges')
             ORDER BY table_name
         `);
         console.log('✅ Tables verified:', tableCheck.rows.map(row => row.table_name));
