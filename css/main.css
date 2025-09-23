@@ -2245,6 +2245,18 @@ body {
         padding: 1.5rem;
     }
 
+    .player-summary.faidao-themed {
+        order: 1;
+    }
+
+    .summary-card .vs-divider {
+        order: 2;
+    }
+
+    .player-summary.filip-themed {
+        order: 3;
+    }
+
     .player-summary {
         min-width: auto;
         width: 100%;
