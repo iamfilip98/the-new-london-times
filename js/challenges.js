@@ -135,15 +135,37 @@ class ChallengesManager {
         return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
     }
 
+    selectAppropriateChallenge(weekNumber) {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0=Sunday, 6=Saturday
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+        // Filter out weekend-specific challenges if it's not a weekend
+        let availableChallenges = this.challengeTypes.filter(challenge => {
+            if (challenge.id === 'speed_demon_weekend' && !isWeekend) {
+                return false; // Skip weekend challenges on weekdays
+            }
+            return true;
+        });
+
+        // If no challenges available (shouldn't happen), fall back to all challenges
+        if (availableChallenges.length === 0) {
+            availableChallenges = this.challengeTypes;
+        }
+
+        // Select based on week rotation from available challenges
+        const challengeIndex = weekNumber % availableChallenges.length;
+        return availableChallenges[challengeIndex];
+    }
+
     startNewChallenge(weekNumber) {
         // End any active challenges
         this.activeChallenges.forEach(challenge => {
             challenge.active = false;
         });
 
-        // Select challenge based on week rotation
-        const challengeIndex = weekNumber % this.challengeTypes.length;
-        const challengeType = this.challengeTypes[challengeIndex];
+        // Select challenge based on week rotation with smart filtering
+        let challengeType = this.selectAppropriateChallenge(weekNumber);
 
         const newChallenge = {
             id: `${challengeType.id}_${Date.now()}`,
