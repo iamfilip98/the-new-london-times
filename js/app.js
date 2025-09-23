@@ -37,7 +37,6 @@ class SudokuChampionship {
         this.setupLeaderboardTabs();
         this.setCurrentDate();
         this.initializeScoreDisplay();
-        this.updateScores(); // Initialize scores immediately
 
         // Load data from database or migrate from localStorage
         await this.loadData();
@@ -47,102 +46,21 @@ class SudokuChampionship {
     }
 
     initializeScoreDisplay() {
-        // Set all scores to 0 initially
-        const players = ['faidao', 'filip'];
-        const difficulties = ['easy', 'medium', 'hard'];
-
-        players.forEach(player => {
-            difficulties.forEach(difficulty => {
-                const scoreElement = document.getElementById(`${player}-${difficulty}-score`);
-                if (scoreElement) scoreElement.textContent = '0';
-            });
-            const totalElement = document.getElementById(`${player}-total`);
-            if (totalElement) totalElement.textContent = '0';
-        });
-
         // Initialize battle results
         const winnerElement = document.getElementById('winnerAnnouncement');
         if (winnerElement) {
-            winnerElement.querySelector('.winner-text').textContent = 'Enter scores to see winner!';
+            winnerElement.querySelector('.winner-text').textContent = 'Play Sudoku to compete!';
         }
     }
 
     setupEventListeners() {
-        // Date input
-        document.getElementById('entryDate').addEventListener('change', () => {
-            this.checkExistingEntry();
-        });
-
-        // Time and error inputs
-        const timeInputs = document.querySelectorAll('.time-input');
-        const errorInputs = document.querySelectorAll('.error-input');
-        const dnfCheckboxes = document.querySelectorAll('.dnf-checkbox');
-
-        timeInputs.forEach(input => {
-            input.addEventListener('input', (e) => {
-                this.handleTimeInput(e.target);
-                this.updateScores();
-            });
-
-            // Clear selection when focused for easy retyping
-            input.addEventListener('focus', (e) => {
-                // Select all text for easy replacement
-                setTimeout(() => {
-                    e.target.select();
-                }, 0);
-            });
-
-            // Also format on blur to catch any missed formatting and apply overflow logic
-            input.addEventListener('blur', (e) => {
-                this.formatTimeInputWithOverflow(e.target);
-                this.updateScores();
-            });
-
-            // Handle key events for better UX
-            input.addEventListener('keydown', (e) => {
-                // Allow easy clearing with Delete/Backspace when all text is selected
-                if ((e.key === 'Delete' || e.key === 'Backspace') &&
-                    e.target.selectionStart === 0 &&
-                    e.target.selectionEnd === e.target.value.length) {
-                    e.target.value = '';
-                    e.target.dataset.rawValue = '';
-                    this.updateScores();
-                    e.preventDefault();
-                }
-            });
-        });
-
-        errorInputs.forEach(input => {
-            input.addEventListener('input', () => {
-                this.updateScores();
-            });
-
-            // Also update on blur
-            input.addEventListener('blur', () => {
-                this.updateScores();
-            });
-        });
-
-        dnfCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                this.toggleInputs(checkbox);
-                this.updateScores();
-            });
-        });
-
-        // Action buttons
-        document.getElementById('saveEntry').addEventListener('click', () => {
-            this.saveEntry();
-        });
-
-        document.getElementById('clearEntry').addEventListener('click', () => {
-            this.clearEntry();
-        });
-
         // Achievement notification close
-        document.querySelector('.achievement-close').addEventListener('click', () => {
-            this.hideAchievementNotification();
-        });
+        const achievementClose = document.querySelector('.achievement-close');
+        if (achievementClose) {
+            achievementClose.addEventListener('click', () => {
+                this.hideAchievementNotification();
+            });
+        }
     }
 
     setupNavigation() {
@@ -198,8 +116,6 @@ class SudokuChampionship {
     }
 
     setCurrentDate() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('entryDate').value = today;
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
@@ -208,132 +124,6 @@ class SudokuChampionship {
         });
     }
 
-    handleTimeInput(input) {
-        let value = input.value;
-
-        // Strip everything except numbers to get raw input
-        const rawNumbers = value.replace(/[^0-9]/g, '');
-
-        // Store raw numbers for calculation purposes - ensure we don't process already formatted values
-        input.dataset.rawValue = rawNumbers;
-
-        // Format and display only if raw value actually changed
-        this.formatTimeInput(input);
-    }
-
-    formatTimeInput(input) {
-        // Use stored raw value if available, otherwise extract from current value
-        let value = input.dataset.rawValue || input.value.replace(/[^0-9]/g, '');
-
-        if (value.length === 0) {
-            input.value = '';
-            input.dataset.rawValue = '';
-            return;
-        }
-
-        // Convert raw numbers to MM:SS format and set cursor position
-        let newCursorPos = input.value.length;
-
-        if (value.length === 1) {
-            // Single digit: 5 → 0:05
-            input.value = `0:0${value}`;
-            newCursorPos = 4;
-        } else if (value.length === 2) {
-            // Two digits: 45 → 0:45, 61 → 0:61 (no overflow conversion during typing)
-            input.value = `0:${value}`;
-            newCursorPos = 4;
-        } else if (value.length === 3) {
-            // Three digits: 611 → 6:11, 345 → 3:45 (no overflow during typing)
-            const minutes = parseInt(value[0]);
-            const seconds = value.substring(1);
-            input.value = `${minutes}:${seconds}`;
-            newCursorPos = input.value.length;
-        } else if (value.length >= 4) {
-            // Four or more digits: 1234 → 12:34 (no overflow during typing)
-            const minutes = parseInt(value.substring(0, value.length - 2));
-            const seconds = value.substring(value.length - 2);
-            input.value = `${minutes}:${seconds.padStart(2, '0')}`;
-            newCursorPos = input.value.length;
-        }
-
-        // Set cursor to end to prevent insertion at beginning
-        setTimeout(() => {
-            input.setSelectionRange(newCursorPos, newCursorPos);
-        }, 0);
-    }
-
-    formatTimeInputWithOverflow(input) {
-        // This version applies overflow logic - used on blur when user is done typing
-        let value = input.dataset.rawValue || input.value.replace(/[^0-9]/g, '');
-
-        if (value.length === 0) {
-            input.value = '';
-            input.dataset.rawValue = '';
-            return;
-        }
-
-        if (value.length === 1) {
-            input.value = `0:0${value}`;
-        } else if (value.length === 2) {
-            // Two digits with overflow: 61 → 1:01
-            const sec = parseInt(value);
-            if (sec >= 60) {
-                const minutes = Math.floor(sec / 60);
-                const seconds = sec % 60;
-                input.value = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            } else {
-                input.value = `0:${value}`;
-            }
-        } else if (value.length === 3) {
-            // Three digits: 611 → 6:11
-            const minutes = parseInt(value[0]);
-            const seconds = value.substring(1);
-            const sec = parseInt(seconds);
-
-            if (sec >= 60) {
-                const totalSeconds = minutes * 60 + sec;
-                const finalMinutes = Math.floor(totalSeconds / 60);
-                const finalSecs = totalSeconds % 60;
-                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
-            } else {
-                input.value = `${minutes}:${seconds}`;
-            }
-        } else if (value.length >= 4) {
-            // Four or more digits: 1234 → 12:34
-            const minutes = parseInt(value.substring(0, value.length - 2));
-            const seconds = value.substring(value.length - 2);
-            const sec = parseInt(seconds);
-
-            if (sec >= 60) {
-                const totalSeconds = minutes * 60 + sec;
-                const finalMinutes = Math.floor(totalSeconds / 60);
-                const finalSecs = totalSeconds % 60;
-                input.value = `${finalMinutes}:${finalSecs.toString().padStart(2, '0')}`;
-            } else {
-                input.value = `${minutes}:${seconds.padStart(2, '0')}`;
-            }
-        }
-    }
-
-    toggleInputs(checkbox) {
-        const card = checkbox.closest('.difficulty-card');
-        const timeInput = card.querySelector('.time-input');
-        const errorInput = card.querySelector('.error-input');
-
-        if (checkbox.checked) {
-            timeInput.disabled = true;
-            timeInput.value = '';
-            timeInput.style.opacity = '0.5';
-            errorInput.disabled = true;
-            errorInput.value = '';
-            errorInput.style.opacity = '0.5';
-        } else {
-            timeInput.disabled = false;
-            timeInput.style.opacity = '1';
-            errorInput.disabled = false;
-            errorInput.style.opacity = '1';
-        }
-    }
 
     parseTimeToSeconds(timeString) {
         if (!timeString || timeString.trim() === '' || timeString === '0:00') return null;
@@ -372,69 +162,6 @@ class SudokuChampionship {
         );
     }
 
-    calculateScores() {
-        const players = ['faidao', 'filip'];
-        const difficulties = ['easy', 'medium', 'hard'];
-        const multipliers = { easy: 1, medium: 1.5, hard: 2 };
-        const scores = { faidao: {}, filip: {} };
-        const playerData = {};
-
-        // Get input data
-        players.forEach(player => {
-            playerData[player] = {};
-            let totalScore = 0;
-
-            difficulties.forEach(difficulty => {
-                const timeInput = document.getElementById(`${player}-${difficulty}-time`);
-                const errorInput = document.getElementById(`${player}-${difficulty}-errors`);
-                const dnfCheckbox = document.getElementById(`${player}-${difficulty}-dnf`);
-
-                const time = this.parseTimeToSeconds(timeInput.value);
-                const errors = parseInt(errorInput.value) || 0;
-                const dnf = dnfCheckbox.checked;
-
-                let score = 0;
-
-                if (!dnf && time !== null) {
-                    // Add error penalty (30 seconds per error)
-                    const adjustedTime = time + (errors * 30);
-                    const adjustedMinutes = adjustedTime / 60;
-
-                    // Calculate score: (1000 ÷ minutes) × multiplier
-                    score = (1000 / adjustedMinutes) * multipliers[difficulty];
-                    score = Math.round(score * 100) / 100;
-                }
-
-                playerData[player][difficulty] = { time, errors, dnf, score };
-                scores[player][difficulty] = score;
-                totalScore += score;
-
-                // Update difficulty score display
-                document.getElementById(`${player}-${difficulty}-score`).textContent = score.toFixed(0);
-            });
-
-            scores[player].total = Math.round(totalScore * 100) / 100;
-
-            // Update total score display
-            document.getElementById(`${player}-total`).textContent = scores[player].total.toFixed(0);
-        });
-
-        // Update battle results
-        this.updateBattleResults(scores);
-
-        return { scores, playerData };
-    }
-
-    updateScores() {
-        const { scores } = this.calculateScores();
-
-        // Trigger score update animation
-        document.querySelectorAll('.difficulty-score, .total-value').forEach(el => {
-            el.style.animation = 'none';
-            el.offsetHeight; // Trigger reflow
-            el.style.animation = 'scoreUpdate 0.5s ease-in-out';
-        });
-    }
 
     updateBattleResults(scores) {
         const faidaoTotal = scores.faidao.total;
@@ -569,130 +296,10 @@ class SudokuChampionship {
     }
 
     async saveEntry() {
-        const date = document.getElementById('entryDate').value;
-        if (!date) {
-            alert('Please select a date');
-            return;
-        }
-
-        const { scores, playerData } = this.calculateScores();
-
-        // Check if any data was entered
-        const hasData = Object.values(playerData).some(player =>
-            Object.values(player).some(difficulty =>
-                difficulty.dnf || difficulty.time !== null
-            )
-        );
-
-        if (!hasData) {
-            alert('Please enter at least one time or mark as DNF');
-            return;
-        }
-
-        // Check if all 6 times are submitted (3 per player)
-        const allTimesSubmitted = ['faidao', 'filip'].every(player =>
-            ['easy', 'medium', 'hard'].every(difficulty =>
-                playerData[player][difficulty].dnf || playerData[player][difficulty].time !== null
-            )
-        );
-
-        // Create entry
-        const entry = {
-            date,
-            faidao: {
-                times: {
-                    easy: playerData.faidao.easy.time,
-                    medium: playerData.faidao.medium.time,
-                    hard: playerData.faidao.hard.time
-                },
-                errors: {
-                    easy: playerData.faidao.easy.errors,
-                    medium: playerData.faidao.medium.errors,
-                    hard: playerData.faidao.hard.errors
-                },
-                dnf: {
-                    easy: playerData.faidao.easy.dnf,
-                    medium: playerData.faidao.medium.dnf,
-                    hard: playerData.faidao.hard.dnf
-                },
-                scores: {
-                    easy: scores.faidao.easy,
-                    medium: scores.faidao.medium,
-                    hard: scores.faidao.hard,
-                    total: scores.faidao.total
-                }
-            },
-            filip: {
-                times: {
-                    easy: playerData.filip.easy.time,
-                    medium: playerData.filip.medium.time,
-                    hard: playerData.filip.hard.time
-                },
-                errors: {
-                    easy: playerData.filip.easy.errors,
-                    medium: playerData.filip.medium.errors,
-                    hard: playerData.filip.hard.errors
-                },
-                dnf: {
-                    easy: playerData.filip.easy.dnf,
-                    medium: playerData.filip.medium.dnf,
-                    hard: playerData.filip.hard.dnf
-                },
-                scores: {
-                    easy: scores.filip.easy,
-                    medium: scores.filip.medium,
-                    hard: scores.filip.hard,
-                    total: scores.filip.total
-                }
-            }
-        };
-
-        try {
-            // Save to database
-            const response = await fetch('/api/entries', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    date,
-                    faidao: entry.faidao,
-                    filip: entry.filip
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to save entry');
-            }
-
-            // Update local data
-            this.entries = this.entries.filter(e => e.date !== date);
-            this.entries.push(entry);
-            this.entries.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            // Only calculate head-to-head scores and achievements when all 6 times are submitted
-            if (allTimesSubmitted) {
-                // Update streaks
-                await this.updateStreaks();
-
-                // Check for achievements
-                await this.checkAchievements(entry);
-            }
-
-            // Always update records regardless of completion status
-            this.records = this.calculateRecords();
-
-            // Update all displays
-            this.updateDashboard();
-
-            const message = allTimesSubmitted
-                ? 'Battle results saved successfully! Head-to-head scores and achievements updated.'
-                : 'Partial results saved successfully. Complete all 6 times to calculate head-to-head scores and achievements.';
-            alert(message);
-        } catch (error) {
-            console.error('Failed to save entry:', error);
-            alert('Failed to save entry. Please try again.');
-        }
+        // This method is no longer used since manual input is disabled
+        // Sudoku games now automatically save through the Sudoku engine
+        console.log('Manual entry saving is disabled - games are saved automatically through Sudoku play');
+        return;
     }
 
     async updateStreaks() {
@@ -783,65 +390,21 @@ class SudokuChampionship {
     }
 
     clearEntry() {
-        if (confirm('Are you sure you want to clear all current entries?')) {
-            document.querySelectorAll('.time-input, .error-input').forEach(input => {
-                input.value = '';
-                input.disabled = false;
-                input.style.opacity = '1';
-            });
-
-            document.querySelectorAll('.dnf-checkbox').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-
-            this.setCurrentDate();
-            this.updateScores();
-        }
+        // This method is no longer used since manual input is disabled
+        console.log('Manual entry clearing is disabled - use Sudoku game controls instead');
+        return;
     }
 
     checkExistingEntry() {
-        const selectedDate = document.getElementById('entryDate').value;
-        const existingEntry = this.entries.find(entry => entry.date === selectedDate);
-
-        if (existingEntry) {
-            if (confirm('An entry exists for this date. Do you want to load it for editing?')) {
-                this.loadEntry(existingEntry);
-            }
-        }
+        // This method is no longer used since manual input is disabled
+        console.log('Manual entry loading is disabled - entries are managed through Sudoku play');
+        return;
     }
 
     loadEntry(entry) {
-        ['faidao', 'filip'].forEach(player => {
-            ['easy', 'medium', 'hard'].forEach(difficulty => {
-                const timeInput = document.getElementById(`${player}-${difficulty}-time`);
-                const errorInput = document.getElementById(`${player}-${difficulty}-errors`);
-                const dnfCheckbox = document.getElementById(`${player}-${difficulty}-dnf`);
-
-                if (entry[player].dnf[difficulty]) {
-                    dnfCheckbox.checked = true;
-                    timeInput.disabled = true;
-                    timeInput.value = '';
-                    timeInput.style.opacity = '0.5';
-                    errorInput.disabled = true;
-                    errorInput.value = '';
-                    errorInput.style.opacity = '0.5';
-                } else {
-                    dnfCheckbox.checked = false;
-                    timeInput.disabled = false;
-                    timeInput.style.opacity = '1';
-                    errorInput.disabled = false;
-                    errorInput.style.opacity = '1';
-
-                    if (entry[player].times[difficulty] !== null) {
-                        timeInput.value = this.formatSecondsToTime(entry[player].times[difficulty]);
-                    }
-
-                    errorInput.value = entry[player].errors[difficulty] || 0;
-                }
-            });
-        });
-
-        this.updateScores();
+        // This method is no longer used since manual input is disabled
+        console.log('Manual entry loading is disabled - entries are managed through Sudoku play');
+        return;
     }
 
     updateDashboard() {
@@ -924,8 +487,9 @@ class SudokuChampionship {
     }
 
     editEntry(date) {
-        document.getElementById('entryDate').value = date;
-        this.checkExistingEntry();
+        // Entry editing is disabled since manual input is removed
+        console.log('Entry editing is disabled - use Sudoku game to create new entries');
+        return;
     }
 
     async deleteEntry(date) {

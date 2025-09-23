@@ -125,187 +125,63 @@
                     </div>
                 </section>
 
-                <!-- Date Selection -->
-                <section class="date-section">
-                    <label for="entryDate" class="date-label">
-                        <i class="fas fa-calendar-alt"></i>
-                        Competition Date:
-                    </label>
-                    <input type="date" id="entryDate" class="date-input">
+                <!-- Sudoku Game Selection -->
+                <section class="sudoku-game-selection">
+                    <div class="game-selection-header">
+                        <h2><i class="fas fa-puzzle-piece"></i> Choose Your Challenge</h2>
+                        <p>Select a difficulty level to start playing today's Sudoku puzzle</p>
+                    </div>
+
+                    <div class="difficulty-selection-grid">
+                        <div class="difficulty-option easy" data-difficulty="easy">
+                            <div class="difficulty-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <h3>EASY</h3>
+                            <p>Perfect for beginners</p>
+                            <div class="difficulty-stats">
+                                <span class="avg-time">~5-8 minutes</span>
+                                <span class="given-numbers">36+ clues</span>
+                            </div>
+                            <button class="play-button" onclick="startSudokuGame('easy')">
+                                <i class="fas fa-play"></i>
+                                Play Easy
+                            </button>
+                        </div>
+
+                        <div class="difficulty-option medium" data-difficulty="medium">
+                            <div class="difficulty-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3>MEDIUM</h3>
+                            <p>For intermediate players</p>
+                            <div class="difficulty-stats">
+                                <span class="avg-time">~8-15 minutes</span>
+                                <span class="given-numbers">26-35 clues</span>
+                            </div>
+                            <button class="play-button" onclick="startSudokuGame('medium')">
+                                <i class="fas fa-play"></i>
+                                Play Medium
+                            </button>
+                        </div>
+
+                        <div class="difficulty-option hard" data-difficulty="hard">
+                            <div class="difficulty-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <h3>HARD</h3>
+                            <p>For experts only</p>
+                            <div class="difficulty-stats">
+                                <span class="avg-time">~15-30 minutes</span>
+                                <span class="given-numbers">17-25 clues</span>
+                            </div>
+                            <button class="play-button" onclick="startSudokuGame('hard')">
+                                <i class="fas fa-play"></i>
+                                Play Hard
+                            </button>
+                        </div>
+                    </div>
                 </section>
-
-                <!-- Player Input Sections -->
-                <div class="players-container">
-                    <!-- Faidao Section -->
-                    <section class="player-section faidao-section" data-player="faidao">
-                        <div class="player-header">
-                            <div class="player-avatar large faidao-avatar">F</div>
-                            <div class="player-info">
-                                <h2 class="player-name">FAIDAO</h2>
-                                <div class="player-subtitle">The Challenger</div>
-                                <div class="player-level">Level 1</div>
-                            </div>
-                        </div>
-
-                        <div class="difficulties-grid">
-                            <div class="difficulty-card easy">
-                                <h3 class="difficulty-title">
-                                    <i class="fas fa-seedling"></i>
-                                    EASY
-                                </h3>
-                                <div class="input-row">
-                                    <div class="input-group time-group">
-                                        <label for="faidao-easy-time">Time:</label>
-                                        <input type="text" id="faidao-easy-time" class="time-input" placeholder="330 → 3:30">
-                                    </div>
-                                    <div class="input-group error-group">
-                                        <label for="faidao-easy-errors">Errors:</label>
-                                        <input type="number" id="faidao-easy-errors" class="error-input" placeholder="0" min="0" max="20">
-                                    </div>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="faidao-easy-dnf" class="dnf-checkbox">
-                                    <label for="faidao-easy-dnf">Did Not Finish</label>
-                                </div>
-                                <div class="difficulty-score" id="faidao-easy-score">0</div>
-                            </div>
-
-                            <div class="difficulty-card medium">
-                                <h3 class="difficulty-title">
-                                    <i class="fas fa-bolt"></i>
-                                    MEDIUM
-                                </h3>
-                                <div class="input-row">
-                                    <div class="input-group time-group">
-                                        <label for="faidao-medium-time">Time:</label>
-                                        <input type="text" id="faidao-medium-time" class="time-input" placeholder="845 → 8:45">
-                                    </div>
-                                    <div class="input-group error-group">
-                                        <label for="faidao-medium-errors">Errors:</label>
-                                        <input type="number" id="faidao-medium-errors" class="error-input" placeholder="0" min="0" max="20">
-                                    </div>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="faidao-medium-dnf" class="dnf-checkbox">
-                                    <label for="faidao-medium-dnf">Did Not Finish</label>
-                                </div>
-                                <div class="difficulty-score" id="faidao-medium-score">0</div>
-                            </div>
-
-                            <div class="difficulty-card hard">
-                                <h3 class="difficulty-title">
-                                    <i class="fas fa-fire"></i>
-                                    HARD
-                                </h3>
-                                <div class="input-row">
-                                    <div class="input-group time-group">
-                                        <label for="faidao-hard-time">Time:</label>
-                                        <input type="text" id="faidao-hard-time" class="time-input" placeholder="1520 → 15:20">
-                                    </div>
-                                    <div class="input-group error-group">
-                                        <label for="faidao-hard-errors">Errors:</label>
-                                        <input type="number" id="faidao-hard-errors" class="error-input" placeholder="0" min="0" max="20">
-                                    </div>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="faidao-hard-dnf" class="dnf-checkbox">
-                                    <label for="faidao-hard-dnf">Did Not Finish</label>
-                                </div>
-                                <div class="difficulty-score" id="faidao-hard-score">0</div>
-                            </div>
-                        </div>
-
-                        <div class="player-total-score">
-                            <span class="total-label">Total Score</span>
-                            <span class="total-value" id="faidao-total">0</span>
-                        </div>
-                    </section>
-
-                    <!-- Filip Section -->
-                    <section class="player-section filip-section" data-player="filip">
-                        <div class="player-header">
-                            <div class="player-avatar large filip-avatar">F</div>
-                            <div class="player-info">
-                                <h2 class="player-name">FILIP</h2>
-                                <div class="player-subtitle">The Champion</div>
-                                <div class="player-level">Level 1</div>
-                            </div>
-                        </div>
-
-                        <div class="difficulties-grid">
-                            <div class="difficulty-card easy">
-                                <h3 class="difficulty-title">
-                                    <i class="fas fa-seedling"></i>
-                                    EASY
-                                </h3>
-                                <div class="input-row">
-                                    <div class="input-group time-group">
-                                        <label for="filip-easy-time">Time:</label>
-                                        <input type="text" id="filip-easy-time" class="time-input" placeholder="330 → 3:30">
-                                    </div>
-                                    <div class="input-group error-group">
-                                        <label for="filip-easy-errors">Errors:</label>
-                                        <input type="number" id="filip-easy-errors" class="error-input" placeholder="0" min="0" max="20">
-                                    </div>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="filip-easy-dnf" class="dnf-checkbox">
-                                    <label for="filip-easy-dnf">Did Not Finish</label>
-                                </div>
-                                <div class="difficulty-score" id="filip-easy-score">0</div>
-                            </div>
-
-                            <div class="difficulty-card medium">
-                                <h3 class="difficulty-title">
-                                    <i class="fas fa-bolt"></i>
-                                    MEDIUM
-                                </h3>
-                                <div class="input-row">
-                                    <div class="input-group time-group">
-                                        <label for="filip-medium-time">Time:</label>
-                                        <input type="text" id="filip-medium-time" class="time-input" placeholder="845 → 8:45">
-                                    </div>
-                                    <div class="input-group error-group">
-                                        <label for="filip-medium-errors">Errors:</label>
-                                        <input type="number" id="filip-medium-errors" class="error-input" placeholder="0" min="0" max="20">
-                                    </div>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="filip-medium-dnf" class="dnf-checkbox">
-                                    <label for="filip-medium-dnf">Did Not Finish</label>
-                                </div>
-                                <div class="difficulty-score" id="filip-medium-score">0</div>
-                            </div>
-
-                            <div class="difficulty-card hard">
-                                <h3 class="difficulty-title">
-                                    <i class="fas fa-fire"></i>
-                                    HARD
-                                </h3>
-                                <div class="input-row">
-                                    <div class="input-group time-group">
-                                        <label for="filip-hard-time">Time:</label>
-                                        <input type="text" id="filip-hard-time" class="time-input" placeholder="1520 → 15:20">
-                                    </div>
-                                    <div class="input-group error-group">
-                                        <label for="filip-hard-errors">Errors:</label>
-                                        <input type="number" id="filip-hard-errors" class="error-input" placeholder="0" min="0" max="20">
-                                    </div>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="filip-hard-dnf" class="dnf-checkbox">
-                                    <label for="filip-hard-dnf">Did Not Finish</label>
-                                </div>
-                                <div class="difficulty-score" id="filip-hard-score">0</div>
-                            </div>
-                        </div>
-
-                        <div class="player-total-score">
-                            <span class="total-label">Total Score</span>
-                            <span class="total-value" id="filip-total">0</span>
-                        </div>
-                    </section>
-                </div>
 
                 <!-- Battle Results -->
                 <section class="battle-results">
@@ -378,17 +254,6 @@
                     </div>
                 </section>
 
-                <!-- Action Buttons -->
-                <section class="actions-section">
-                    <button class="action-btn primary" id="saveEntry">
-                        <i class="fas fa-save"></i>
-                        Save Battle Results
-                    </button>
-                    <button class="action-btn secondary" id="clearEntry">
-                        <i class="fas fa-trash"></i>
-                        Clear All
-                    </button>
-                </section>
 
                 <!-- Recent History -->
                 <section class="recent-history">
@@ -673,6 +538,28 @@
 
         // Initialize player session when DOM is ready
         document.addEventListener('DOMContentLoaded', initializePlayerSession);
+
+        // Function to start Sudoku game with selected difficulty
+        function startSudokuGame(difficulty) {
+            // Switch to sudoku page
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+
+            // Update active nav link
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-page="sudoku"]').classList.add('active');
+
+            // Update active page
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById('sudoku').classList.add('active');
+
+            // Start the sudoku game with the selected difficulty
+            setTimeout(() => {
+                if (window.sudokuEngine) {
+                    window.sudokuEngine.changeDifficulty(difficulty);
+                }
+            }, 100);
+        }
     </script>
 
     <script src="js/app.js"></script>

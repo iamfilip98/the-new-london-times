@@ -3879,3 +3879,214 @@ select:focus-visible,
         font-size: 1.2rem;
     }
 }
+
+/* Sudoku Game Selection Styles */
+.sudoku-game-selection {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--box-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.game-selection-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.game-selection-header h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-orange);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.game-selection-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.difficulty-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.difficulty-option {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.difficulty-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 1;
+}
+
+.difficulty-option:hover::before {
+    opacity: 1;
+}
+
+.difficulty-option:hover {
+    transform: translateY(-5px);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.2),
+        0 5px 20px rgba(255, 255, 255, 0.1);
+}
+
+.difficulty-option.easy {
+    border-color: rgba(52, 211, 153, 0.3);
+}
+
+.difficulty-option.easy:hover {
+    border-color: rgba(52, 211, 153, 0.6);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(52, 211, 153, 0.3);
+}
+
+.difficulty-option.medium {
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.difficulty-option.medium:hover {
+    border-color: rgba(251, 191, 36, 0.6);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(251, 191, 36, 0.3);
+}
+
+.difficulty-option.hard {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.difficulty-option.hard:hover {
+    border-color: rgba(239, 68, 68, 0.6);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(239, 68, 68, 0.3);
+}
+
+.difficulty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.difficulty-option.easy .difficulty-icon {
+    color: #34d399;
+}
+
+.difficulty-option.medium .difficulty-icon {
+    color: #fbbf24;
+}
+
+.difficulty-option.hard .difficulty-icon {
+    color: #ef4444;
+}
+
+.difficulty-option h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.difficulty-option p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.difficulty-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.difficulty-stats span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.play-button {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.play-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.play-button:active {
+    transform: translateY(0);
+}
+
+/* Mobile responsiveness for Sudoku selection */
+@media (max-width: 768px) {
+    .difficulty-selection-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .difficulty-option {
+        padding: 1.5rem 1rem;
+    }
+
+    .game-selection-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .difficulty-icon {
+        font-size: 2.5rem;
+    }
+
+    .difficulty-option h3 {
+        font-size: 1.3rem;
+    }
+}
