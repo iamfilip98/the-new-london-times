@@ -101,7 +101,8 @@ class AchievementsManager {
                 icon: 'fas fa-walking',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'easy', value: 180 },
-                rarity: 'common'
+                rarity: 'common',
+                oneTime: true
             },
             {
                 id: 'speed_demon_easy',
@@ -110,7 +111,8 @@ class AchievementsManager {
                 icon: 'fas fa-bolt',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'easy', value: 120 },
-                rarity: 'rare'
+                rarity: 'rare',
+                oneTime: true
             },
             {
                 id: 'speed_racer_easy',
@@ -119,7 +121,8 @@ class AchievementsManager {
                 icon: 'fas fa-rocket',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'easy', value: 60 },
-                rarity: 'epic'
+                rarity: 'epic',
+                oneTime: true
             },
             {
                 id: 'teleporter_easy',
@@ -128,7 +131,8 @@ class AchievementsManager {
                 icon: 'fas fa-magic',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'easy', value: 30 },
-                rarity: 'legendary'
+                rarity: 'legendary',
+                oneTime: true
             },
             {
                 id: 'speed_demon_medium',
@@ -137,7 +141,8 @@ class AchievementsManager {
                 icon: 'fas fa-bolt',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'medium', value: 300 },
-                rarity: 'rare'
+                rarity: 'rare',
+                oneTime: true
             },
             {
                 id: 'speed_racer_medium',
@@ -146,7 +151,8 @@ class AchievementsManager {
                 icon: 'fas fa-rocket',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'medium', value: 180 },
-                rarity: 'epic'
+                rarity: 'epic',
+                oneTime: true
             },
             {
                 id: 'teleporter_medium',
@@ -155,7 +161,8 @@ class AchievementsManager {
                 icon: 'fas fa-magic',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'medium', value: 120 },
-                rarity: 'legendary'
+                rarity: 'legendary',
+                oneTime: true
             },
             {
                 id: 'speed_demon_hard',
@@ -164,7 +171,8 @@ class AchievementsManager {
                 icon: 'fas fa-bolt',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'hard', value: 600 },
-                rarity: 'epic'
+                rarity: 'epic',
+                oneTime: true
             },
             {
                 id: 'speed_racer_hard',
@@ -173,7 +181,8 @@ class AchievementsManager {
                 icon: 'fas fa-rocket',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'hard', value: 300 },
-                rarity: 'legendary'
+                rarity: 'legendary',
+                oneTime: true
             },
             {
                 id: 'time_lord',
@@ -182,7 +191,8 @@ class AchievementsManager {
                 icon: 'fas fa-clock',
                 type: 'speed',
                 requirement: { type: 'time_under', difficulty: 'hard', value: 180 },
-                rarity: 'legendary'
+                rarity: 'legendary',
+                oneTime: true
             },
             {
                 id: 'triple_threat',
@@ -191,7 +201,8 @@ class AchievementsManager {
                 icon: 'fas fa-fire',
                 type: 'speed',
                 requirement: { type: 'total_time_under', value: 900 },
-                rarity: 'epic'
+                rarity: 'epic',
+                oneTime: true
             },
             {
                 id: 'lightning_round',
@@ -200,7 +211,8 @@ class AchievementsManager {
                 icon: 'fas fa-bolt',
                 type: 'speed',
                 requirement: { type: 'total_time_under', value: 480 },
-                rarity: 'legendary'
+                rarity: 'legendary',
+                oneTime: true
             },
 
             // PERFECTION ACHIEVEMENTS (8)
@@ -341,7 +353,8 @@ class AchievementsManager {
                 icon: 'fas fa-play',
                 type: 'consistency',
                 requirement: { type: 'total_days', value: 7 },
-                rarity: 'common'
+                rarity: 'common',
+                oneTime: true
             },
             {
                 id: 'consistent_performer',
@@ -350,7 +363,8 @@ class AchievementsManager {
                 icon: 'fas fa-calendar',
                 type: 'consistency',
                 requirement: { type: 'total_days', value: 30 },
-                rarity: 'rare'
+                rarity: 'rare',
+                oneTime: true
             },
             {
                 id: 'dedicated_competitor',
@@ -359,7 +373,8 @@ class AchievementsManager {
                 icon: 'fas fa-medal',
                 type: 'consistency',
                 requirement: { type: 'total_days', value: 100 },
-                rarity: 'epic'
+                rarity: 'epic',
+                oneTime: true
             },
             {
                 id: 'sudoku_veteran',
@@ -368,7 +383,8 @@ class AchievementsManager {
                 icon: 'fas fa-shield',
                 type: 'consistency',
                 requirement: { type: 'total_days', value: 365 },
-                rarity: 'legendary'
+                rarity: 'legendary',
+                oneTime: true
             },
             {
                 id: 'consistency_king',
@@ -377,7 +393,8 @@ class AchievementsManager {
                 icon: 'fas fa-balance-scale',
                 type: 'consistency',
                 requirement: { type: 'balanced_times', value: 0.1 },
-                rarity: 'rare'
+                rarity: 'rare',
+                oneTime: true
             },
             {
                 id: 'precision_machine',
@@ -386,7 +403,8 @@ class AchievementsManager {
                 icon: 'fas fa-cog',
                 type: 'consistency',
                 requirement: { type: 'balanced_times', value: 0.05 },
-                rarity: 'epic'
+                rarity: 'epic',
+                oneTime: true
             },
 
             // QUIRKY & FUN ACHIEVEMENTS (8)
@@ -442,7 +460,8 @@ class AchievementsManager {
                 icon: 'fas fa-brain',
                 type: 'speed',
                 requirement: { type: 'time_over', difficulty: 'hard', value: 900 },
-                rarity: 'common'
+                rarity: 'common',
+                oneTime: true
             },
             {
                 id: 'perfectionist_patience',
@@ -451,7 +470,8 @@ class AchievementsManager {
                 icon: 'fas fa-clock',
                 type: 'speed',
                 requirement: { type: 'time_over', difficulty: 'hard', value: 1200 },
-                rarity: 'rare'
+                rarity: 'rare',
+                oneTime: true
             },
             {
                 id: 'error_recovery',
@@ -509,9 +529,16 @@ class AchievementsManager {
             if (playersWhoEarned && playersWhoEarned.length > 0) {
                 for (const player of playersWhoEarned) {
                     // Check if this player already has this achievement
-                    const alreadyHas = this.unlockedAchievements.some(a =>
-                        a.id === achievement.id && a.player === player
-                    );
+                    let alreadyHas;
+                    if (achievement.oneTime) {
+                        // For one-time achievements, check if player has ANY instance of this achievement
+                        alreadyHas = this.unlockedAchievements.some(a =>
+                            a.id === achievement.id && a.player === player
+                        );
+                    } else {
+                        // For repeatable achievements, always allow unlocking
+                        alreadyHas = false;
+                    }
 
                     if (!alreadyHas) {
                         await this.unlockAchievement(achievement, player);
@@ -994,7 +1021,8 @@ class AchievementsManager {
             player: player,
             unlockedAt: new Date().toISOString(),
             title: achievement.title,
-            description: achievement.description
+            description: achievement.description,
+            oneTime: achievement.oneTime || false
         };
 
         this.unlockedAchievements.push(unlock);

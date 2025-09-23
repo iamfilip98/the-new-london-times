@@ -61,10 +61,26 @@ module.exports = async function handler(req, res) {
         return res.status(200).json(achievements);
 
       case 'POST':
-        const { id, player, unlockedAt, ...data } = req.body;
+        const { id, player, unlockedAt, oneTime, ...data } = req.body;
 
         if (!id || !player || !unlockedAt) {
           return res.status(400).json({ error: 'Achievement ID, player, and unlockedAt are required' });
+        }
+
+        if (oneTime) {
+          // For one-time achievements, check if already exists and don't insert if it does
+          const existing = await sql`
+            SELECT achievement_id FROM achievements
+            WHERE achievement_id = ${id} AND player = ${player}
+            LIMIT 1
+          `;
+
+          if (existing.rows.length > 0) {
+            return res.status(200).json({
+              success: true,
+              message: 'Achievement already exists (one-time achievement)'
+            });
+          }
         }
 
         await sql`
