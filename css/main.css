@@ -188,16 +188,6 @@ body {
     align-items: center;
 }
 
-.streak-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    border: 2px solid transparent;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
 
 .streak-card::before {
     content: '';
@@ -219,22 +209,38 @@ body {
     transform: scaleX(1);
 }
 
-.streak-header {
+.streak-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    border: 2px solid transparent;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    align-items: center;
-    margin-bottom: 1.5rem;
     gap: 2rem;
+    align-items: start;
+}
+
+.streak-header {
+    grid-column: 1 / -1;
+    display: contents;
 }
 
 .streak-header h3 {
     font-family: 'Orbitron', monospace;
     font-size: 1.3rem;
     color: var(--faidao-color);
-    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .streak-header .player-avatar {
+    margin-bottom: 1rem;
     justify-self: end;
 }
 
@@ -268,9 +274,8 @@ body {
 }
 
 .streak-stats {
-    display: flex;
-    justify-content: space-between;
-    gap: 2rem;
+    grid-column: 1 / -1;
+    display: contents;
 }
 
 .current-streak,
