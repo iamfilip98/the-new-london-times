@@ -14,6 +14,7 @@ class SudokuEngine {
         this.gameStarted = false;
         this.gameCompleted = false;
         this.candidateMode = false;
+        this.showAllCandidates = false;
         this.autoSaveInterval = null;
     }
 
@@ -107,6 +108,10 @@ class SudokuEngine {
                             <i class="fas fa-pencil-alt"></i>
                             <span>Notes</span>
                         </button>
+                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn">
+                            <i class="fas fa-eye"></i>
+                            <span>Show All</span>
+                        </button>
                         <button class="action-btn save-btn" id="saveBtn">
                             <i class="fas fa-save"></i>
                             <span>Save</span>
@@ -185,6 +190,7 @@ class SudokuEngine {
         document.getElementById('hintBtn')?.addEventListener('click', () => this.getHint());
         document.getElementById('undoBtn')?.addEventListener('click', () => this.undo());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
+        document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('saveBtn')?.addEventListener('click', () => this.saveGameState());
 
         // Keyboard controls
@@ -338,9 +344,8 @@ class SudokuEngine {
 
     loadPuzzle(difficulty) {
         if (!this.dailyPuzzles || !this.dailyPuzzles[difficulty]) {
-            document.getElementById('gameStatus').innerHTML =
-                '<div class="status-message error">Failed to load puzzle. Please try again.</div>';
-            return;
+            // Generate fallback puzzles if not loaded
+            this.generateFallbackPuzzles();
         }
 
         const puzzleData = this.dailyPuzzles[difficulty];
@@ -355,6 +360,9 @@ class SudokuEngine {
         this.gameStarted = true;
         this.gameCompleted = false;
         this.selectedCell = null;
+
+        // Clear any previous candidates
+        this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
         this.updateDisplay();
         this.startTimer();
@@ -394,8 +402,8 @@ class SudokuEngine {
                 } else {
                     valueDiv.textContent = '';
 
-                    // Show candidates if in candidate mode
-                    if (this.candidateMode && this.candidates[row][col].size > 0) {
+                    // Show candidates if they exist (regardless of candidate mode)
+                    if (this.candidates[row][col].size > 0) {
                         candidatesDiv.innerHTML = Array.from(this.candidates[row][col])
                             .sort((a, b) => a - b)
                             .map(num => `<span class="candidate-num">${num}</span>`)
@@ -448,14 +456,16 @@ class SudokuEngine {
             this.playerGrid[row][col] = 0;
             this.candidates[row][col].clear();
         } else if (this.candidateMode) {
-            // Toggle candidate
-            if (this.candidates[row][col].has(number)) {
-                this.candidates[row][col].delete(number);
-            } else {
-                this.candidates[row][col].add(number);
+            // Toggle candidate - only if cell is empty
+            if (this.playerGrid[row][col] === 0) {
+                if (this.candidates[row][col].has(number)) {
+                    this.candidates[row][col].delete(number);
+                } else {
+                    this.candidates[row][col].add(number);
+                }
             }
         } else {
-            // Place number
+            // Place number - clear candidates when placing a number
             this.playerGrid[row][col] = number;
             this.candidates[row][col].clear();
 
@@ -479,6 +489,57 @@ class SudokuEngine {
         const candidateBtn = document.getElementById('candidateBtn');
         if (candidateBtn) {
             candidateBtn.classList.toggle('active', this.candidateMode);
+        }
+    }
+
+    toggleAllCandidates() {
+        this.showAllCandidates = !this.showAllCandidates;
+
+        const toggleBtn = document.getElementById('toggleCandidatesBtn');
+        if (toggleBtn) {
+            toggleBtn.classList.toggle('active', this.showAllCandidates);
+            const span = toggleBtn.querySelector('span');
+            const icon = toggleBtn.querySelector('i');
+            if (this.showAllCandidates) {
+                span.textContent = 'Hide All';
+                icon.className = 'fas fa-eye-slash';
+                // Generate all possible candidates for empty cells
+                this.generateAllCandidates();
+            } else {
+                span.textContent = 'Show All';
+                icon.className = 'fas fa-eye';
+                // Keep only user-entered candidates
+                this.clearGeneratedCandidates();
+            }
+        }
+
+        this.updateDisplay();
+    }
+
+    generateAllCandidates() {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0) {
+                    // Add all valid numbers as candidates
+                    for (let num = 1; num <= 9; num++) {
+                        if (this.isValidMove(this.playerGrid, row, col, num)) {
+                            this.candidates[row][col].add(num);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    clearGeneratedCandidates() {
+        // This would ideally track which candidates were user-entered vs generated
+        // For now, we'll clear all candidates when hiding
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0) {
+                    this.candidates[row][col].clear();
+                }
+            }
         }
     }
 

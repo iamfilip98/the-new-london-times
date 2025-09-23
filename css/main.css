@@ -3026,13 +3026,15 @@ select:focus-visible,
 .sudoku-grid {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
     gap: 1px;
-    background: var(--text-primary);
-    border: 3px solid var(--text-primary);
+    background: #000;
+    border: 3px solid #000;
     border-radius: 8px;
-    padding: 3px;
-    max-width: 450px;
-    aspect-ratio: 1;
+    padding: 0;
+    width: 450px;
+    height: 450px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .sudoku-cell {
@@ -3044,15 +3046,16 @@ select:focus-visible,
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
-    min-height: 48px;
-    border: 1px solid #ddd;
+    border: 1px solid #000;
+    width: 100%;
+    height: 100%;
 }
 
 /* NYT-style typography */
 .cell-value {
-    font-family: Georgia, serif;
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
     color: #000;
     line-height: 1;
     user-select: none;
@@ -3071,13 +3074,14 @@ select:focus-visible,
 }
 
 .candidate-num {
-    font-family: Georgia, serif;
-    font-size: 0.6rem;
-    color: #666;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 0.7rem;
+    color: #888;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
+    font-weight: 500;
 }
 
 /* Cell states */
@@ -3113,19 +3117,19 @@ select:focus-visible,
 
 /* 3x3 box borders */
 .sudoku-cell.right-thick {
-    border-right: 3px solid var(--text-primary);
+    border-right: 3px solid #000;
 }
 
 .sudoku-cell.bottom-thick {
-    border-bottom: 3px solid var(--text-primary);
+    border-bottom: 3px solid #000;
 }
 
 .sudoku-cell.left-thick {
-    border-left: 3px solid var(--text-primary);
+    border-left: 3px solid #000;
 }
 
 .sudoku-cell.top-thick {
-    border-top: 3px solid var(--text-primary);
+    border-top: 3px solid #000;
 }
 
 /* Game Controls */
@@ -3304,7 +3308,8 @@ select:focus-visible,
     }
 
     .sudoku-grid {
-        max-width: 350px;
+        width: 350px;
+        height: 350px;
     }
 
     .cell-value {
@@ -3344,7 +3349,8 @@ select:focus-visible,
 
 @media (max-width: 480px) {
     .sudoku-grid {
-        max-width: 300px;
+        width: 300px;
+        height: 300px;
     }
 
     .cell-value {
