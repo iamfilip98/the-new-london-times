@@ -364,48 +364,104 @@
                     </div>
 
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <h4 data-icon="trophy">Win Rate</h4>
+                        <div class="stat-card competitive">
+                            <h4 data-icon="trophy">Win Rate Battle</h4>
                             <div class="stat-content">
-                                <div class="stat-number" id="winRateNumber">--</div>
-                                <div class="stat-label">Overall Success</div>
-                                <div class="stat-sublabel" id="winRateSubtext">Loading statistics...</div>
-                            </div>
-                            <div class="stat-footer">
-                                <span>Last 30 days</span>
-                                <div class="stat-trend" id="winRateTrend">
-                                    <i class="fas fa-minus"></i>
-                                    <span>--</span>
+                                <div class="player-vs-stats">
+                                    <div class="player-stat faidao-themed">
+                                        <div class="player-avatar small faidao-avatar">F</div>
+                                        <div class="player-data">
+                                            <div class="player-name">Faidao</div>
+                                            <div class="stat-number" id="faidaoWinRate">--</div>
+                                            <div class="stat-trend" id="faidaoWinTrend">
+                                                <i class="fas fa-minus"></i>
+                                                <span>--</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="vs-separator">
+                                        <div class="vs-text">VS</div>
+                                        <div class="overall-stat" id="totalGamesCount">-- games</div>
+                                    </div>
+                                    <div class="player-stat filip-themed">
+                                        <div class="player-avatar small filip-avatar">F</div>
+                                        <div class="player-data">
+                                            <div class="player-name">Filip</div>
+                                            <div class="stat-number" id="filipWinRate">--</div>
+                                            <div class="stat-trend" id="filipWinTrend">
+                                                <i class="fas fa-minus"></i>
+                                                <span>--</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <h4 data-icon="chart">Average Performance</h4>
+
+                        <div class="stat-card competitive">
+                            <h4 data-icon="chart">Average Score Battle</h4>
                             <div class="stat-content">
-                                <div class="stat-number" id="avgPerformanceNumber">--</div>
-                                <div class="stat-label">Score Per Game</div>
-                                <div class="stat-sublabel" id="avgPerformanceSubtext">Loading statistics...</div>
-                            </div>
-                            <div class="stat-footer">
-                                <span>All-time avg</span>
-                                <div class="stat-trend" id="avgPerformanceTrend">
-                                    <i class="fas fa-minus"></i>
-                                    <span>--</span>
+                                <div class="player-vs-stats">
+                                    <div class="player-stat faidao-themed">
+                                        <div class="player-avatar small faidao-avatar">F</div>
+                                        <div class="player-data">
+                                            <div class="player-name">Faidao</div>
+                                            <div class="stat-number" id="faidaoAvgScore">--</div>
+                                            <div class="stat-trend" id="faidaoScoreTrend">
+                                                <i class="fas fa-minus"></i>
+                                                <span>--</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="vs-separator">
+                                        <div class="vs-text">VS</div>
+                                        <div class="overall-stat" id="scoreDifference">tied</div>
+                                    </div>
+                                    <div class="player-stat filip-themed">
+                                        <div class="player-avatar small filip-avatar">F</div>
+                                        <div class="player-data">
+                                            <div class="player-name">Filip</div>
+                                            <div class="stat-number" id="filipAvgScore">--</div>
+                                            <div class="stat-trend" id="filipScoreTrend">
+                                                <i class="fas fa-minus"></i>
+                                                <span>--</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <h4 data-icon="trend">Improvement</h4>
+
+                        <div class="stat-card competitive">
+                            <h4 data-icon="trend">Recent Form</h4>
                             <div class="stat-content">
-                                <div class="stat-number" id="improvementNumber">--</div>
-                                <div class="stat-label">Progress Rate</div>
-                                <div class="stat-sublabel" id="improvementSubtext">Loading statistics...</div>
-                            </div>
-                            <div class="stat-footer">
-                                <span>vs last month</span>
-                                <div class="stat-trend" id="improvementTrend">
-                                    <i class="fas fa-minus"></i>
-                                    <span>--</span>
+                                <div class="player-vs-stats">
+                                    <div class="player-stat faidao-themed">
+                                        <div class="player-avatar small faidao-avatar">F</div>
+                                        <div class="player-data">
+                                            <div class="player-name">Faidao</div>
+                                            <div class="stat-number" id="faidaoRecentForm">--</div>
+                                            <div class="stat-trend" id="faidaoFormTrend">
+                                                <i class="fas fa-minus"></i>
+                                                <span>--</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="vs-separator">
+                                        <div class="vs-text">VS</div>
+                                        <div class="overall-stat" id="recentFormNote">Last 5 games</div>
+                                    </div>
+                                    <div class="player-stat filip-themed">
+                                        <div class="player-avatar small filip-avatar">F</div>
+                                        <div class="player-data">
+                                            <div class="player-name">Filip</div>
+                                            <div class="stat-number" id="filipRecentForm">--</div>
+                                            <div class="stat-trend" id="filipFormTrend">
+                                                <i class="fas fa-minus"></i>
+                                                <span>--</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

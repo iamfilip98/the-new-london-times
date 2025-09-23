@@ -1160,6 +1160,147 @@ body {
     color: var(--text-secondary);
 }
 
+/* Competitive Stat Cards */
+.stat-card.competitive .stat-content {
+    padding: 0;
+}
+
+.player-vs-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+}
+
+.player-stat {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.player-stat.faidao-themed {
+    border-left: 3px solid var(--faidao-color);
+}
+
+.player-stat.filip-themed {
+    border-left: 3px solid var(--filip-color);
+}
+
+.player-stat:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.player-avatar.small {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.player-data {
+    flex: 1;
+    text-align: center;
+}
+
+.player-data .player-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.player-data .stat-number {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.player-data .stat-trend {
+    font-size: 0.8rem;
+    justify-content: center;
+}
+
+.vs-separator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    flex-shrink: 0;
+}
+
+.vs-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--accent-orange);
+    text-shadow: 0 2px 10px rgba(254, 225, 64, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background: rgba(254, 225, 64, 0.1);
+    border: 2px solid rgba(254, 225, 64, 0.3);
+}
+
+.overall-stat {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Highlight winning player */
+.player-stat.winner {
+    background: rgba(var(--accent-green-rgb), 0.1);
+    border-left-color: var(--accent-green);
+    box-shadow: 0 0 20px rgba(var(--accent-green-rgb), 0.2);
+}
+
+.player-stat.winner .player-data .stat-number {
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(var(--accent-green-rgb), 0.3);
+}
+
+/* Responsive adjustments for competitive cards */
+@media (max-width: 768px) {
+    .player-vs-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .vs-separator {
+        order: 2;
+        padding: 1rem 0;
+    }
+
+    .player-stat {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 /* Leaderboards */
 .leaderboard-tabs {
     display: flex;
