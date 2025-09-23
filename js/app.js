@@ -1177,6 +1177,7 @@ class SudokuChampionship {
 
     updateAllPages() {
         this.updateDashboard();
+        this.updateLeaderboards();
         // Other page updates will be handled when those managers are loaded
     }
 
