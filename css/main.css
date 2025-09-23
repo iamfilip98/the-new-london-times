@@ -220,16 +220,22 @@ body {
 }
 
 .streak-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    justify-content: space-between;
     margin-bottom: 1.5rem;
+    gap: 2rem;
 }
 
 .streak-header h3 {
     font-family: 'Orbitron', monospace;
     font-size: 1.3rem;
     color: var(--faidao-color);
+    justify-self: start;
+}
+
+.streak-header .player-avatar {
+    justify-self: end;
 }
 
 .streak-card.filip .streak-header h3 {
