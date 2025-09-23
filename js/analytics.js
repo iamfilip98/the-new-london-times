@@ -230,18 +230,14 @@ class AnalyticsManager {
     updateWinRateStats(entries) {
         const faidaoWinRateEl = document.getElementById('faidaoWinRate');
         const filipWinRateEl = document.getElementById('filipWinRate');
-        const faidaoTrendEl = document.getElementById('faidaoWinTrend');
-        const filipTrendEl = document.getElementById('filipWinTrend');
         const totalGamesEl = document.getElementById('totalGamesCount');
 
-        if (!faidaoWinRateEl || !filipWinRateEl) return;
+        if (!faidaoWinRateEl || !filipWinRateEl || !totalGamesEl) return;
 
         if (entries.length === 0) {
             faidaoWinRateEl.textContent = '--';
             filipWinRateEl.textContent = '--';
-            totalGamesEl.textContent = '0 games';
-            if (faidaoTrendEl) faidaoTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
-            if (filipTrendEl) filipTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
+            totalGamesEl.textContent = '0 games total';
             return;
         }
 
@@ -265,67 +261,20 @@ class AnalyticsManager {
 
         faidaoWinRateEl.textContent = `${faidaoWinRate}%`;
         filipWinRateEl.textContent = `${filipWinRate}%`;
-        totalGamesEl.textContent = `${totalGames} games`;
-
-        // Add winner class to the leading player
-        const faidaoStatEl = faidaoWinRateEl.closest('.player-stat');
-        const filipStatEl = filipWinRateEl.closest('.player-stat');
-
-        faidaoStatEl?.classList.remove('winner');
-        filipStatEl?.classList.remove('winner');
-
-        if (faidaoWins > filipWins) {
-            faidaoStatEl?.classList.add('winner');
-        } else if (filipWins > faidaoWins) {
-            filipStatEl?.classList.add('winner');
-        }
-
-        // Calculate trends from recent games
-        if (entries.length >= 10) {
-            const recentGames = entries.slice(0, 5);
-            const olderGames = entries.slice(5, 10);
-
-            const recentFaidaoWins = recentGames.filter(entry =>
-                entry.faidao.scores.total > entry.filip.scores.total).length;
-            const olderFaidaoWins = olderGames.filter(entry =>
-                entry.faidao.scores.total > entry.filip.scores.total).length;
-
-            const recentFaidaoWinRate = (recentFaidaoWins / recentGames.length) * 100;
-            const olderFaidaoWinRate = (olderFaidaoWins / olderGames.length) * 100;
-            const faidaoTrend = recentFaidaoWinRate - olderFaidaoWinRate;
-
-            const recentFilipWins = recentGames.filter(entry =>
-                entry.filip.scores.total > entry.faidao.scores.total).length;
-            const olderFilipWins = olderGames.filter(entry =>
-                entry.filip.scores.total > entry.faidao.scores.total).length;
-
-            const recentFilipWinRate = (recentFilipWins / recentGames.length) * 100;
-            const olderFilipWinRate = (olderFilipWins / olderGames.length) * 100;
-            const filipTrend = recentFilipWinRate - olderFilipWinRate;
-
-            this.updateTrendElement(faidaoTrendEl, faidaoTrend);
-            this.updateTrendElement(filipTrendEl, filipTrend);
-        } else {
-            if (faidaoTrendEl) faidaoTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
-            if (filipTrendEl) filipTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
-        }
+        totalGamesEl.textContent = `${totalGames} games total`;
     }
 
     updatePerformanceStats(entries) {
         const faidaoScoreEl = document.getElementById('faidaoAvgScore');
         const filipScoreEl = document.getElementById('filipAvgScore');
-        const faidaoTrendEl = document.getElementById('faidaoScoreTrend');
-        const filipTrendEl = document.getElementById('filipScoreTrend');
         const scoreDiffEl = document.getElementById('scoreDifference');
 
-        if (!faidaoScoreEl || !filipScoreEl) return;
+        if (!faidaoScoreEl || !filipScoreEl || !scoreDiffEl) return;
 
         if (entries.length === 0) {
             faidaoScoreEl.textContent = '--';
             filipScoreEl.textContent = '--';
-            scoreDiffEl.textContent = 'tied';
-            if (faidaoTrendEl) faidaoTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
-            if (filipTrendEl) filipTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
+            scoreDiffEl.textContent = 'All-time average';
             return;
         }
 
@@ -341,59 +290,20 @@ class AnalyticsManager {
         // Show score difference
         const diff = Math.abs(faidaoAvg - filipAvg);
         if (faidaoAvg > filipAvg) {
-            scoreDiffEl.textContent = `+${diff} ahead`;
+            scoreDiffEl.textContent = `Faidao leads by ${diff}`;
         } else if (filipAvg > faidaoAvg) {
-            scoreDiffEl.textContent = `+${diff} ahead`;
+            scoreDiffEl.textContent = `Filip leads by ${diff}`;
         } else {
-            scoreDiffEl.textContent = 'tied';
-        }
-
-        // Add winner class
-        const faidaoStatEl = faidaoScoreEl.closest('.player-stat');
-        const filipStatEl = filipScoreEl.closest('.player-stat');
-
-        faidaoStatEl?.classList.remove('winner');
-        filipStatEl?.classList.remove('winner');
-
-        if (faidaoAvg > filipAvg) {
-            faidaoStatEl?.classList.add('winner');
-        } else if (filipAvg > faidaoAvg) {
-            filipStatEl?.classList.add('winner');
-        }
-
-        // Calculate trends
-        if (entries.length >= 10) {
-            const recentEntries = entries.slice(0, 5);
-            const olderEntries = entries.slice(5, 10);
-
-            const faidaoRecentAvg = recentEntries.reduce((sum, entry) =>
-                sum + entry.faidao.scores.total, 0) / recentEntries.length;
-            const faidaoOlderAvg = olderEntries.reduce((sum, entry) =>
-                sum + entry.faidao.scores.total, 0) / olderEntries.length;
-            const faidaoTrend = faidaoRecentAvg - faidaoOlderAvg;
-
-            const filipRecentAvg = recentEntries.reduce((sum, entry) =>
-                sum + entry.filip.scores.total, 0) / recentEntries.length;
-            const filipOlderAvg = olderEntries.reduce((sum, entry) =>
-                sum + entry.filip.scores.total, 0) / olderEntries.length;
-            const filipTrend = filipRecentAvg - filipOlderAvg;
-
-            this.updateTrendElement(faidaoTrendEl, faidaoTrend);
-            this.updateTrendElement(filipTrendEl, filipTrend);
-        } else {
-            if (faidaoTrendEl) faidaoTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
-            if (filipTrendEl) filipTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
+            scoreDiffEl.textContent = 'Perfectly tied!';
         }
     }
 
     updateRecentFormStats(entries) {
         const faidaoFormEl = document.getElementById('faidaoRecentForm');
         const filipFormEl = document.getElementById('filipRecentForm');
-        const faidaoTrendEl = document.getElementById('faidaoFormTrend');
-        const filipTrendEl = document.getElementById('filipFormTrend');
         const formNoteEl = document.getElementById('recentFormNote');
 
-        if (!faidaoFormEl || !filipFormEl) return;
+        if (!faidaoFormEl || !filipFormEl || !formNoteEl) return;
 
         const recentCount = Math.min(5, entries.length);
 
@@ -401,8 +311,6 @@ class AnalyticsManager {
             faidaoFormEl.textContent = '--';
             filipFormEl.textContent = '--';
             formNoteEl.textContent = 'No games yet';
-            if (faidaoTrendEl) faidaoTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
-            if (filipTrendEl) filipTrendEl.innerHTML = '<i class="fas fa-minus"></i><span>--</span>';
             return;
         }
 
@@ -423,26 +331,6 @@ class AnalyticsManager {
         faidaoFormEl.textContent = `${faidaoRecentWins}/${recentCount}`;
         filipFormEl.textContent = `${filipRecentWins}/${recentCount}`;
         formNoteEl.textContent = `Last ${recentCount} games`;
-
-        // Add winner class for recent form
-        const faidaoStatEl = faidaoFormEl.closest('.player-stat');
-        const filipStatEl = filipFormEl.closest('.player-stat');
-
-        faidaoStatEl?.classList.remove('winner');
-        filipStatEl?.classList.remove('winner');
-
-        if (faidaoRecentWins > filipRecentWins) {
-            faidaoStatEl?.classList.add('winner');
-        } else if (filipRecentWins > faidaoRecentWins) {
-            filipStatEl?.classList.add('winner');
-        }
-
-        // Show recent form trends (win streak indicator)
-        const faidaoStreak = this.calculateWinStreak(entries, 'faidao');
-        const filipStreak = this.calculateWinStreak(entries, 'filip');
-
-        this.updateStreakTrend(faidaoTrendEl, faidaoStreak);
-        this.updateStreakTrend(filipTrendEl, filipStreak);
     }
 
     calculateWinStreak(entries, player) {

@@ -1012,7 +1012,7 @@ body {
 .stats-grid {
     grid-column: span 2;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
 }
 
@@ -1161,211 +1161,106 @@ body {
     color: var(--text-secondary);
 }
 
-/* Competitive Stat Cards */
-.stat-card.competitive .stat-content {
-    padding: 0;
-}
-
-.player-vs-stats {
+/* Simple Stat Cards */
+.simple-stat-row {
     display: flex;
-    align-items: stretch;
     justify-content: space-between;
-    gap: 0.75rem;
-    width: 100%;
-    flex-wrap: nowrap;
-}
-
-.player-stat {
-    flex: 1;
-    display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    transition: var(--transition);
-    position: relative;
-    overflow: visible;
-    min-width: 0;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.player-stat.faidao-themed {
-    border-left: 3px solid var(--faidao-color);
+.simple-stat-row:last-of-type {
+    border-bottom: none;
+    margin-bottom: 1rem;
 }
 
-.player-stat.filip-themed {
-    border-left: 3px solid var(--filip-color);
-}
-
-.player-stat:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-}
-
-.player-avatar.small {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-}
-
-.player-data {
-    flex: 1;
-    text-align: center;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.player-data .player-name {
+.stat-label {
     font-family: 'Orbitron', monospace;
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 0.25rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    letter-spacing: 1px;
 }
 
-.player-data .stat-number {
+.stat-value {
     font-family: 'Orbitron', monospace;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 900;
     background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.25rem;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.player-data .stat-trend {
-    font-size: 0.8rem;
-    justify-content: center;
-}
-
-.vs-separator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0 0.5rem;
-    flex-shrink: 0;
-    min-width: 60px;
-}
-
-.vs-text {
-    font-family: 'Orbitron', monospace;
-    font-size: 1rem;
-    font-weight: 900;
-    color: var(--accent-orange);
     text-shadow: 0 2px 10px rgba(254, 225, 64, 0.3);
-    padding: 0.25rem 0.5rem;
-    border-radius: 15px;
-    background: rgba(254, 225, 64, 0.1);
-    border: 2px solid rgba(254, 225, 64, 0.3);
-    white-space: nowrap;
 }
 
-.overall-stat {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+.stat-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     text-align: center;
+}
+
+.footer-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* Highlight winning player */
-.player-stat.winner {
-    background: rgba(var(--accent-green-rgb), 0.1);
-    border-left-color: var(--accent-green);
-    box-shadow: 0 0 20px rgba(var(--accent-green-rgb), 0.2);
-}
-
-.player-stat.winner .player-data .stat-number {
-    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 20px rgba(var(--accent-green-rgb), 0.3);
-}
-
-/* Responsive adjustments for competitive cards */
+/* Responsive adjustments for simple stat cards */
 @media (max-width: 1200px) {
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+    }
+
+    .stat-value {
+        font-size: 1.3rem;
     }
 }
 
 @media (max-width: 768px) {
     .stats-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
     .stat-card {
-        padding: 1rem;
-        min-height: 200px;
+        padding: 1.5rem;
+        min-height: auto;
     }
 
-    .player-vs-stats {
-        flex-direction: column;
-        gap: 0.75rem;
-        align-items: stretch;
+    .stat-label {
+        font-size: 1rem;
     }
 
-    .vs-separator {
-        order: 2;
-        padding: 0.5rem 0;
-        flex-direction: row;
-        justify-content: center;
-        min-width: auto;
+    .stat-value {
+        font-size: 1.5rem;
     }
 
-    .vs-text {
-        font-size: 0.9rem;
-        padding: 0.25rem 0.75rem;
-    }
-
-    .overall-stat {
-        margin-left: 0.5rem;
-    }
-
-    .player-stat {
-        width: 100%;
-        justify-content: space-between;
-        padding: 1rem;
-    }
-
-    .player-data .stat-number {
-        font-size: 1.6rem;
-    }
-
-    .player-data .player-name {
-        font-size: 0.9rem;
+    .footer-text {
+        font-size: 0.85rem;
     }
 }
 
 @media (max-width: 480px) {
-    .player-stat {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.5rem;
+    .stat-card {
+        padding: 1rem;
     }
 
-    .player-avatar.small {
-        align-self: center;
+    .simple-stat-row {
+        padding: 1rem 0;
     }
 
-    .player-data .stat-number {
-        font-size: 1.8rem;
+    .stat-value {
+        font-size: 1.4rem;
     }
 }
 
