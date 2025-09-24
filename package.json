@@ -4,8 +4,9 @@
   "description": "The New London Times - Sudoku Championship website with database storage",
   "main": "index.html",
   "scripts": {
-    "start": "echo 'This is a Vercel serverless project. Use vercel dev for local development.'",
-    "dev": "echo 'Use vercel dev for local development or open index.html directly in browser.'"
+    "start": "node test-api.js",
+    "dev": "nodemon test-api.js",
+    "vercel-dev": "vercel dev"
   },
   "dependencies": {
     "dotenv": "^17.2.2",
