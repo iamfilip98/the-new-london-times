@@ -7,9 +7,9 @@ After making any code changes, Claude should:
 3. Push to git
 
 ## Available Commands
-- `npm run lint` - Run linting
-- `npm run typecheck` - Run type checking
-- `npm test` - Run tests
+- `npm run dev` - Start development server
+- Open index.html directly in browser for testing
+- No lint/typecheck commands available
 
 ## Git Workflow
 - Always commit with descriptive messages

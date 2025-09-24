@@ -2482,6 +2482,13 @@ class SudokuEngine {
         this.selectedCell = null;
         this.moveHistory = [];
 
+        // Explicitly clear the player grid before reloading
+        this.playerGrid = Array(9).fill().map(() => Array(9).fill(0));
+        this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+
+        // Force a display update to clear the DOM
+        this.updateDisplay();
+
         // Reload the same puzzle fresh
         this.loadPuzzle(this.currentDifficulty);
 
