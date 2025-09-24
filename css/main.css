@@ -3162,7 +3162,7 @@ select:focus-visible,
 }
 
 .sudoku-cell.user-input .cell-value {
-    color: #000000;
+    color: #2563eb;
     font-weight: 900;
 }
 
