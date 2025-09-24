@@ -494,8 +494,8 @@ class SudokuEngine {
                     } else {
                         cell.classList.add('user-input');
 
-                        // Check for errors by checking conflicts with the current value
-                        if (!this.isValidMove(this.playerGrid, row, col, this.playerGrid[row][col])) {
+                        // Check for errors by comparing with the correct solution
+                        if (this.playerGrid[row][col] !== this.solution[row][col]) {
                             cell.classList.add('error');
                         }
                     }
@@ -629,16 +629,16 @@ class SudokuEngine {
                 this.manualCandidates[row][col].add(number);
             }
         } else {
-            // Check for errors BEFORE placing the number
-            const isValidPlacement = this.isValidMove(this.playerGrid, row, col, number);
+            // Check if the number matches the correct solution
+            const isCorrectSolution = (this.solution[row][col] === number);
 
             // Place number - clear candidates when placing a number
             this.playerGrid[row][col] = number;
             this.candidates[row][col].clear();
             this.manualCandidates[row][col].clear();
 
-            // Increment errors if this is an invalid move
-            if (!isValidPlacement) {
+            // Increment errors if this doesn't match the solution
+            if (!isCorrectSolution) {
                 this.errors++;
                 // Provide immediate feedback for errors
                 this.showErrorFeedback(row, col);
@@ -2226,7 +2226,7 @@ class SudokuEngine {
         // Show temporary error message
         const errorMessage = document.createElement('div');
         errorMessage.className = 'error-message';
-        errorMessage.textContent = 'Invalid placement!';
+        errorMessage.textContent = 'Wrong number!';
         errorMessage.style.cssText = `
             position: absolute;
             top: 50%;
