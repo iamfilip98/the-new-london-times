@@ -631,8 +631,8 @@ class SudokuEngine {
             }
         }
 
-        // Update all candidates if in show all mode or if we placed a number
-        if (this.showAllCandidates || (!this.candidateMode && number !== 0)) {
+        // Update all candidates if in show all mode or if we placed a number (but not when manually editing candidates)
+        if ((this.showAllCandidates || (!this.candidateMode && number !== 0)) && !this.candidateMode) {
             this.updateAllCandidates();
         }
 
@@ -751,20 +751,32 @@ class SudokuEngine {
     }
 
     updateAllCandidates() {
-        // Update candidates for all empty cells
+        // Update candidates for all cells (empty and filled)
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
-                if (this.playerGrid[row][col] === 0) {
-                    if (this.showAllCandidates) {
-                        // Clear and regenerate all candidates
-                        this.candidates[row][col].clear();
+                if (this.showAllCandidates) {
+                    // Preserve manual candidates
+                    const manualCands = new Set(this.manualCandidates[row][col]);
+
+                    // Clear and regenerate all candidates
+                    this.candidates[row][col].clear();
+
+                    // Add valid auto-generated candidates (only for empty cells)
+                    if (this.playerGrid[row][col] === 0) {
                         for (let num = 1; num <= 9; num++) {
                             if (this.isValidMove(this.playerGrid, row, col, num)) {
                                 this.candidates[row][col].add(num);
                             }
                         }
-                    } else {
-                        // Remove invalid candidates from user-entered ones
+                    }
+
+                    // Re-add manual candidates (even if they're invalid - user choice)
+                    manualCands.forEach(num => {
+                        this.candidates[row][col].add(num);
+                    });
+                } else {
+                    // Remove invalid candidates from user-entered ones (for empty cells only)
+                    if (this.playerGrid[row][col] === 0) {
                         const toRemove = [];
                         this.candidates[row][col].forEach(num => {
                             if (!this.isValidMove(this.playerGrid, row, col, num)) {
