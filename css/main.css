@@ -3113,6 +3113,7 @@ select:focus-visible,
     gap: 0.3rem;
     font-family: 'Orbitron', monospace;
     font-weight: 600;
+    flex: 1;
 }
 
 .stat-item i {
