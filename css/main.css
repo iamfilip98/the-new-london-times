@@ -3016,13 +3016,12 @@ select:focus-visible,
     color: var(--accent-purple);
 }
 
-/* NYT Sudoku Grid */
+/* Accurate NYT Sudoku Grid */
 .sudoku-grid-container {
     display: flex;
     justify-content: center;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 12px;
+    padding: 0;
+    background: transparent;
     margin: 0 auto;
     max-width: fit-content;
 }
@@ -3032,14 +3031,14 @@ select:focus-visible,
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(9, 1fr);
     gap: 0;
-    background: #333333;
-    border: 2px solid #333333;
-    border-radius: 4px;
+    background: #000000;
+    border: 3px solid #000000;
+    border-radius: 0;
     padding: 0;
     width: 450px;
     height: 450px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    font-family: 'Arial', 'Helvetica', sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 .sudoku-cell {
@@ -3049,20 +3048,68 @@ select:focus-visible,
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.1s ease;
     position: relative;
-    border: 0.5px solid #d1d5db;
+    border: 1px solid #cccccc;
     width: 100%;
     height: 100%;
     outline: none;
 }
 
-/* NYT-style clean typography */
+/* NYT 3x3 box alternating backgrounds */
+.sudoku-cell {
+    background: #ffffff;
+}
+
+/* Gray background for alternating 3x3 boxes */
+.sudoku-cell[data-row="0"][data-col="3"],
+.sudoku-cell[data-row="0"][data-col="4"],
+.sudoku-cell[data-row="0"][data-col="5"],
+.sudoku-cell[data-row="1"][data-col="3"],
+.sudoku-cell[data-row="1"][data-col="4"],
+.sudoku-cell[data-row="1"][data-col="5"],
+.sudoku-cell[data-row="2"][data-col="3"],
+.sudoku-cell[data-row="2"][data-col="4"],
+.sudoku-cell[data-row="2"][data-col="5"],
+
+.sudoku-cell[data-row="3"][data-col="0"],
+.sudoku-cell[data-row="3"][data-col="1"],
+.sudoku-cell[data-row="3"][data-col="2"],
+.sudoku-cell[data-row="4"][data-col="0"],
+.sudoku-cell[data-row="4"][data-col="1"],
+.sudoku-cell[data-row="4"][data-col="2"],
+.sudoku-cell[data-row="5"][data-col="0"],
+.sudoku-cell[data-row="5"][data-col="1"],
+.sudoku-cell[data-row="5"][data-col="2"],
+
+.sudoku-cell[data-row="3"][data-col="6"],
+.sudoku-cell[data-row="3"][data-col="7"],
+.sudoku-cell[data-row="3"][data-col="8"],
+.sudoku-cell[data-row="4"][data-col="6"],
+.sudoku-cell[data-row="4"][data-col="7"],
+.sudoku-cell[data-row="4"][data-col="8"],
+.sudoku-cell[data-row="5"][data-col="6"],
+.sudoku-cell[data-row="5"][data-col="7"],
+.sudoku-cell[data-row="5"][data-col="8"],
+
+.sudoku-cell[data-row="6"][data-col="3"],
+.sudoku-cell[data-row="6"][data-col="4"],
+.sudoku-cell[data-row="6"][data-col="5"],
+.sudoku-cell[data-row="7"][data-col="3"],
+.sudoku-cell[data-row="7"][data-col="4"],
+.sudoku-cell[data-row="7"][data-col="5"],
+.sudoku-cell[data-row="8"][data-col="3"],
+.sudoku-cell[data-row="8"][data-col="4"],
+.sudoku-cell[data-row="8"][data-col="5"] {
+    background: #f0f0f0;
+}
+
+/* Accurate NYT typography */
 .cell-value {
-    font-family: 'Arial', 'Helvetica', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #1f2937;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #000000;
     line-height: 1;
     text-align: center;
     display: flex;
@@ -3077,85 +3124,87 @@ select:focus-visible,
 
 .cell-candidates {
     position: absolute;
-    top: 3px;
-    left: 3px;
-    right: 3px;
-    bottom: 3px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    display: flex;
+    flex-wrap: wrap;
     gap: 1px;
     pointer-events: none;
     z-index: 1;
+    font-size: 0.65rem;
+    line-height: 1;
 }
 
 .candidate-num {
-    font-family: 'Arial', 'Helvetica', sans-serif;
-    font-size: 0.5rem;
-    color: #6b7280;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    font-weight: 500;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.65rem;
+    color: #666666;
+    font-weight: 400;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
 }
 
-/* NYT Cell states with proper highlighting */
+/* Accurate NYT Cell states */
 .sudoku-cell.given {
-    background: #ffffff;
+    /* Inherit from base or alternating pattern */
 }
 
 .sudoku-cell.given .cell-value {
-    color: #1f2937;
-    font-weight: 700;
+    color: #000000;
+    font-weight: 900;
 }
 
 .sudoku-cell.user-input {
-    background: #ffffff;
+    /* Inherit from base or alternating pattern */
 }
 
 .sudoku-cell.user-input .cell-value {
-    color: #2563eb;
-    font-weight: 700;
+    color: #000000;
+    font-weight: 900;
 }
 
 .sudoku-cell.error {
-    background: #fef2f2 !important;
+    background: #ffeeee !important;
     position: relative;
 }
 
-.sudoku-cell.error::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 6px;
-    height: 6px;
-    background: #dc2626;
-    border-radius: 50%;
-    z-index: 3;
-}
-
 .sudoku-cell.error .cell-value {
-    color: #dc2626 !important;
+    color: #cc0000 !important;
 }
 
-/* NYT-style yellow selection */
+/* Accurate NYT orange selection */
 .sudoku-cell.selected {
-    background: #fef3c7 !important;
-    border: 1px solid #f59e0b !important;
-    box-shadow: inset 0 0 0 1px #f59e0b;
+    background: #ff9500 !important;
+    border: 1px solid #ff9500 !important;
 }
 
-/* Row, column, box highlighting like NYT */
+.sudoku-cell.selected.given,
+.sudoku-cell.selected.user-input {
+    background: #ff9500 !important;
+}
+
+/* Row, column, box highlighting */
 .sudoku-cell.highlighted {
-    background: #fffbeb !important;
+    background: #fff4e6 !important;
 }
 
-/* Same number highlighting with blue tint */
+.sudoku-cell.highlighted.given,
+.sudoku-cell.highlighted.user-input {
+    background: #fff4e6 !important;
+}
+
+/* Same number highlighting */
 .sudoku-cell.same-number {
-    background: #dbeafe !important;
-    color: #2563eb;
+    background: #e6f3ff !important;
+}
+
+.sudoku-cell.same-number.given,
+.sudoku-cell.same-number.user-input {
+    background: #e6f3ff !important;
 }
 
 /* Paused state */
@@ -3173,32 +3222,37 @@ select:focus-visible,
     color: #999 !important;
 }
 
-/* NYT-style 3x3 box borders with proper thickness */
+/* Accurate NYT 3x3 box borders */
 .sudoku-cell.right-thick {
-    border-right: 2px solid #333333;
+    border-right: 3px solid #000000;
 }
 
 .sudoku-cell.bottom-thick {
-    border-bottom: 2px solid #333333;
+    border-bottom: 3px solid #000000;
 }
 
 .sudoku-cell.left-thick {
-    border-left: 2px solid #333333;
+    border-left: 3px solid #000000;
 }
 
 .sudoku-cell.top-thick {
-    border-top: 2px solid #333333;
+    border-top: 3px solid #000000;
 }
 
-/* NYT hover effect */
+/* Subtle hover effect */
 .sudoku-cell:hover:not(.selected) {
-    background: #f9fafb;
-    transition: background-color 0.15s ease;
+    background: #fafafa;
+    transition: background-color 0.1s ease;
 }
 
-/* Focus state for accessibility */
+.sudoku-cell:hover:not(.selected).given,
+.sudoku-cell:hover:not(.selected).user-input {
+    background: #fafafa;
+}
+
+/* Focus state */
 .sudoku-cell:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid #ff9500;
     outline-offset: -2px;
     z-index: 5;
 }
@@ -3384,7 +3438,8 @@ select:focus-visible,
     }
 
     .cell-value {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
+        font-weight: 900;
     }
 
     .number-buttons {
@@ -3425,7 +3480,8 @@ select:focus-visible,
     }
 
     .cell-value {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        font-weight: 900;
     }
 
     .candidate-num {
