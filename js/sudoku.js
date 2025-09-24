@@ -609,6 +609,7 @@ class SudokuEngine {
             // Erase
             this.playerGrid[row][col] = 0;
             this.candidates[row][col].clear();
+            this.manualCandidates[row][col].clear();
         } else if (this.candidateMode) {
             // Toggle candidate - allow even if cell has a value
             if (this.candidates[row][col].has(number)) {
@@ -622,6 +623,7 @@ class SudokuEngine {
             // Place number - clear candidates when placing a number
             this.playerGrid[row][col] = number;
             this.candidates[row][col].clear();
+            this.manualCandidates[row][col].clear();
 
             // Check for errors by temporarily removing the cell value
             const tempGrid = this.playerGrid.map(row => [...row]);
