@@ -2145,6 +2145,23 @@ class SudokuEngine {
         return { isValid: true, reason: 'Valid puzzle data' };
     }
 
+    countClues(puzzle) {
+        if (!puzzle || !Array.isArray(puzzle)) {
+            return 0;
+        }
+
+        let clueCount = 0;
+        for (let row = 0; row < 9; row++) {
+            if (!Array.isArray(puzzle[row])) continue;
+            for (let col = 0; col < 9; col++) {
+                if (puzzle[row][col] !== 0) {
+                    clueCount++;
+                }
+            }
+        }
+        return clueCount;
+    }
+
     generateFallbackPuzzles() {
         // Base solution - all puzzles use this same solution
         const baseSolution = [
