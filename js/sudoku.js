@@ -264,6 +264,8 @@ class SudokuEngine {
         if (this.gameStarted && !this.gameCompleted) {
             this.saveGameState();
             this.stopTimer();
+            // Set paused state to prevent timer restart
+            this.gamePaused = true;
         }
 
         this.currentDifficulty = difficulty;
@@ -422,6 +424,7 @@ class SudokuEngine {
         this.errors = 0;
         this.gameStarted = true;
         this.gameCompleted = false;
+        this.gamePaused = false;  // Reset pause state
         this.selectedCell = null;
 
         // Clear any previous candidates
@@ -1273,15 +1276,31 @@ class SudokuEngine {
     }
 
     startTimer() {
-        this.stopTimer();
+        // Prevent multiple timers by checking if already running
+        if (this.timerInterval) {
+            console.warn('Timer already running, stopping existing timer first');
+            this.stopTimer();
+        }
+
+        // Only start timer if game is active and not completed
+        if (!this.gameStarted || this.gameCompleted || this.gamePaused) {
+            console.log('Not starting timer - game not active or completed/paused');
+            return;
+        }
+
+        console.log('Starting timer');
         this.timerInterval = setInterval(() => {
             this.timer++;
-            document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerDisplay) {
+                timerDisplay.textContent = this.formatTime(this.timer);
+            }
         }, 1000);
     }
 
     stopTimer() {
         if (this.timerInterval) {
+            console.log('Stopping timer');
             clearInterval(this.timerInterval);
             this.timerInterval = null;
         }
@@ -1459,8 +1478,11 @@ class SudokuEngine {
                     // Keep completed state - don't start timer
                     document.getElementById('gameStatus').innerHTML =
                         '<div class="status-message success">Puzzle completed! Well done!</div>';
-                } else if (this.gameStarted) {
-                    this.startTimer();
+                } else if (this.gameStarted && !this.gamePaused) {
+                    // Only start timer if not already running
+                    if (!this.timerInterval) {
+                        this.startTimer();
+                    }
                 }
 
                 this.updateDisplay();
@@ -2185,11 +2207,19 @@ class SudokuEngine {
     }
 
     destroy() {
+        console.log('Destroying SudokuEngine instance');
         // Cleanup when switching pages
         this.stopTimer();
         if (this.autoSaveInterval) {
             clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
         }
+
+        // Reset game state flags to prevent timer restart
+        this.gameStarted = false;
+        this.gameCompleted = false;
+        this.gamePaused = false;
+
         // Close any open modals
         document.querySelectorAll('.settings-modal').forEach(modal => modal.remove());
     }
@@ -2203,8 +2233,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if we're on the sudoku page
     if (document.getElementById('sudoku')) {
         const initSudoku = async () => {
+            console.log('Initializing Sudoku');
             if (window.sudokuEngine) {
+                console.log('Destroying existing SudokuEngine');
                 window.sudokuEngine.destroy();
+                // Add small delay to ensure cleanup is complete
+                await new Promise(resolve => setTimeout(resolve, 50));
             }
             window.sudokuEngine = new SudokuEngine();
             await window.sudokuEngine.init();
@@ -2221,9 +2255,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                     const sudokuPage = document.getElementById('sudoku');
                     if (sudokuPage && sudokuPage.classList.contains('active')) {
-                        setTimeout(initSudoku, 100); // Small delay to ensure DOM is ready
+                        // Prevent rapid re-initialization
+                        if (window.sudokuInitializing) {
+                            console.log('Sudoku already initializing, skipping');
+                            return;
+                        }
+                        window.sudokuInitializing = true;
+                        setTimeout(async () => {
+                            await initSudoku();
+                            window.sudokuInitializing = false;
+                        }, 100); // Small delay to ensure DOM is ready
                     } else if (window.sudokuEngine) {
+                        console.log('Sudoku page no longer active, destroying engine');
                         window.sudokuEngine.destroy();
+                        window.sudokuEngine = null;
                     }
                 }
             });
