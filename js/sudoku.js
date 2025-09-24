@@ -227,23 +227,23 @@ class SudokuEngine {
 
         // Number input
         document.querySelectorAll('.number-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 const number = parseInt(e.target.dataset.number || e.target.closest('.number-btn').dataset.number);
-                this.inputNumber(number);
+                await this.inputNumber(number);
             });
         });
 
         // Action buttons
-        document.getElementById('hintBtn')?.addEventListener('click', () => this.getHint());
+        document.getElementById('hintBtn')?.addEventListener('click', async () => await this.getHint());
         document.getElementById('undoBtn')?.addEventListener('click', () => this.undo());
-        document.getElementById('eraseBtn')?.addEventListener('click', () => this.eraseSelectedCell());
+        document.getElementById('eraseBtn')?.addEventListener('click', async () => await this.eraseSelectedCell());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
 
         // Keyboard controls
-        document.addEventListener('keydown', (e) => this.handleKeyInput(e));
+        document.addEventListener('keydown', async (e) => await this.handleKeyInput(e));
 
         // Auto-save every 10 seconds
         this.autoSaveInterval = setInterval(() => {
@@ -585,7 +585,7 @@ class SudokuEngine {
         this.updateDisplay();
     }
 
-    inputNumber(number) {
+    async inputNumber(number) {
         if (!this.selectedCell || !this.gameStarted || this.gameCompleted || this.gamePaused) return;
 
         const { row, col } = this.selectedCell;
@@ -657,7 +657,7 @@ class SudokuEngine {
 
         this.updateDisplay();
         this.playSound('place');
-        this.checkCompletion();
+        await this.checkCompletion();
     }
 
     toggleCandidateMode() {
@@ -845,7 +845,7 @@ class SudokuEngine {
         }
     }
 
-    getHint() {
+    async getHint() {
         if (!this.gameStarted || this.gameCompleted) return;
 
         // Find best hint using deterministic algorithm
@@ -923,7 +923,7 @@ class SudokuEngine {
                 document.head.appendChild(hintStyles);
             }
 
-            this.checkCompletion();
+            await this.checkCompletion();
         } else {
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">No hints available right now.</div>';
@@ -1270,7 +1270,7 @@ class SudokuEngine {
         return null;
     }
 
-    checkCompletion() {
+    async checkCompletion() {
         let completed = true;
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
@@ -1285,6 +1285,10 @@ class SudokuEngine {
         if (completed) {
             this.gameCompleted = true;
             this.stopTimer();
+
+            // Save the completed state to prevent the game from appearing unfinished when reloaded
+            await this.saveGameState();
+
             this.playSound('complete');
             this.incrementStreak();
 
@@ -1414,19 +1418,19 @@ class SudokuEngine {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
-    handleKeyInput(e) {
+    async handleKeyInput(e) {
         if (!this.gameStarted || this.gameCompleted) return;
 
         // Number keys
         if (e.key >= '1' && e.key <= '9') {
             e.preventDefault();
-            this.inputNumber(parseInt(e.key));
+            await this.inputNumber(parseInt(e.key));
         }
 
         // Delete/Backspace
         if (e.key === 'Delete' || e.key === 'Backspace') {
             e.preventDefault();
-            this.inputNumber(0);
+            await this.inputNumber(0);
         }
 
         // Arrow keys for navigation
@@ -1454,7 +1458,7 @@ class SudokuEngine {
         // Additional keyboard shortcuts
         if (e.key === 'h' && e.ctrlKey) {
             e.preventDefault();
-            this.getHint();
+            await this.getHint();
         }
         if (e.key === 'z' && e.ctrlKey) {
             e.preventDefault();
@@ -1884,9 +1888,9 @@ class SudokuEngine {
         });
     }
 
-    eraseSelectedCell() {
+    async eraseSelectedCell() {
         if (this.selectedCell) {
-            this.inputNumber(0);
+            await this.inputNumber(0);
         }
     }
 
