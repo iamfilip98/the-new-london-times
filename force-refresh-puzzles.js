@@ -21,9 +21,9 @@ async function forceRefreshAllPuzzles() {
         console.log(`📊 Medium: ${result.medium.puzzle.flat().filter(x => x === 0).length} empty cells`);
         console.log(`📊 Hard: ${result.hard.puzzle.flat().filter(x => x === 0).length} empty cells`);
 
-        console.log('\n🌐 Now do a hard refresh in your browser:');
-        console.log('   - Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)');
-        console.log('   - Or F12 → Right-click refresh → "Empty Cache and Hard Reload"');
+        console.log('\n🌐 To see the new puzzles in your browser, you have two options:');
+        console.log('   1. EASY: In browser console, run: refreshPuzzles()');
+        console.log('   2. OR do a hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)');
 
         return true;
     } catch (error) {

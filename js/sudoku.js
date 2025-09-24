@@ -331,6 +331,40 @@ class SudokuEngine {
         }
     }
 
+    async forceRefreshPuzzles() {
+        try {
+            console.log('🔄 Force refreshing puzzles from server...');
+
+            // Clear cached preloaded puzzles
+            window.preloadedPuzzles = null;
+
+            // Force reload from API with cache busting
+            const today = this.getTodayDateString();
+            const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
+
+            if (response.ok) {
+                this.dailyPuzzles = await response.json();
+                console.log('✅ Successfully refreshed puzzles from server');
+
+                // Update global cache
+                window.preloadedPuzzles = this.dailyPuzzles;
+
+                // If currently playing, reload the current puzzle
+                if (this.currentDifficulty && this.gameStarted) {
+                    console.log(`🔄 Reloading current ${this.currentDifficulty} puzzle with fresh data`);
+                    this.loadPuzzle(this.currentDifficulty);
+                }
+
+                return true;
+            } else {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+        } catch (error) {
+            console.error('❌ Failed to force refresh puzzles:', error);
+            return false;
+        }
+    }
+
     generatePuzzle(difficulty) {
         // Simplified puzzle generation - in production would use advanced algorithm
         const puzzle = Array(9).fill().map(() => Array(9).fill(0));
@@ -2630,3 +2664,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Global function to force refresh puzzles from browser console
+window.refreshPuzzles = function() {
+    if (window.sudokuEngine) {
+        return window.sudokuEngine.forceRefreshPuzzles();
+    } else {
+        console.warn('Sudoku engine not available. Try running this on the puzzle page.');
+        return false;
+    }
+};
