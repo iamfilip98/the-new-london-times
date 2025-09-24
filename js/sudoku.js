@@ -488,7 +488,6 @@ class SudokuEngine {
 
                 if (this.playerGrid[row][col] !== 0) {
                     valueDiv.textContent = this.playerGrid[row][col];
-                    candidatesDiv.innerHTML = '';
 
                     // Mark as given or user input
                     if (this.initialGrid[row][col] !== 0) {
@@ -502,6 +501,13 @@ class SudokuEngine {
                         if (!this.isValidMove(tempGrid, row, col, this.playerGrid[row][col])) {
                             cell.classList.add('error');
                         }
+                    }
+
+                    // Show candidates even when cell has a value (for notes on filled cells)
+                    if (this.candidates[row][col].size > 0) {
+                        candidatesDiv.innerHTML = this.renderCandidatesGrid(this.candidates[row][col]);
+                    } else {
+                        candidatesDiv.innerHTML = '';
                     }
                 } else {
                     valueDiv.textContent = '';
@@ -604,15 +610,13 @@ class SudokuEngine {
             this.playerGrid[row][col] = 0;
             this.candidates[row][col].clear();
         } else if (this.candidateMode) {
-            // Toggle candidate - only if cell is empty
-            if (this.playerGrid[row][col] === 0) {
-                if (this.candidates[row][col].has(number)) {
-                    this.candidates[row][col].delete(number);
-                    this.manualCandidates[row][col].delete(number);
-                } else {
-                    this.candidates[row][col].add(number);
-                    this.manualCandidates[row][col].add(number);
-                }
+            // Toggle candidate - allow even if cell has a value
+            if (this.candidates[row][col].has(number)) {
+                this.candidates[row][col].delete(number);
+                this.manualCandidates[row][col].delete(number);
+            } else {
+                this.candidates[row][col].add(number);
+                this.manualCandidates[row][col].add(number);
             }
         } else {
             // Place number - clear candidates when placing a number
