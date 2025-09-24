@@ -560,21 +560,15 @@ class SudokuEngine {
 
         return `
             <div class="candidates-grid">
-                <div class="candidates-row">
-                    <span class="candidate-cell">${grid[0] || ''}</span>
-                    <span class="candidate-cell">${grid[1] || ''}</span>
-                    <span class="candidate-cell">${grid[2] || ''}</span>
-                </div>
-                <div class="candidates-row">
-                    <span class="candidate-cell">${grid[3] || ''}</span>
-                    <span class="candidate-cell">${grid[4] || ''}</span>
-                    <span class="candidate-cell">${grid[5] || ''}</span>
-                </div>
-                <div class="candidates-row">
-                    <span class="candidate-cell">${grid[6] || ''}</span>
-                    <span class="candidate-cell">${grid[7] || ''}</span>
-                    <span class="candidate-cell">${grid[8] || ''}</span>
-                </div>
+                <span class="candidate-cell">${grid[0] || ''}</span>
+                <span class="candidate-cell">${grid[1] || ''}</span>
+                <span class="candidate-cell">${grid[2] || ''}</span>
+                <span class="candidate-cell">${grid[3] || ''}</span>
+                <span class="candidate-cell">${grid[4] || ''}</span>
+                <span class="candidate-cell">${grid[5] || ''}</span>
+                <span class="candidate-cell">${grid[6] || ''}</span>
+                <span class="candidate-cell">${grid[7] || ''}</span>
+                <span class="candidate-cell">${grid[8] || ''}</span>
             </div>
         `;
     }
