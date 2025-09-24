@@ -33,13 +33,17 @@ class SudokuEngine {
             this.currentDifficulty = selectedDifficulty;
             sessionStorage.removeItem('selectedDifficulty'); // Clear it once used
             console.log('Using selected difficulty from dashboard:', selectedDifficulty);
-        }
 
-        await this.loadGameState();
-
-        // If no saved game state and we have a selected difficulty, start new game
-        if (!this.gameStarted && this.currentDifficulty) {
+            // When user explicitly selects a difficulty, start fresh game instead of loading saved state
             this.loadPuzzle(this.currentDifficulty);
+        } else {
+            // Only load saved game state if no difficulty was explicitly selected
+            await this.loadGameState();
+
+            // If no saved game state and we have a current difficulty, start new game
+            if (!this.gameStarted && this.currentDifficulty) {
+                this.loadPuzzle(this.currentDifficulty);
+            }
         }
     }
 
