@@ -22,11 +22,25 @@ class SudokuEngine {
     }
 
     // Initialize Sudoku UI and game
-    init() {
+    async init() {
         this.createSudokuInterface();
-        this.loadDailyPuzzles();
+        await this.loadDailyPuzzles();
         this.setupEventListeners();
-        this.loadGameState();
+
+        // Check if there's a selected difficulty from dashboard
+        const selectedDifficulty = sessionStorage.getItem('selectedDifficulty');
+        if (selectedDifficulty) {
+            this.currentDifficulty = selectedDifficulty;
+            sessionStorage.removeItem('selectedDifficulty'); // Clear it once used
+            console.log('Using selected difficulty from dashboard:', selectedDifficulty);
+        }
+
+        await this.loadGameState();
+
+        // If no saved game state and we have a selected difficulty, start new game
+        if (!this.gameStarted && this.currentDifficulty) {
+            this.loadPuzzle(this.currentDifficulty);
+        }
     }
 
     createSudokuInterface() {
@@ -1450,12 +1464,12 @@ window.sudokuEngine = null;
 document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if we're on the sudoku page
     if (document.getElementById('sudoku')) {
-        const initSudoku = () => {
+        const initSudoku = async () => {
             if (window.sudokuEngine) {
                 window.sudokuEngine.destroy();
             }
             window.sudokuEngine = new SudokuEngine();
-            window.sudokuEngine.init();
+            await window.sudokuEngine.init();
         };
 
         // Initialize immediately if sudoku page is active

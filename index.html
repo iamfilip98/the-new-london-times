@@ -526,6 +526,9 @@
 
         // Function to start Sudoku game with selected difficulty
         function startSudokuGame(difficulty) {
+            // Store the selected difficulty for when the sudoku engine initializes
+            sessionStorage.setItem('selectedDifficulty', difficulty);
+
             // Switch to sudoku page
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
@@ -542,6 +545,9 @@
             setTimeout(() => {
                 if (window.sudokuEngine) {
                     window.sudokuEngine.changeDifficulty(difficulty);
+                } else {
+                    // If engine isn't ready yet, it will pick up the stored difficulty when it initializes
+                    console.log('Sudoku engine not ready, stored difficulty:', difficulty);
                 }
             }, 100);
         }
