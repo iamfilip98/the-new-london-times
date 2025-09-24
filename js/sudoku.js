@@ -1419,13 +1419,8 @@ class SudokuEngine {
     calculateCurrentScore() {
         if (!this.gameStarted) return 0;
 
-        // Improved scoring formula - difficulty-based penalties
-        const errorPenalty = { easy: 20, medium: 15, hard: 10 };
-        const hintPenalty = { easy: 8, medium: 6, hard: 4 };
-
-        const adjustedTime = this.timer +
-            (this.errors * errorPenalty[this.currentDifficulty]) +
-            (this.hints * hintPenalty[this.currentDifficulty]);
+        // Use standard scoring formula with fixed penalties
+        const adjustedTime = this.timer + (this.errors * 30) + (this.hints * 15);
         const adjustedMinutes = adjustedTime / 60;
         const multipliers = { easy: 1, medium: 1.5, hard: 2 };
 
