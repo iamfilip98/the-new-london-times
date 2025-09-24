@@ -316,7 +316,7 @@ class SudokuEngine {
             // Fallback: Load daily puzzles from server API
             console.log('🔄 Preloaded puzzles not available, fetching from server...');
             const today = this.getTodayDateString();
-            const response = await fetch(`/api/puzzles?date=${today}`);
+            const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
 
             if (response.ok) {
                 this.dailyPuzzles = await response.json();

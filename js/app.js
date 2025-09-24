@@ -1201,7 +1201,7 @@ class SudokuChampionship {
         try {
             console.log('🧩 Preloading daily puzzles...');
             const today = new Date().toISOString().split('T')[0];
-            const response = await fetch(`/api/puzzles?date=${today}`);
+            const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
 
             if (response.ok) {
                 this.puzzleCache.puzzles = await response.json();
