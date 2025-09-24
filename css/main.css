@@ -2940,7 +2940,7 @@ select:focus-visible,
 /* Enhanced Game Info Panel */
 .game-info-panel {
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr;
+    grid-template-columns: 1fr 1fr auto;
     gap: 2rem;
     background: var(--card-bg);
     backdrop-filter: blur(20px);
@@ -2971,6 +2971,47 @@ select:focus-visible,
     font-weight: 700;
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
+}
+
+.game-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: var(--border-radius);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.icon-btn:active {
+    transform: translateY(0);
+}
+
+.hint-btn:hover {
+    color: var(--accent-orange);
+    background: rgba(255, 165, 0, 0.1);
+}
+
+.pause-btn:hover {
+    color: var(--accent-blue);
+    background: rgba(74, 144, 226, 0.1);
 }
 
 
@@ -3840,6 +3881,11 @@ select:focus-visible,
         grid-template-columns: 1fr;
         gap: 1rem;
         text-align: center;
+    }
+
+    .game-controls {
+        justify-content: center;
+        margin-top: 1rem;
     }
 
     .stats-section {

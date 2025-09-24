@@ -103,6 +103,14 @@ class SudokuEngine {
                             <span class="hints-count" id="hintsCount">0</span>
                         </div>
                     </div>
+                    <div class="game-controls">
+                        <button class="icon-btn hint-btn" id="hintBtn" title="Get a hint">
+                            <i class="fas fa-lightbulb"></i>
+                        </button>
+                        <button class="icon-btn pause-btn" id="pauseBtn" title="Pause game">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Sudoku Grid -->
@@ -137,14 +145,6 @@ class SudokuEngine {
                         <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
                             <i class="fas fa-pencil-alt"></i>
                             <span>Notes</span>
-                        </button>
-                        <button class="action-btn hint-btn" id="hintBtn" title="Get a hint">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Hint</span>
-                        </button>
-                        <button class="action-btn pause-btn" id="pauseBtn" title="Pause game">
-                            <i class="fas fa-pause"></i>
-                            <span>Pause</span>
                         </button>
                         <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
                             <i class="fas fa-eye"></i>
@@ -750,15 +750,15 @@ class SudokuEngine {
 
         if (this.gamePaused) {
             this.stopTimer();
-            pauseBtn.querySelector('span').textContent = 'Resume';
             pauseBtn.querySelector('i').className = 'fas fa-play';
+            pauseBtn.title = 'Resume game';
             sudokuGrid.classList.add('paused');
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game paused. Click Resume to continue.</div>';
         } else {
             this.startTimer();
-            pauseBtn.querySelector('span').textContent = 'Pause';
             pauseBtn.querySelector('i').className = 'fas fa-pause';
+            pauseBtn.title = 'Pause game';
             sudokuGrid.classList.remove('paused');
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game resumed!</div>';
