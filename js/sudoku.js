@@ -20,6 +20,8 @@ class SudokuEngine {
         this.moveHistory = [];
         this.autoSaveInterval = null;
         this.explicitlySelectedDifficulty = false; // Track if user explicitly selected difficulty
+        this.lastPuzzleDate = null; // Track puzzle date for auto-refresh
+        this.dailyRefreshInterval = null; // Auto-refresh timer
 
         // New NYT-style features
         this.autoCheckErrors = true;
@@ -34,6 +36,10 @@ class SudokuEngine {
     async init() {
         this.loadSettings();
         this.createSudokuInterface();
+
+        // Setup automatic daily refresh system
+        this.setupAutomaticRefresh();
+
         await this.loadDailyPuzzles();
         this.setupEventListeners();
 
@@ -1939,6 +1945,176 @@ class SudokuEngine {
         }
     }
 
+
+    // Automatic daily puzzle refresh system
+    setupAutomaticRefresh() {
+        console.log('🔄 Setting up automatic daily puzzle refresh...');
+
+        // Clear any existing interval
+        if (this.dailyRefreshInterval) {
+            clearInterval(this.dailyRefreshInterval);
+        }
+
+        // Check for new puzzles every 5 minutes
+        this.dailyRefreshInterval = setInterval(() => {
+            this.checkAndRefreshDailyPuzzles();
+        }, 5 * 60 * 1000); // 5 minutes
+
+        // Also check immediately on visibility change (tab focus)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                console.log('🔄 Tab focused, checking for new daily puzzles...');
+                this.checkAndRefreshDailyPuzzles();
+            }
+        });
+
+        // Check on page load
+        this.checkAndRefreshDailyPuzzles();
+    }
+
+    async checkAndRefreshDailyPuzzles() {
+        const today = new Date().toISOString().split('T')[0];
+
+        // If we don't have puzzles or they're for a different date, refresh
+        if (!this.dailyPuzzles || this.lastPuzzleDate !== today) {
+            console.log(`📅 Date changed or no puzzles loaded. Current: ${today}, Last: ${this.lastPuzzleDate}`);
+            await this.loadDailyPuzzles(true); // Force refresh
+            this.lastPuzzleDate = today;
+
+            // If user has a game in progress for old date, handle it
+            if (this.gameStarted && this.lastPuzzleDate !== today) {
+                console.log('🔄 New day detected, clearing old game state');
+                this.clearOldGameState();
+                // Auto-load easy difficulty for new day
+                this.loadPuzzle('easy');
+            }
+        }
+    }
+
+    clearOldGameState() {
+        // Clear localStorage for previous dates
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.includes('sudoku') && !key.includes(new Date().toISOString().split('T')[0])) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+
+        // Reset game state
+        this.gameStarted = false;
+        this.gameCompleted = false;
+        this.timer = 0;
+        this.hints = 0;
+        this.errors = 0;
+    }
+
+    async loadDailyPuzzles(forceRefresh = false) {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Always use cache-busting for reliable updates
+            const cacheBuster = `_cb=${Date.now()}`;
+            const dateParam = `date=${today}`;
+            const url = `/api/puzzles?${dateParam}&${cacheBuster}`;
+
+            console.log('🔄 Loading daily puzzles:', url);
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const puzzleData = await response.json();
+
+            // Validate puzzle data thoroughly
+            const validation = this.validatePuzzleData(puzzleData);
+            if (!validation.isValid) {
+                throw new Error(`Invalid puzzle data: ${validation.reason}`);
+            }
+
+            this.dailyPuzzles = puzzleData;
+            this.lastPuzzleDate = today;
+
+            console.log('✅ Daily puzzles loaded and validated successfully');
+
+            // Log puzzle info for verification
+            Object.keys(this.dailyPuzzles).forEach(difficulty => {
+                const puzzle = this.dailyPuzzles[difficulty];
+                if (puzzle && puzzle.puzzle) {
+                    const clueCount = this.countClues(puzzle.puzzle);
+                    console.log(`  ${difficulty}: ${clueCount} clues`);
+                }
+            });
+
+            return true;
+
+        } catch (error) {
+            console.error('❌ Failed to load daily puzzles:', error);
+
+            if (!forceRefresh) {
+                console.log('🔄 Trying force refresh...');
+                return await this.loadDailyPuzzles(true);
+            } else {
+                console.log('🔄 Using fallback puzzles...');
+                this.generateFallbackPuzzles();
+                this.lastPuzzleDate = new Date().toISOString().split('T')[0];
+                return false;
+            }
+        }
+    }
+
+    validatePuzzleData(puzzleData) {
+        if (!puzzleData || typeof puzzleData !== 'object') {
+            return { isValid: false, reason: 'No puzzle data received' };
+        }
+
+        const difficulties = ['easy', 'medium', 'hard'];
+        for (const difficulty of difficulties) {
+            const puzzle = puzzleData[difficulty];
+
+            if (!puzzle || !puzzle.puzzle || !puzzle.solution) {
+                return { isValid: false, reason: `Missing ${difficulty} puzzle data` };
+            }
+
+            // Check if puzzle is properly formatted (9x9 arrays)
+            if (!Array.isArray(puzzle.puzzle) || puzzle.puzzle.length !== 9) {
+                return { isValid: false, reason: `Invalid ${difficulty} puzzle format` };
+            }
+
+            // Check if puzzle has empty cells (not already solved)
+            let emptyCells = 0;
+            for (let row = 0; row < 9; row++) {
+                if (!Array.isArray(puzzle.puzzle[row]) || puzzle.puzzle[row].length !== 9) {
+                    return { isValid: false, reason: `Invalid ${difficulty} puzzle row format` };
+                }
+                for (let col = 0; col < 9; col++) {
+                    if (puzzle.puzzle[row][col] === 0) emptyCells++;
+                }
+            }
+
+            if (emptyCells === 0) {
+                return { isValid: false, reason: `${difficulty} puzzle is already solved` };
+            }
+
+            // Reasonable clue count check
+            const clues = 81 - emptyCells;
+            if (clues < 17 || clues > 50) {
+                return { isValid: false, reason: `${difficulty} puzzle has unreasonable clue count: ${clues}` };
+            }
+        }
+
+        return { isValid: true, reason: 'Valid puzzle data' };
+    }
 
     generateFallbackPuzzles() {
         // Base solution - all puzzles use this same solution
