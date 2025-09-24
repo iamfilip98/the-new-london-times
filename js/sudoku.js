@@ -1992,7 +1992,15 @@ class SudokuEngine {
                             <option value="high" ${this.soundLevel === 'high' ? 'selected' : ''}>High</option>
                         </select>
                     </div>
-                    ${this.gameStarted && !this.gameCompleted ? `
+                    ${(() => {
+                        console.log('Settings modal debug:', {
+                            gameStarted: this.gameStarted,
+                            gameCompleted: this.gameCompleted,
+                            currentDifficulty: this.currentDifficulty,
+                            showResetButton: this.gameStarted && !this.gameCompleted
+                        });
+                        return this.gameStarted && !this.gameCompleted;
+                    })() ? `
                     <div class="setting-item">
                         <hr style="margin: 1rem 0; border: 1px solid #333;">
                         <button class="btn-secondary" onclick="window.sudokuEngine.restartPuzzle(); this.closest('.settings-modal').remove();" style="width: 100%; margin-top: 0.5rem;">
