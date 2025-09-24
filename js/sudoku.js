@@ -508,10 +508,7 @@ class SudokuEngine {
 
                     // Show candidates if they exist (regardless of candidate mode)
                     if (this.candidates[row][col].size > 0) {
-                        candidatesDiv.innerHTML = Array.from(this.candidates[row][col])
-                            .sort((a, b) => a - b)
-                            .map(num => `<span class="candidate-num">${num}</span>`)
-                            .join('');
+                        candidatesDiv.innerHTML = this.renderCandidatesGrid(this.candidates[row][col]);
                     } else {
                         candidatesDiv.innerHTML = '';
                     }
@@ -547,6 +544,39 @@ class SudokuEngine {
     isInSameBox(row1, col1, row2, col2) {
         return Math.floor(row1 / 3) === Math.floor(row2 / 3) &&
                Math.floor(col1 / 3) === Math.floor(col2 / 3);
+    }
+
+    renderCandidatesGrid(candidatesSet) {
+        // Create a 3x3 grid for candidates numbered 1-9
+        // Grid positions: 1=top-left, 2=top-center, 3=top-right,
+        //                 4=mid-left, 5=mid-center, 6=mid-right,
+        //                 7=bot-left, 8=bot-center, 9=bot-right
+        const grid = Array(9).fill('');
+        const candidatesArray = Array.from(candidatesSet).sort((a, b) => a - b);
+
+        candidatesArray.forEach(num => {
+            grid[num - 1] = num; // Position numbers 1-9 in grid positions 0-8
+        });
+
+        return `
+            <div class="candidates-grid">
+                <div class="candidates-row">
+                    <span class="candidate-cell">${grid[0] || ''}</span>
+                    <span class="candidate-cell">${grid[1] || ''}</span>
+                    <span class="candidate-cell">${grid[2] || ''}</span>
+                </div>
+                <div class="candidates-row">
+                    <span class="candidate-cell">${grid[3] || ''}</span>
+                    <span class="candidate-cell">${grid[4] || ''}</span>
+                    <span class="candidate-cell">${grid[5] || ''}</span>
+                </div>
+                <div class="candidates-row">
+                    <span class="candidate-cell">${grid[6] || ''}</span>
+                    <span class="candidate-cell">${grid[7] || ''}</span>
+                    <span class="candidate-cell">${grid[8] || ''}</span>
+                </div>
+            </div>
+        `;
     }
 
     selectCell(row, col) {
