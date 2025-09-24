@@ -1303,6 +1303,37 @@ class SudokuChampionship {
         location.reload(true);
     }
 
+    // Test API connectivity
+    async testApiConnectivity() {
+        const today = new Date().toISOString().split('T')[0];
+        console.log(`🔍 Testing API connectivity for ${today}...`);
+
+        const endpoints = [
+            `/api/puzzles?date=${today}&t=${Date.now()}`,
+            `/api/games?date=${today}`,
+            `/api/entries`,
+            `/api/stats?type=all`
+        ];
+
+        for (const endpoint of endpoints) {
+            try {
+                console.log(`🌐 Testing: ${endpoint}`);
+                const response = await fetch(endpoint);
+                console.log(`✅ ${endpoint} - Status: ${response.status}`);
+
+                if (endpoint.includes('puzzles')) {
+                    const data = await response.json();
+                    console.log(`🧩 Puzzle data structure:`, Object.keys(data));
+                    if (data.easy && data.easy.puzzle) {
+                        console.log(`🎯 Easy puzzle first row:`, data.easy.puzzle[0]);
+                    }
+                }
+            } catch (error) {
+                console.error(`❌ ${endpoint} - Error:`, error.message);
+            }
+        }
+    }
+
     // Puzzle preloading functionality
     async preloadPuzzles() {
         // Don't preload if already loading or recently loaded
@@ -1364,3 +1395,17 @@ window.resetToday = () => sudokuApp.resetToday();
 window.fullReset = (date) => sudokuApp.fullReset(date);
 window.clearLocalStorage = () => sudokuApp.clearAllLocalStorage();
 window.forceDailyRefresh = () => sudokuApp.forceDailyRefresh();
+window.testApi = () => sudokuApp.testApiConnectivity();
+window.testPuzzles = () => {
+    if (window.sudokuEngine && window.sudokuEngine.dailyPuzzles) {
+        console.log('🧩 Current daily puzzles:', window.sudokuEngine.dailyPuzzles);
+        Object.keys(window.sudokuEngine.dailyPuzzles).forEach(difficulty => {
+            const puzzle = window.sudokuEngine.dailyPuzzles[difficulty];
+            if (puzzle && puzzle.puzzle) {
+                console.log(`${difficulty}: First row =`, puzzle.puzzle[0]);
+            }
+        });
+    } else {
+        console.log('❌ No Sudoku engine or daily puzzles found');
+    }
+};
