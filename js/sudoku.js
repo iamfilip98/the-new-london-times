@@ -153,6 +153,10 @@ class SudokuEngine {
                             <i class="fas fa-pause"></i>
                             <span>Pause</span>
                         </button>
+                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
+                            <i class="fas fa-eye"></i>
+                            <span>Show All</span>
+                        </button>
                         <button class="action-btn settings-btn" id="settingsBtn" title="Game settings">
                             <i class="fas fa-cog"></i>
                             <span>Settings</span>
@@ -232,6 +236,7 @@ class SudokuEngine {
         document.getElementById('undoBtn')?.addEventListener('click', () => this.undo());
         document.getElementById('eraseBtn')?.addEventListener('click', () => this.eraseSelectedCell());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
+        document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
 
@@ -451,6 +456,8 @@ class SudokuEngine {
         }
 
         this.updateDisplay();
+        this.updateCandidateModeUI();
+        this.updateShowAllCandidatesUI();
         this.startTimer();
 
         document.getElementById('gameStatus').innerHTML =
