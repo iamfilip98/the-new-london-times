@@ -1461,6 +1461,7 @@ class SudokuEngine {
 
         const gameState = {
             playerGrid: this.playerGrid,
+            initialGrid: this.initialGrid,
             candidates: this.candidates.map(row => row.map(cell => Array.from(cell))),
             timer: this.timer,
             hints: this.hints,
@@ -1532,6 +1533,7 @@ class SudokuEngine {
 
             if (gameState) {
                 this.playerGrid = gameState.playerGrid || this.playerGrid;
+                this.initialGrid = gameState.initialGrid || this.initialGrid;
                 this.candidates = gameState.candidates ?
                     gameState.candidates.map(row => row.map(cell => new Set(cell))) :
                     this.candidates;
