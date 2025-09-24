@@ -341,9 +341,9 @@ class SudokuEngine {
 
         // Remove numbers based on difficulty
         const cellsToRemove = {
-            easy: 45,    // ~36 given numbers
-            medium: 55,  // ~26 given numbers
-            hard: 65     // ~16 given numbers
+            easy: 35,    // ~46 given numbers - more approachable
+            medium: 45,  // ~36 given numbers - balanced challenge
+            hard: 52     // ~29 given numbers - difficult but fair
         };
 
         // Copy solution to puzzle
@@ -353,19 +353,56 @@ class SudokuEngine {
             }
         }
 
-        // Remove cells to create puzzle
+        // Remove cells to create puzzle with better distribution
+        const positions = [];
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                positions.push([i, j]);
+            }
+        }
+
+        // Shuffle positions for random removal
+        for (let i = positions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [positions[i], positions[j]] = [positions[j], positions[i]];
+        }
+
         let removed = 0;
-        while (removed < cellsToRemove[difficulty]) {
-            const row = Math.floor(Math.random() * 9);
-            const col = Math.floor(Math.random() * 9);
+        const targetCells = cellsToRemove[difficulty];
+
+        for (let [row, col] of positions) {
+            if (removed >= targetCells) break;
 
             if (puzzle[row][col] !== 0) {
+                // For easy mode, ensure regions don't become too sparse
+                if (difficulty === 'easy') {
+                    const regionClues = this.countRegionClues(puzzle, row, col);
+                    if (regionClues < 4) continue;
+                }
+
                 puzzle[row][col] = 0;
                 removed++;
             }
         }
 
         return { puzzle, solution };
+    }
+
+    // Helper function to count clues in a 3x3 region
+    countRegionClues(grid, row, col) {
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        let count = 0;
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (grid[startRow + i][startCol + j] !== 0) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
     }
 
     generateCompleteSolution(grid) {
@@ -1382,8 +1419,13 @@ class SudokuEngine {
     calculateCurrentScore() {
         if (!this.gameStarted) return 0;
 
-        // Use existing scoring formula with hint penalty
-        const adjustedTime = this.timer + (this.errors * 30) + (this.hints * 15);
+        // Improved scoring formula - difficulty-based penalties
+        const errorPenalty = { easy: 20, medium: 15, hard: 10 };
+        const hintPenalty = { easy: 8, medium: 6, hard: 4 };
+
+        const adjustedTime = this.timer +
+            (this.errors * errorPenalty[this.currentDifficulty]) +
+            (this.hints * hintPenalty[this.currentDifficulty]);
         const adjustedMinutes = adjustedTime / 60;
         const multipliers = { easy: 1, medium: 1.5, hard: 2 };
 

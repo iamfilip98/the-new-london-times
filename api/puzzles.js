@@ -142,9 +142,9 @@ function generatePuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
 
   const cellsToRemove = {
-    easy: 40,    // ~41 given numbers
-    medium: 50,  // ~31 given numbers
-    hard: 60     // ~21 given numbers
+    easy: 35,    // ~46 given numbers - more approachable
+    medium: 45,  // ~36 given numbers - balanced challenge
+    hard: 52     // ~29 given numbers - difficult but fair
   };
 
   const positions = [];
@@ -161,14 +161,74 @@ function generatePuzzle(solution, difficulty) {
   }
 
   let removed = 0;
-  for (let [row, col] of positions) {
-    if (removed >= cellsToRemove[difficulty]) break;
+  const targetCells = cellsToRemove[difficulty];
 
-    puzzle[row][col] = 0;
-    removed++;
+  // Enhanced removal strategy for better playability
+  // Remove cells in multiple passes to ensure even distribution
+
+  // Pass 1: Remove cells symmetrically for better visual balance
+  const symmetricPositions = [];
+  for (let i = 0; i < Math.floor(positions.length / 2); i++) {
+    const [row, col] = positions[i];
+    const symRow = 8 - row;
+    const symCol = 8 - col;
+
+    symmetricPositions.push([row, col]);
+    if (row !== symRow || col !== symCol) {
+      symmetricPositions.push([symRow, symCol]);
+    }
+  }
+
+  // Shuffle symmetric positions
+  for (let i = symmetricPositions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [symmetricPositions[i], symmetricPositions[j]] = [symmetricPositions[j], symmetricPositions[i]];
+  }
+
+  // Remove cells with some strategy based on difficulty
+  for (let [row, col] of symmetricPositions) {
+    if (removed >= targetCells) break;
+
+    if (puzzle[row][col] !== 0) {
+      // For easier difficulties, prefer removing cells that leave more clues in their region
+      if (difficulty === 'easy') {
+        const regionClues = countRegionClues(puzzle, row, col);
+        if (regionClues < 3) continue; // Don't remove if region would have too few clues
+      }
+
+      puzzle[row][col] = 0;
+      removed++;
+    }
+  }
+
+  // If we haven't removed enough cells, finish with remaining positions
+  for (let [row, col] of positions) {
+    if (removed >= targetCells) break;
+
+    if (puzzle[row][col] !== 0) {
+      puzzle[row][col] = 0;
+      removed++;
+    }
   }
 
   return puzzle;
+}
+
+// Helper function to count clues in a 3x3 region
+function countRegionClues(grid, row, col) {
+  const startRow = Math.floor(row / 3) * 3;
+  const startCol = Math.floor(col / 3) * 3;
+  let count = 0;
+
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (grid[startRow + i][startCol + j] !== 0) {
+        count++;
+      }
+    }
+  }
+
+  return count;
 }
 
 // Convert grid to 81-character string
