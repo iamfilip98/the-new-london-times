@@ -13,7 +13,7 @@
     <div class="app-container">
         <!-- Navigation -->
         <nav class="main-nav">
-            <div class="nav-brand">
+            <div class="nav-brand" onclick="navigateToDashboard()" style="cursor: pointer;">
                 <i class="fas fa-trophy"></i>
                 <span>Sudoku Championship</span>
             </div>
@@ -544,6 +544,23 @@
             // The sudoku engine will pick up the stored difficulty when it initializes
             // No need to call changeDifficulty since we stored it in sessionStorage
             console.log('Difficulty stored for initialization:', difficulty);
+        }
+
+        // Function to navigate to dashboard when clicking on brand
+        function navigateToDashboard() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+
+            // Update active nav link to dashboard
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-page="dashboard"]').classList.add('active');
+
+            // Update active page to dashboard
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById('dashboard').classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
         }
     </script>
 
