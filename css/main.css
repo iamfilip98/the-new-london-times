@@ -3352,12 +3352,12 @@ select:focus-visible,
 
 /* Row, column, box highlighting */
 .sudoku-cell.highlighted {
-    background: #fff4e6 !important;
+    background: rgba(255, 244, 230, 0.8) !important;
 }
 
 .sudoku-cell.highlighted.given,
 .sudoku-cell.highlighted.user-input {
-    background: #fff4e6 !important;
+    background: rgba(255, 244, 230, 0.8) !important;
 }
 
 /* Same number highlighting */
