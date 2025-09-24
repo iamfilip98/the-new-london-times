@@ -596,12 +596,14 @@ class SudokuEngine {
         // Save current state for undo
         const previousValue = this.playerGrid[row][col];
         const previousCandidates = new Set(this.candidates[row][col]);
+        const previousManualCandidates = new Set(this.manualCandidates[row][col]);
 
         this.moveHistory.push({
             row,
             col,
             previousValue,
             previousCandidates: previousCandidates,
+            previousManualCandidates: previousManualCandidates,
             timestamp: Date.now()
         });
 
@@ -2012,15 +2014,29 @@ class SudokuEngine {
         }
 
         const lastMove = this.moveHistory.pop();
-        const { row, col, previousValue, previousCandidates } = lastMove;
+        const { row, col, previousValue, previousCandidates, previousManualCandidates } = lastMove;
 
         // Restore previous state
         this.playerGrid[row][col] = previousValue;
         this.candidates[row][col] = new Set(previousCandidates);
 
-        // Update all candidates if in show all mode
+        // Restore manual candidates (handle backwards compatibility)
+        if (previousManualCandidates) {
+            this.manualCandidates[row][col] = new Set(previousManualCandidates);
+        }
+
+        // Only update other cells' candidates if in show all mode, but preserve this cell's restored candidates
         if (this.showAllCandidates) {
+            // Save the restored candidates for this cell
+            const restoredCandidates = new Set(this.candidates[row][col]);
+            const restoredManualCandidates = new Set(this.manualCandidates[row][col]);
+
+            // Update all other cells
             this.updateAllCandidates();
+
+            // Restore this specific cell's candidates after the update
+            this.candidates[row][col] = restoredCandidates;
+            this.manualCandidates[row][col] = restoredManualCandidates;
         }
 
         // Select the cell that was just undone
