@@ -598,12 +598,22 @@ class SudokuEngine {
         const previousCandidates = new Set(this.candidates[row][col]);
         const previousManualCandidates = new Set(this.manualCandidates[row][col]);
 
+        // Determine move type
+        let moveType = 'number';
+        if (number === 0) {
+            moveType = 'erase';
+        } else if (this.candidateMode) {
+            moveType = 'candidate';
+        }
+
         this.moveHistory.push({
             row,
             col,
             previousValue,
             previousCandidates: previousCandidates,
             previousManualCandidates: previousManualCandidates,
+            moveType: moveType,
+            candidateNumber: this.candidateMode ? number : null,
             timestamp: Date.now()
         });
 
@@ -2014,29 +2024,42 @@ class SudokuEngine {
         }
 
         const lastMove = this.moveHistory.pop();
-        const { row, col, previousValue, previousCandidates, previousManualCandidates } = lastMove;
+        const { row, col, previousValue, previousCandidates, previousManualCandidates, moveType, candidateNumber } = lastMove;
 
-        // Restore previous state
-        this.playerGrid[row][col] = previousValue;
-        this.candidates[row][col] = new Set(previousCandidates);
+        if (moveType === 'candidate' && candidateNumber) {
+            // For candidate moves, just toggle the specific candidate that was changed
+            if (this.candidates[row][col].has(candidateNumber)) {
+                // Remove the candidate that was just added
+                this.candidates[row][col].delete(candidateNumber);
+                this.manualCandidates[row][col].delete(candidateNumber);
+            } else {
+                // Add back the candidate that was just removed
+                this.candidates[row][col].add(candidateNumber);
+                this.manualCandidates[row][col].add(candidateNumber);
+            }
+        } else {
+            // For number and erase moves, restore the full previous state
+            this.playerGrid[row][col] = previousValue;
+            this.candidates[row][col] = new Set(previousCandidates);
 
-        // Restore manual candidates (handle backwards compatibility)
-        if (previousManualCandidates) {
-            this.manualCandidates[row][col] = new Set(previousManualCandidates);
-        }
+            // Restore manual candidates (handle backwards compatibility)
+            if (previousManualCandidates) {
+                this.manualCandidates[row][col] = new Set(previousManualCandidates);
+            }
 
-        // Only update other cells' candidates if in show all mode, but preserve this cell's restored candidates
-        if (this.showAllCandidates) {
-            // Save the restored candidates for this cell
-            const restoredCandidates = new Set(this.candidates[row][col]);
-            const restoredManualCandidates = new Set(this.manualCandidates[row][col]);
+            // Only update other cells' candidates if in show all mode, but preserve this cell's restored candidates
+            if (this.showAllCandidates) {
+                // Save the restored candidates for this cell
+                const restoredCandidates = new Set(this.candidates[row][col]);
+                const restoredManualCandidates = new Set(this.manualCandidates[row][col]);
 
-            // Update all other cells
-            this.updateAllCandidates();
+                // Update all other cells
+                this.updateAllCandidates();
 
-            // Restore this specific cell's candidates after the update
-            this.candidates[row][col] = restoredCandidates;
-            this.manualCandidates[row][col] = restoredManualCandidates;
+                // Restore this specific cell's candidates after the update
+                this.candidates[row][col] = restoredCandidates;
+                this.manualCandidates[row][col] = restoredManualCandidates;
+            }
         }
 
         // Select the cell that was just undone
