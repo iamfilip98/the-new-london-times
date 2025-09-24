@@ -67,7 +67,7 @@ class SudokuEngine {
         sudokuContainer.innerHTML = `
             <div class="sudoku-game">
                 <!-- NYT-style Header -->
-                <div class="nyt-header">
+                <div>
                     <div class="puzzle-info">
                         <h2 class="puzzle-title">Sudoku</h2>
                         <div class="puzzle-difficulty">${this.currentDifficulty.charAt(0).toUpperCase() + this.currentDifficulty.slice(1)}</div>
