@@ -876,6 +876,11 @@ class SudokuEngine {
             this.candidates[row][col].clear();
             this.hints++;
 
+            // Update all candidates to eliminate the placed number from related cells
+            if (this.showAllCandidates) {
+                this.updateAllCandidates();
+            }
+
             // Select the hinted cell
             this.selectCell(row, col);
             this.updateDisplay();
