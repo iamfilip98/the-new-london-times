@@ -1274,6 +1274,35 @@ class SudokuChampionship {
         return count;
     }
 
+    // Force complete daily refresh
+    forceDailyRefresh() {
+        const today = new Date().toISOString().split('T')[0];
+        console.log(`🔄 Forcing complete refresh for ${today}...`);
+
+        // Clear all cached data
+        localStorage.removeItem('lastCheckedDate');
+        this.clearTodayProgressFromLocalStorage(today);
+
+        // Clear app caches
+        this.puzzleCache.puzzles = null;
+        this.puzzleCache.loadTime = null;
+        this.cache.data = null;
+        this.cache.lastUpdate = null;
+
+        // Reset date detection
+        this.lastCheckedDate = null;
+        this.currentDate = today;
+
+        // Clear session storage
+        sessionStorage.clear();
+
+        console.log(`✅ Complete refresh initiated for ${today}`);
+        console.log(`🔄 Reloading page...`);
+
+        // Force page reload
+        location.reload(true);
+    }
+
     // Puzzle preloading functionality
     async preloadPuzzles() {
         // Don't preload if already loading or recently loaded
@@ -1334,3 +1363,4 @@ window.resetPuzzles = (date) => sudokuApp.resetDailyPuzzles(date);
 window.resetToday = () => sudokuApp.resetToday();
 window.fullReset = (date) => sudokuApp.fullReset(date);
 window.clearLocalStorage = () => sudokuApp.clearAllLocalStorage();
+window.forceDailyRefresh = () => sudokuApp.forceDailyRefresh();
