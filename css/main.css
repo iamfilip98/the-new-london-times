@@ -3035,8 +3035,8 @@ select:focus-visible,
     border: 3px solid #000000;
     border-radius: 0;
     padding: 0;
-    width: 450px;
-    height: 450px;
+    width: 675px;
+    height: 675px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
@@ -3107,7 +3107,7 @@ select:focus-visible,
 /* Accurate NYT typography */
 .cell-value {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    font-size: 1.8rem;
+    font-size: 2.7rem;
     font-weight: 900;
     color: #000000;
     line-height: 1;
@@ -3138,7 +3138,7 @@ select:focus-visible,
 
 .candidate-num {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    font-size: 0.6rem;
+    font-size: 0.9rem;
     color: #666666;
     display: flex;
     align-items: center;
@@ -3432,12 +3432,12 @@ select:focus-visible,
     }
 
     .sudoku-grid {
-        width: 360px;
-        height: 360px;
+        width: 540px;
+        height: 540px;
     }
 
     .cell-value {
-        font-size: 1.4rem;
+        font-size: 2.1rem;
         font-weight: 900;
     }
 
@@ -3474,12 +3474,12 @@ select:focus-visible,
 
 @media (max-width: 480px) {
     .sudoku-grid {
-        width: 320px;
-        height: 320px;
+        width: 480px;
+        height: 480px;
     }
 
     .cell-value {
-        font-size: 1.2rem;
+        font-size: 1.8rem;
         font-weight: 900;
     }
 
