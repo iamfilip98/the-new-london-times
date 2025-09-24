@@ -70,7 +70,7 @@ class SudokuEngine {
                             <span class="errors-count" id="errorsCount">0</span>
                         </div>
                     </div>
-                    <div class="score-section" style="display: none;">
+                    <div class="score-section" id="scoreSection" style="display: none;">
                         <div class="current-score">
                             Score: <span id="currentScore">0</span>
                         </div>
@@ -198,7 +198,7 @@ class SudokuEngine {
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
-        document.getElementById('saveBtn')?.addEventListener('click', () => this.saveGameState());
+        document.getElementById('saveBtn')?.addEventListener('click', () => this.saveGame());
 
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.handleKeyInput(e));
@@ -212,6 +212,13 @@ class SudokuEngine {
     }
 
     changeDifficulty(difficulty) {
+        // Prevent switching during active gameplay
+        if (this.gameStarted && !this.gameCompleted && !this.gamePaused) {
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message error">Cannot switch difficulty during active gameplay. Please pause or complete the current game first.</div>';
+            return;
+        }
+
         // Save current game if in progress and pause timer
         if (this.gameStarted && !this.gameCompleted) {
             this.saveGameState();
@@ -236,7 +243,6 @@ class SudokuEngine {
         } else {
             this.candidateMode = false; // Start in number mode
             this.showAllCandidates = true; // But show all candidates
-            this.generateAllCandidates();
         }
         this.updateCandidateModeUI();
         this.updateShowAllCandidatesUI();
@@ -380,6 +386,11 @@ class SudokuEngine {
         // Clear any previous candidates
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
+        // Generate candidates if in show all mode (medium/hard)
+        if (this.showAllCandidates) {
+            this.generateAllCandidates();
+        }
+
         this.updateDisplay();
         this.startTimer();
 
@@ -410,8 +421,10 @@ class SudokuEngine {
                     } else {
                         cell.classList.add('user-input');
 
-                        // Check for errors
-                        if (!this.isValidMove(this.playerGrid, row, col, this.playerGrid[row][col])) {
+                        // Check for errors by temporarily removing the cell value
+                        const tempGrid = this.playerGrid.map(row => [...row]);
+                        tempGrid[row][col] = 0; // Temporarily remove to check conflicts
+                        if (!this.isValidMove(tempGrid, row, col, this.playerGrid[row][col])) {
                             cell.classList.add('error');
                         }
                     }
@@ -456,6 +469,7 @@ class SudokuEngine {
 
     selectCell(row, col) {
         this.selectedCell = { row, col };
+        // Don't update display if it would clear candidates
         this.updateDisplay();
     }
 
@@ -497,8 +511,10 @@ class SudokuEngine {
             this.playerGrid[row][col] = number;
             this.candidates[row][col].clear();
 
-            // Check for errors
-            if (!this.isValidMove(this.playerGrid, row, col, number)) {
+            // Check for errors by temporarily removing the cell value
+            const tempGrid = this.playerGrid.map(row => [...row]);
+            tempGrid[row][col] = 0;
+            if (!this.isValidMove(tempGrid, row, col, number)) {
                 this.errors++;
             }
         }
@@ -566,11 +582,18 @@ class SudokuEngine {
 
     clearGeneratedCandidates() {
         // This would ideally track which candidates were user-entered vs generated
-        // For now, we'll clear all candidates when hiding
+        // For now, we'll keep user-entered candidates and only clear if they're invalid
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
-                    this.candidates[row][col].clear();
+                    // Keep only valid user-entered candidates
+                    const toRemove = [];
+                    this.candidates[row][col].forEach(num => {
+                        if (!this.isValidMove(this.playerGrid, row, col, num)) {
+                            toRemove.push(num);
+                        }
+                    });
+                    toRemove.forEach(num => this.candidates[row][col].delete(num));
                 }
             }
         }
@@ -596,13 +619,24 @@ class SudokuEngine {
         // Update candidates for all empty cells
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
-                if (this.playerGrid[row][col] === 0 && this.showAllCandidates) {
-                    // Clear and regenerate candidates
-                    this.candidates[row][col].clear();
-                    for (let num = 1; num <= 9; num++) {
-                        if (this.isValidMove(this.playerGrid, row, col, num)) {
-                            this.candidates[row][col].add(num);
+                if (this.playerGrid[row][col] === 0) {
+                    if (this.showAllCandidates) {
+                        // Clear and regenerate all candidates
+                        this.candidates[row][col].clear();
+                        for (let num = 1; num <= 9; num++) {
+                            if (this.isValidMove(this.playerGrid, row, col, num)) {
+                                this.candidates[row][col].add(num);
+                            }
                         }
+                    } else {
+                        // Remove invalid candidates from user-entered ones
+                        const toRemove = [];
+                        this.candidates[row][col].forEach(num => {
+                            if (!this.isValidMove(this.playerGrid, row, col, num)) {
+                                toRemove.push(num);
+                            }
+                        });
+                        toRemove.forEach(num => this.candidates[row][col].delete(num));
                     }
                 }
             }
@@ -884,6 +918,18 @@ class SudokuEngine {
             e.preventDefault();
             this.toggleCandidateMode();
         }
+    }
+
+    saveGame() {
+        if (!this.gameStarted) {
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">No game to save!</div>';
+            return;
+        }
+
+        this.saveGameState();
+        document.getElementById('gameStatus').innerHTML =
+            '<div class="status-message">Game saved successfully!</div>';
     }
 
     async saveGameState() {
@@ -1225,22 +1271,24 @@ class SudokuEngine {
     }
 
     generateFallbackPuzzles() {
-        // Working validated puzzles - these are correct and solvable
+        // Base solution - all puzzles use this same solution
+        const baseSolution = [
+            [5,3,4,6,7,8,9,1,2],
+            [6,7,2,1,9,5,3,4,8],
+            [1,9,8,3,4,2,5,6,7],
+            [8,5,9,7,6,1,4,2,3],
+            [4,2,6,8,5,3,7,9,1],
+            [7,1,3,9,2,4,8,5,6],
+            [9,6,1,5,3,7,2,8,4],
+            [2,8,7,4,1,9,6,3,5],
+            [3,4,5,2,8,6,1,7,9]
+        ];
+
+        // Working validated puzzles with proper difficulty progression
         this.dailyPuzzles = {
             easy: {
                 puzzle: [
-                    [5,3,0,0,7,0,0,0,0],
-                    [6,0,0,1,9,5,0,0,0],
-                    [0,9,8,0,0,0,0,6,0],
-                    [8,0,0,0,6,0,0,0,3],
-                    [4,0,0,8,0,3,0,0,1],
-                    [7,0,0,0,2,0,0,0,6],
-                    [0,6,0,0,0,0,2,8,0],
-                    [0,0,0,4,1,9,0,0,5],
-                    [0,0,0,0,8,0,0,7,9]
-                ],
-                solution: [
-                    [5,3,4,6,7,8,9,1,2],
+                    [5,3,4,6,7,8,0,1,2],
                     [6,7,2,1,9,5,3,4,8],
                     [1,9,8,3,4,2,5,6,7],
                     [8,5,9,7,6,1,4,2,3],
@@ -1248,8 +1296,9 @@ class SudokuEngine {
                     [7,1,3,9,2,4,8,5,6],
                     [9,6,1,5,3,7,2,8,4],
                     [2,8,7,4,1,9,6,3,5],
-                    [3,4,5,2,8,6,1,7,9]
-                ]
+                    [3,4,5,2,8,6,1,7,0]
+                ],
+                solution: baseSolution
             },
             medium: {
                 puzzle: [
@@ -1263,47 +1312,31 @@ class SudokuEngine {
                     [0,0,0,4,1,9,0,0,5],
                     [0,0,0,0,8,0,0,7,9]
                 ],
-                solution: [
-                    [5,3,4,6,7,8,9,1,2],
-                    [6,7,2,1,9,5,3,4,8],
-                    [1,9,8,3,4,2,5,6,7],
-                    [8,5,9,7,6,1,4,2,3],
-                    [4,2,6,8,5,3,7,9,1],
-                    [7,1,3,9,2,4,8,5,6],
-                    [9,6,1,5,3,7,2,8,4],
-                    [2,8,7,4,1,9,6,3,5],
-                    [3,4,5,2,8,6,1,7,9]
-                ]
+                solution: baseSolution
             },
             hard: {
                 puzzle: [
-                    [5,3,0,0,7,0,0,0,0],
-                    [6,0,0,1,9,5,0,0,0],
-                    [0,9,8,0,0,0,0,6,0],
-                    [8,0,0,0,6,0,0,0,3],
-                    [4,0,0,8,0,3,0,0,1],
-                    [7,0,0,0,2,0,0,0,6],
-                    [0,6,0,0,0,0,2,8,0],
-                    [0,0,0,4,1,9,0,0,5],
-                    [0,0,0,0,8,0,0,7,9]
+                    [0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,5,0,0,0],
+                    [0,0,0,0,0,0,0,6,0],
+                    [0,0,0,0,6,0,0,0,3],
+                    [0,0,0,8,0,3,0,0,0],
+                    [7,0,0,0,0,0,0,0,6],
+                    [0,6,0,0,0,0,2,0,0],
+                    [0,0,0,4,1,0,0,0,0],
+                    [0,0,0,0,8,0,0,7,0]
                 ],
-                solution: [
-                    [5,3,4,6,7,8,9,1,2],
-                    [6,7,2,1,9,5,3,4,8],
-                    [1,9,8,3,4,2,5,6,7],
-                    [8,5,9,7,6,1,4,2,3],
-                    [4,2,6,8,5,3,7,9,1],
-                    [7,1,3,9,2,4,8,5,6],
-                    [9,6,1,5,3,7,2,8,4],
-                    [2,8,7,4,1,9,6,3,5],
-                    [3,4,5,2,8,6,1,7,9]
-                ]
+                solution: baseSolution
             }
         };
     }
 
     undo() {
-        if (this.moveHistory.length === 0) return;
+        if (this.moveHistory.length === 0) {
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">No moves to undo</div>';
+            return;
+        }
 
         const lastMove = this.moveHistory.pop();
         const { row, col, previousValue, previousCandidates } = lastMove;

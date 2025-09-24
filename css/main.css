@@ -3032,8 +3032,8 @@ select:focus-visible,
     border: 3px solid #000;
     border-radius: 8px;
     padding: 0;
-    width: 540px;
-    height: 540px;
+    width: 600px;
+    height: 600px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -3086,7 +3086,7 @@ select:focus-visible,
 
 /* Cell states */
 .sudoku-cell.given {
-    background: #f8f9fa;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .sudoku-cell.given .cell-value {
@@ -3095,7 +3095,7 @@ select:focus-visible,
 }
 
 .sudoku-cell.user-input .cell-value {
-    color: #1a73e8;
+    color: #000;
 }
 
 .sudoku-cell.error {
@@ -3112,7 +3112,7 @@ select:focus-visible,
 }
 
 .sudoku-cell.highlighted {
-    background: #fff2e6 !important;
+    background: rgba(255, 165, 0, 0.2) !important;
 }
 
 /* 3x3 box borders */
