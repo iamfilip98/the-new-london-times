@@ -3359,9 +3359,9 @@ select:focus-visible,
     border: 2px solid #ddd;
     border-radius: 8px;
     padding: 1rem;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 1.2rem;
-    font-weight: bold;
+    font-weight: 900;
     color: #000;
     cursor: pointer;
     transition: all 0.2s ease;
