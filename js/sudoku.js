@@ -447,6 +447,13 @@ class SudokuEngine {
         this.gamePaused = false;  // Reset pause state
         this.selectedCell = null;
 
+        // Set candidate visibility based on difficulty
+        if (difficulty === 'easy') {
+            this.showAllCandidates = false;
+        } else {
+            this.showAllCandidates = true; // Show candidates by default for medium and hard
+        }
+
         // Clear any previous candidates
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
