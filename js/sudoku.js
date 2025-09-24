@@ -765,6 +765,23 @@ class SudokuEngine {
         }
     }
 
+    updatePauseUI() {
+        const pauseBtn = document.getElementById('pauseBtn');
+        const sudokuGrid = document.getElementById('sudokuGrid');
+
+        if (pauseBtn && sudokuGrid) {
+            if (this.gamePaused) {
+                pauseBtn.querySelector('i').className = 'fas fa-play';
+                pauseBtn.title = 'Resume game';
+                sudokuGrid.classList.add('paused');
+            } else {
+                pauseBtn.querySelector('i').className = 'fas fa-pause';
+                pauseBtn.title = 'Pause game';
+                sudokuGrid.classList.remove('paused');
+            }
+        }
+    }
+
     getHint() {
         if (!this.gameStarted || this.gameCompleted) return;
 
@@ -1418,6 +1435,8 @@ class SudokuEngine {
             difficulty: this.currentDifficulty,
             gameStarted: this.gameStarted,
             gameCompleted: this.gameCompleted,
+            gamePaused: this.gamePaused,
+            pausedAt: this.gamePaused ? Date.now() : null,
             candidateMode: this.candidateMode,
             showAllCandidates: this.showAllCandidates,
             selectedCell: this.selectedCell,
@@ -1492,6 +1511,7 @@ class SudokuEngine {
                 this.errors = gameState.errors || 0;
                 this.gameStarted = gameState.gameStarted || false;
                 this.gameCompleted = gameState.gameCompleted || false;
+                this.gamePaused = gameState.gamePaused || false;
                 this.candidateMode = gameState.candidateMode || false;
                 this.showAllCandidates = gameState.showAllCandidates || false;
                 this.selectedCell = gameState.selectedCell;
@@ -1500,10 +1520,17 @@ class SudokuEngine {
                     // Keep completed state - don't start timer
                     document.getElementById('gameStatus').innerHTML =
                         '<div class="status-message success">Puzzle completed! Well done!</div>';
-                } else if (this.gameStarted && !this.gamePaused) {
-                    // Only start timer if not already running
-                    if (!this.timerInterval) {
-                        this.startTimer();
+                } else if (this.gameStarted) {
+                    if (this.gamePaused) {
+                        // Game was paused - update UI but don't start timer
+                        this.updatePauseUI();
+                        document.getElementById('gameStatus').innerHTML =
+                            '<div class="status-message">Game paused. Click Resume to continue playing.</div>';
+                    } else {
+                        // Game was not paused - start timer if not already running
+                        if (!this.timerInterval) {
+                            this.startTimer();
+                        }
                     }
                 }
 
@@ -1512,8 +1539,11 @@ class SudokuEngine {
                 this.updateShowAllCandidatesUI();
 
                 if (!this.gameCompleted) {
-                    document.getElementById('gameStatus').innerHTML =
-                        '<div class="status-message">Game state restored!</div>';
+                    if (!this.gamePaused) {
+                        document.getElementById('gameStatus').innerHTML =
+                            '<div class="status-message">Game state restored!</div>';
+                    }
+                    // If paused, the message was already set above
                 }
             }
 
@@ -1805,6 +1835,15 @@ class SudokuEngine {
                             <option value="high" ${this.soundLevel === 'high' ? 'selected' : ''}>High</option>
                         </select>
                     </div>
+                    ${this.gameStarted && !this.gameCompleted ? `
+                    <div class="setting-item">
+                        <hr style="margin: 1rem 0; border: 1px solid #333;">
+                        <button class="btn-secondary" onclick="window.sudokuEngine.restartPuzzle(); this.closest('.settings-modal').remove();" style="width: 100%; margin-top: 0.5rem;">
+                            🔄 Restart Current Puzzle
+                        </button>
+                        <small style="color: #888; display: block; margin-top: 0.5rem;">This will clear your progress and start the puzzle fresh</small>
+                    </div>
+                    ` : ''}
                 </div>
                 <div class="settings-footer">
                     <button class="btn-primary" onclick="window.sudokuEngine.saveSettings(); this.closest('.settings-modal').remove();">Save Settings</button>
@@ -2228,8 +2267,61 @@ class SudokuEngine {
         document.getElementById('dashboard').classList.add('active');
     }
 
+    restartPuzzle() {
+        if (!confirm('Are you sure you want to restart the current puzzle? This will clear all your progress.')) {
+            return;
+        }
+
+        console.log('Restarting current puzzle');
+
+        // Clear saved game state for this difficulty
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        if (currentPlayer) {
+            const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
+            localStorage.removeItem(key);
+        }
+
+        // Stop current timer and clear auto-save
+        this.stopTimer();
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
+
+        // Reset all game state
+        this.timer = 0;
+        this.hints = 0;
+        this.errors = 0;
+        this.gameStarted = false;
+        this.gameCompleted = false;
+        this.gamePaused = false;
+        this.selectedCell = null;
+        this.moveHistory = [];
+
+        // Reload the same puzzle fresh
+        this.loadPuzzle(this.currentDifficulty);
+
+        // Restart auto-save interval
+        this.autoSaveInterval = setInterval(() => {
+            if (this.gameStarted && !this.gameCompleted) {
+                this.saveGameState();
+            }
+        }, 10000);
+
+        document.getElementById('gameStatus').innerHTML =
+            '<div class="status-message">Puzzle restarted! Good luck!</div>';
+    }
+
     destroy() {
         console.log('Destroying SudokuEngine instance');
+
+        // Auto-pause if game is in progress and not completed
+        if (this.gameStarted && !this.gameCompleted && !this.gamePaused) {
+            console.log('Auto-pausing game before leaving puzzle page');
+            this.gamePaused = true;
+            this.saveGameState(); // Save the paused state
+        }
+
         // Cleanup when switching pages
         this.stopTimer();
         if (this.autoSaveInterval) {
