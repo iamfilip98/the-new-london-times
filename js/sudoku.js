@@ -1631,9 +1631,12 @@ class SudokuEngine {
                 timestamp: Date.now()
             };
 
-            // Store in localStorage for immediate access
+            // Store in localStorage for immediate access (backwards compatibility)
             const key = `completed_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
             localStorage.setItem(key, JSON.stringify(completedGame));
+
+            // Also save to database for cross-browser sync
+            await this.saveGameToDatabase(completedGame);
 
             // Integrate with existing analytics system
             await this.integrateWithAnalytics(completedGame);
@@ -1794,7 +1797,7 @@ class SudokuEngine {
                 // Trigger dashboard update if we're on main app
                 if (window.sudokuApp) {
                     await window.sudokuApp.loadData();
-                    window.sudokuApp.updateDashboard();
+                    await window.sudokuApp.updateDashboard();
                 }
             }
 
@@ -1812,6 +1815,35 @@ class SudokuEngine {
             data: playerData,
             timestamp: Date.now()
         }));
+    }
+
+    async saveGameToDatabase(gameData) {
+        try {
+            const response = await fetch('/api/games', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    player: gameData.player,
+                    date: gameData.date,
+                    difficulty: gameData.difficulty,
+                    time: gameData.time,
+                    errors: gameData.errors,
+                    score: gameData.score,
+                    hints: gameData.hints
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save game to database');
+            }
+
+            console.log('Game saved to database for cross-browser sync');
+        } catch (error) {
+            console.error('Failed to save game to database:', error);
+            // Don't throw error - localStorage fallback is still available
+        }
     }
 
     notifyOpponentProgress(gameData) {

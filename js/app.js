@@ -51,8 +51,8 @@ class SudokuChampionship {
         // Load data from database or migrate from localStorage
         await this.loadData();
 
-        this.updateDashboard();
-        this.updateAllPages();
+        await this.updateDashboard();
+        await this.updateAllPages();
     }
 
     initializeScoreDisplay() {
@@ -417,11 +417,11 @@ class SudokuChampionship {
         return;
     }
 
-    updateDashboard() {
+    async updateDashboard() {
         this.updateStreakDisplay();
         this.updateOverallRecord();
         this.updateRecentHistory();
-        this.updateTodayProgress();
+        await this.updateTodayProgress();
         this.updateProgressNotifications();
     }
 
@@ -515,7 +515,7 @@ class SudokuChampionship {
 
                 this.entries = this.entries.filter(entry => entry.date !== date);
                 await this.updateStreaks();
-                this.updateDashboard();
+                await this.updateDashboard();
             } catch (error) {
                 console.error('Failed to delete entry:', error);
                 alert('Failed to delete entry. Please try again.');
@@ -792,8 +792,8 @@ class SudokuChampionship {
         }
     }
 
-    updateAllPages() {
-        this.updateDashboard();
+    async updateAllPages() {
+        await this.updateDashboard();
         this.updateLeaderboards();
         // Other page updates will be handled when those managers are loaded
     }
@@ -975,10 +975,21 @@ class SudokuChampionship {
         }
     }
 
-    updateTodayProgress() {
+    async updateTodayProgress() {
         const today = new Date().toISOString().split('T')[0];
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
+
+        // Try to load progress from database first
+        let dbProgress = null;
+        try {
+            const response = await fetch(`/api/games?date=${today}`);
+            if (response.ok) {
+                dbProgress = await response.json();
+            }
+        } catch (error) {
+            console.warn('Failed to load progress from database, falling back to localStorage:', error);
+        }
 
         players.forEach(player => {
             difficulties.forEach(difficulty => {
@@ -986,15 +997,25 @@ class SudokuChampionship {
                 if (!progressElement) return;
 
                 const statusElement = progressElement.querySelector('.progress-status');
-                const key = `completed_${player}_${today}_${difficulty}`;
-                const gameData = localStorage.getItem(key);
+                let gameData = null;
 
-                if (gameData) {
-                    const game = JSON.parse(gameData);
-                    const time = this.formatSecondsToTime(game.time);
+                // Check database first
+                if (dbProgress && dbProgress[player] && dbProgress[player][difficulty]) {
+                    gameData = dbProgress[player][difficulty];
+                } else {
+                    // Fallback to localStorage
+                    const key = `completed_${player}_${today}_${difficulty}`;
+                    const localData = localStorage.getItem(key);
+                    if (localData) {
+                        gameData = JSON.parse(localData);
+                    }
+                }
+
+                if (gameData && gameData.time) {
+                    const time = this.formatSecondsToTime(gameData.time);
                     statusElement.innerHTML = `
                         <span class="completed">✓ ${time}</span>
-                        <span class="score">${game.score}pts</span>
+                        <span class="score">${Math.round(gameData.score || 0)}pts</span>
                     `;
                     progressElement.classList.add('completed');
                 } else {
