@@ -2966,7 +2966,7 @@ select:focus-visible,
     letter-spacing: 1px;
 }
 
-.timer-display, .errors-count, .current-score {
+.timer-display, .errors-count, .hints-count, .current-score {
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--text-primary);
