@@ -119,6 +119,9 @@ class SudokuEngine {
                         <button class="icon-btn pause-btn" id="pauseBtn" title="Pause game">
                             <i class="fas fa-pause"></i>
                         </button>
+                        <button class="icon-btn settings-btn" id="settingsBtn" title="Game settings">
+                            <i class="fas fa-cog"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -158,10 +161,6 @@ class SudokuEngine {
                         <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
                             <i class="fas fa-eye"></i>
                             <span>Show All</span>
-                        </button>
-                        <button class="action-btn settings-btn" id="settingsBtn" title="Game settings">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
                         </button>
                     </div>
                 </div>
