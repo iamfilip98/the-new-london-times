@@ -5,6 +5,7 @@ class SudokuEngine {
         this.initialGrid = Array(9).fill().map(() => Array(9).fill(0));
         this.playerGrid = Array(9).fill().map(() => Array(9).fill(0));
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+        this.manualCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.selectedCell = null;
         this.timer = 0;
         this.timerInterval = null;
@@ -35,8 +36,8 @@ class SudokuEngine {
         // Replace placeholder with actual game interface
         sudokuContainer.innerHTML = `
             <div class="sudoku-game">
-                <!-- Difficulty Selection -->
-                <div class="difficulty-selector">
+                <!-- Difficulty Selection - Hidden for daily puzzles -->
+                <div class="difficulty-selector" style="display: none;">
                     <h3>Choose Difficulty</h3>
                     <div class="difficulty-buttons">
                         <button class="difficulty-btn active" data-difficulty="easy">
@@ -409,7 +410,7 @@ class SudokuEngine {
                 const candidatesDiv = cell.querySelector('.cell-candidates');
 
                 // Clear existing classes
-                cell.classList.remove('given', 'user-input', 'error', 'selected', 'highlighted');
+                cell.classList.remove('given', 'user-input', 'error', 'selected', 'highlighted', 'same-number');
 
                 if (this.playerGrid[row][col] !== 0) {
                     valueDiv.textContent = this.playerGrid[row][col];
@@ -451,6 +452,14 @@ class SudokuEngine {
                     this.isInSameBox(row, col, this.selectedCell.row, this.selectedCell.col)
                 )) {
                     cell.classList.add('highlighted');
+                }
+
+                // Highlight cells with the same number as the selected cell
+                if (this.selectedCell && this.playerGrid[row][col] !== 0) {
+                    const selectedValue = this.playerGrid[this.selectedCell.row][this.selectedCell.col];
+                    if (selectedValue !== 0 && this.playerGrid[row][col] === selectedValue) {
+                        cell.classList.add('same-number');
+                    }
                 }
             }
         }
@@ -502,8 +511,10 @@ class SudokuEngine {
             if (this.playerGrid[row][col] === 0) {
                 if (this.candidates[row][col].has(number)) {
                     this.candidates[row][col].delete(number);
+                    this.manualCandidates[row][col].delete(number);
                 } else {
                     this.candidates[row][col].add(number);
+                    this.manualCandidates[row][col].add(number);
                 }
             }
         } else {
@@ -557,8 +568,14 @@ class SudokuEngine {
             } else {
                 span.textContent = 'Show All';
                 icon.className = 'fas fa-eye';
-                // Keep only user-entered candidates
-                this.clearGeneratedCandidates();
+                // Keep only manually entered candidates
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (this.playerGrid[row][col] === 0) {
+                            this.candidates[row][col] = new Set(this.manualCandidates[row][col]);
+                        }
+                    }
+                }
             }
         }
 
@@ -569,12 +586,23 @@ class SudokuEngine {
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
-                    // Add all valid numbers as candidates
+                    // Preserve manual candidates
+                    const manualCands = new Set(this.manualCandidates[row][col]);
+
+                    // Clear and regenerate all candidates
+                    this.candidates[row][col].clear();
+
+                    // Add valid auto-generated candidates
                     for (let num = 1; num <= 9; num++) {
                         if (this.isValidMove(this.playerGrid, row, col, num)) {
                             this.candidates[row][col].add(num);
                         }
                     }
+
+                    // Re-add manual candidates (even if they're invalid - user choice)
+                    manualCands.forEach(num => {
+                        this.candidates[row][col].add(num);
+                    });
                 }
             }
         }
@@ -648,17 +676,20 @@ class SudokuEngine {
 
         this.gamePaused = !this.gamePaused;
         const pauseBtn = document.getElementById('pauseBtn');
+        const sudokuGrid = document.getElementById('sudokuGrid');
 
         if (this.gamePaused) {
             this.stopTimer();
             pauseBtn.querySelector('span').textContent = 'Resume';
             pauseBtn.querySelector('i').className = 'fas fa-play';
+            sudokuGrid.classList.add('paused');
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game paused. Click Resume to continue.</div>';
         } else {
             this.startTimer();
             pauseBtn.querySelector('span').textContent = 'Pause';
             pauseBtn.querySelector('i').className = 'fas fa-pause';
+            sudokuGrid.classList.remove('paused');
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game resumed!</div>';
         }
