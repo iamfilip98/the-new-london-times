@@ -162,10 +162,6 @@ class SudokuEngine {
                             <i class="fas fa-eye"></i>
                             <span>Show All</span>
                         </button>
-                        <button class="action-btn reset-btn" id="resetBtn" title="Reset current puzzle">
-                            <i class="fas fa-redo"></i>
-                            <span>Reset</span>
-                        </button>
                     </div>
                 </div>
 
@@ -242,7 +238,6 @@ class SudokuEngine {
         document.getElementById('eraseBtn')?.addEventListener('click', async () => await this.eraseSelectedCell());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
-        document.getElementById('resetBtn')?.addEventListener('click', () => this.restartPuzzle());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
 
