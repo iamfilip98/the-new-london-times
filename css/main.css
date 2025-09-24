@@ -3114,7 +3114,14 @@ select:focus-visible,
     gap: 0.3rem;
     font-family: 'Orbitron', monospace;
     font-weight: 600;
+}
+
+.stats-section .stat-item {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .stat-item i {
