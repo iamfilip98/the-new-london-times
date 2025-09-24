@@ -106,15 +106,9 @@ class SudokuEngine {
                             <span class="errors-count" id="errorsCount">0</span>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Score</div>
-                            <span class="current-score" id="currentScore">0</span>
+                            <div class="stat-label">Hints</div>
+                            <span class="hints-count" id="hintsCount">0</span>
                         </div>
-                    </div>
-                    <div class="progress-section">
-                        <div class="completion-bar">
-                            <div class="completion-fill" id="completionFill"></div>
-                        </div>
-                        <div class="completion-text" id="completionText">0% Complete</div>
                     </div>
                 </div>
 
@@ -513,8 +507,7 @@ class SudokuEngine {
         // Update stats display
         document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
         document.getElementById('errorsCount').textContent = this.errors;
-        document.getElementById('currentScore').textContent = this.calculateCurrentScore();
-        this.updateProgressBar();
+        document.getElementById('hintsCount').textContent = this.hints;
     }
 
     isInSameBox(row1, col1, row2, col2) {
@@ -1284,7 +1277,6 @@ class SudokuEngine {
         this.timerInterval = setInterval(() => {
             this.timer++;
             document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
-            document.getElementById('currentScore').textContent = this.calculateCurrentScore();
         }, 1000);
     }
 
@@ -1818,21 +1810,6 @@ class SudokuEngine {
         }
     }
 
-    updateProgressBar() {
-        const filledCells = this.playerGrid.flat().filter(cell => cell !== 0).length;
-        const totalCells = 81;
-        const percentage = Math.round((filledCells / totalCells) * 100);
-
-        const completionFill = document.getElementById('completionFill');
-        const completionText = document.getElementById('completionText');
-
-        if (completionFill) {
-            completionFill.style.width = `${percentage}%`;
-        }
-        if (completionText) {
-            completionText.textContent = `${percentage}% Complete`;
-        }
-    }
 
     generateFallbackPuzzles() {
         // Base solution - all puzzles use this same solution
