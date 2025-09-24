@@ -3198,12 +3198,12 @@ select:focus-visible,
 
 /* Same number highlighting */
 .sudoku-cell.same-number {
-    background: #e6f3ff !important;
+    background: rgba(255, 149, 0, 0.2) !important;
 }
 
 .sudoku-cell.same-number.given,
 .sudoku-cell.same-number.user-input {
-    background: #e6f3ff !important;
+    background: rgba(255, 149, 0, 0.2) !important;
 }
 
 /* Paused state */
