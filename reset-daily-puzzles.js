@@ -130,11 +130,12 @@ async function resetAllPuzzleData(date) {
     // Reset database
     await resetDailyPuzzles(targetDate);
 
-    console.log(`📝 Manual localStorage cleanup required:`);
+    console.log(`📝 localStorage cleanup required:`);
     console.log(`   - Open browser dev tools (F12)`);
-    console.log(`   - Go to Application tab > Local Storage`);
-    console.log(`   - Clear items starting with: completed_faidao_${targetDate}_, completed_filip_${targetDate}_`);
+    console.log(`   - Go to Console tab`);
+    console.log(`   - Copy and run the script from: clear-localStorage.js`);
     console.log(`   - Or run: localStorage.clear() in console for full reset`);
+    console.log(`   - Then refresh the page to load fresh puzzles`);
 
     return true;
   } catch (error) {
