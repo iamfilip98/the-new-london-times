@@ -228,8 +228,7 @@ class ThemeManager {
     }
 
     setupThemeControls() {
-        // Create theme selector if it doesn't exist
-        this.createThemeSelector();
+        // Theme selector removed - themes change automatically
 
         // Listen for theme changes
         document.addEventListener('themeChange', (e) => {
@@ -238,70 +237,11 @@ class ThemeManager {
         });
     }
 
-    createThemeSelector() {
-        const navUser = document.querySelector('.nav-user');
-        if (!navUser) return;
-
-        // Check if theme selector already exists
-        if (document.getElementById('themeSelector')) return;
-
-        const themeSelector = document.createElement('div');
-        themeSelector.id = 'themeSelector';
-        themeSelector.className = 'theme-selector';
-        themeSelector.innerHTML = `
-            <button title="Change Theme">
-                <i class="${this.themes[this.currentTheme].icon}"></i>
-            </button>
-            <div class="theme-dropdown">
-                ${Object.entries(this.themes).map(([key, theme]) => `
-                    <div class="theme-option ${key === this.currentTheme ? 'active' : ''}"
-                         data-theme="${key}"
-                         ${!theme.active && key !== 'default' && key !== this.currentTheme ? 'style="opacity: 0.5;"' : ''}>
-                        <i class="${theme.icon}"></i>
-                        <span>${theme.name}</span>
-                        ${theme.multiplier > 1 ? `<span class="multiplier">×${theme.multiplier}</span>` : ''}
-                    </div>
-                `).join('')}
-            </div>
-        `;
-
-        navUser.insertBefore(themeSelector, navUser.firstChild);
-
-        // Add event listeners
-        const toggleBtn = themeSelector.querySelector('button');
-        const dropdown = themeSelector.querySelector('.theme-dropdown');
-
-        toggleBtn.addEventListener('click', () => {
-            dropdown.classList.toggle('show');
-        });
-
-        themeSelector.querySelectorAll('.theme-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const theme = option.dataset.theme;
-                if (this.themes[theme].active || theme === 'default') {
-                    this.selectTheme(theme);
-                    dropdown.classList.remove('show');
-                }
-            });
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!themeSelector.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-    }
 
     selectTheme(themeKey) {
         this.currentTheme = themeKey;
         localStorage.setItem('selectedTheme', themeKey);
         this.applyTheme();
-
-        // Update dropdown
-        document.querySelectorAll('.theme-option').forEach(option => {
-            option.classList.toggle('active', option.dataset.theme === themeKey);
-        });
 
         // Trigger theme change event
         document.dispatchEvent(new CustomEvent('themeChange', {

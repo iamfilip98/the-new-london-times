@@ -4264,95 +4264,6 @@ select:focus-visible,
     }
 }
 
-/* Theme System */
-.theme-selector {
-    position: relative;
-    display: inline-block;
-}
-
-.theme-selector > button {
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    padding: 0.5rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
-}
-
-.theme-selector > button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: var(--theme-accent, var(--accent-blue));
-    color: var(--theme-accent, var(--accent-blue));
-    transform: translateY(-2px);
-}
-
-.theme-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    padding: 0.5rem;
-    min-width: 200px;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: var(--transition);
-    box-shadow: var(--box-shadow);
-    margin-top: 0.5rem;
-}
-
-.theme-dropdown.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.theme-option {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition);
-    margin-bottom: 0.25rem;
-}
-
-.theme-option:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.theme-option.active {
-    background: var(--theme-accent, var(--accent-blue));
-    color: white;
-}
-
-.theme-option i {
-    font-size: 1.1rem;
-    min-width: 20px;
-}
-
-.theme-option .multiplier {
-    margin-left: auto;
-    background: var(--accent-orange);
-    color: white;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
 
 /* Special Events */
 .special-events-container {
@@ -4543,13 +4454,8 @@ select:focus-visible,
     font-family: var(--font-display);
 }
 
-/* Mobile theme responsiveness */
+/* Mobile responsiveness */
 @media (max-width: 768px) {
-    .theme-dropdown {
-        right: auto;
-        left: 0;
-        min-width: 180px;
-    }
 
     .events-grid {
         grid-template-columns: 1fr;
