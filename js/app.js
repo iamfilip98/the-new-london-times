@@ -1053,7 +1053,109 @@ class SudokuChampionship {
 
         return 'Earlier today';
     }
+
+    // Development helper functions for browser console
+    async resetDailyPuzzles(date) {
+        const targetDate = date || new Date().toISOString().split('T')[0];
+
+        try {
+            console.log(`🔄 Resetting daily puzzles for ${targetDate}...`);
+
+            // Call the puzzle API to reset puzzles for the date
+            const response = await fetch('/api/puzzles', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date: targetDate })
+            });
+
+            if (!response.ok) {
+                // If DELETE method isn't supported, try using a POST with reset action
+                const resetResponse = await fetch('/api/puzzles', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'reset',
+                        date: targetDate
+                    })
+                });
+
+                if (!resetResponse.ok) {
+                    throw new Error('Reset API not available - use node reset-daily-puzzles.js instead');
+                }
+            }
+
+            console.log(`✅ Database reset completed for ${targetDate}`);
+
+            // Clear localStorage for the date
+            this.clearLocalStorageForDate(targetDate);
+
+            console.log(`🎯 Successfully reset all puzzles for ${targetDate}`);
+            console.log(`💡 Refresh the page to load new puzzles`);
+
+            return true;
+        } catch (error) {
+            console.error('❌ Failed to reset daily puzzles:', error);
+            console.log('💡 Try using: node reset-daily-puzzles.js reset ' + targetDate);
+            return false;
+        }
+    }
+
+    clearLocalStorageForDate(date) {
+        const keys = Object.keys(localStorage);
+        let cleared = 0;
+
+        keys.forEach(key => {
+            if (key.includes(date)) {
+                localStorage.removeItem(key);
+                cleared++;
+                console.log(`🗑️ Cleared: ${key}`);
+            }
+        });
+
+        console.log(`✅ Cleared ${cleared} localStorage items for ${date}`);
+        return cleared;
+    }
+
+    async fullReset(date) {
+        const targetDate = date || new Date().toISOString().split('T')[0];
+
+        console.log(`🔄 Full reset for ${targetDate}...`);
+
+        // Reset database
+        const dbReset = await this.resetDailyPuzzles(targetDate);
+
+        if (dbReset) {
+            console.log(`🏁 Full reset completed! Refresh the page to see new puzzles.`);
+            return true;
+        } else {
+            console.log(`❌ Reset failed. Use command line tool instead.`);
+            return false;
+        }
+    }
+
+    // Quick access functions for console
+    resetToday() {
+        return this.fullReset();
+    }
+
+    clearAllLocalStorage() {
+        const count = localStorage.length;
+        localStorage.clear();
+        console.log(`🗑️ Cleared all ${count} localStorage items`);
+        console.log(`💡 Refresh the page to reload data`);
+        return count;
+    }
 }
 
 // Initialize the application
 const sudokuApp = new SudokuChampionship();
+
+// Global console helper functions
+window.resetPuzzles = (date) => sudokuApp.resetDailyPuzzles(date);
+window.resetToday = () => sudokuApp.resetToday();
+window.fullReset = (date) => sudokuApp.fullReset(date);
+window.clearLocalStorage = () => sudokuApp.clearAllLocalStorage();

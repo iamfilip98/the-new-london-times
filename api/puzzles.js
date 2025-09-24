@@ -370,13 +370,37 @@ module.exports = async function handler(req, res) {
           // Save game state
           await saveGameState(player, date, difficulty, state);
           return res.status(200).json({ success: true });
+        } else if (action === 'reset' && date) {
+          // Reset puzzles and game states for specific date
+          await sql`DELETE FROM daily_puzzles WHERE date = ${date}`;
+          await sql`DELETE FROM game_states WHERE date = ${date}`;
+          return res.status(200).json({
+            success: true,
+            message: `Reset completed for ${date}`
+          });
         } else {
           return res.status(400).json({ error: 'Invalid request parameters' });
         }
       }
 
+      case 'DELETE': {
+        const { date } = req.body;
+
+        if (date) {
+          // Delete puzzles and game states for specific date
+          await sql`DELETE FROM daily_puzzles WHERE date = ${date}`;
+          await sql`DELETE FROM game_states WHERE date = ${date}`;
+          return res.status(200).json({
+            success: true,
+            message: `Deleted all data for ${date}`
+          });
+        } else {
+          return res.status(400).json({ error: 'Date parameter required' });
+        }
+      }
+
       default:
-        res.setHeader('Allow', ['GET', 'POST']);
+        res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
         return res.status(405).json({ error: `Method ${req.method} not allowed` });
     }
   } catch (error) {
