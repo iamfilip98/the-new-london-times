@@ -249,7 +249,7 @@ class ThemeManager {
         themeSelector.id = 'themeSelector';
         themeSelector.className = 'theme-selector';
         themeSelector.innerHTML = `
-            <button class="theme-toggle-btn" title="Change Theme">
+            <button title="Change Theme">
                 <i class="${this.themes[this.currentTheme].icon}"></i>
             </button>
             <div class="theme-dropdown">
@@ -268,7 +268,7 @@ class ThemeManager {
         navUser.insertBefore(themeSelector, navUser.firstChild);
 
         // Add event listeners
-        const toggleBtn = themeSelector.querySelector('.theme-toggle-btn');
+        const toggleBtn = themeSelector.querySelector('button');
         const dropdown = themeSelector.querySelector('.theme-dropdown');
 
         toggleBtn.addEventListener('click', () => {

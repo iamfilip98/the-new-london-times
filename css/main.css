@@ -4270,7 +4270,7 @@ select:focus-visible,
     display: inline-block;
 }
 
-.theme-toggle-btn {
+.theme-selector > button {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -4287,7 +4287,7 @@ select:focus-visible,
     min-height: 40px;
 }
 
-.theme-toggle-btn:hover {
+.theme-selector > button:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: var(--theme-accent, var(--accent-blue));
     color: var(--theme-accent, var(--accent-blue));
