@@ -702,8 +702,8 @@ class SudokuEngine {
             }
         }
 
-        // Update all candidates if in show all mode or if we placed a number (but not when manually editing candidates)
-        if ((this.showAllCandidates || (!this.candidateMode && number !== 0)) && !this.candidateMode) {
+        // Update candidates when placing or removing numbers (not when in candidate mode)
+        if (!this.candidateMode) {
             this.updateAllCandidates();
         }
 
@@ -822,43 +822,45 @@ class SudokuEngine {
     }
 
     updateAllCandidates() {
-        // Update candidates for all cells (empty and filled)
+        // Update candidates for all empty cells
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
-                if (this.showAllCandidates) {
-                    // Preserve manual candidates
-                    const manualCands = new Set(this.manualCandidates[row][col]);
+                // Only update candidates for empty cells
+                if (this.playerGrid[row][col] === 0) {
+                    if (this.showAllCandidates) {
+                        // In show-all mode, combine auto-generated and manual candidates
+                        const manualCands = new Set(this.manualCandidates[row][col]);
+                        const autoCands = new Set();
 
-                    // Clear and regenerate all candidates
-                    this.candidates[row][col].clear();
-
-                    // Add valid auto-generated candidates (only for empty cells)
-                    if (this.playerGrid[row][col] === 0) {
+                        // Generate auto candidates
                         for (let num = 1; num <= 9; num++) {
                             if (this.isValidMove(this.playerGrid, row, col, num)) {
-                                this.candidates[row][col].add(num);
+                                autoCands.add(num);
                             }
                         }
-                    }
 
-                    // Re-add manual candidates (even if they're invalid - user choice)
-                    manualCands.forEach(num => {
-                        this.candidates[row][col].add(num);
-                    });
-                } else {
-                    // Remove invalid candidates from user-entered ones (for empty cells only)
-                    if (this.playerGrid[row][col] === 0) {
-                        const toRemove = [];
-                        this.candidates[row][col].forEach(num => {
-                            if (!this.isValidMove(this.playerGrid, row, col, num)) {
-                                toRemove.push(num);
-                            }
+                        // Combine auto and manual candidates
+                        this.candidates[row][col] = new Set([...autoCands, ...manualCands]);
+                    } else {
+                        // In normal mode, only show manual candidates but remove invalid ones
+                        const validManualCands = new Set();
+                        this.manualCandidates[row][col].forEach(num => {
+                            // Keep manual candidates even if they're currently invalid
+                            // (user might have placed them for strategic reasons)
+                            validManualCands.add(num);
                         });
-                        toRemove.forEach(num => this.candidates[row][col].delete(num));
+                        this.candidates[row][col] = validManualCands;
                     }
+                } else {
+                    // Clear candidates for filled cells
+                    this.candidates[row][col].clear();
+                    this.manualCandidates[row][col].clear();
                 }
             }
         }
+
+        // Update the display after updating candidates
+        this.updateDisplay();
     }
 
     togglePause() {
@@ -1011,40 +1013,22 @@ class SudokuEngine {
     }
 
     findBestHint() {
-        // Deterministic hint finding with advanced techniques
+        // Completely rewritten hint finding with correct logic
 
-        // 1. Look for naked singles first (easiest)
+        // 1. Look for naked singles first (cells with only one possible value)
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
                     const possibleValues = this.getPossibleValues(row, col);
                     if (possibleValues.length === 1) {
-                        return {
-                            row,
-                            col,
-                            value: possibleValues[0],
-                            technique: 'Naked Single',
-                            explanation: `Only ${possibleValues[0]} can go in this cell`
-                        };
-                    }
-                }
-            }
-        }
-
-        // 2. Look for hidden singles
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                if (this.playerGrid[row][col] === 0) {
-                    const possibleValues = this.getPossibleValues(row, col);
-                    for (let value of possibleValues) {
-                        const hiddenResult = this.isHiddenSingle(row, col, value);
-                        if (hiddenResult.isHidden) {
+                        // Verify this is actually correct by checking against solution
+                        if (this.solution[row][col] === possibleValues[0]) {
                             return {
                                 row,
                                 col,
-                                value,
-                                technique: 'Hidden Single',
-                                explanation: `${value} can only go here in this ${hiddenResult.region}`
+                                value: possibleValues[0],
+                                technique: 'Naked Single',
+                                explanation: `Cell R${row+1}C${col+1} can only contain ${possibleValues[0]} - no other number is valid here`
                             };
                         }
                     }
@@ -1052,19 +1036,125 @@ class SudokuEngine {
             }
         }
 
-        // 3. Look for pointing pairs/box-line reduction
-        const pointingHint = this.findPointingPairs();
-        if (pointingHint) {
-            return pointingHint;
+        // 2. Look for hidden singles (number that can only go in one cell within a region)
+        // Check each row for hidden singles
+        for (let row = 0; row < 9; row++) {
+            for (let num = 1; num <= 9; num++) {
+                if (!this.isNumberInRow(row, num)) {
+                    const possibleCols = [];
+                    for (let col = 0; col < 9; col++) {
+                        if (this.playerGrid[row][col] === 0 && this.isValidMove(this.playerGrid, row, col, num)) {
+                            possibleCols.push(col);
+                        }
+                    }
+                    if (possibleCols.length === 1) {
+                        const col = possibleCols[0];
+                        // Verify against solution
+                        if (this.solution[row][col] === num) {
+                            return {
+                                row,
+                                col,
+                                value: num,
+                                technique: 'Hidden Single (Row)',
+                                explanation: `${num} can only go in R${row+1}C${col+1} within row ${row+1}`
+                            };
+                        }
+                    }
+                }
+            }
         }
 
-        // 4. Look for naked pairs
-        const nakedPairHint = this.findNakedPairs();
-        if (nakedPairHint) {
-            return nakedPairHint;
+        // Check each column for hidden singles
+        for (let col = 0; col < 9; col++) {
+            for (let num = 1; num <= 9; num++) {
+                if (!this.isNumberInColumn(col, num)) {
+                    const possibleRows = [];
+                    for (let row = 0; row < 9; row++) {
+                        if (this.playerGrid[row][col] === 0 && this.isValidMove(this.playerGrid, row, col, num)) {
+                            possibleRows.push(row);
+                        }
+                    }
+                    if (possibleRows.length === 1) {
+                        const row = possibleRows[0];
+                        // Verify against solution
+                        if (this.solution[row][col] === num) {
+                            return {
+                                row,
+                                col,
+                                value: num,
+                                technique: 'Hidden Single (Column)',
+                                explanation: `${num} can only go in R${row+1}C${col+1} within column ${col+1}`
+                            };
+                        }
+                    }
+                }
+            }
         }
 
-        // 5. If no logical techniques work, give a random valid move
+        // Check each 3x3 box for hidden singles
+        for (let boxRow = 0; boxRow < 3; boxRow++) {
+            for (let boxCol = 0; boxCol < 3; boxCol++) {
+                for (let num = 1; num <= 9; num++) {
+                    if (!this.isNumberInBox(boxRow * 3, boxCol * 3, num)) {
+                        const possiblePositions = [];
+                        for (let r = 0; r < 3; r++) {
+                            for (let c = 0; c < 3; c++) {
+                                const row = boxRow * 3 + r;
+                                const col = boxCol * 3 + c;
+                                if (this.playerGrid[row][col] === 0 && this.isValidMove(this.playerGrid, row, col, num)) {
+                                    possiblePositions.push([row, col]);
+                                }
+                            }
+                        }
+                        if (possiblePositions.length === 1) {
+                            const [row, col] = possiblePositions[0];
+                            // Verify against solution
+                            if (this.solution[row][col] === num) {
+                                return {
+                                    row,
+                                    col,
+                                    value: num,
+                                    technique: 'Hidden Single (Box)',
+                                    explanation: `${num} can only go in R${row+1}C${col+1} within the 3x3 box`
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. If no obvious logical moves, find the cell with fewest possibilities
+        let bestCell = null;
+        let minPossibilities = 10;
+
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0) {
+                    const possibleValues = this.getPossibleValues(row, col);
+                    if (possibleValues.length > 0 && possibleValues.length < minPossibilities) {
+                        // Check if the correct solution value is among the possibilities
+                        const correctValue = this.solution[row][col];
+                        if (possibleValues.includes(correctValue)) {
+                            bestCell = { row, col, value: correctValue, possibilities: possibleValues.length };
+                            minPossibilities = possibleValues.length;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (bestCell) {
+            return {
+                row: bestCell.row,
+                col: bestCell.col,
+                value: bestCell.value,
+                technique: 'Strategic Hint',
+                explanation: `This cell has only ${bestCell.possibilities} possible values. Try ${bestCell.value} - it's correct!`
+            };
+        }
+
+        // 4. Last resort: give any correct move
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
@@ -1074,7 +1164,7 @@ class SudokuEngine {
                         col,
                         value: correctValue,
                         technique: 'Solution Hint',
-                        explanation: `When stuck, try ${correctValue} - it's the correct answer`
+                        explanation: `When all else fails, ${correctValue} is the correct answer for R${row+1}C${col+1}`
                     };
                 }
             }
@@ -1093,262 +1183,33 @@ class SudokuEngine {
         return possible;
     }
 
-    isHiddenSingle(row, col, value) {
-        // Check if this value can only go in this cell in its row, column, or box
-
-        // Check row
-        let canPlaceInRow = 0;
-        for (let c = 0; c < 9; c++) {
-            if (this.playerGrid[row][c] === 0 && this.isValidMove(this.playerGrid, row, c, value)) {
-                canPlaceInRow++;
-            }
+    // Helper methods for hint system
+    isNumberInRow(row, num) {
+        for (let col = 0; col < 9; col++) {
+            if (this.playerGrid[row][col] === num) return true;
         }
-        if (canPlaceInRow === 1) return { isHidden: true, region: 'row' };
-
-        // Check column
-        let canPlaceInCol = 0;
-        for (let r = 0; r < 9; r++) {
-            if (this.playerGrid[r][col] === 0 && this.isValidMove(this.playerGrid, r, col, value)) {
-                canPlaceInCol++;
-            }
-        }
-        if (canPlaceInCol === 1) return { isHidden: true, region: 'column' };
-
-        // Check box
-        const startRow = row - row % 3;
-        const startCol = col - col % 3;
-        let canPlaceInBox = 0;
-        for (let r = startRow; r < startRow + 3; r++) {
-            for (let c = startCol; c < startCol + 3; c++) {
-                if (this.playerGrid[r][c] === 0 && this.isValidMove(this.playerGrid, r, c, value)) {
-                    canPlaceInBox++;
-                }
-            }
-        }
-        if (canPlaceInBox === 1) return { isHidden: true, region: 'box' };
-
-        return { isHidden: false };
+        return false;
     }
 
-    findPointingPairs() {
-        // Look for pointing pairs - when a number in a box can only be in one line
-        for (let boxRow = 0; boxRow < 3; boxRow++) {
-            for (let boxCol = 0; boxCol < 3; boxCol++) {
-                const startRow = boxRow * 3;
-                const startCol = boxCol * 3;
-
-                for (let num = 1; num <= 9; num++) {
-                    // Check if number is already in this box
-                    let hasNumber = false;
-                    for (let r = startRow; r < startRow + 3; r++) {
-                        for (let c = startCol; c < startCol + 3; c++) {
-                            if (this.playerGrid[r][c] === num) {
-                                hasNumber = true;
-                                break;
-                            }
-                        }
-                        if (hasNumber) break;
-                    }
-                    if (hasNumber) continue;
-
-                    // Find all possible positions for this number in the box
-                    const positions = [];
-                    for (let r = startRow; r < startRow + 3; r++) {
-                        for (let c = startCol; c < startCol + 3; c++) {
-                            if (this.playerGrid[r][c] === 0 && this.isValidMove(this.playerGrid, r, c, num)) {
-                                positions.push({ row: r, col: c });
-                            }
-                        }
-                    }
-
-                    // Check if all positions are in the same row or column
-                    if (positions.length > 1) {
-                        const sameRow = positions.every(pos => pos.row === positions[0].row);
-                        const sameCol = positions.every(pos => pos.col === positions[0].col);
-
-                        if (sameRow || sameCol) {
-                            // This is a pointing pair - eliminate candidates in the line
-                            const eliminationFound = this.findPointingPairEliminations(positions, num, sameRow);
-                            if (eliminationFound) {
-                                return {
-                                    row: positions[0].row,
-                                    col: positions[0].col,
-                                    value: num,
-                                    technique: 'Pointing Pair',
-                                    explanation: `${num} in this box must be in this ${sameRow ? 'row' : 'column'}`
-                                };
-                            }
-                        }
-                    }
-                }
-            }
+    isNumberInColumn(col, num) {
+        for (let row = 0; row < 9; row++) {
+            if (this.playerGrid[row][col] === num) return true;
         }
-        return null;
+        return false;
     }
 
-    findPointingPairEliminations(positions, num, sameRow) {
-        // Check if we can eliminate candidates elsewhere in the line
-        const line = sameRow ? positions[0].row : positions[0].col;
-
-        for (let i = 0; i < 9; i++) {
-            const checkRow = sameRow ? line : i;
-            const checkCol = sameRow ? i : line;
-
-            // Skip if this position is in the same box as the pointing pair
-            const inSameBox = positions.some(pos =>
-                Math.floor(checkRow / 3) === Math.floor(pos.row / 3) &&
-                Math.floor(checkCol / 3) === Math.floor(pos.col / 3)
-            );
-
-            if (!inSameBox && this.playerGrid[checkRow][checkCol] === 0) {
-                // This cell could have the number eliminated
-                if (this.isValidMove(this.playerGrid, checkRow, checkCol, num)) {
-                    return true; // Found a cell where we could eliminate candidates
-                }
+    isNumberInBox(startRow, startCol, num) {
+        const boxRow = Math.floor(startRow / 3) * 3;
+        const boxCol = Math.floor(startCol / 3) * 3;
+        for (let r = boxRow; r < boxRow + 3; r++) {
+            for (let c = boxCol; c < boxCol + 3; c++) {
+                if (this.playerGrid[r][c] === num) return true;
             }
         }
         return false;
     }
 
-    findNakedPairs() {
-        // Look for naked pairs - two cells in a line with the same two candidates
-        for (let row = 0; row < 9; row++) {
-            const hint = this.findNakedPairsInRow(row);
-            if (hint) return hint;
-        }
-
-        for (let col = 0; col < 9; col++) {
-            const hint = this.findNakedPairsInColumn(col);
-            if (hint) return hint;
-        }
-
-        for (let boxRow = 0; boxRow < 3; boxRow++) {
-            for (let boxCol = 0; boxCol < 3; boxCol++) {
-                const hint = this.findNakedPairsInBox(boxRow, boxCol);
-                if (hint) return hint;
-            }
-        }
-
-        return null;
-    }
-
-    findNakedPairsInRow(row) {
-        const emptyCells = [];
-        for (let col = 0; col < 9; col++) {
-            if (this.playerGrid[row][col] === 0) {
-                const candidates = this.getPossibleValues(row, col);
-                if (candidates.length === 2) {
-                    emptyCells.push({ row, col, candidates });
-                }
-            }
-        }
-
-        // Look for matching pairs
-        for (let i = 0; i < emptyCells.length - 1; i++) {
-            for (let j = i + 1; j < emptyCells.length; j++) {
-                const cell1 = emptyCells[i];
-                const cell2 = emptyCells[j];
-
-                if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
-                    cell1.candidates[0] === cell2.candidates[0] &&
-                    cell1.candidates[1] === cell2.candidates[1]) {
-
-                    // Found a naked pair - check if it helps solve other cells
-                    return this.checkNakedPairElimination(row, -1, cell1.candidates, 'row');
-                }
-            }
-        }
-        return null;
-    }
-
-    findNakedPairsInColumn(col) {
-        const emptyCells = [];
-        for (let row = 0; row < 9; row++) {
-            if (this.playerGrid[row][col] === 0) {
-                const candidates = this.getPossibleValues(row, col);
-                if (candidates.length === 2) {
-                    emptyCells.push({ row, col, candidates });
-                }
-            }
-        }
-
-        // Look for matching pairs
-        for (let i = 0; i < emptyCells.length - 1; i++) {
-            for (let j = i + 1; j < emptyCells.length; j++) {
-                const cell1 = emptyCells[i];
-                const cell2 = emptyCells[j];
-
-                if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
-                    cell1.candidates[0] === cell2.candidates[0] &&
-                    cell1.candidates[1] === cell2.candidates[1]) {
-
-                    return this.checkNakedPairElimination(-1, col, cell1.candidates, 'column');
-                }
-            }
-        }
-        return null;
-    }
-
-    findNakedPairsInBox(boxRow, boxCol) {
-        const startRow = boxRow * 3;
-        const startCol = boxCol * 3;
-        const emptyCells = [];
-
-        for (let r = startRow; r < startRow + 3; r++) {
-            for (let c = startCol; c < startCol + 3; c++) {
-                if (this.playerGrid[r][c] === 0) {
-                    const candidates = this.getPossibleValues(r, c);
-                    if (candidates.length === 2) {
-                        emptyCells.push({ row: r, col: c, candidates });
-                    }
-                }
-            }
-        }
-
-        // Look for matching pairs
-        for (let i = 0; i < emptyCells.length - 1; i++) {
-            for (let j = i + 1; j < emptyCells.length; j++) {
-                const cell1 = emptyCells[i];
-                const cell2 = emptyCells[j];
-
-                if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
-                    cell1.candidates[0] === cell2.candidates[0] &&
-                    cell1.candidates[1] === cell2.candidates[1]) {
-
-                    return {
-                        row: cell1.row,
-                        col: cell1.col,
-                        value: cell1.candidates[0],
-                        technique: 'Naked Pair',
-                        explanation: `Naked pair limits other cells in this box`
-                    };
-                }
-            }
-        }
-        return null;
-    }
-
-    checkNakedPairElimination(row, col, pairCandidates, region) {
-        // This is a simplified check - in a real implementation we'd eliminate candidates
-        // For hints, we just indicate that a naked pair technique could be applied
-        if (region === 'row') {
-            for (let c = 0; c < 9; c++) {
-                if (this.playerGrid[row][c] === 0) {
-                    const candidates = this.getPossibleValues(row, c);
-                    if (candidates.length === 1) {
-                        return {
-                            row,
-                            col: c,
-                            value: candidates[0],
-                            technique: 'Naked Pair Effect',
-                            explanation: `Naked pair in this row makes ${candidates[0]} the only possibility`
-                        };
-                    }
-                }
-            }
-        }
-        return null;
-    }
+    // Removed broken hint methods - using simplified correct approach in findBestHint()
 
     async checkCompletion() {
         let completed = true;

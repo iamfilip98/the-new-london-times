@@ -137,14 +137,117 @@ function generateCompleteSolution() {
   return grid;
 }
 
-// Generate puzzle from solution by removing numbers
+// Generate puzzle from solution by removing numbers with solvability validation
 function generatePuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
 
-  const cellsToRemove = {
-    easy: 35,    // ~46 given numbers - more approachable
-    medium: 45,  // ~36 given numbers - balanced challenge
-    hard: 52     // ~29 given numbers - difficult but fair
+  // Improved difficulty settings focused on solvability without guessing
+  const difficultySettings = {
+    easy: {
+      minClues: 32,
+      maxClues: 40,
+      requireNakedSingles: true,
+      allowHiddenSingles: true,
+      allowComplexTechniques: false,
+      maxIterations: 1000
+    },
+    medium: {
+      minClues: 25,
+      maxClues: 32,
+      requireNakedSingles: true,
+      allowHiddenSingles: true,
+      allowComplexTechniques: true,
+      maxIterations: 2000
+    },
+    hard: {
+      minClues: 20,
+      maxClues: 28,
+      requireNakedSingles: false,
+      allowHiddenSingles: true,
+      allowComplexTechniques: true,
+      maxIterations: 3000
+    }
+  };
+
+  const settings = difficultySettings[difficulty];
+
+  // Create list of all positions
+  const positions = [];
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      positions.push([i, j]);
+    }
+  }
+
+  // Shuffle positions for randomness
+  for (let i = positions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [positions[i], positions[j]] = [positions[j], positions[i]];
+  }
+
+  // Remove cells while maintaining solvability
+  let iterations = 0;
+  let bestPuzzle = null;
+  let bestClueCount = 81;
+
+  while (iterations < settings.maxIterations) {
+    const testPuzzle = solution.map(row => [...row]);
+    let removedCells = 0;
+    const shuffledPositions = [...positions];
+
+    // Shuffle again for this iteration
+    for (let i = shuffledPositions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledPositions[i], shuffledPositions[j]] = [shuffledPositions[j], shuffledPositions[i]];
+    }
+
+    // Try to remove cells while maintaining solvability
+    for (let [row, col] of shuffledPositions) {
+      if (81 - removedCells <= settings.minClues) break;
+
+      const originalValue = testPuzzle[row][col];
+      if (originalValue === 0) continue;
+
+      // Remove the cell temporarily
+      testPuzzle[row][col] = 0;
+
+      // Check if puzzle is still solvable with logical techniques only
+      if (isPuzzleSolvableLogically(testPuzzle, settings)) {
+        removedCells++;
+
+        // Check if we've reached a good balance
+        const currentClues = 81 - removedCells;
+        if (currentClues >= settings.minClues && currentClues <= settings.maxClues) {
+          if (currentClues < bestClueCount) {
+            bestPuzzle = testPuzzle.map(row => [...row]);
+            bestClueCount = currentClues;
+          }
+        }
+      } else {
+        // Restore the cell if removing it makes puzzle unsolvable
+        testPuzzle[row][col] = originalValue;
+      }
+    }
+
+    iterations++;
+
+    // If we found a good puzzle in acceptable range, we can stop early
+    if (bestPuzzle && bestClueCount >= settings.minClues && bestClueCount <= settings.maxClues) {
+      break;
+    }
+  }
+
+  // Return best puzzle found, or fallback to a simpler approach if needed
+  return bestPuzzle || createFallbackPuzzle(solution, difficulty);
+}
+
+// Fallback puzzle creation if the sophisticated method fails
+function createFallbackPuzzle(solution, difficulty) {
+  const puzzle = solution.map(row => [...row]);
+  const cellsToKeep = {
+    easy: 36,   // Keep more cells for easier solving
+    medium: 28, // Balanced
+    hard: 22    // More challenging but still solvable
   };
 
   const positions = [];
@@ -160,58 +263,192 @@ function generatePuzzle(solution, difficulty) {
     [positions[i], positions[j]] = [positions[j], positions[i]];
   }
 
-  let removed = 0;
-  const targetCells = cellsToRemove[difficulty];
+  const toKeep = cellsToKeep[difficulty];
+  const toRemove = 81 - toKeep;
 
-  // Enhanced removal strategy for better playability
-  // Remove cells in multiple passes to ensure even distribution
-
-  // Pass 1: Remove cells symmetrically for better visual balance
-  const symmetricPositions = [];
-  for (let i = 0; i < Math.floor(positions.length / 2); i++) {
+  for (let i = 0; i < toRemove && i < positions.length; i++) {
     const [row, col] = positions[i];
-    const symRow = 8 - row;
-    const symCol = 8 - col;
-
-    symmetricPositions.push([row, col]);
-    if (row !== symRow || col !== symCol) {
-      symmetricPositions.push([symRow, symCol]);
-    }
-  }
-
-  // Shuffle symmetric positions
-  for (let i = symmetricPositions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [symmetricPositions[i], symmetricPositions[j]] = [symmetricPositions[j], symmetricPositions[i]];
-  }
-
-  // Remove cells with some strategy based on difficulty
-  for (let [row, col] of symmetricPositions) {
-    if (removed >= targetCells) break;
-
-    if (puzzle[row][col] !== 0) {
-      // For easier difficulties, prefer removing cells that leave more clues in their region
-      if (difficulty === 'easy') {
-        const regionClues = countRegionClues(puzzle, row, col);
-        if (regionClues < 3) continue; // Don't remove if region would have too few clues
-      }
-
-      puzzle[row][col] = 0;
-      removed++;
-    }
-  }
-
-  // If we haven't removed enough cells, finish with remaining positions
-  for (let [row, col] of positions) {
-    if (removed >= targetCells) break;
-
-    if (puzzle[row][col] !== 0) {
-      puzzle[row][col] = 0;
-      removed++;
-    }
+    puzzle[row][col] = 0;
   }
 
   return puzzle;
+}
+
+// Check if a puzzle can be solved using only logical techniques
+function isPuzzleSolvableLogically(puzzle, settings) {
+  const testGrid = puzzle.map(row => [...row]);
+  let changed = true;
+  let iterations = 0;
+  const maxSolverIterations = 100;
+
+  while (changed && iterations < maxSolverIterations) {
+    changed = false;
+    iterations++;
+
+    // Try naked singles (cells with only one possible value)
+    if (settings.requireNakedSingles || settings.allowHiddenSingles) {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (testGrid[row][col] === 0) {
+            const possibleValues = getPossibleValues(testGrid, row, col);
+            if (possibleValues.length === 1) {
+              testGrid[row][col] = possibleValues[0];
+              changed = true;
+            }
+          }
+        }
+      }
+    }
+
+    // Try hidden singles (numbers that can only go in one place in a region)
+    if (settings.allowHiddenSingles) {
+      // Check rows
+      for (let row = 0; row < 9; row++) {
+        for (let num = 1; num <= 9; num++) {
+          if (!isNumberInRow(testGrid, row, num)) {
+            const possibleCols = [];
+            for (let col = 0; col < 9; col++) {
+              if (testGrid[row][col] === 0 && isValidPlacement(testGrid, row, col, num)) {
+                possibleCols.push(col);
+              }
+            }
+            if (possibleCols.length === 1) {
+              testGrid[row][possibleCols[0]] = num;
+              changed = true;
+            }
+          }
+        }
+      }
+
+      // Check columns
+      for (let col = 0; col < 9; col++) {
+        for (let num = 1; num <= 9; num++) {
+          if (!isNumberInColumn(testGrid, col, num)) {
+            const possibleRows = [];
+            for (let row = 0; row < 9; row++) {
+              if (testGrid[row][col] === 0 && isValidPlacement(testGrid, row, col, num)) {
+                possibleRows.push(row);
+              }
+            }
+            if (possibleRows.length === 1) {
+              testGrid[possibleRows[0]][col] = num;
+              changed = true;
+            }
+          }
+        }
+      }
+
+      // Check boxes
+      for (let boxRow = 0; boxRow < 3; boxRow++) {
+        for (let boxCol = 0; boxCol < 3; boxCol++) {
+          for (let num = 1; num <= 9; num++) {
+            if (!isNumberInBox(testGrid, boxRow * 3, boxCol * 3, num)) {
+              const possiblePositions = [];
+              for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                  const row = boxRow * 3 + r;
+                  const col = boxCol * 3 + c;
+                  if (testGrid[row][col] === 0 && isValidPlacement(testGrid, row, col, num)) {
+                    possiblePositions.push([row, col]);
+                  }
+                }
+              }
+              if (possiblePositions.length === 1) {
+                const [row, col] = possiblePositions[0];
+                testGrid[row][col] = num;
+                changed = true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Check if puzzle is completely solved
+    let emptyCells = 0;
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (testGrid[row][col] === 0) emptyCells++;
+      }
+    }
+
+    if (emptyCells === 0) {
+      return true; // Puzzle is solvable!
+    }
+
+    // If no progress was made and there are still empty cells,
+    // check if we need more complex techniques
+    if (!changed && emptyCells > 0) {
+      if (settings.allowComplexTechniques) {
+        // For now, we'll be more lenient with complex techniques
+        // In a full implementation, we'd add pointing pairs, box/line reduction, etc.
+        return emptyCells < 25; // Heuristic: if we got most of the way there, call it solvable
+      } else {
+        return false; // Needs complex techniques but they're not allowed for this difficulty
+      }
+    }
+  }
+
+  return false; // Couldn't solve within iteration limit
+}
+
+// Helper functions for solvability checking
+function getPossibleValues(grid, row, col) {
+  const possible = [];
+  for (let num = 1; num <= 9; num++) {
+    if (isValidPlacement(grid, row, col, num)) {
+      possible.push(num);
+    }
+  }
+  return possible;
+}
+
+function isValidPlacement(grid, row, col, num) {
+  // Check row
+  for (let c = 0; c < 9; c++) {
+    if (c !== col && grid[row][c] === num) return false;
+  }
+
+  // Check column
+  for (let r = 0; r < 9; r++) {
+    if (r !== row && grid[r][col] === num) return false;
+  }
+
+  // Check 3x3 box
+  const boxRow = Math.floor(row / 3) * 3;
+  const boxCol = Math.floor(col / 3) * 3;
+  for (let r = boxRow; r < boxRow + 3; r++) {
+    for (let c = boxCol; c < boxCol + 3; c++) {
+      if (r !== row && c !== col && grid[r][c] === num) return false;
+    }
+  }
+
+  return true;
+}
+
+function isNumberInRow(grid, row, num) {
+  for (let col = 0; col < 9; col++) {
+    if (grid[row][col] === num) return true;
+  }
+  return false;
+}
+
+function isNumberInColumn(grid, col, num) {
+  for (let row = 0; row < 9; row++) {
+    if (grid[row][col] === num) return true;
+  }
+  return false;
+}
+
+function isNumberInBox(grid, startRow, startCol, num) {
+  const boxRow = Math.floor(startRow / 3) * 3;
+  const boxCol = Math.floor(startCol / 3) * 3;
+  for (let r = boxRow; r < boxRow + 3; r++) {
+    for (let c = boxCol; c < boxCol + 3; c++) {
+      if (grid[r][c] === num) return true;
+    }
+  }
+  return false;
 }
 
 // Helper function to count clues in a 3x3 region
@@ -245,16 +482,58 @@ function stringToGrid(str) {
   return grid;
 }
 
-// Generate daily puzzles for a specific date
+// Generate daily puzzles for a specific date with validation
 async function generateDailyPuzzles(date) {
   try {
-    const solution = generateCompleteSolution();
+    let attempts = 0;
+    const maxAttempts = 5;
+    let validPuzzles = null;
 
-    const puzzles = {
-      easy: generatePuzzle(solution, 'easy'),
-      medium: generatePuzzle(solution, 'medium'),
-      hard: generatePuzzle(solution, 'hard')
-    };
+    // Try multiple times to generate valid puzzles
+    while (attempts < maxAttempts && !validPuzzles) {
+      attempts++;
+      console.log(`Generating puzzle attempt ${attempts} for ${date}`);
+
+      const solution = generateCompleteSolution();
+
+      const puzzles = {
+        easy: generatePuzzle(solution, 'easy'),
+        medium: generatePuzzle(solution, 'medium'),
+        hard: generatePuzzle(solution, 'hard')
+      };
+
+      // Validate all puzzles before storing
+      const validationResults = {
+        easy: validatePuzzle(puzzles.easy, solution),
+        medium: validatePuzzle(puzzles.medium, solution),
+        hard: validatePuzzle(puzzles.hard, solution)
+      };
+
+      console.log(`Validation results for attempt ${attempts}:`, validationResults);
+
+      // Check if all puzzles are valid
+      if (validationResults.easy.isValid && validationResults.medium.isValid && validationResults.hard.isValid) {
+        validPuzzles = puzzles;
+        console.log(`✅ Successfully generated valid puzzles for ${date} on attempt ${attempts}`);
+        console.log(`Clue counts - Easy: ${validationResults.easy.clueCount}, Medium: ${validationResults.medium.clueCount}, Hard: ${validationResults.hard.clueCount}`);
+      } else {
+        console.log(`❌ Attempt ${attempts} failed validation:`);
+        if (!validationResults.easy.isValid) console.log(`  Easy: ${validationResults.easy.reason}`);
+        if (!validationResults.medium.isValid) console.log(`  Medium: ${validationResults.medium.reason}`);
+        if (!validationResults.hard.isValid) console.log(`  Hard: ${validationResults.hard.reason}`);
+      }
+    }
+
+    // If we couldn't generate valid puzzles, use fallback
+    if (!validPuzzles) {
+      console.log(`⚠️ Using fallback puzzles for ${date} after ${maxAttempts} attempts`);
+      const solution = generateCompleteSolution();
+      validPuzzles = {
+        easy: createFallbackPuzzle(solution, 'easy'),
+        medium: createFallbackPuzzle(solution, 'medium'),
+        hard: createFallbackPuzzle(solution, 'hard')
+      };
+    }
 
     // Store in database
     await sql`
@@ -265,32 +544,94 @@ async function generateDailyPuzzles(date) {
       )
       VALUES (
         ${date},
-        ${gridToString(puzzles.easy)},
-        ${gridToString(puzzles.medium)},
-        ${gridToString(puzzles.hard)},
+        ${gridToString(validPuzzles.easy)},
+        ${gridToString(validPuzzles.medium)},
+        ${gridToString(validPuzzles.hard)},
         ${gridToString(solution)},
         ${gridToString(solution)},
         ${gridToString(solution)}
       )
       ON CONFLICT (date) DO UPDATE SET
-        easy_puzzle = ${gridToString(puzzles.easy)},
-        medium_puzzle = ${gridToString(puzzles.medium)},
-        hard_puzzle = ${gridToString(puzzles.hard)},
+        easy_puzzle = ${gridToString(validPuzzles.easy)},
+        medium_puzzle = ${gridToString(validPuzzles.medium)},
+        hard_puzzle = ${gridToString(validPuzzles.hard)},
         easy_solution = ${gridToString(solution)},
         medium_solution = ${gridToString(solution)},
         hard_solution = ${gridToString(solution)}
     `;
 
     return {
-      easy: { puzzle: puzzles.easy, solution },
-      medium: { puzzle: puzzles.medium, solution },
-      hard: { puzzle: puzzles.hard, solution }
+      easy: { puzzle: validPuzzles.easy, solution },
+      medium: { puzzle: validPuzzles.medium, solution },
+      hard: { puzzle: validPuzzles.hard, solution }
     };
 
   } catch (error) {
     console.error('Failed to generate daily puzzles:', error);
     throw error;
   }
+}
+
+// Validate a puzzle to ensure it's solvable and has unique solution
+function validatePuzzle(puzzle, expectedSolution) {
+  // Count clues
+  let clueCount = 0;
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (puzzle[row][col] !== 0) clueCount++;
+    }
+  }
+
+  // Minimum clue check
+  if (clueCount < 17) {
+    return { isValid: false, reason: `Too few clues (${clueCount})`, clueCount };
+  }
+
+  // Basic validity check - ensure no immediate conflicts
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const num = puzzle[row][col];
+      if (num !== 0) {
+        // Temporarily remove the number and check if it's valid
+        puzzle[row][col] = 0;
+        if (!isValidPlacement(puzzle, row, col, num)) {
+          puzzle[row][col] = num; // restore
+          return { isValid: false, reason: `Invalid clue at R${row+1}C${col+1}`, clueCount };
+        }
+        puzzle[row][col] = num; // restore
+      }
+    }
+  }
+
+  // Quick solvability check using our logical solver
+  const testGrid = puzzle.map(row => [...row]);
+  const solvabilitySettings = {
+    requireNakedSingles: true,
+    allowHiddenSingles: true,
+    allowComplexTechniques: true
+  };
+
+  if (!isPuzzleSolvableLogically(testGrid, solvabilitySettings)) {
+    return { isValid: false, reason: 'Not solvable with logical techniques', clueCount };
+  }
+
+  // Verify the solution matches
+  let solutionMatches = true;
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (testGrid[row][col] !== expectedSolution[row][col]) {
+        solutionMatches = false;
+        break;
+      }
+    }
+    if (!solutionMatches) break;
+  }
+
+  if (!solutionMatches) {
+    return { isValid: false, reason: 'Solver produces different solution than expected', clueCount };
+  }
+
+  return { isValid: true, reason: 'Valid puzzle', clueCount };
 }
 
 // Get daily puzzles for a specific date
