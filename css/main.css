@@ -4522,6 +4522,27 @@ select:focus-visible,
     to { text-shadow: 0 0 25px #ff69b4, 0 0 35px #ffd700; }
 }
 
+/* Error feedback animations */
+@keyframes errorFlash {
+    0% { background: #ffeeee; }
+    50% { background: #ff4444; }
+    100% { background: #ffeeee; }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.sudoku-cell.error-flash {
+    animation: errorFlash 0.5s ease-in-out;
+}
+
+.error-message {
+    pointer-events: none;
+    font-family: var(--font-display);
+}
+
 /* Mobile theme responsiveness */
 @media (max-width: 768px) {
     .theme-dropdown {

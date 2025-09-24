@@ -494,10 +494,8 @@ class SudokuEngine {
                     } else {
                         cell.classList.add('user-input');
 
-                        // Check for errors by temporarily removing the cell value
-                        const tempGrid = this.playerGrid.map(row => [...row]);
-                        tempGrid[row][col] = 0; // Temporarily remove to check conflicts
-                        if (!this.isValidMove(tempGrid, row, col, this.playerGrid[row][col])) {
+                        // Check for errors by checking conflicts with the current value
+                        if (!this.isValidMove(this.playerGrid, row, col, this.playerGrid[row][col])) {
                             cell.classList.add('error');
                         }
                     }
@@ -631,16 +629,19 @@ class SudokuEngine {
                 this.manualCandidates[row][col].add(number);
             }
         } else {
+            // Check for errors BEFORE placing the number
+            const isValidPlacement = this.isValidMove(this.playerGrid, row, col, number);
+
             // Place number - clear candidates when placing a number
             this.playerGrid[row][col] = number;
             this.candidates[row][col].clear();
             this.manualCandidates[row][col].clear();
 
-            // Check for errors by temporarily removing the cell value
-            const tempGrid = this.playerGrid.map(row => [...row]);
-            tempGrid[row][col] = 0;
-            if (!this.isValidMove(tempGrid, row, col, number)) {
+            // Increment errors if this is an invalid move
+            if (!isValidPlacement) {
                 this.errors++;
+                // Provide immediate feedback for errors
+                this.showErrorFeedback(row, col);
             }
         }
 
@@ -2207,6 +2208,43 @@ class SudokuEngine {
                 }
             }
         }
+    }
+
+    showErrorFeedback(row, col) {
+        // Visual feedback - flash the cell red
+        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        if (cell) {
+            cell.classList.add('error-flash');
+            setTimeout(() => {
+                cell.classList.remove('error-flash');
+            }, 500);
+        }
+
+        // Audio feedback
+        this.playSound('error');
+
+        // Show temporary error message
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Invalid placement!';
+        errorMessage.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: fadeOut 1.5s forwards;
+        `;
+
+        document.body.appendChild(errorMessage);
+        setTimeout(() => {
+            errorMessage.remove();
+        }, 1500);
     }
 
     playSound(type) {
