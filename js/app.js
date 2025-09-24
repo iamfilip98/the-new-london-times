@@ -21,6 +21,11 @@ class SudokuChampionship {
             loading: false
         };
 
+        // Date change detection
+        this.currentDate = new Date().toISOString().split('T')[0];
+        this.lastCheckedDate = localStorage.getItem('lastCheckedDate');
+        this.initializationComplete = false;
+
         this.init();
     }
 
@@ -39,6 +44,9 @@ class SudokuChampionship {
         // Scroll to top on page load/refresh
         window.scrollTo(0, 0);
 
+        // Check if date has changed and handle new day logic
+        await this.checkDateChange();
+
         this.setupEventListeners();
         this.setupNavigation();
         this.setupLeaderboardTabs();
@@ -53,6 +61,13 @@ class SudokuChampionship {
 
         await this.updateDashboard();
         await this.updateAllPages();
+
+        // Set up automatic date checking every minute
+        this.startDateChangeMonitoring();
+
+        // Mark initialization as complete
+        this.initializationComplete = true;
+        console.log('✅ Application initialization complete');
     }
 
     initializeScoreDisplay() {
@@ -131,6 +146,84 @@ class SudokuChampionship {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
+        });
+    }
+
+    async checkDateChange() {
+        const today = new Date().toISOString().split('T')[0];
+
+        // If this is the first visit or date has changed
+        if (!this.lastCheckedDate || this.lastCheckedDate !== today) {
+            console.log(`🗓️ Date change detected: ${this.lastCheckedDate} → ${today}`);
+
+            // Clear today's progress from localStorage for fresh start
+            this.clearTodayProgressFromLocalStorage(today);
+
+            // Clear puzzle cache to force new puzzle generation
+            this.puzzleCache.puzzles = null;
+            this.puzzleCache.loadTime = null;
+
+            // Clear general cache to force data refresh
+            this.cache.data = null;
+            this.cache.lastUpdate = null;
+
+            // Update the stored date
+            localStorage.setItem('lastCheckedDate', today);
+            this.lastCheckedDate = today;
+            this.currentDate = today;
+
+            // Refresh the date display
+            this.setCurrentDate();
+
+            // If initialization is complete, refresh data
+            if (this.initializationComplete) {
+                console.log(`🔄 Refreshing data for new day: ${today}`);
+
+                // Preload fresh puzzles
+                await this.preloadPuzzles();
+
+                // Refresh dashboard data
+                await this.updateDashboard();
+
+                // Update all page content
+                await this.updateAllPages();
+            }
+
+            console.log(`✨ Fresh start for ${today} - progress reset`);
+        }
+    }
+
+    clearTodayProgressFromLocalStorage(date) {
+        const keys = Object.keys(localStorage);
+        let cleared = 0;
+
+        // Clear all keys related to today's date
+        keys.forEach(key => {
+            if (key.includes(date) || key.startsWith('completed_')) {
+                // Only clear today's completed games, not other data
+                if (key.includes(date)) {
+                    localStorage.removeItem(key);
+                    cleared++;
+                }
+            }
+        });
+
+        if (cleared > 0) {
+            console.log(`🧹 Cleared ${cleared} localStorage items for ${date}`);
+        }
+    }
+
+    startDateChangeMonitoring() {
+        // Check for date changes every minute
+        setInterval(() => {
+            this.checkDateChange();
+        }, 60000); // 1 minute
+
+        // Also check when page becomes visible (user returns to tab)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.checkDateChange();
+            }
         });
     }
 
