@@ -808,12 +808,17 @@ class SudokuEngine {
 
         this.gamePaused = !this.gamePaused;
         const pauseBtn = document.getElementById('pauseBtn');
+        const hintBtn = document.getElementById('hintBtn');
         const sudokuGrid = document.getElementById('sudokuGrid');
 
         if (this.gamePaused) {
             this.stopTimer();
             pauseBtn.querySelector('i').className = 'fas fa-play';
             pauseBtn.title = 'Resume game';
+            if (hintBtn) {
+                hintBtn.disabled = true;
+                hintBtn.classList.add('disabled');
+            }
             sudokuGrid.classList.add('paused');
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game paused. Click Resume to continue.</div>';
@@ -821,6 +826,10 @@ class SudokuEngine {
             this.startTimer();
             pauseBtn.querySelector('i').className = 'fas fa-pause';
             pauseBtn.title = 'Pause game';
+            if (hintBtn) {
+                hintBtn.disabled = false;
+                hintBtn.classList.remove('disabled');
+            }
             sudokuGrid.classList.remove('paused');
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game resumed!</div>';
@@ -829,23 +838,32 @@ class SudokuEngine {
 
     updatePauseUI() {
         const pauseBtn = document.getElementById('pauseBtn');
+        const hintBtn = document.getElementById('hintBtn');
         const sudokuGrid = document.getElementById('sudokuGrid');
 
         if (pauseBtn && sudokuGrid) {
             if (this.gamePaused) {
                 pauseBtn.querySelector('i').className = 'fas fa-play';
                 pauseBtn.title = 'Resume game';
+                if (hintBtn) {
+                    hintBtn.disabled = true;
+                    hintBtn.classList.add('disabled');
+                }
                 sudokuGrid.classList.add('paused');
             } else {
                 pauseBtn.querySelector('i').className = 'fas fa-pause';
                 pauseBtn.title = 'Pause game';
+                if (hintBtn) {
+                    hintBtn.disabled = false;
+                    hintBtn.classList.remove('disabled');
+                }
                 sudokuGrid.classList.remove('paused');
             }
         }
     }
 
     async getHint() {
-        if (!this.gameStarted || this.gameCompleted) return;
+        if (!this.gameStarted || this.gameCompleted || this.gamePaused) return;
 
         // Find best hint using deterministic algorithm
         const hintCell = this.findBestHint();

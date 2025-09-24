@@ -3372,9 +3372,27 @@ select:focus-visible,
 
 /* Paused state */
 .sudoku-grid.paused {
-    filter: grayscale(100%);
-    opacity: 0.5;
+    filter: grayscale(100%) blur(8px);
+    opacity: 0.3;
     pointer-events: none;
+    position: relative;
+}
+
+.sudoku-grid.paused::after {
+    content: "GAME PAUSED";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--text-color);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(4px);
 }
 
 .sudoku-grid.paused .sudoku-cell {
@@ -3382,7 +3400,15 @@ select:focus-visible,
 }
 
 .sudoku-grid.paused .cell-value {
-    color: #999 !important;
+    visibility: hidden !important;
+}
+
+/* Disabled button styles */
+.icon-btn.disabled,
+.icon-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 /* Accurate NYT 3x3 box borders */
