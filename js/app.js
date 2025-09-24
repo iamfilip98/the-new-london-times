@@ -14,6 +14,13 @@ class SudokuChampionship {
             data: null
         };
 
+        // Puzzle preloading cache
+        this.puzzleCache = {
+            puzzles: null,
+            loadTime: null,
+            loading: false
+        };
+
         this.init();
     }
 
@@ -37,6 +44,9 @@ class SudokuChampionship {
         this.setupLeaderboardTabs();
         this.setCurrentDate();
         this.initializeScoreDisplay();
+
+        // Preload puzzles immediately on website entry
+        this.preloadPuzzles();
 
         // Load data from database or migrate from localStorage
         await this.loadData();
@@ -1148,6 +1158,57 @@ class SudokuChampionship {
         console.log(`🗑️ Cleared all ${count} localStorage items`);
         console.log(`💡 Refresh the page to reload data`);
         return count;
+    }
+
+    // Puzzle preloading functionality
+    async preloadPuzzles() {
+        // Don't preload if already loading or recently loaded
+        if (this.puzzleCache.loading) {
+            console.log('Puzzle preloading already in progress');
+            return;
+        }
+
+        const now = Date.now();
+        if (this.puzzleCache.puzzles && this.puzzleCache.loadTime &&
+            (now - this.puzzleCache.loadTime) < 300000) { // 5 minutes cache
+            console.log('Using cached puzzles, skipping preload');
+            return;
+        }
+
+        this.puzzleCache.loading = true;
+
+        try {
+            console.log('🧩 Preloading daily puzzles...');
+            const today = new Date().toISOString().split('T')[0];
+            const response = await fetch(`/api/puzzles?date=${today}`);
+
+            if (response.ok) {
+                this.puzzleCache.puzzles = await response.json();
+                this.puzzleCache.loadTime = now;
+                console.log('✅ Daily puzzles preloaded successfully');
+
+                // Make puzzles globally available
+                window.preloadedPuzzles = this.puzzleCache.puzzles;
+            } else {
+                console.warn('Failed to preload puzzles, will load when needed');
+            }
+        } catch (error) {
+            console.warn('Puzzle preloading failed:', error.message);
+        } finally {
+            this.puzzleCache.loading = false;
+        }
+    }
+
+    // Get preloaded puzzles
+    getPreloadedPuzzles() {
+        return this.puzzleCache.puzzles;
+    }
+
+    // Check if puzzles are available
+    arePuzzlesPreloaded() {
+        return this.puzzleCache.puzzles !== null &&
+               this.puzzleCache.loadTime !== null &&
+               (Date.now() - this.puzzleCache.loadTime) < 300000; // 5 minutes fresh
     }
 }
 

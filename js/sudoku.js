@@ -293,7 +293,22 @@ class SudokuEngine {
 
     async loadDailyPuzzles() {
         try {
-            // Load daily puzzles from server API
+            // First, check if puzzles are already preloaded
+            if (window.preloadedPuzzles) {
+                this.dailyPuzzles = window.preloadedPuzzles;
+                console.log('✅ Using preloaded puzzles - instant load!');
+                return;
+            }
+
+            // Check if sudokuApp is available and has preloaded puzzles
+            if (window.sudokuApp && window.sudokuApp.arePuzzlesPreloaded()) {
+                this.dailyPuzzles = window.sudokuApp.getPreloadedPuzzles();
+                console.log('✅ Using cached preloaded puzzles');
+                return;
+            }
+
+            // Fallback: Load daily puzzles from server API
+            console.log('🔄 Preloaded puzzles not available, fetching from server...');
             const today = this.getTodayDateString();
             const response = await fetch(`/api/puzzles?date=${today}`);
 
