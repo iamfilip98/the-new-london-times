@@ -3016,72 +3016,83 @@ select:focus-visible,
     color: var(--accent-purple);
 }
 
-/* Sudoku Grid */
+/* NYT Sudoku Grid */
 .sudoku-grid-container {
     display: flex;
     justify-content: center;
     padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin: 0 auto;
+    max-width: fit-content;
 }
 
 .sudoku-grid {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(9, 1fr);
-    gap: 1px;
-    background: #000;
-    border: 3px solid #000;
-    border-radius: 8px;
+    gap: 0;
+    background: #333333;
+    border: 2px solid #333333;
+    border-radius: 4px;
     padding: 0;
-    width: 720px;
-    height: 720px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    width: 450px;
+    height: 450px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-family: 'Arial', 'Helvetica', sans-serif;
 }
 
 .sudoku-cell {
-    background: white;
+    background: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     position: relative;
-    border: 1px solid #000;
+    border: 0.5px solid #d1d5db;
     width: 100%;
     height: 100%;
+    outline: none;
 }
 
-/* NYT-style typography */
+/* NYT-style clean typography */
 .cell-value {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: #000;
-    line-height: 0.9;
-    user-select: none;
-    width: 100%;
-    height: 100%;
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    position: relative;
+    z-index: 2;
 }
 
 .cell-candidates {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     gap: 1px;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .candidate-num {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 0.7rem;
-    color: #888;
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    font-size: 0.5rem;
+    color: #6b7280;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3089,40 +3100,62 @@ select:focus-visible,
     font-weight: 500;
 }
 
-/* Cell states */
+/* NYT Cell states with proper highlighting */
 .sudoku-cell.given {
-    background: rgba(255, 255, 255, 0.1);
+    background: #ffffff;
 }
 
 .sudoku-cell.given .cell-value {
-    color: #000;
-    font-weight: bold;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.sudoku-cell.user-input {
+    background: #ffffff;
 }
 
 .sudoku-cell.user-input .cell-value {
-    color: #000;
+    color: #2563eb;
+    font-weight: 700;
 }
 
 .sudoku-cell.error {
-    background: #ffeaea !important;
+    background: #fef2f2 !important;
+    position: relative;
+}
+
+.sudoku-cell.error::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    background: #dc2626;
+    border-radius: 50%;
+    z-index: 3;
 }
 
 .sudoku-cell.error .cell-value {
-    color: #d93025 !important;
+    color: #dc2626 !important;
 }
 
+/* NYT-style yellow selection */
 .sudoku-cell.selected {
-    background: #cce4ff !important;
-    border: 2px solid #007bff !important;
+    background: #fef3c7 !important;
+    border: 1px solid #f59e0b !important;
+    box-shadow: inset 0 0 0 1px #f59e0b;
 }
 
+/* Row, column, box highlighting like NYT */
 .sudoku-cell.highlighted {
-    background: rgba(0, 123, 255, 0.15) !important;
+    background: #fffbeb !important;
 }
 
-/* Same number highlighting */
+/* Same number highlighting with blue tint */
 .sudoku-cell.same-number {
-    background: rgba(0, 123, 255, 0.3) !important;
+    background: #dbeafe !important;
+    color: #2563eb;
 }
 
 /* Paused state */
@@ -3140,21 +3173,34 @@ select:focus-visible,
     color: #999 !important;
 }
 
-/* 3x3 box borders */
+/* NYT-style 3x3 box borders with proper thickness */
 .sudoku-cell.right-thick {
-    border-right: 3px solid #000;
+    border-right: 2px solid #333333;
 }
 
 .sudoku-cell.bottom-thick {
-    border-bottom: 3px solid #000;
+    border-bottom: 2px solid #333333;
 }
 
 .sudoku-cell.left-thick {
-    border-left: 3px solid #000;
+    border-left: 2px solid #333333;
 }
 
 .sudoku-cell.top-thick {
-    border-top: 3px solid #000;
+    border-top: 2px solid #333333;
+}
+
+/* NYT hover effect */
+.sudoku-cell:hover:not(.selected) {
+    background: #f9fafb;
+    transition: background-color 0.15s ease;
+}
+
+/* Focus state for accessibility */
+.sudoku-cell:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: -2px;
+    z-index: 5;
 }
 
 /* Game Controls */
@@ -3333,12 +3379,12 @@ select:focus-visible,
     }
 
     .sudoku-grid {
-        width: 420px;
-        height: 420px;
+        width: 360px;
+        height: 360px;
     }
 
     .cell-value {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .number-buttons {
@@ -3374,12 +3420,12 @@ select:focus-visible,
 
 @media (max-width: 480px) {
     .sudoku-grid {
-        width: 360px;
-        height: 360px;
+        width: 320px;
+        height: 320px;
     }
 
     .cell-value {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
     .candidate-num {
