@@ -140,17 +140,6 @@ class SudokuEngine {
 
                 <!-- Game Controls -->
                 <div class="game-controls">
-                    <div class="number-input">
-                        <div class="number-buttons">
-                            ${Array.from({length: 9}, (_, i) =>
-                                `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
-                            ).join('')}
-                            <button class="number-btn erase-btn" data-number="0">
-                                <i class="fas fa-eraser"></i>
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="action-buttons">
                         <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
                             <i class="fas fa-undo-alt"></i>
@@ -168,6 +157,17 @@ class SudokuEngine {
                             <i class="fas fa-eye"></i>
                             <span>Show All</span>
                         </button>
+                    </div>
+
+                    <div class="number-input">
+                        <div class="number-buttons">
+                            ${Array.from({length: 9}, (_, i) =>
+                                `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
+                            ).join('')}
+                            <button class="number-btn erase-btn" data-number="0">
+                                <i class="fas fa-eraser"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
