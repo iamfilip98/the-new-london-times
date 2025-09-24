@@ -541,15 +541,9 @@
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById('sudoku').classList.add('active');
 
-            // Start the sudoku game with the selected difficulty
-            setTimeout(() => {
-                if (window.sudokuEngine) {
-                    window.sudokuEngine.changeDifficulty(difficulty);
-                } else {
-                    // If engine isn't ready yet, it will pick up the stored difficulty when it initializes
-                    console.log('Sudoku engine not ready, stored difficulty:', difficulty);
-                }
-            }, 100);
+            // The sudoku engine will pick up the stored difficulty when it initializes
+            // No need to call changeDifficulty since we stored it in sessionStorage
+            console.log('Difficulty stored for initialization:', difficulty);
         }
     </script>
 

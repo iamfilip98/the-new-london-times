@@ -19,6 +19,7 @@ class SudokuEngine {
         this.gamePaused = false;
         this.moveHistory = [];
         this.autoSaveInterval = null;
+        this.explicitlySelectedDifficulty = false; // Track if user explicitly selected difficulty
     }
 
     // Initialize Sudoku UI and game
@@ -30,11 +31,13 @@ class SudokuEngine {
         // Check if there's a selected difficulty from dashboard
         const selectedDifficulty = sessionStorage.getItem('selectedDifficulty');
         if (selectedDifficulty) {
+            this.explicitlySelectedDifficulty = true;
             this.currentDifficulty = selectedDifficulty;
             sessionStorage.removeItem('selectedDifficulty'); // Clear it once used
             console.log('Using selected difficulty from dashboard:', selectedDifficulty);
 
             // When user explicitly selects a difficulty, start fresh game instead of loading saved state
+            console.log('Loading fresh puzzle for selected difficulty:', this.currentDifficulty);
             this.loadPuzzle(this.currentDifficulty);
         } else {
             // Only load saved game state if no difficulty was explicitly selected
@@ -231,6 +234,12 @@ class SudokuEngine {
     }
 
     changeDifficulty(difficulty) {
+        // Don't switch if user already explicitly selected this difficulty
+        if (this.explicitlySelectedDifficulty && this.currentDifficulty === difficulty) {
+            console.log('Ignoring changeDifficulty call - already loaded explicitly selected difficulty:', difficulty);
+            return;
+        }
+
         // Prevent switching during active gameplay
         if (this.gameStarted && !this.gameCompleted && !this.gamePaused) {
             document.getElementById('gameStatus').innerHTML =
@@ -1027,6 +1036,12 @@ class SudokuEngine {
     async loadGameState() {
         const currentPlayer = sessionStorage.getItem('currentPlayer');
         if (!currentPlayer) return;
+
+        // Don't load saved state if user explicitly selected a difficulty
+        if (this.explicitlySelectedDifficulty) {
+            console.log('Skipping loadGameState because user explicitly selected difficulty');
+            return;
+        }
 
         try {
             // Try to load from server first
