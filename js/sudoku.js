@@ -67,13 +67,6 @@ class SudokuEngine {
         sudokuContainer.innerHTML = `
             <div class="sudoku-game">
                 <!-- NYT-style Header -->
-                <div>
-                    <div>
-                        <h2>Sudoku</h2>
-                        <div class="puzzle-difficulty">${this.currentDifficulty.charAt(0).toUpperCase() + this.currentDifficulty.slice(1)}</div>
-                    </div>
-                    <div class="puzzle-date">${this.getFormattedDate()}</div>
-                </div>
 
                 <!-- Difficulty Selection - Hidden for daily puzzles -->
                 <div class="difficulty-selector" style="display: none;">
