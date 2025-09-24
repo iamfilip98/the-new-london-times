@@ -15,6 +15,8 @@ class SudokuEngine {
         this.gameCompleted = false;
         this.candidateMode = false;
         this.showAllCandidates = false;
+        this.gamePaused = false;
+        this.moveHistory = [];
         this.autoSaveInterval = null;
     }
 
@@ -68,7 +70,7 @@ class SudokuEngine {
                             <span class="errors-count" id="errorsCount">0</span>
                         </div>
                     </div>
-                    <div class="score-section">
+                    <div class="score-section" style="display: none;">
                         <div class="current-score">
                             Score: <span id="currentScore">0</span>
                         </div>
@@ -111,6 +113,10 @@ class SudokuEngine {
                         <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn">
                             <i class="fas fa-eye"></i>
                             <span>Show All</span>
+                        </button>
+                        <button class="action-btn pause-btn" id="pauseBtn">
+                            <i class="fas fa-pause"></i>
+                            <span>Pause</span>
                         </button>
                         <button class="action-btn save-btn" id="saveBtn">
                             <i class="fas fa-save"></i>
@@ -191,6 +197,7 @@ class SudokuEngine {
         document.getElementById('undoBtn')?.addEventListener('click', () => this.undo());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
+        document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
         document.getElementById('saveBtn')?.addEventListener('click', () => this.saveGameState());
 
         // Keyboard controls
@@ -205,9 +212,10 @@ class SudokuEngine {
     }
 
     changeDifficulty(difficulty) {
-        // Save current game if in progress
+        // Save current game if in progress and pause timer
         if (this.gameStarted && !this.gameCompleted) {
             this.saveGameState();
+            this.stopTimer();
         }
 
         this.currentDifficulty = difficulty;
@@ -221,13 +229,17 @@ class SudokuEngine {
         // Load puzzle for this difficulty
         this.loadPuzzle(difficulty);
 
-        // Update candidate mode based on difficulty
+        // Update candidate mode based on difficulty and show candidates for medium/hard
         if (difficulty === 'easy') {
             this.candidateMode = false;
+            this.showAllCandidates = false;
         } else {
-            this.candidateMode = true;
+            this.candidateMode = false; // Start in number mode
+            this.showAllCandidates = true; // But show all candidates
+            this.generateAllCandidates();
         }
         this.updateCandidateModeUI();
+        this.updateShowAllCandidatesUI();
     }
 
     async loadDailyPuzzles() {
@@ -320,22 +332,26 @@ class SudokuEngine {
     }
 
     isValidMove(grid, row, col, num) {
-        // Check row
+        // Check row (excluding the current cell)
         for (let x = 0; x < 9; x++) {
-            if (grid[row][x] === num) return false;
+            if (x !== col && grid[row][x] === num) return false;
         }
 
-        // Check column
+        // Check column (excluding the current cell)
         for (let x = 0; x < 9; x++) {
-            if (grid[x][col] === num) return false;
+            if (x !== row && grid[x][col] === num) return false;
         }
 
-        // Check 3x3 box
+        // Check 3x3 box (excluding the current cell)
         const startRow = row - row % 3;
         const startCol = col - col % 3;
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (grid[i + startRow][j + startCol] === num) return false;
+                const checkRow = i + startRow;
+                const checkCol = j + startCol;
+                if (!(checkRow === row && checkCol === col) && grid[checkRow][checkCol] === num) {
+                    return false;
+                }
             }
         }
 
@@ -444,12 +460,24 @@ class SudokuEngine {
     }
 
     inputNumber(number) {
-        if (!this.selectedCell || !this.gameStarted || this.gameCompleted) return;
+        if (!this.selectedCell || !this.gameStarted || this.gameCompleted || this.gamePaused) return;
 
         const { row, col } = this.selectedCell;
 
         // Don't allow changing given numbers
         if (this.initialGrid[row][col] !== 0) return;
+
+        // Save current state for undo
+        const previousValue = this.playerGrid[row][col];
+        const previousCandidates = new Set(this.candidates[row][col]);
+
+        this.moveHistory.push({
+            row,
+            col,
+            previousValue,
+            previousCandidates: previousCandidates,
+            timestamp: Date.now()
+        });
 
         if (number === 0) {
             // Erase
@@ -473,6 +501,11 @@ class SudokuEngine {
             if (!this.isValidMove(this.playerGrid, row, col, number)) {
                 this.errors++;
             }
+        }
+
+        // Update all candidates if in show all mode or if we placed a number
+        if (this.showAllCandidates || (!this.candidateMode && number !== 0)) {
+            this.updateAllCandidates();
         }
 
         this.updateDisplay();
@@ -540,6 +573,60 @@ class SudokuEngine {
                     this.candidates[row][col].clear();
                 }
             }
+        }
+    }
+
+    updateShowAllCandidatesUI() {
+        const toggleBtn = document.getElementById('toggleCandidatesBtn');
+        if (toggleBtn) {
+            toggleBtn.classList.toggle('active', this.showAllCandidates);
+            const span = toggleBtn.querySelector('span');
+            const icon = toggleBtn.querySelector('i');
+            if (this.showAllCandidates) {
+                span.textContent = 'Hide All';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                span.textContent = 'Show All';
+                icon.className = 'fas fa-eye';
+            }
+        }
+    }
+
+    updateAllCandidates() {
+        // Update candidates for all empty cells
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0 && this.showAllCandidates) {
+                    // Clear and regenerate candidates
+                    this.candidates[row][col].clear();
+                    for (let num = 1; num <= 9; num++) {
+                        if (this.isValidMove(this.playerGrid, row, col, num)) {
+                            this.candidates[row][col].add(num);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    togglePause() {
+        if (!this.gameStarted || this.gameCompleted) return;
+
+        this.gamePaused = !this.gamePaused;
+        const pauseBtn = document.getElementById('pauseBtn');
+
+        if (this.gamePaused) {
+            this.stopTimer();
+            pauseBtn.querySelector('span').textContent = 'Resume';
+            pauseBtn.querySelector('i').className = 'fas fa-play';
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">Game paused. Click Resume to continue.</div>';
+        } else {
+            this.startTimer();
+            pauseBtn.querySelector('span').textContent = 'Pause';
+            pauseBtn.querySelector('i').className = 'fas fa-pause';
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">Game resumed!</div>';
         }
     }
 
@@ -813,6 +900,7 @@ class SudokuEngine {
             gameStarted: this.gameStarted,
             gameCompleted: this.gameCompleted,
             candidateMode: this.candidateMode,
+            showAllCandidates: this.showAllCandidates,
             selectedCell: this.selectedCell,
             lastSaved: Date.now()
         };
@@ -880,17 +968,25 @@ class SudokuEngine {
                 this.gameStarted = gameState.gameStarted || false;
                 this.gameCompleted = gameState.gameCompleted || false;
                 this.candidateMode = gameState.candidateMode || false;
+                this.showAllCandidates = gameState.showAllCandidates || false;
                 this.selectedCell = gameState.selectedCell;
 
-                if (this.gameStarted && !this.gameCompleted) {
+                if (this.gameCompleted) {
+                    // Keep completed state - don't start timer
+                    document.getElementById('gameStatus').innerHTML =
+                        '<div class="status-message success">Puzzle completed! Well done!</div>';
+                } else if (this.gameStarted) {
                     this.startTimer();
                 }
 
                 this.updateDisplay();
                 this.updateCandidateModeUI();
+                this.updateShowAllCandidatesUI();
 
-                document.getElementById('gameStatus').innerHTML =
-                    '<div class="status-message">Game state restored!</div>';
+                if (!this.gameCompleted) {
+                    document.getElementById('gameStatus').innerHTML =
+                        '<div class="status-message">Game state restored!</div>';
+                }
             }
 
         } catch (error) {
@@ -1129,7 +1225,7 @@ class SudokuEngine {
     }
 
     generateFallbackPuzzles() {
-        // Simple fallback puzzles if generation fails
+        // Working validated puzzles - these are correct and solvable
         this.dailyPuzzles = {
             easy: {
                 puzzle: [
@@ -1157,61 +1253,76 @@ class SudokuEngine {
             },
             medium: {
                 puzzle: [
-                    [0,0,0,6,0,0,4,0,0],
-                    [7,0,0,0,0,3,6,0,0],
-                    [0,0,0,0,9,1,0,8,0],
-                    [0,0,0,0,0,0,0,0,0],
-                    [0,5,0,1,8,0,0,0,3],
-                    [0,0,0,3,0,6,0,4,5],
-                    [0,4,0,2,0,0,0,6,0],
-                    [9,0,3,0,0,0,0,0,0],
-                    [0,2,0,0,0,0,1,0,0]
+                    [5,3,0,0,7,0,0,0,0],
+                    [6,0,0,1,9,5,0,0,0],
+                    [0,9,8,0,0,0,0,6,0],
+                    [8,0,0,0,6,0,0,0,3],
+                    [4,0,0,8,0,3,0,0,1],
+                    [7,0,0,0,2,0,0,0,6],
+                    [0,6,0,0,0,0,2,8,0],
+                    [0,0,0,4,1,9,0,0,5],
+                    [0,0,0,0,8,0,0,7,9]
                 ],
                 solution: [
-                    [1,3,9,6,7,8,4,5,2],
-                    [7,8,4,5,2,3,6,1,9],
-                    [6,2,5,4,9,1,3,8,7],
-                    [3,9,2,8,1,4,5,7,6],
-                    [4,5,6,1,8,7,9,2,3],
-                    [8,1,7,3,2,6,8,4,5],
-                    [5,4,1,2,3,9,7,6,8],
-                    [9,6,3,7,4,5,2,3,1],
-                    [2,7,8,9,6,2,1,3,4]
+                    [5,3,4,6,7,8,9,1,2],
+                    [6,7,2,1,9,5,3,4,8],
+                    [1,9,8,3,4,2,5,6,7],
+                    [8,5,9,7,6,1,4,2,3],
+                    [4,2,6,8,5,3,7,9,1],
+                    [7,1,3,9,2,4,8,5,6],
+                    [9,6,1,5,3,7,2,8,4],
+                    [2,8,7,4,1,9,6,3,5],
+                    [3,4,5,2,8,6,1,7,9]
                 ]
             },
             hard: {
                 puzzle: [
-                    [0,0,0,0,0,0,0,1,0],
-                    [4,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,6,0,2],
-                    [0,0,0,0,0,3,0,7,0],
-                    [0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0],
-                    [0,6,0,5,0,0,0,0,0],
-                    [0,0,3,0,0,0,0,0,5],
-                    [0,0,0,0,0,0,0,0,0]
+                    [5,3,0,0,7,0,0,0,0],
+                    [6,0,0,1,9,5,0,0,0],
+                    [0,9,8,0,0,0,0,6,0],
+                    [8,0,0,0,6,0,0,0,3],
+                    [4,0,0,8,0,3,0,0,1],
+                    [7,0,0,0,2,0,0,0,6],
+                    [0,6,0,0,0,0,2,8,0],
+                    [0,0,0,4,1,9,0,0,5],
+                    [0,0,0,0,8,0,0,7,9]
                 ],
                 solution: [
-                    [6,7,2,3,4,8,5,1,9],
-                    [4,1,5,6,9,7,2,8,3],
-                    [3,8,9,1,5,2,6,4,7],
-                    [2,5,8,4,6,3,1,7,8],
-                    [7,3,6,8,1,5,4,9,2],
-                    [1,9,4,2,7,9,8,3,6],
-                    [8,6,1,5,2,4,3,7,9],
-                    [9,2,3,7,8,6,7,5,1],
-                    [5,4,7,9,3,1,9,6,4]
+                    [5,3,4,6,7,8,9,1,2],
+                    [6,7,2,1,9,5,3,4,8],
+                    [1,9,8,3,4,2,5,6,7],
+                    [8,5,9,7,6,1,4,2,3],
+                    [4,2,6,8,5,3,7,9,1],
+                    [7,1,3,9,2,4,8,5,6],
+                    [9,6,1,5,3,7,2,8,4],
+                    [2,8,7,4,1,9,6,3,5],
+                    [3,4,5,2,8,6,1,7,9]
                 ]
             }
         };
     }
 
     undo() {
-        // Simple undo - could be enhanced with full history
-        if (this.selectedCell && this.playerGrid[this.selectedCell.row][this.selectedCell.col] !== 0) {
-            this.playerGrid[this.selectedCell.row][this.selectedCell.col] = 0;
-            this.updateDisplay();
+        if (this.moveHistory.length === 0) return;
+
+        const lastMove = this.moveHistory.pop();
+        const { row, col, previousValue, previousCandidates } = lastMove;
+
+        // Restore previous state
+        this.playerGrid[row][col] = previousValue;
+        this.candidates[row][col] = new Set(previousCandidates);
+
+        // Update all candidates if in show all mode
+        if (this.showAllCandidates) {
+            this.updateAllCandidates();
         }
+
+        // Select the cell that was just undone
+        this.selectCell(row, col);
+        this.updateDisplay();
+
+        document.getElementById('gameStatus').innerHTML =
+            '<div class="status-message">Move undone</div>';
     }
 
     checkThemeAchievements() {

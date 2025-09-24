@@ -3032,8 +3032,8 @@ select:focus-visible,
     border: 3px solid #000;
     border-radius: 8px;
     padding: 0;
-    width: 450px;
-    height: 450px;
+    width: 540px;
+    height: 540px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -3107,12 +3107,12 @@ select:focus-visible,
 }
 
 .sudoku-cell.selected {
-    background: #bbdefb !important;
-    border: 2px solid #1976d2 !important;
+    background: #ffe0b3 !important;
+    border: 2px solid #ff8c00 !important;
 }
 
 .sudoku-cell.highlighted {
-    background: #e3f2fd !important;
+    background: #fff2e6 !important;
 }
 
 /* 3x3 box borders */
@@ -3159,7 +3159,7 @@ select:focus-visible,
     border: 2px solid #ddd;
     border-radius: 8px;
     padding: 1rem;
-    font-family: Georgia, serif;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     font-size: 1.2rem;
     font-weight: bold;
     color: #000;
@@ -3173,8 +3173,8 @@ select:focus-visible,
 }
 
 .number-btn:hover {
-    background: #e3f2fd;
-    border-color: #1976d2;
+    background: #fff2e6;
+    border-color: #ff8c00;
     transform: translateY(-2px);
 }
 
@@ -3308,8 +3308,8 @@ select:focus-visible,
     }
 
     .sudoku-grid {
-        width: 350px;
-        height: 350px;
+        width: 420px;
+        height: 420px;
     }
 
     .cell-value {
@@ -3349,8 +3349,8 @@ select:focus-visible,
 
 @media (max-width: 480px) {
     .sudoku-grid {
-        width: 300px;
-        height: 300px;
+        width: 360px;
+        height: 360px;
     }
 
     .cell-value {
