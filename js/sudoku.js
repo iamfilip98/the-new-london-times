@@ -40,20 +40,29 @@ class SudokuEngine {
         // Check if there's a selected difficulty from dashboard
         const selectedDifficulty = sessionStorage.getItem('selectedDifficulty');
         if (selectedDifficulty) {
-            this.explicitlySelectedDifficulty = true;
-            this.currentDifficulty = selectedDifficulty;
             sessionStorage.removeItem('selectedDifficulty'); // Clear it once used
-            console.log('Using selected difficulty from dashboard:', selectedDifficulty);
+            console.log('Selected difficulty from dashboard:', selectedDifficulty);
 
-            // When user explicitly selects a difficulty, start fresh game instead of loading saved state
-            console.log('Loading fresh puzzle for selected difficulty:', this.currentDifficulty);
-            this.loadPuzzle(this.currentDifficulty);
+            // Set the selected difficulty
+            this.currentDifficulty = selectedDifficulty;
+
+            // Always try to load saved state first, regardless of how we got here
+            console.log('Attempting to load saved game state for difficulty:', this.currentDifficulty);
+            await this.loadGameState();
+
+            // If no saved game state was found, start a new game
+            if (!this.gameStarted) {
+                console.log('No saved state found, loading fresh puzzle:', this.currentDifficulty);
+                this.loadPuzzle(this.currentDifficulty);
+            }
         } else {
-            // Only load saved game state if no difficulty was explicitly selected
+            // No difficulty was explicitly selected - try to load saved game state
+            console.log('No explicit difficulty selection, loading saved game state');
             await this.loadGameState();
 
             // If no saved game state and we have a current difficulty, start new game
             if (!this.gameStarted && this.currentDifficulty) {
+                console.log('No saved state found, loading fresh puzzle for default difficulty:', this.currentDifficulty);
                 this.loadPuzzle(this.currentDifficulty);
             }
         }
@@ -1471,11 +1480,7 @@ class SudokuEngine {
         const currentPlayer = sessionStorage.getItem('currentPlayer');
         if (!currentPlayer) return;
 
-        // Don't load saved state if user explicitly selected a difficulty
-        if (this.explicitlySelectedDifficulty) {
-            console.log('Skipping loadGameState because user explicitly selected difficulty');
-            return;
-        }
+        // This function now always attempts to load saved state for the current difficulty
 
         try {
             // Try to load from server first
