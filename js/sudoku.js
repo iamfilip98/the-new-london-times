@@ -20,10 +20,19 @@ class SudokuEngine {
         this.moveHistory = [];
         this.autoSaveInterval = null;
         this.explicitlySelectedDifficulty = false; // Track if user explicitly selected difficulty
+
+        // New NYT-style features
+        this.autoCheckErrors = true;
+        this.showTimer = true;
+        this.autoSave = true;
+        this.soundLevel = 'medium';
+        this.streakCount = 0;
+        this.bestTime = { easy: null, medium: null, hard: null };
     }
 
     // Initialize Sudoku UI and game
     async init() {
+        this.loadSettings();
         this.createSudokuInterface();
         await this.loadDailyPuzzles();
         this.setupEventListeners();
@@ -57,6 +66,15 @@ class SudokuEngine {
         // Replace placeholder with actual game interface
         sudokuContainer.innerHTML = `
             <div class="sudoku-game">
+                <!-- NYT-style Header -->
+                <div class="nyt-header">
+                    <div class="puzzle-info">
+                        <h2 class="puzzle-title">Sudoku</h2>
+                        <div class="puzzle-difficulty">${this.currentDifficulty.charAt(0).toUpperCase() + this.currentDifficulty.slice(1)}</div>
+                    </div>
+                    <div class="puzzle-date">${this.getFormattedDate()}</div>
+                </div>
+
                 <!-- Difficulty Selection - Hidden for daily puzzles -->
                 <div class="difficulty-selector" style="display: none;">
                     <h3>Choose Difficulty</h3>
@@ -76,26 +94,27 @@ class SudokuEngine {
                     </div>
                 </div>
 
-                <!-- Game Info Panel -->
+                <!-- NYT-style Game Info Panel -->
                 <div class="game-info-panel">
                     <div class="timer-section">
-                        <i class="fas fa-clock"></i>
+                        <div class="stat-label">Timer</div>
                         <span class="timer-display" id="timerDisplay">0:00</span>
                     </div>
                     <div class="stats-section">
                         <div class="stat-item">
-                            <i class="fas fa-lightbulb"></i>
-                            <span class="hints-count" id="hintsCount">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="stat-label">Mistakes</div>
                             <span class="errors-count" id="errorsCount">0</span>
                         </div>
-                    </div>
-                    <div class="score-section" id="scoreSection" style="display: none;">
-                        <div class="current-score">
-                            Score: <span id="currentScore">0</span>
+                        <div class="stat-item">
+                            <div class="stat-label">Score</div>
+                            <span class="current-score" id="currentScore">0</span>
                         </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="completion-bar">
+                            <div class="completion-fill" id="completionFill"></div>
+                        </div>
+                        <div class="completion-text" id="completionText">0% Complete</div>
                     </div>
                 </div>
 
@@ -120,29 +139,29 @@ class SudokuEngine {
                     </div>
 
                     <div class="action-buttons">
-                        <button class="action-btn hint-btn" id="hintBtn">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Hint</span>
-                        </button>
-                        <button class="action-btn undo-btn" id="undoBtn">
-                            <i class="fas fa-undo"></i>
+                        <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
+                            <i class="fas fa-undo-alt"></i>
                             <span>Undo</span>
                         </button>
-                        <button class="action-btn candidate-btn" id="candidateBtn">
+                        <button class="action-btn erase-btn" id="eraseBtn" title="Erase selected cell">
+                            <i class="fas fa-eraser"></i>
+                            <span>Erase</span>
+                        </button>
+                        <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
                             <i class="fas fa-pencil-alt"></i>
                             <span>Notes</span>
                         </button>
-                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn">
-                            <i class="fas fa-eye"></i>
-                            <span>Show All</span>
+                        <button class="action-btn hint-btn" id="hintBtn" title="Get a hint">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Hint</span>
                         </button>
-                        <button class="action-btn pause-btn" id="pauseBtn">
+                        <button class="action-btn pause-btn" id="pauseBtn" title="Pause game">
                             <i class="fas fa-pause"></i>
                             <span>Pause</span>
                         </button>
-                        <button class="action-btn save-btn" id="saveBtn">
-                            <i class="fas fa-save"></i>
-                            <span>Save</span>
+                        <button class="action-btn settings-btn" id="settingsBtn" title="Game settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
                         </button>
                     </div>
                 </div>
@@ -217,10 +236,10 @@ class SudokuEngine {
         // Action buttons
         document.getElementById('hintBtn')?.addEventListener('click', () => this.getHint());
         document.getElementById('undoBtn')?.addEventListener('click', () => this.undo());
+        document.getElementById('eraseBtn')?.addEventListener('click', () => this.eraseSelectedCell());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
-        document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
-        document.getElementById('saveBtn')?.addEventListener('click', () => this.saveGame());
+        document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
 
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.handleKeyInput(e));
@@ -493,9 +512,9 @@ class SudokuEngine {
 
         // Update stats display
         document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
-        document.getElementById('hintsCount').textContent = this.hints;
         document.getElementById('errorsCount').textContent = this.errors;
         document.getElementById('currentScore').textContent = this.calculateCurrentScore();
+        this.updateProgressBar();
     }
 
     isInSameBox(row1, col1, row2, col2) {
@@ -562,7 +581,13 @@ class SudokuEngine {
             this.updateAllCandidates();
         }
 
+        // Auto-check for conflicts if enabled
+        if (this.autoCheckErrors && number !== 0 && !this.candidateMode) {
+            this.highlightConflicts(row, col);
+        }
+
         this.updateDisplay();
+        this.playSound('place');
         this.checkCompletion();
     }
 
@@ -740,9 +765,65 @@ class SudokuEngine {
             this.selectCell(row, col);
             this.updateDisplay();
 
-            // Show hint explanation
-            document.getElementById('gameStatus').innerHTML =
-                `<div class="status-message hint">Hint: ${technique} - Cell R${row + 1}C${col + 1} = ${value}</div>`;
+            // Show enhanced hint explanation
+            const statusDiv = document.getElementById('gameStatus');
+            statusDiv.innerHTML = `
+                <div class="hint-message">
+                    <div class="hint-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>${hintCell.technique}</strong>
+                    </div>
+                    <div class="hint-body">
+                        ${hintCell.explanation}
+                    </div>
+                    <div class="hint-location">
+                        Cell: R${row + 1}C${col + 1} = ${value}
+                    </div>
+                </div>
+            `;
+
+            // Add hint message styling if not already present
+            if (!document.querySelector('.hint-styles-added')) {
+                const hintStyles = document.createElement('style');
+                hintStyles.className = 'hint-styles-added';
+                hintStyles.textContent = `
+                    .hint-message {
+                        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+                        color: white;
+                        padding: 1rem;
+                        border-radius: var(--border-radius);
+                        margin: 1rem 0;
+                        box-shadow: var(--box-shadow);
+                        animation: hintAppear 0.4s ease-out;
+                    }
+                    .hint-header {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-size: 1.1rem;
+                        margin-bottom: 0.5rem;
+                    }
+                    .hint-body {
+                        font-size: 0.95rem;
+                        margin-bottom: 0.5rem;
+                        opacity: 0.9;
+                    }
+                    .hint-location {
+                        font-family: 'Orbitron', monospace;
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                        background: rgba(255, 255, 255, 0.2);
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 4px;
+                        display: inline-block;
+                    }
+                    @keyframes hintAppear {
+                        from { opacity: 0; transform: translateY(-10px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                `;
+                document.head.appendChild(hintStyles);
+            }
 
             this.checkCompletion();
         } else {
@@ -752,39 +833,71 @@ class SudokuEngine {
     }
 
     findBestHint() {
-        // Deterministic hint finding - always returns same hint for same board state
+        // Deterministic hint finding with advanced techniques
+
+        // 1. Look for naked singles first (easiest)
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
-                    // Find cells that can be solved with naked singles
                     const possibleValues = this.getPossibleValues(row, col);
                     if (possibleValues.length === 1) {
                         return {
                             row,
                             col,
                             value: possibleValues[0],
-                            technique: 'Naked single'
+                            technique: 'Naked Single',
+                            explanation: `Only ${possibleValues[0]} can go in this cell`
                         };
                     }
                 }
             }
         }
 
-        // If no naked singles, find hidden singles
+        // 2. Look for hidden singles
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
                     const possibleValues = this.getPossibleValues(row, col);
                     for (let value of possibleValues) {
-                        if (this.isHiddenSingle(row, col, value)) {
+                        const hiddenResult = this.isHiddenSingle(row, col, value);
+                        if (hiddenResult.isHidden) {
                             return {
                                 row,
                                 col,
                                 value,
-                                technique: 'Hidden single'
+                                technique: 'Hidden Single',
+                                explanation: `${value} can only go here in this ${hiddenResult.region}`
                             };
                         }
                     }
+                }
+            }
+        }
+
+        // 3. Look for pointing pairs/box-line reduction
+        const pointingHint = this.findPointingPairs();
+        if (pointingHint) {
+            return pointingHint;
+        }
+
+        // 4. Look for naked pairs
+        const nakedPairHint = this.findNakedPairs();
+        if (nakedPairHint) {
+            return nakedPairHint;
+        }
+
+        // 5. If no logical techniques work, give a random valid move
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === 0) {
+                    const correctValue = this.solution[row][col];
+                    return {
+                        row,
+                        col,
+                        value: correctValue,
+                        technique: 'Solution Hint',
+                        explanation: `When stuck, try ${correctValue} - it's the correct answer`
+                    };
                 }
             }
         }
@@ -812,7 +925,7 @@ class SudokuEngine {
                 canPlaceInRow++;
             }
         }
-        if (canPlaceInRow === 1) return true;
+        if (canPlaceInRow === 1) return { isHidden: true, region: 'row' };
 
         // Check column
         let canPlaceInCol = 0;
@@ -821,7 +934,7 @@ class SudokuEngine {
                 canPlaceInCol++;
             }
         }
-        if (canPlaceInCol === 1) return true;
+        if (canPlaceInCol === 1) return { isHidden: true, region: 'column' };
 
         // Check box
         const startRow = row - row % 3;
@@ -834,9 +947,229 @@ class SudokuEngine {
                 }
             }
         }
-        if (canPlaceInBox === 1) return true;
+        if (canPlaceInBox === 1) return { isHidden: true, region: 'box' };
 
+        return { isHidden: false };
+    }
+
+    findPointingPairs() {
+        // Look for pointing pairs - when a number in a box can only be in one line
+        for (let boxRow = 0; boxRow < 3; boxRow++) {
+            for (let boxCol = 0; boxCol < 3; boxCol++) {
+                const startRow = boxRow * 3;
+                const startCol = boxCol * 3;
+
+                for (let num = 1; num <= 9; num++) {
+                    // Check if number is already in this box
+                    let hasNumber = false;
+                    for (let r = startRow; r < startRow + 3; r++) {
+                        for (let c = startCol; c < startCol + 3; c++) {
+                            if (this.playerGrid[r][c] === num) {
+                                hasNumber = true;
+                                break;
+                            }
+                        }
+                        if (hasNumber) break;
+                    }
+                    if (hasNumber) continue;
+
+                    // Find all possible positions for this number in the box
+                    const positions = [];
+                    for (let r = startRow; r < startRow + 3; r++) {
+                        for (let c = startCol; c < startCol + 3; c++) {
+                            if (this.playerGrid[r][c] === 0 && this.isValidMove(this.playerGrid, r, c, num)) {
+                                positions.push({ row: r, col: c });
+                            }
+                        }
+                    }
+
+                    // Check if all positions are in the same row or column
+                    if (positions.length > 1) {
+                        const sameRow = positions.every(pos => pos.row === positions[0].row);
+                        const sameCol = positions.every(pos => pos.col === positions[0].col);
+
+                        if (sameRow || sameCol) {
+                            // This is a pointing pair - eliminate candidates in the line
+                            const eliminationFound = this.findPointingPairEliminations(positions, num, sameRow);
+                            if (eliminationFound) {
+                                return {
+                                    row: positions[0].row,
+                                    col: positions[0].col,
+                                    value: num,
+                                    technique: 'Pointing Pair',
+                                    explanation: `${num} in this box must be in this ${sameRow ? 'row' : 'column'}`
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    findPointingPairEliminations(positions, num, sameRow) {
+        // Check if we can eliminate candidates elsewhere in the line
+        const line = sameRow ? positions[0].row : positions[0].col;
+
+        for (let i = 0; i < 9; i++) {
+            const checkRow = sameRow ? line : i;
+            const checkCol = sameRow ? i : line;
+
+            // Skip if this position is in the same box as the pointing pair
+            const inSameBox = positions.some(pos =>
+                Math.floor(checkRow / 3) === Math.floor(pos.row / 3) &&
+                Math.floor(checkCol / 3) === Math.floor(pos.col / 3)
+            );
+
+            if (!inSameBox && this.playerGrid[checkRow][checkCol] === 0) {
+                // This cell could have the number eliminated
+                if (this.isValidMove(this.playerGrid, checkRow, checkCol, num)) {
+                    return true; // Found a cell where we could eliminate candidates
+                }
+            }
+        }
         return false;
+    }
+
+    findNakedPairs() {
+        // Look for naked pairs - two cells in a line with the same two candidates
+        for (let row = 0; row < 9; row++) {
+            const hint = this.findNakedPairsInRow(row);
+            if (hint) return hint;
+        }
+
+        for (let col = 0; col < 9; col++) {
+            const hint = this.findNakedPairsInColumn(col);
+            if (hint) return hint;
+        }
+
+        for (let boxRow = 0; boxRow < 3; boxRow++) {
+            for (let boxCol = 0; boxCol < 3; boxCol++) {
+                const hint = this.findNakedPairsInBox(boxRow, boxCol);
+                if (hint) return hint;
+            }
+        }
+
+        return null;
+    }
+
+    findNakedPairsInRow(row) {
+        const emptyCells = [];
+        for (let col = 0; col < 9; col++) {
+            if (this.playerGrid[row][col] === 0) {
+                const candidates = this.getPossibleValues(row, col);
+                if (candidates.length === 2) {
+                    emptyCells.push({ row, col, candidates });
+                }
+            }
+        }
+
+        // Look for matching pairs
+        for (let i = 0; i < emptyCells.length - 1; i++) {
+            for (let j = i + 1; j < emptyCells.length; j++) {
+                const cell1 = emptyCells[i];
+                const cell2 = emptyCells[j];
+
+                if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
+                    cell1.candidates[0] === cell2.candidates[0] &&
+                    cell1.candidates[1] === cell2.candidates[1]) {
+
+                    // Found a naked pair - check if it helps solve other cells
+                    return this.checkNakedPairElimination(row, -1, cell1.candidates, 'row');
+                }
+            }
+        }
+        return null;
+    }
+
+    findNakedPairsInColumn(col) {
+        const emptyCells = [];
+        for (let row = 0; row < 9; row++) {
+            if (this.playerGrid[row][col] === 0) {
+                const candidates = this.getPossibleValues(row, col);
+                if (candidates.length === 2) {
+                    emptyCells.push({ row, col, candidates });
+                }
+            }
+        }
+
+        // Look for matching pairs
+        for (let i = 0; i < emptyCells.length - 1; i++) {
+            for (let j = i + 1; j < emptyCells.length; j++) {
+                const cell1 = emptyCells[i];
+                const cell2 = emptyCells[j];
+
+                if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
+                    cell1.candidates[0] === cell2.candidates[0] &&
+                    cell1.candidates[1] === cell2.candidates[1]) {
+
+                    return this.checkNakedPairElimination(-1, col, cell1.candidates, 'column');
+                }
+            }
+        }
+        return null;
+    }
+
+    findNakedPairsInBox(boxRow, boxCol) {
+        const startRow = boxRow * 3;
+        const startCol = boxCol * 3;
+        const emptyCells = [];
+
+        for (let r = startRow; r < startRow + 3; r++) {
+            for (let c = startCol; c < startCol + 3; c++) {
+                if (this.playerGrid[r][c] === 0) {
+                    const candidates = this.getPossibleValues(r, c);
+                    if (candidates.length === 2) {
+                        emptyCells.push({ row: r, col: c, candidates });
+                    }
+                }
+            }
+        }
+
+        // Look for matching pairs
+        for (let i = 0; i < emptyCells.length - 1; i++) {
+            for (let j = i + 1; j < emptyCells.length; j++) {
+                const cell1 = emptyCells[i];
+                const cell2 = emptyCells[j];
+
+                if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
+                    cell1.candidates[0] === cell2.candidates[0] &&
+                    cell1.candidates[1] === cell2.candidates[1]) {
+
+                    return {
+                        row: cell1.row,
+                        col: cell1.col,
+                        value: cell1.candidates[0],
+                        technique: 'Naked Pair',
+                        explanation: `Naked pair limits other cells in this box`
+                    };
+                }
+            }
+        }
+        return null;
+    }
+
+    checkNakedPairElimination(row, col, pairCandidates, region) {
+        // This is a simplified check - in a real implementation we'd eliminate candidates
+        // For hints, we just indicate that a naked pair technique could be applied
+        if (region === 'row') {
+            for (let c = 0; c < 9; c++) {
+                if (this.playerGrid[row][c] === 0) {
+                    const candidates = this.getPossibleValues(row, c);
+                    if (candidates.length === 1) {
+                        return {
+                            row,
+                            col: c,
+                            value: candidates[0],
+                            technique: 'Naked Pair Effect',
+                            explanation: `Naked pair in this row makes ${candidates[0]} the only possibility`
+                        };
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     checkCompletion() {
@@ -854,41 +1187,69 @@ class SudokuEngine {
         if (completed) {
             this.gameCompleted = true;
             this.stopTimer();
+            this.playSound('complete');
+            this.incrementStreak();
 
             const score = this.calculateFinalScore();
+            const isPersonalBest = this.checkPersonalBest();
 
             // Check for theme-specific achievements
             const themeAchievements = this.checkThemeAchievements();
 
             let statusMessage = `
-                <div class="status-message success">
-                    Congratulations! Puzzle completed!<br>
-                    Final Score: ${score}
+                <div class="completion-modal">
+                    <div class="completion-content">
+                        <div class="completion-header">
+                            <h2>🎉 Puzzle Complete!</h2>
+                            ${isPersonalBest ? '<div class="personal-best">🏆 New Personal Best!</div>' : ''}
+                        </div>
+                        <div class="completion-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Time:</span>
+                                <span class="stat-value">${this.formatTime(this.timer)}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Score:</span>
+                                <span class="stat-value">${score}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Mistakes:</span>
+                                <span class="stat-value">${this.errors}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Streak:</span>
+                                <span class="stat-value">${this.streakCount} days</span>
+                            </div>
+                        </div>
             `;
 
             // Add theme multiplier info if active
             if (window.themeManager) {
                 const themeInfo = window.themeManager.getThemeInfo();
                 if (themeInfo && themeInfo.multiplier > 1) {
-                    statusMessage += `<br><span class="theme-bonus">🎨 ${themeInfo.name} Bonus: ×${themeInfo.multiplier}</span>`;
+                    statusMessage += `<div class="theme-bonus">🎨 ${themeInfo.name} Bonus: ×${themeInfo.multiplier}</div>`;
                 }
             }
 
-            statusMessage += `<br>Time: ${this.formatTime(this.timer)} | Hints: ${this.hints} | Errors: ${this.errors}`;
-
             // Add achievement notifications
             if (themeAchievements.length > 0) {
-                statusMessage += `<br><div class="achievements-unlocked">`;
+                statusMessage += `<div class="achievements-unlocked">`;
                 themeAchievements.forEach(achievement => {
                     statusMessage += `<div class="achievement-unlock">🏆 ${achievement.name}</div>`;
                 });
                 statusMessage += `</div>`;
             }
 
-            statusMessage += `</div>`;
+            statusMessage += `
+                        <div class="completion-actions">
+                            <button class="btn-primary" onclick="window.sudokuEngine.showStats()">View Stats</button>
+                            <button class="btn-secondary" onclick="window.sudokuEngine.startNewGame()">New Game</button>
+                        </div>
+                    </div>
+                </div>
+            `;
 
             document.getElementById('gameStatus').innerHTML = statusMessage;
-
             this.saveCompletedGame(score);
         }
     }
@@ -975,6 +1336,27 @@ class SudokuEngine {
         if (e.key === ' ' || e.key === 'Enter') {
             e.preventDefault();
             this.toggleCandidateMode();
+        }
+
+        // Additional keyboard shortcuts
+        if (e.key === 'h' && e.ctrlKey) {
+            e.preventDefault();
+            this.getHint();
+        }
+        if (e.key === 'z' && e.ctrlKey) {
+            e.preventDefault();
+            this.undo();
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            if (this.selectedCell) {
+                this.selectedCell = null;
+                this.updateDisplay();
+            }
+        }
+        if (e.key === 'p' && e.ctrlKey) {
+            e.preventDefault();
+            this.togglePause();
         }
     }
 
@@ -1334,6 +1716,124 @@ class SudokuEngine {
         return new Date().toISOString().split('T')[0];
     }
 
+    getFormattedDate() {
+        return new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    eraseSelectedCell() {
+        if (this.selectedCell) {
+            this.inputNumber(0);
+        }
+    }
+
+    showSettings() {
+        // Create settings modal
+        const modal = document.createElement('div');
+        modal.className = 'settings-modal';
+        modal.innerHTML = `
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h3>Game Settings</h3>
+                    <button class="close-btn" onclick="this.closest('.settings-modal').remove()">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="autoCheckErrors" ${this.autoCheckErrors ? 'checked' : ''}>
+                            Highlight mistakes automatically
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="showTimer" ${this.showTimer !== false ? 'checked' : ''}>
+                            Show timer
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="autoSave" ${this.autoSave !== false ? 'checked' : ''}>
+                            Auto-save progress
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>Sound Effects</label>
+                        <select id="soundLevel">
+                            <option value="off" ${this.soundLevel === 'off' ? 'selected' : ''}>Off</option>
+                            <option value="low" ${this.soundLevel === 'low' ? 'selected' : ''}>Low</option>
+                            <option value="medium" ${this.soundLevel === 'medium' || !this.soundLevel ? 'selected' : ''}>Medium</option>
+                            <option value="high" ${this.soundLevel === 'high' ? 'selected' : ''}>High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-footer">
+                    <button class="btn-primary" onclick="window.sudokuEngine.saveSettings(); this.closest('.settings-modal').remove();">Save Settings</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Close modal on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    saveSettings() {
+        this.autoCheckErrors = document.getElementById('autoCheckErrors').checked;
+        this.showTimer = document.getElementById('showTimer').checked;
+        this.autoSave = document.getElementById('autoSave').checked;
+        this.soundLevel = document.getElementById('soundLevel').value;
+
+        // Save to localStorage
+        const settings = {
+            autoCheckErrors: this.autoCheckErrors,
+            showTimer: this.showTimer,
+            autoSave: this.autoSave,
+            soundLevel: this.soundLevel
+        };
+        localStorage.setItem('sudoku_settings', JSON.stringify(settings));
+
+        // Update UI visibility
+        const timerSection = document.querySelector('.timer-section');
+        if (timerSection) {
+            timerSection.style.display = this.showTimer ? 'block' : 'none';
+        }
+    }
+
+    loadSettings() {
+        const settings = localStorage.getItem('sudoku_settings');
+        if (settings) {
+            const parsed = JSON.parse(settings);
+            this.autoCheckErrors = parsed.autoCheckErrors !== false;
+            this.showTimer = parsed.showTimer !== false;
+            this.autoSave = parsed.autoSave !== false;
+            this.soundLevel = parsed.soundLevel || 'medium';
+        }
+    }
+
+    updateProgressBar() {
+        const filledCells = this.playerGrid.flat().filter(cell => cell !== 0).length;
+        const totalCells = 81;
+        const percentage = Math.round((filledCells / totalCells) * 100);
+
+        const completionFill = document.getElementById('completionFill');
+        const completionText = document.getElementById('completionText');
+
+        if (completionFill) {
+            completionFill.style.width = `${percentage}%`;
+        }
+        if (completionText) {
+            completionText.textContent = `${percentage}% Complete`;
+        }
+    }
+
     generateFallbackPuzzles() {
         // Base solution - all puzzles use this same solution
         const baseSolution = [
@@ -1467,12 +1967,254 @@ class SudokuEngine {
         return achievements;
     }
 
+    highlightConflicts(row, col) {
+        const value = this.playerGrid[row][col];
+        if (value === 0) return;
+
+        // Clear previous conflict highlights
+        document.querySelectorAll('.sudoku-cell.conflict').forEach(cell => {
+            cell.classList.remove('conflict');
+        });
+
+        // Check for conflicts and highlight them
+        for (let i = 0; i < 9; i++) {
+            // Row conflicts
+            if (i !== col && this.playerGrid[row][i] === value) {
+                const cell = document.querySelector(`[data-row="${row}"][data-col="${i}"]`);
+                cell?.classList.add('conflict');
+            }
+            // Column conflicts
+            if (i !== row && this.playerGrid[i][col] === value) {
+                const cell = document.querySelector(`[data-row="${i}"][data-col="${col}"]`);
+                cell?.classList.add('conflict');
+            }
+        }
+
+        // Box conflicts
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        for (let r = startRow; r < startRow + 3; r++) {
+            for (let c = startCol; c < startCol + 3; c++) {
+                if ((r !== row || c !== col) && this.playerGrid[r][c] === value) {
+                    const cell = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+                    cell?.classList.add('conflict');
+                }
+            }
+        }
+    }
+
+    playSound(type) {
+        if (this.soundLevel === 'off') return;
+
+        const volume = {
+            'low': 0.3,
+            'medium': 0.6,
+            'high': 1.0
+        }[this.soundLevel] || 0.6;
+
+        // Create audio context for sound effects
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        const playTone = (frequency, duration) => {
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
+
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + duration);
+        };
+
+        switch (type) {
+            case 'place':
+                playTone(800, 0.1);
+                break;
+            case 'error':
+                playTone(300, 0.2);
+                break;
+            case 'complete':
+                playTone(523, 0.2); // C
+                setTimeout(() => playTone(659, 0.2), 100); // E
+                setTimeout(() => playTone(784, 0.4), 200); // G
+                break;
+            case 'hint':
+                playTone(1000, 0.15);
+                break;
+        }
+    }
+
+    updateStreakCounter() {
+        // Load current streak
+        const streakData = localStorage.getItem('sudoku_streak');
+        if (streakData) {
+            const parsed = JSON.parse(streakData);
+            this.streakCount = parsed.count || 0;
+        }
+    }
+
+    incrementStreak() {
+        this.streakCount++;
+        const streakData = {
+            count: this.streakCount,
+            lastDate: this.getTodayDateString()
+        };
+        localStorage.setItem('sudoku_streak', JSON.stringify(streakData));
+    }
+
+    checkPersonalBest() {
+        const bestTimes = localStorage.getItem('sudoku_best_times');
+        let best = { easy: null, medium: null, hard: null };
+
+        if (bestTimes) {
+            best = JSON.parse(bestTimes);
+        }
+
+        const currentTime = this.timer;
+        const difficulty = this.currentDifficulty;
+
+        if (!best[difficulty] || currentTime < best[difficulty]) {
+            best[difficulty] = currentTime;
+            localStorage.setItem('sudoku_best_times', JSON.stringify(best));
+            return true;
+        }
+        return false;
+    }
+
+    showStats() {
+        // Close completion modal
+        document.getElementById('gameStatus').innerHTML = '';
+
+        // Show comprehensive stats
+        const modal = document.createElement('div');
+        modal.className = 'stats-modal';
+        modal.innerHTML = `
+            <div class="stats-content">
+                <div class="stats-header">
+                    <h3>Your Statistics</h3>
+                    <button class="close-btn" onclick="this.closest('.stats-modal').remove()">&times;</button>
+                </div>
+                <div class="stats-body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Current Streak</h4>
+                            <div class="stat-number">${this.streakCount}</div>
+                            <div class="stat-unit">days</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Games Played</h4>
+                            <div class="stat-number">${this.getGamesPlayed()}</div>
+                            <div class="stat-unit">total</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Average Time</h4>
+                            <div class="stat-number">${this.getAverageTime()}</div>
+                            <div class="stat-unit">minutes</div>
+                        </div>
+                    </div>
+                    ${this.getBestTimesHTML()}
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    getGamesPlayed() {
+        // Count completed games from localStorage
+        let count = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('completed_')) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    getAverageTime() {
+        // Calculate average time from completed games
+        let totalTime = 0;
+        let count = 0;
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('completed_')) {
+                try {
+                    const game = JSON.parse(localStorage.getItem(key));
+                    if (game && game.time) {
+                        totalTime += game.time;
+                        count++;
+                    }
+                } catch (e) {}
+            }
+        }
+
+        if (count === 0) return '0:00';
+        const avgSeconds = Math.round(totalTime / count);
+        return this.formatTime(avgSeconds);
+    }
+
+    getBestTimesHTML() {
+        const bestTimes = localStorage.getItem('sudoku_best_times');
+        const best = bestTimes ? JSON.parse(bestTimes) : { easy: null, medium: null, hard: null };
+
+        return `
+            <div class="best-times">
+                <h4>Best Times</h4>
+                <div class="difficulty-times">
+                    <div class="time-row">
+                        <span class="difficulty">Easy:</span>
+                        <span class="time">${best.easy ? this.formatTime(best.easy) : 'Not set'}</span>
+                    </div>
+                    <div class="time-row">
+                        <span class="difficulty">Medium:</span>
+                        <span class="time">${best.medium ? this.formatTime(best.medium) : 'Not set'}</span>
+                    </div>
+                    <div class="time-row">
+                        <span class="difficulty">Hard:</span>
+                        <span class="time">${best.hard ? this.formatTime(best.hard) : 'Not set'}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    startNewGame() {
+        // Close any modals
+        document.querySelectorAll('.stats-modal, .completion-modal').forEach(modal => modal.remove());
+        document.getElementById('gameStatus').innerHTML = '';
+
+        // Navigate back to dashboard
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelector('[data-page="dashboard"]').classList.add('active');
+
+        pages.forEach(page => page.classList.remove('active'));
+        document.getElementById('dashboard').classList.add('active');
+    }
+
     destroy() {
         // Cleanup when switching pages
         this.stopTimer();
         if (this.autoSaveInterval) {
             clearInterval(this.autoSaveInterval);
         }
+        // Close any open modals
+        document.querySelectorAll('.settings-modal').forEach(modal => modal.remove());
     }
 }
 
