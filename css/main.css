@@ -3350,25 +3350,7 @@ select:focus-visible,
     background: #ff9500 !important;
 }
 
-/* Row, column, box highlighting */
-.sudoku-cell.highlighted {
-    background: #fff4e6 !important;
-}
-
-.sudoku-cell.highlighted.given,
-.sudoku-cell.highlighted.user-input {
-    background: #fff4e6 !important;
-}
-
-/* Same number highlighting */
-.sudoku-cell.same-number {
-    background: #fabb61 !important;
-}
-
-.sudoku-cell.same-number.given,
-.sudoku-cell.same-number.user-input {
-    background: #fabb61 !important;
-}
+/* Cell highlighting styles removed */
 
 /* Paused state */
 .sudoku-grid.paused {
