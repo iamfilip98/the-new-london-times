@@ -605,6 +605,35 @@ class SudokuEngine {
         document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
         document.getElementById('errorsCount').textContent = this.errors;
         document.getElementById('hintsCount').textContent = this.hints;
+
+        // Update number button states
+        this.updateNumberButtons();
+    }
+
+    updateNumberButtons() {
+        // Count how many of each number (1-9) are on the grid
+        const numberCounts = Array(10).fill(0);
+
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const value = this.playerGrid[row][col];
+                if (value !== 0) {
+                    numberCounts[value]++;
+                }
+            }
+        }
+
+        // Update button states - grey out if all 9 instances are placed
+        for (let num = 1; num <= 9; num++) {
+            const button = document.querySelector(`.number-btn[data-number="${num}"]`);
+            if (button) {
+                if (numberCounts[num] >= 9) {
+                    button.classList.add('completed');
+                } else {
+                    button.classList.remove('completed');
+                }
+            }
+        }
     }
 
     isInSameBox(row1, col1, row2, col2) {
