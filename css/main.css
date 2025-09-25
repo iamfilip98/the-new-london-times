@@ -4693,7 +4693,6 @@ select:focus-visible,
         flex-direction: column;
         gap: 0.5rem;
         padding: 8px;
-        margin-bottom: 0.5rem;
         grid-template-columns: none;
     }
 
