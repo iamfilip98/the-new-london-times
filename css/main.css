@@ -4506,6 +4506,11 @@ select:focus-visible,
         font-weight: 700;
     }
 
+    .candidate-num {
+        font-size: 0.9rem;
+        font-weight: 400;
+    }
+
     /* Number input buttons */
     .number-buttons {
         grid-template-columns: repeat(5, 1fr);
@@ -4768,7 +4773,8 @@ select:focus-visible,
     }
 
     .candidate-num {
-        font-size: 0.77rem;
+        font-size: 0.55rem;
+        font-weight: 300;
     }
 
     /* Mobile responsiveness for 3x3 candidate grid */
