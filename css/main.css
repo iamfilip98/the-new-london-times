@@ -3792,11 +3792,6 @@ select:focus-visible,
     transform: translateY(0);
 }
 
-.erase-btn {
-    background: #ffebee !important;
-    border-color: #e57373 !important;
-    color: #d32f2f !important;
-}
 
 .number-btn.completed {
     background: #e0e0e0 !important;
@@ -3812,10 +3807,6 @@ select:focus-visible,
     transform: none !important;
 }
 
-.erase-btn:hover {
-    background: #ffcdd2 !important;
-    border-color: #f44336 !important;
-}
 
 .action-buttons {
     display: flex;
