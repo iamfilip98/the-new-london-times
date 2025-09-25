@@ -3353,12 +3353,12 @@ select:focus-visible,
 
 /* Row, column, box highlighting */
 .sudoku-cell.highlighted {
-    background: #ff9500 !important;
+    background: #B8D5FF !important;
 }
 
 .sudoku-cell.highlighted.given,
 .sudoku-cell.highlighted.user-input {
-    background: #ff9500 !important;
+    background: #B8D5FF !important;
 }
 
 /* Same number highlighting */
