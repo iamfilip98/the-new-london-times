@@ -4578,24 +4578,68 @@ select:focus-visible,
         padding: 8px;
         margin-bottom: 0.5rem;
         text-align: center;
-        min-height: 60px;
+        min-height: 50px;
     }
 
     .action-btn {
-        padding: 0.5rem 1rem;
+        flex: 1;
+        padding: 0.5rem;
         font-size: 0.9rem;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        min-width: 0;
+    }
+
+    .action-btn span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .number-input {
         display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
         gap: 0.5rem;
         padding: 8px;
         margin-bottom: 0.5rem;
-        text-align: center;
-        min-height: 60px;
+    }
+
+    .number-row-1,
+    .number-row-2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 50px;
+    }
+
+    .number-row-1 .number-btn,
+    .number-row-2 .number-btn {
+        flex: 1;
+        height: 44px;
+        font-size: 1.2rem;
+        min-width: 44px;
+    }
+
+    .number-row-2 .undo-btn {
+        flex: 1;
+        height: 44px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+
+    .number-row-2 .undo-btn span {
+        display: none;
+    }
+
+    .number-row-2 .undo-btn i {
+        font-size: 1.2rem;
     }
 
     .difficulty-buttons {

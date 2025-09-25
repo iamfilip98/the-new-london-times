@@ -141,28 +141,33 @@ class SudokuEngine {
                     </div>
                 </div>
 
-                <!-- Number Input Row -->
+                <!-- Number Input Rows -->
                 <div class="number-input">
-                    <div class="number-buttons">
-                        ${Array.from({length: 9}, (_, i) =>
+                    <div class="number-row-1">
+                        ${Array.from({length: 5}, (_, i) =>
                             `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
                         ).join('')}
+                    </div>
+                    <div class="number-row-2">
+                        ${Array.from({length: 4}, (_, i) =>
+                            `<button class="number-btn" data-number="${i + 6}">${i + 6}</button>`
+                        ).join('')}
+                        <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
+                            <i class="fas fa-undo-alt"></i>
+                            <span>Undo</span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Action Buttons Row -->
                 <div class="action-buttons">
-                    <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
-                        <i class="fas fa-undo-alt"></i>
-                        <span>Undo</span>
+                    <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
+                        <i class="fas fa-pencil-alt"></i>
+                        <span>Notes</span>
                     </button>
                     <button class="action-btn erase-btn" id="eraseBtn" title="Erase selected cell">
                         <i class="fas fa-eraser"></i>
                         <span>Erase</span>
-                    </button>
-                    <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
-                        <i class="fas fa-pencil-alt"></i>
-                        <span>Notes</span>
                     </button>
                     <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
                         <i class="fas fa-eye"></i>
