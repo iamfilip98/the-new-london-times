@@ -2611,6 +2611,9 @@ class SudokuEngine {
 
         console.log('Restarting current puzzle');
 
+        // Remember if the game was paused before restarting
+        const wasPaused = this.gamePaused;
+
         // Clear saved game state for this difficulty
         const currentPlayer = sessionStorage.getItem('currentPlayer');
         if (currentPlayer) {
@@ -2645,15 +2648,43 @@ class SudokuEngine {
         // Reload the same puzzle fresh
         this.loadPuzzle(this.currentDifficulty);
 
+        // If the game was paused before restarting, pause it again
+        if (wasPaused) {
+            this.gamePaused = true;
+            this.stopTimer();
+
+            // Update pause button and blur state
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (pauseBtn) {
+                pauseBtn.querySelector('i').className = 'fas fa-play';
+                pauseBtn.title = 'Resume game';
+            }
+
+            // Add blur effect to sudoku grid
+            const sudokuGrid = document.getElementById('sudokuGrid');
+            if (sudokuGrid) {
+                sudokuGrid.classList.add('blurred');
+            }
+
+            // Disable hint button
+            const hintBtn = document.getElementById('hintBtn');
+            if (hintBtn) {
+                hintBtn.disabled = true;
+            }
+
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">Game paused. Click Resume to continue.</div>';
+        } else {
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">Puzzle restarted! Good luck!</div>';
+        }
+
         // Restart auto-save interval
         this.autoSaveInterval = setInterval(() => {
             if (this.gameStarted && !this.gameCompleted) {
                 this.saveGameState();
             }
         }, 10000);
-
-        document.getElementById('gameStatus').innerHTML =
-            '<div class="status-message">Puzzle restarted! Good luck!</div>';
     }
 
     destroy() {
