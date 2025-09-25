@@ -4182,7 +4182,8 @@ select:focus-visible,
     margin-top: 2rem;
 }
 
-.action-btn.active {
+.action-btn.active,
+.erase-btn {
     background: var(--accent-blue);
     border-color: var(--accent-blue);
     color: white;
