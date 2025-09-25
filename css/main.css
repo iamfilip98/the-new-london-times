@@ -249,6 +249,7 @@ body {
     transition: var(--transition);
     font-weight: 500;
     border: 2px solid transparent;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
 }
@@ -340,12 +341,17 @@ body {
     align-items: center;
     justify-content: center;
     gap: 1rem;
+    /* Fallback text shadow for better readability */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    /* Ensure text shadow shows even with transparent text */
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .current-date {
     font-family: 'Orbitron', monospace;
     font-size: 1.2rem;
     color: var(--accent-orange);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
     font-weight: 700;
 }
 
@@ -477,6 +483,7 @@ body {
     font-weight: 900;
     color: var(--accent-orange);
     margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .streak-label {
@@ -484,6 +491,7 @@ body {
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .vs-divider {
@@ -727,6 +735,7 @@ body {
     color: var(--text-secondary);
     font-style: italic;
     margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .player-level {
@@ -943,6 +952,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     margin-bottom: 2rem;
     animation: winnerPulse 2s ease-in-out infinite;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7), 0 0 8px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes winnerPulse {
@@ -992,7 +1002,7 @@ body {
     font-size: 1.5rem;
     font-weight: 900;
     color: var(--text-primary);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.6), 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Action Buttons */
@@ -4424,6 +4434,7 @@ select:focus-visible,
     color: var(--text-secondary);
     font-size: 0.9rem;
     font-family: 'Orbitron', monospace;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .no-notifications {
@@ -4508,6 +4519,7 @@ select:focus-visible,
     font-family: 'Orbitron', monospace;
     font-weight: 600;
     color: var(--text-primary);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     text-transform: uppercase;
     font-size: 0.9rem;
 }
@@ -4517,11 +4529,13 @@ select:focus-visible,
     font-family: 'Orbitron', monospace;
     font-size: 0.9rem;
     text-align: right;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .progress-status .completed {
     color: var(--accent-green);
     font-weight: 700;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 .progress-status .score {
@@ -4529,6 +4543,7 @@ select:focus-visible,
     color: var(--accent-purple);
     font-size: 0.8rem;
     margin-top: 0.2rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 /* Mobile Responsiveness for Progress */
