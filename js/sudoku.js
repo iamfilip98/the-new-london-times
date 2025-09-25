@@ -138,37 +138,36 @@ class SudokuEngine {
                     </div>
                 </div>
 
-                <!-- Game Controls -->
-                <div class="game-controls">
-                    <div class="number-input">
-                        <div class="number-buttons">
-                            ${Array.from({length: 9}, (_, i) =>
-                                `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
-                            ).join('')}
-                            <button class="number-btn erase-btn" data-number="0">
-                                <i class="fas fa-eraser"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="action-buttons">
-                        <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
-                            <i class="fas fa-undo-alt"></i>
-                            <span>Undo</span>
-                        </button>
-                        <button class="action-btn erase-btn" id="eraseBtn" title="Erase selected cell">
+                <!-- Number Input Row -->
+                <div class="number-input">
+                    <div class="number-buttons">
+                        ${Array.from({length: 9}, (_, i) =>
+                            `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
+                        ).join('')}
+                        <button class="number-btn erase-btn" data-number="0">
                             <i class="fas fa-eraser"></i>
-                            <span>Erase</span>
-                        </button>
-                        <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
-                            <i class="fas fa-pencil-alt"></i>
-                            <span>Notes</span>
-                        </button>
-                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
-                            <i class="fas fa-eye"></i>
-                            <span>Show All</span>
                         </button>
                     </div>
+                </div>
+
+                <!-- Action Buttons Row -->
+                <div class="action-buttons">
+                    <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
+                        <i class="fas fa-undo-alt"></i>
+                        <span>Undo</span>
+                    </button>
+                    <button class="action-btn erase-btn" id="eraseBtn" title="Erase selected cell">
+                        <i class="fas fa-eraser"></i>
+                        <span>Erase</span>
+                    </button>
+                    <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
+                        <i class="fas fa-pencil-alt"></i>
+                        <span>Notes</span>
+                    </button>
+                    <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
+                        <i class="fas fa-eye"></i>
+                        <span>Show All</span>
+                    </button>
                 </div>
 
                 <!-- Game Status -->
