@@ -11,6 +11,9 @@ class SudokuEngine {
         this.timerInterval = null;
         this.hints = 0;
         this.errors = 0;
+        this.hintTimePenalty = 0; // Track actual time penalty for scoring
+        this.currentHintCell = null; // Track which cell is being hinted
+        this.hintState = 'none'; // 'none', 'pointing', 'revealed'
         this.currentDifficulty = 'easy';
         this.gameStarted = false;
         this.gameCompleted = false;
@@ -525,6 +528,9 @@ class SudokuEngine {
         this.timer = 0;
         this.hints = 0;
         this.errors = 0;
+        this.hintTimePenalty = 0;
+        this.currentHintCell = null;
+        this.hintState = 'none';
         this.gameStarted = true;
         this.gameCompleted = false;
         this.gamePaused = false;  // Reset pause state
@@ -750,6 +756,33 @@ class SudokuEngine {
                 this.errors++;
                 // Provide immediate feedback for errors
                 this.showErrorFeedback(row, col);
+            } else {
+                // Check if user solved the hinted cell manually
+                if (this.hintState === 'pointing' && this.currentHintCell &&
+                    this.currentHintCell.row === row && this.currentHintCell.col === col) {
+                    // User solved the hinted cell manually - reset hint state
+                    this.currentHintCell = null;
+                    this.hintState = 'none';
+                    this.clearHintIndicators();
+
+                    // Show positive feedback
+                    const statusDiv = document.getElementById('gameStatus');
+                    statusDiv.innerHTML = `
+                        <div class="hint-message solved-manually">
+                            <div class="hint-header">
+                                <i class="fas fa-check-circle"></i>
+                                <strong>Great work!</strong>
+                            </div>
+                            <div class="hint-body">
+                                You solved the hinted cell yourself! Only 5 seconds penalty applied.
+                            </div>
+                        </div>
+                    `;
+                    // Clear the message after a few seconds
+                    setTimeout(() => {
+                        statusDiv.innerHTML = '';
+                    }, 3000);
+                }
             }
         }
 
@@ -976,90 +1009,174 @@ class SudokuEngine {
     async getHint() {
         if (!this.gameStarted || this.gameCompleted || this.gamePaused) return;
 
-        // Find best hint using deterministic algorithm
-        const hintCell = this.findBestHint();
+        const statusDiv = document.getElementById('gameStatus');
 
-        if (hintCell) {
-            const { row, col, value, technique } = hintCell;
+        // Progressive hint system
+        if (this.hintState === 'none') {
+            // First click: point to the next cell to solve
+            const hintCell = this.findBestHint();
 
-            // Provide the hint
-            this.playerGrid[row][col] = value;
-            this.candidates[row][col].clear();
-            this.hints++;
+            if (hintCell) {
+                const { row, col, value, technique } = hintCell;
+                this.currentHintCell = { row, col, value, technique };
+                this.hintState = 'pointing';
+                this.hints++;
+                this.hintTimePenalty += 5; // 5 second penalty for pointing
 
-            // Update all candidates to eliminate the placed number from related cells
-            if (this.showAllCandidates) {
-                this.updateAllCandidates();
-            }
+                // Clear any existing hint visual indicators
+                this.clearHintIndicators();
 
-            // Select the hinted cell
-            this.selectCell(row, col);
-            this.updateDisplay();
+                // Add visual indication to the pointed cell
+                this.addHintIndicator(row, col, 'pointing');
 
-            // Show enhanced hint explanation
-            const statusDiv = document.getElementById('gameStatus');
-            statusDiv.innerHTML = `
-                <div class="hint-message">
-                    <div class="hint-header">
-                        <i class="fas fa-lightbulb"></i>
-                        <strong>${hintCell.technique}</strong>
+                // Select the pointed cell
+                this.selectCell(row, col);
+                this.updateDisplay();
+
+                // Show pointing message
+                statusDiv.innerHTML = `
+                    <div class="hint-message pointing">
+                        <div class="hint-header">
+                            <i class="fas fa-search"></i>
+                            <strong>Hint: Focus Here</strong>
+                        </div>
+                        <div class="hint-body">
+                            Look at cell R${row + 1}C${col + 1}. This is the next cell you should solve using ${technique}.
+                        </div>
+                        <div class="hint-penalty">
+                            Penalty: 5 seconds | Click hint again to reveal the answer (+10 more seconds)
+                        </div>
                     </div>
-                    <div class="hint-body">
-                        ${hintCell.explanation}
-                    </div>
-                    <div class="hint-location">
-                        Cell: R${row + 1}C${col + 1} = ${value}
-                    </div>
-                </div>
-            `;
-
-            // Add hint message styling if not already present
-            if (!document.querySelector('.hint-styles-added')) {
-                const hintStyles = document.createElement('style');
-                hintStyles.className = 'hint-styles-added';
-                hintStyles.textContent = `
-                    .hint-message {
-                        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-                        color: white;
-                        padding: 1rem;
-                        border-radius: var(--border-radius);
-                        margin: 1rem 0;
-                        box-shadow: var(--box-shadow);
-                        animation: hintAppear 0.4s ease-out;
-                    }
-                    .hint-header {
-                        display: flex;
-                        align-items: center;
-                        gap: 0.5rem;
-                        font-size: 1.1rem;
-                        margin-bottom: 0.5rem;
-                    }
-                    .hint-body {
-                        font-size: 0.95rem;
-                        margin-bottom: 0.5rem;
-                        opacity: 0.9;
-                    }
-                    .hint-location {
-                        font-family: 'Orbitron', monospace;
-                        font-weight: 700;
-                        font-size: 0.9rem;
-                        background: rgba(255, 255, 255, 0.2);
-                        padding: 0.25rem 0.5rem;
-                        border-radius: 4px;
-                        display: inline-block;
-                    }
-                    @keyframes hintAppear {
-                        from { opacity: 0; transform: translateY(-10px); }
-                        to { opacity: 1; transform: translateY(0); }
-                    }
                 `;
-                document.head.appendChild(hintStyles);
+            } else {
+                statusDiv.innerHTML = '<div class="status-message">No hints available right now.</div>';
             }
+        } else if (this.hintState === 'pointing') {
+            // Second click: reveal the cell value
+            if (this.currentHintCell) {
+                const { row, col, value, technique } = this.currentHintCell;
+                this.hintState = 'revealed';
+                this.hintTimePenalty += 10; // 10 second penalty for revealing
 
-            await this.checkCompletion();
-        } else {
-            document.getElementById('gameStatus').innerHTML =
-                '<div class="status-message">No hints available right now.</div>';
+                // Place the value
+                this.playerGrid[row][col] = value;
+                this.candidates[row][col].clear();
+
+                // Update candidates
+                if (this.showAllCandidates) {
+                    this.updateAllCandidates();
+                }
+
+                // Update visual indicator
+                this.clearHintIndicators();
+                this.addHintIndicator(row, col, 'revealed');
+
+                this.selectCell(row, col);
+                this.updateDisplay();
+
+                // Show reveal message
+                statusDiv.innerHTML = `
+                    <div class="hint-message revealed">
+                        <div class="hint-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>${technique}</strong>
+                        </div>
+                        <div class="hint-body">
+                            Cell R${row + 1}C${col + 1} = ${value}
+                        </div>
+                        <div class="hint-penalty">
+                            Total penalty: 15 seconds (5 + 10)
+                        </div>
+                    </div>
+                `;
+
+                // Reset hint state for next hint
+                this.currentHintCell = null;
+                this.hintState = 'none';
+
+                await this.checkCompletion();
+            }
+        }
+
+        // Add hint message styling if not already present
+        if (!document.querySelector('.hint-styles-added')) {
+            const hintStyles = document.createElement('style');
+            hintStyles.className = 'hint-styles-added';
+            hintStyles.textContent = `
+                .hint-message {
+                    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+                    color: white;
+                    padding: 1rem;
+                    border-radius: var(--border-radius);
+                    margin: 1rem 0;
+                    box-shadow: var(--box-shadow);
+                    animation: hintAppear 0.4s ease-out;
+                }
+                .hint-message.pointing {
+                    background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+                }
+                .hint-message.revealed {
+                    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+                }
+                .hint-message.solved-manually {
+                    background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+                }
+                .hint-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-size: 1.1rem;
+                    margin-bottom: 0.5rem;
+                }
+                .hint-body {
+                    font-size: 0.95rem;
+                    margin-bottom: 0.5rem;
+                    opacity: 0.9;
+                }
+                .hint-penalty {
+                    font-family: 'Orbitron', monospace;
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    background: rgba(0, 0, 0, 0.2);
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 4px;
+                    display: inline-block;
+                }
+                .cell.hint-pointing {
+                    background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(255, 193, 7, 0.3)) !important;
+                    border: 2px solid var(--accent-orange) !important;
+                    animation: hintPulse 1.5s infinite;
+                }
+                .cell.hint-revealed {
+                    background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(139, 195, 74, 0.3)) !important;
+                    border: 2px solid var(--accent-green) !important;
+                }
+                @keyframes hintAppear {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes hintPulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+            `;
+            document.head.appendChild(hintStyles);
+        }
+    }
+
+    clearHintIndicators() {
+        // Remove hint indicators from all cells
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+            cell.classList.remove('hint-pointing', 'hint-revealed');
+        });
+    }
+
+    addHintIndicator(row, col, type) {
+        // Add hint indicator to specific cell
+        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        if (cell) {
+            cell.classList.add(`hint-${type}`);
         }
     }
 
@@ -1400,8 +1517,8 @@ class SudokuEngine {
     calculateCurrentScore() {
         if (!this.gameStarted) return 0;
 
-        // Use standard scoring formula with fixed penalties
-        const adjustedTime = this.timer + (this.errors * 30) + (this.hints * 15);
+        // Use progressive hint penalty system
+        const adjustedTime = this.timer + (this.errors * 30) + this.hintTimePenalty;
         const adjustedMinutes = adjustedTime / 60;
         const multipliers = { easy: 1, medium: 1.5, hard: 2 };
 
@@ -1638,6 +1755,9 @@ class SudokuEngine {
             timer: this.timer,
             hints: this.hints,
             errors: this.errors,
+            hintTimePenalty: this.hintTimePenalty,
+            currentHintCell: this.currentHintCell,
+            hintState: this.hintState,
             difficulty: this.currentDifficulty,
             gameStarted: this.gameStarted,
             gameCompleted: this.gameCompleted,
@@ -1712,6 +1832,9 @@ class SudokuEngine {
                 this.timer = gameState.timer || 0;
                 this.hints = gameState.hints || 0;
                 this.errors = gameState.errors || 0;
+                this.hintTimePenalty = gameState.hintTimePenalty || 0;
+                this.currentHintCell = gameState.currentHintCell || null;
+                this.hintState = gameState.hintState || 'none';
                 this.gameStarted = gameState.gameStarted || false;
                 this.gameCompleted = gameState.gameCompleted || false;
                 this.gamePaused = gameState.gamePaused || false;
@@ -2205,6 +2328,9 @@ class SudokuEngine {
         this.timer = 0;
         this.hints = 0;
         this.errors = 0;
+        this.hintTimePenalty = 0;
+        this.currentHintCell = null;
+        this.hintState = 'none';
     }
 
     getTodayDate() {
@@ -2809,6 +2935,9 @@ class SudokuEngine {
         this.timer = 0;
         this.hints = 0;
         this.errors = 0;
+        this.hintTimePenalty = 0;
+        this.currentHintCell = null;
+        this.hintState = 'none';
         this.gameStarted = false;
         this.gameCompleted = false;
         this.gamePaused = false;
