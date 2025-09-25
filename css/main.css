@@ -4343,6 +4343,11 @@ select:focus-visible,
         padding: 0 0.25rem 0.5rem 0.25rem;
     }
 
+    .stats-section .stat-item {
+        height: auto;
+        width: auto;
+    }
+
     .stat-item .stat-label {
         font-size: 0.7rem;
         margin: 0;
