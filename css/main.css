@@ -4741,6 +4741,14 @@ select:focus-visible,
         min-height: 35px;
     }
 
+    .undo-btn {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        min-width: 35px;
+        min-height: 35px;
+        height: 35px;
+    }
+
     .timer-section,
     .score-section {
         font-size: 1rem;
