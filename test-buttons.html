@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Height Test</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            background: #6b46c1;
+            display: flex;
+            gap: 10px;
+            align-items: baseline;
+        }
+        .test-info {
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-info">Desktop Single Row Test:</div>
+    </div>
+
+    <!-- Desktop Single Row Layout -->
+    <div class="number-input number-input-desktop">
+        <button class="number-btn" data-number="1">1</button>
+        <button class="number-btn" data-number="2">2</button>
+        <button class="number-btn" data-number="3">3</button>
+        <button class="number-btn" data-number="4">4</button>
+        <button class="number-btn" data-number="5">5</button>
+        <button class="number-btn" data-number="6">6</button>
+        <button class="number-btn" data-number="7">7</button>
+        <button class="number-btn" data-number="8">8</button>
+        <button class="number-btn" data-number="9">9</button>
+        <button class="undo-btn" id="undoBtn" title="Undo last move">
+            <i class="fas fa-undo-alt"></i>
+            <span>Undo</span>
+        </button>
+    </div>
+
+    <div class="test-container">
+        <div class="test-info">Mobile Two Row Test:</div>
+    </div>
+
+    <!-- Mobile Two Row Layout -->
+    <div class="number-input">
+        <div class="number-row-1">
+            <button class="number-btn" data-number="1">1</button>
+            <button class="number-btn" data-number="2">2</button>
+            <button class="number-btn" data-number="3">3</button>
+            <button class="number-btn" data-number="4">4</button>
+            <button class="number-btn" data-number="5">5</button>
+        </div>
+        <div class="number-row-2">
+            <button class="number-btn" data-number="6">6</button>
+            <button class="number-btn" data-number="7">7</button>
+            <button class="number-btn" data-number="8">8</button>
+            <button class="number-btn" data-number="9">9</button>
+            <button class="undo-btn" id="undoBtn2" title="Undo last move">
+                <i class="fas fa-undo-alt"></i>
+                <span>Undo</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Add computed style inspection
+        window.addEventListener('load', function() {
+            const numberBtn = document.querySelector('.number-btn');
+            const undoBtn = document.querySelector('.undo-btn');
+
+            const numberStyles = window.getComputedStyle(numberBtn);
+            const undoStyles = window.getComputedStyle(undoBtn);
+
+            console.log('NUMBER BUTTON COMPUTED STYLES:');
+            console.log('height:', numberStyles.height);
+            console.log('min-height:', numberStyles.minHeight);
+            console.log('padding:', numberStyles.padding);
+            console.log('box-sizing:', numberStyles.boxSizing);
+            console.log('border:', numberStyles.border);
+            console.log('font-size:', numberStyles.fontSize);
+
+            console.log('\nUNDO BUTTON COMPUTED STYLES:');
+            console.log('height:', undoStyles.height);
+            console.log('min-height:', undoStyles.minHeight);
+            console.log('padding:', undoStyles.padding);
+            console.log('box-sizing:', undoStyles.boxSizing);
+            console.log('border:', undoStyles.border);
+            console.log('font-size:', undoStyles.fontSize);
+
+            // Check actual rendered heights
+            console.log('\nACTUAL RENDERED HEIGHTS:');
+            console.log('Number button height:', numberBtn.offsetHeight + 'px');
+            console.log('Undo button height:', undoBtn.offsetHeight + 'px');
+            console.log('Height difference:', Math.abs(numberBtn.offsetHeight - undoBtn.offsetHeight) + 'px');
+        });
+    </script>
+</body>
+</html>

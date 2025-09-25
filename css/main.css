@@ -3829,6 +3829,7 @@ select:focus-visible,
     align-items: center;
     justify-content: center;
     gap: 0.3rem;
+    line-height: 1;
     box-sizing: border-box;
 }
 
@@ -3856,9 +3857,12 @@ select:focus-visible,
     transition: all 0.2s ease;
     min-width: 48px;
     min-height: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
+    box-sizing: border-box;
 }
 
 .number-btn:hover {
@@ -4683,6 +4687,10 @@ select:focus-visible,
         height: 44px;
         font-size: 1.2rem;
         min-width: 44px;
+        min-height: 44px;
+        padding: 0.5rem;
+        line-height: 1;
+        box-sizing: border-box;
     }
 
     .undo-btn {
@@ -4691,6 +4699,8 @@ select:focus-visible,
         min-width: 44px;
         min-height: 44px;
         padding: 0.5rem;
+        line-height: 1;
+        box-sizing: border-box;
     }
 
     .undo-btn span {
@@ -4739,6 +4749,9 @@ select:focus-visible,
         font-size: 0.9rem;
         min-width: 35px;
         min-height: 35px;
+        height: 35px;
+        line-height: 1;
+        box-sizing: border-box;
     }
 
     .undo-btn {
@@ -4747,6 +4760,8 @@ select:focus-visible,
         min-width: 35px;
         min-height: 35px;
         height: 35px;
+        line-height: 1;
+        box-sizing: border-box;
     }
 
     .timer-section,
