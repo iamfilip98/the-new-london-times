@@ -3298,8 +3298,8 @@ select:focus-visible,
 }
 
 .stats-section .stat-item {
-    width: 78.54px;
-    height: 78.54px;
+    width: 100px;
+    height: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
