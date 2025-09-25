@@ -356,11 +356,28 @@ class SudokuChampionship {
                 console.log('Successfully migrated localStorage data to database');
             }
 
-            // Load data from database - optimized with parallel loading
-            const [entries, bulkData] = await Promise.all([
-                this.loadFromStorage(),
-                this.loadBulkData()
-            ]);
+            // Check for preloaded data first
+            const preloadedEntries = sessionStorage.getItem('preloadedEntries');
+            const preloadedBulkData = sessionStorage.getItem('preloadedBulkData');
+
+            let entries, bulkData;
+
+            if (preloadedEntries && preloadedBulkData) {
+                console.log('🚀 Using preloaded data for faster startup');
+                entries = JSON.parse(preloadedEntries);
+                bulkData = JSON.parse(preloadedBulkData);
+
+                // Clear the preloaded data to free memory
+                sessionStorage.removeItem('preloadedEntries');
+                sessionStorage.removeItem('preloadedBulkData');
+            } else {
+                console.log('📡 Loading data from API');
+                // Load data from database - optimized with parallel loading
+                [entries, bulkData] = await Promise.all([
+                    this.loadFromStorage(),
+                    this.loadBulkData()
+                ]);
+            }
 
             this.entries = entries;
             this.achievements = bulkData.achievements || [];
@@ -1380,6 +1397,34 @@ class SudokuChampionship {
 
     // Puzzle preloading functionality
     async preloadPuzzles() {
+        // Check for preloaded puzzles from login page first
+        const preloadedPuzzles = sessionStorage.getItem('preloadedPuzzles');
+        const puzzlesLoadTime = sessionStorage.getItem('puzzlesLoadTime');
+
+        if (preloadedPuzzles && puzzlesLoadTime) {
+            const loadTime = parseInt(puzzlesLoadTime);
+            const now = Date.now();
+
+            // Use preloaded data if it's recent (within 5 minutes)
+            if ((now - loadTime) < 300000) {
+                console.log('🚀 Using preloaded puzzles from login page');
+                this.puzzleCache.puzzles = JSON.parse(preloadedPuzzles);
+                this.puzzleCache.loadTime = loadTime;
+
+                // Make puzzles globally available
+                window.preloadedPuzzles = this.puzzleCache.puzzles;
+
+                // Clear from sessionStorage to free memory
+                sessionStorage.removeItem('preloadedPuzzles');
+                sessionStorage.removeItem('puzzlesLoadTime');
+                return;
+            } else {
+                // Clear stale data
+                sessionStorage.removeItem('preloadedPuzzles');
+                sessionStorage.removeItem('puzzlesLoadTime');
+            }
+        }
+
         // Don't preload if already loading or recently loaded
         if (this.puzzleCache.loading) {
             console.log('Puzzle preloading already in progress');
