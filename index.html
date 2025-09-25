@@ -547,7 +547,7 @@
         }
 
         // Function to navigate to dashboard when clicking on brand
-        function navigateToDashboard() {
+        async function navigateToDashboard() {
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
 
@@ -561,6 +561,12 @@
 
             // Scroll to top
             window.scrollTo(0, 0);
+
+            // Refresh today's progress data
+            if (window.sudokuApp) {
+                await window.sudokuApp.updateTodayProgress();
+                await window.sudokuApp.updateDashboard();
+            }
         }
     </script>
 

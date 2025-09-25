@@ -112,6 +112,11 @@ class SudokuChampionship {
 
                 // Update page content
                 await this.updatePageContent(targetPage);
+
+                // If navigating to dashboard, refresh today's progress
+                if (targetPage === 'dashboard') {
+                    await this.updateTodayProgress();
+                }
             });
         });
     }
@@ -1397,6 +1402,9 @@ class SudokuChampionship {
 
 // Initialize the application
 const sudokuApp = new SudokuChampionship();
+
+// Make sudokuApp globally available
+window.sudokuApp = sudokuApp;
 
 // Global console helper functions
 window.resetPuzzles = (date) => sudokuApp.resetDailyPuzzles(date);
