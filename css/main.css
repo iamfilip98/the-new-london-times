@@ -4404,7 +4404,6 @@ select:focus-visible,
         align-items: center;
         gap: 0.5rem;
         padding: 8px;
-        margin-bottom: 0.5rem;
         text-align: center;
         min-height: 60px;
     }
