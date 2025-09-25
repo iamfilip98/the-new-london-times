@@ -3773,16 +3773,13 @@ select:focus-visible,
     align-items: center;
 }
 
+/* Desktop: Display number rows as single horizontal line spanning full width */
 .number-input {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
     padding: 1.5rem;
     border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Desktop: Display number rows as single horizontal line spanning full width */
-.number-input {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 0.5rem;
@@ -4646,6 +4643,7 @@ select:focus-visible,
         gap: 0.5rem;
         padding: 8px;
         margin-bottom: 0.5rem;
+        grid-template-columns: none;
     }
 
     .number-row-1 {
