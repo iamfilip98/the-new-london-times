@@ -3312,10 +3312,26 @@ select:focus-visible,
 
 .hints-count {
     color: var(--accent-blue);
+    padding: 0.5rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
 }
 
 .errors-count {
     color: var(--accent-pink);
+    padding: 0.5rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
 }
 
 .score-section {
