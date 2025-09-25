@@ -1439,6 +1439,15 @@ class SudokuEngine {
             notification.classList.add('persistent');
         }
 
+        // Set initial styles to prevent flash in top-left corner
+        notification.style.position = 'absolute';
+        notification.style.top = '50%';
+        notification.style.left = '50%';
+        notification.style.transform = 'translate(-50%, -50%)';
+        notification.style.zIndex = '1000';
+        notification.style.pointerEvents = 'none';
+        notification.style.opacity = '0';
+
         notification.innerHTML = `
             <div class="completion-notification">
                 <div class="completion-icon">🎉</div>
@@ -1466,6 +1475,15 @@ class SudokuEngine {
 
             gridContainer.appendChild(notification);
             console.log('Notification added to grid container');
+
+            // Trigger smooth fade-in and scale animation
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                const notificationInner = notification.querySelector('.completion-notification');
+                if (notificationInner) {
+                    notificationInner.classList.add('show');
+                }
+            }, 10); // Small delay to ensure DOM is updated
 
             if (isPersistent) {
                 // Add click handler to dismiss persistent notification
