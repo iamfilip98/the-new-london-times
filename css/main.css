@@ -3810,7 +3810,7 @@ select:focus-visible,
     min-height: 50px;
 }
 
-/* Make undo button identical to number buttons */
+/* Make undo button identical to number buttons - DESKTOP ONLY */
 .undo-btn {
     background: white;
     border: 2px solid #ddd;
@@ -3833,6 +3833,17 @@ select:focus-visible,
     line-height: 1;
     box-sizing: border-box;
     overflow: hidden;
+}
+
+/* DESKTOP SPECIFIC: Ensure undo button height matches number buttons exactly */
+@media (min-width: 769px) {
+    .undo-btn {
+        height: 48px !important;
+        max-height: 48px !important;
+        min-height: 48px !important;
+        padding: 1rem !important;
+        font-size: 1.2rem !important;
+    }
 }
 
 /* Force icon and text to not affect button height */
