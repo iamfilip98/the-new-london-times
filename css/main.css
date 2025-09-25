@@ -4570,12 +4570,32 @@ select:focus-visible,
     }
 
     .action-buttons {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
         gap: 0.5rem;
+        padding: 8px;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        min-height: 60px;
     }
 
     .action-btn {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
+    }
+
+    .number-input {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 8px;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        min-height: 60px;
     }
 
     .difficulty-buttons {
