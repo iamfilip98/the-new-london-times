@@ -3781,41 +3781,45 @@ select:focus-visible,
     border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Desktop: Display number rows as single horizontal line */
+/* Desktop: Display number rows as single horizontal line spanning full width */
 .number-input {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
     gap: 0.5rem;
     align-items: center;
-    flex-direction: row;
 }
 
-.number-row-1,
+.number-row-1 {
+    display: contents;
+}
+
 .number-row-2 {
-    display: flex;
-    gap: 0.5rem;
+    display: contents;
 }
 
+/* Desktop: Make undo button match number button styling exactly */
 .number-row-2 .undo-btn {
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
     padding: 1rem;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: var(--transition);
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 48px;
+    min-height: 48px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    min-width: auto;
 }
 
 .number-row-2 .undo-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent-blue);
+    background: #fff2e6;
+    border-color: #ff8c00;
     transform: translateY(-2px);
 }
 
@@ -4644,31 +4648,48 @@ select:focus-visible,
         margin-bottom: 0.5rem;
     }
 
-    .number-row-1,
+    .number-row-1 {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+        min-height: 50px;
+    }
+
     .number-row-2 {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
         gap: 0.5rem;
         min-height: 50px;
     }
 
     .number-row-1 .number-btn,
     .number-row-2 .number-btn {
-        flex: 1;
         height: 44px;
         font-size: 1.2rem;
         min-width: 44px;
     }
 
     .number-row-2 .undo-btn {
-        flex: 1;
         height: 44px;
-        font-size: 1rem;
+        font-size: 1.2rem;
+        font-weight: 900;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 0.3rem;
+        background: white;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        color: #000;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 44px;
+    }
+
+    .number-row-2 .undo-btn:hover {
+        background: #fff2e6;
+        border-color: #ff8c00;
+        transform: translateY(-2px);
     }
 
     .number-row-2 .undo-btn span {
