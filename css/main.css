@@ -3144,7 +3144,6 @@ select:focus-visible,
     padding: 1.5rem;
     border: 2px solid rgba(255, 255, 255, 0.1);
     box-shadow: var(--box-shadow);
-    margin-bottom: 1.5rem;
 }
 
 .timer-section, .stats-section .stat-item {
