@@ -512,6 +512,12 @@ class SudokuEngine {
         this.solution = puzzleData.solution.map(row => [...row]);
         this.playerGrid = puzzleData.puzzle.map(row => [...row]);
 
+        // Validate that the solution is actually valid
+        if (!this.isValidSudokuSolution(this.solution)) {
+            console.error(`❌ Invalid solution loaded for ${difficulty} difficulty!`);
+            console.log('Solution:', this.solution.map(r => r.join('')).join('\n'));
+        }
+
         // Reset game state
         this.timer = 0;
         this.hints = 0;
@@ -568,7 +574,8 @@ class SudokuEngine {
                         cell.classList.add('user-input');
 
                         // Check for errors by comparing with the correct solution
-                        if (this.playerGrid[row][col] !== this.solution[row][col]) {
+                        // Only show errors during active gameplay, not for completed puzzles
+                        if (!this.gameCompleted && this.playerGrid[row][col] !== this.solution[row][col]) {
                             cell.classList.add('error');
                         }
                     }
@@ -727,6 +734,13 @@ class SudokuEngine {
         } else {
             // Check if the number matches the correct solution
             const isCorrectSolution = (this.solution[row][col] === number);
+
+            // Debug: Check if the number was shown as a valid candidate but doesn't match solution
+            if (!isCorrectSolution && this.candidates[row][col].has(number)) {
+                console.warn(`⚠️ Candidate mismatch at R${row+1}C${col+1}: Candidate ${number} shown as valid but solution is ${this.solution[row][col]}`);
+                console.log('Current candidates:', Array.from(this.candidates[row][col]));
+                console.log('Player grid state:', this.playerGrid.map(r => r.join('')).join('\n'));
+            }
 
             // Place number - clear candidates when placing a number
             this.playerGrid[row][col] = number;
@@ -1203,7 +1217,7 @@ class SudokuEngine {
                         col,
                         value: correctValue,
                         technique: 'Solution Hint',
-                        explanation: `When all else fails, ${correctValue} is the correct answer for R${row+1}C${col+1}`
+                        explanation: `When all else fails, ${this.solution[row][col]} is the correct answer for R${row+1}C${col+1}`
                     };
                 }
             }
@@ -1249,6 +1263,52 @@ class SudokuEngine {
     }
 
     // Removed broken hint methods - using simplified correct approach in findBestHint()
+
+    isValidSudokuSolution(grid) {
+        // Check if a 9x9 grid is a valid complete Sudoku solution
+
+        // Check rows
+        for (let row = 0; row < 9; row++) {
+            const seen = new Set();
+            for (let col = 0; col < 9; col++) {
+                const num = grid[row][col];
+                if (num < 1 || num > 9 || seen.has(num)) {
+                    return false;
+                }
+                seen.add(num);
+            }
+        }
+
+        // Check columns
+        for (let col = 0; col < 9; col++) {
+            const seen = new Set();
+            for (let row = 0; row < 9; row++) {
+                const num = grid[row][col];
+                if (seen.has(num)) {
+                    return false;
+                }
+                seen.add(num);
+            }
+        }
+
+        // Check 3x3 boxes
+        for (let boxRow = 0; boxRow < 3; boxRow++) {
+            for (let boxCol = 0; boxCol < 3; boxCol++) {
+                const seen = new Set();
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 3; c++) {
+                        const num = grid[boxRow * 3 + r][boxCol * 3 + c];
+                        if (seen.has(num)) {
+                            return false;
+                        }
+                        seen.add(num);
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
 
     async checkCompletion() {
         let completed = true;
