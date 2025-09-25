@@ -4332,6 +4332,7 @@ select:focus-visible,
         flex: 2;
         justify-content: center;
         margin-bottom: 0;
+        height: auto;
     }
 
     .stat-item {
