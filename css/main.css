@@ -3782,16 +3782,17 @@ select:focus-visible,
 }
 
 /* Desktop: Display number rows as single horizontal line */
-.number-row-1,
-.number-row-2 {
-    display: flex;
-    gap: 0.5rem;
-}
-
 .number-input {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    flex-direction: row;
+}
+
+.number-row-1,
+.number-row-2 {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .number-row-2 .undo-btn {
