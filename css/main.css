@@ -4303,39 +4303,42 @@ select:focus-visible,
 
     .game-info-panel {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: space-between;
         align-items: center;
         gap: 0.5rem;
         padding: 8px;
         margin-bottom: 0.5rem;
         text-align: center;
+        min-height: 60px;
     }
 
     .timer-section {
         height: auto;
-        padding: 0 0.5rem 0.5rem 0.5rem;
-        flex: 1;
-        min-width: 80px;
+        padding: 0 0.25rem 0.5rem 0.25rem;
+        flex: 0 0 auto;
+        min-width: 70px;
+        max-width: 90px;
     }
 
     .timer-section .stat-label {
-        font-size: 0.7rem;
+        font-size: max(0.65rem, 2.5vw);
         margin-bottom: 0.25rem;
     }
 
     .timer-display {
-        font-size: 1.2rem;
+        font-size: max(1.1rem, 4vw);
         line-height: 1;
     }
 
     .stats-section {
         display: flex;
-        gap: 1rem;
-        flex: 2;
+        gap: 0.75rem;
+        flex: 1;
         justify-content: center;
         margin-bottom: 0;
         height: auto;
+        min-width: 140px;
     }
 
     .stat-item {
@@ -4352,21 +4355,22 @@ select:focus-visible,
     }
 
     .stat-item .stat-label {
-        font-size: 0.7rem;
+        font-size: max(0.65rem, 2.5vw);
         margin: 0;
     }
 
     .errors-count, .hints-count {
-        font-size: 1.1rem;
+        font-size: max(1rem, 3.5vw);
         line-height: 1;
     }
 
     .game-controls {
-        flex: 1;
+        flex: 0 0 auto;
         justify-content: center;
         margin-top: 0;
         gap: 0.25rem;
-        min-width: 120px;
+        min-width: 90px;
+        max-width: 100px;
     }
 
     .icon-btn {
