@@ -21,8 +21,8 @@ class SudokuChampionship {
             loading: false
         };
 
-        // Date change detection
-        this.currentDate = new Date().toISOString().split('T')[0];
+        // Date change detection - use local date
+        this.currentDate = this.getTodayDate();
         this.lastCheckedDate = localStorage.getItem('lastCheckedDate');
         this.initializationComplete = false;
 
@@ -140,6 +140,15 @@ class SudokuChampionship {
         });
     }
 
+    getTodayDate() {
+        // Get today's date in local timezone as YYYY-MM-DD string
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     setCurrentDate() {
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
             weekday: 'long',
@@ -150,7 +159,7 @@ class SudokuChampionship {
     }
 
     async checkDateChange() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = this.getTodayDate();
 
         // If this is the first visit or date has changed
         if (!this.lastCheckedDate || this.lastCheckedDate !== today) {
@@ -1069,7 +1078,7 @@ class SudokuChampionship {
     }
 
     async updateTodayProgress() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = this.getTodayDate();
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
 
@@ -1123,7 +1132,7 @@ class SudokuChampionship {
         const currentPlayer = sessionStorage.getItem('currentPlayer');
         if (!currentPlayer) return;
 
-        const today = new Date().toISOString().split('T')[0];
+        const today = this.getTodayDate();
         const key = `opponent_progress_${currentPlayer}_${today}`;
         const notifications = localStorage.getItem(key);
 
@@ -1276,7 +1285,7 @@ class SudokuChampionship {
 
     // Force complete daily refresh
     forceDailyRefresh() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = this.getTodayDate();
         console.log(`🔄 Forcing complete refresh for ${today}...`);
 
         // Clear all cached data
@@ -1305,7 +1314,7 @@ class SudokuChampionship {
 
     // Test API connectivity
     async testApiConnectivity() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = this.getTodayDate();
         console.log(`🔍 Testing API connectivity for ${today}...`);
 
         const endpoints = [
@@ -1353,7 +1362,7 @@ class SudokuChampionship {
 
         try {
             console.log('🧩 Preloading daily puzzles...');
-            const today = new Date().toISOString().split('T')[0];
+            const today = this.getTodayDate();
             const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
 
             if (response.ok) {
@@ -1408,4 +1417,17 @@ window.testPuzzles = () => {
     } else {
         console.log('❌ No Sudoku engine or daily puzzles found');
     }
+};
+window.testDates = () => {
+    const now = new Date();
+    const utcDate = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+    const localISODate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+
+    console.log('📅 Date debugging:');
+    console.log('🌍 System timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    console.log('🕐 Current time:', now.toString());
+    console.log('🌐 UTC time:', utcDate.toString());
+    console.log('📊 ISO local date:', localISODate);
+    console.log('📊 ISO UTC date:', now.toISOString().split('T')[0]);
+    console.log('⏰ Timezone offset (minutes):', now.getTimezoneOffset());
 };

@@ -2039,9 +2039,18 @@ class SudokuEngine {
         this.errors = 0;
     }
 
+    getTodayDate() {
+        // Get today's date in local timezone as YYYY-MM-DD string
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     async loadDailyPuzzles(forceRefresh = false) {
         try {
-            const today = new Date().toISOString().split('T')[0];
+            const today = this.getTodayDate();
 
             // Always use cache-busting for reliable updates
             const cacheBuster = `_cb=${Date.now()}`;
