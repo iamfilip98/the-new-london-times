@@ -205,7 +205,7 @@ class SudokuEngine {
                         ${Array.from({length: 4}, (_, i) =>
                             `<button class="number-btn" data-number="${i + 6}">${i + 6}</button>`
                         ).join('')}
-                        <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
+                        <button class="undo-btn" id="undoBtn" title="Undo last move">
                             <i class="fas fa-undo-alt"></i>
                             <span>Undo</span>
                         </button>
@@ -219,7 +219,7 @@ class SudokuEngine {
                     ${Array.from({length: 9}, (_, i) =>
                         `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
                     ).join('')}
-                    <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
+                    <button class="undo-btn" id="undoBtn" title="Undo last move">
                         <i class="fas fa-undo-alt"></i>
                         <span>Undo</span>
                     </button>

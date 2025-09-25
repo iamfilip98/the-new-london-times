@@ -3810,44 +3810,36 @@ select:focus-visible,
     min-height: 50px;
 }
 
-/* Make undo button identical to number buttons - override action-btn styles */
-.number-input .undo-btn {
-    background: white !important;
-    border: 2px solid #ddd !important;
-    border-radius: 8px !important;
-    padding: 1rem !important;
-    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;
-    font-size: 1.2rem !important;
-    font-weight: 900 !important;
-    color: #000 !important;
+/* Make undo button identical to number buttons */
+.undo-btn {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #000;
     cursor: pointer;
-    transition: all 0.2s ease !important;
-    min-width: 48px !important;
-    min-height: 48px !important;
-    height: 48px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.3rem !important;
-    text-transform: none !important;
-    letter-spacing: normal !important;
-    text-shadow: none !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    transform: none !important;
+    transition: all 0.2s ease;
+    min-width: 48px;
+    min-height: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    box-sizing: border-box;
 }
 
-.number-input .undo-btn:hover {
-    background: #fff2e6 !important;
-    border-color: #ff8c00 !important;
-    transform: translateY(-2px) !important;
-    color: #000 !important;
-    text-shadow: none !important;
-    box-shadow: none !important;
+.undo-btn:hover {
+    background: #fff2e6;
+    border-color: #ff8c00;
+    transform: translateY(-2px);
 }
 
-.number-input .undo-btn:active {
-    transform: translateY(0) !important;
+.undo-btn:active {
+    transform: translateY(0);
 }
 
 
@@ -4693,29 +4685,19 @@ select:focus-visible,
         min-width: 44px;
     }
 
-    .number-input .undo-btn {
-        height: 44px !important;
-        font-size: 1.2rem !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
-        padding: 0.5rem !important;
-        background: white !important;
-        border: 2px solid #ddd !important;
-        border-radius: 8px !important;
-        color: #000 !important;
-        font-weight: 900 !important;
-        text-transform: none !important;
-        letter-spacing: normal !important;
-        text-shadow: none !important;
-        box-shadow: none !important;
-        backdrop-filter: none !important;
+    .undo-btn {
+        height: 44px;
+        font-size: 1.2rem;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.5rem;
     }
 
-    .number-input .undo-btn span {
+    .undo-btn span {
         display: none;
     }
 
-    .number-input .undo-btn i {
+    .undo-btn i {
         font-size: 1.2rem;
     }
 
