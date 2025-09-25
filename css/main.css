@@ -3505,7 +3505,7 @@ select:focus-visible,
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 0.99rem;
     font-weight: 400;
-    color: #555555;
+    color: #000000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4514,6 +4514,7 @@ select:focus-visible,
     .candidate-cell {
         font-size: 0.6rem !important;
         font-weight: 200 !important;
+        color: #000000 !important;
     }
 
     /* Number input buttons */
@@ -4786,6 +4787,7 @@ select:focus-visible,
     .candidate-cell {
         font-size: 0.4rem !important;
         font-weight: 100 !important;
+        color: #000000 !important;
     }
 
     .number-btn {
