@@ -3810,9 +3810,8 @@ select:focus-visible,
     min-height: 50px;
 }
 
-/* Desktop: Make undo button match number button styling exactly */
-.number-input-desktop .undo-btn,
-.number-row-2 .undo-btn {
+/* Make undo button identical to number buttons */
+.number-input .undo-btn {
     background: white;
     border: 2px solid #ddd;
     border-radius: 8px;
@@ -3828,16 +3827,16 @@ select:focus-visible,
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.3rem;
 }
 
-.number-row-2 .undo-btn:hover {
+.number-input .undo-btn:hover {
     background: #fff2e6;
     border-color: #ff8c00;
     transform: translateY(-2px);
 }
 
-.number-row-2 .undo-btn:active {
+.number-input .undo-btn:active {
     transform: translateY(0);
 }
 
@@ -4684,34 +4683,18 @@ select:focus-visible,
         min-width: 44px;
     }
 
-    .number-row-2 .undo-btn {
+    .number-input .undo-btn {
         height: 44px;
         font-size: 1.2rem;
-        font-weight: 900;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
-        background: white;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        color: #000;
-        cursor: pointer;
-        transition: all 0.2s ease;
         min-width: 44px;
+        padding: 0.5rem;
     }
 
-    .number-row-2 .undo-btn:hover {
-        background: #fff2e6;
-        border-color: #ff8c00;
-        transform: translateY(-2px);
-    }
-
-    .number-row-2 .undo-btn span {
+    .number-input .undo-btn span {
         display: none;
     }
 
-    .number-row-2 .undo-btn i {
+    .number-input .undo-btn i {
         font-size: 1.2rem;
     }
 
