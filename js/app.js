@@ -1131,6 +1131,36 @@ class SudokuChampionship {
                 }
             });
         });
+
+        // Update battle results based on today's completed games
+        this.updateTodaysBattleResults();
+    }
+
+    updateTodaysBattleResults() {
+        const today = this.getTodayDate();
+        const players = ['faidao', 'filip'];
+        const difficulties = ['easy', 'medium', 'hard'];
+
+        // Calculate total scores for today
+        const todayScores = {
+            faidao: { total: 0 },
+            filip: { total: 0 }
+        };
+
+        players.forEach(player => {
+            difficulties.forEach(difficulty => {
+                // Check database progress first, then localStorage
+                const key = `completed_${player}_${today}_${difficulty}`;
+                const gameData = localStorage.getItem(key);
+                if (gameData) {
+                    const data = JSON.parse(gameData);
+                    todayScores[player].total += data.score || 0;
+                }
+            });
+        });
+
+        // Update the battle results display
+        this.updateBattleResults(todayScores);
     }
 
     updateProgressNotifications() {

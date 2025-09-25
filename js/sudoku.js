@@ -2069,6 +2069,18 @@ class SudokuEngine {
                 if (window.sudokuApp) {
                     await window.sudokuApp.loadData();
                     await window.sudokuApp.updateDashboard();
+
+                    // Check for achievements when a new entry is completed
+                    const entries = window.sudokuApp.entries;
+                    const latestEntry = entries.find(entry => entry.date === date);
+                    if (latestEntry) {
+                        await window.sudokuApp.checkAchievements(latestEntry);
+                        console.log('✅ Achievements checked for completed puzzle');
+                    }
+
+                    // Ensure Today's Battle results are updated immediately
+                    window.sudokuApp.updateTodaysBattleResults();
+                    console.log('✅ Today\'s Battle results updated');
                 }
             }
 
