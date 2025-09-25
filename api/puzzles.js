@@ -144,8 +144,8 @@ function generatePuzzle(solution, difficulty) {
   // Improved difficulty settings focused on solvability without guessing
   const difficultySettings = {
     easy: {
-      minClues: 40,
-      maxClues: 50,
+      minClues: 32,
+      maxClues: 40,
       requireNakedSingles: true,
       allowHiddenSingles: true,
       allowComplexTechniques: false,
@@ -245,7 +245,7 @@ function generatePuzzle(solution, difficulty) {
 function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
   const cellsToKeep = {
-    easy: 45,   // Keep more cells for much easier solving
+    easy: 36,   // Keep more cells for easier solving
     medium: 28, // Balanced
     hard: 22    // More challenging but still solvable
   };

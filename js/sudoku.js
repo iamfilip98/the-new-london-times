@@ -377,7 +377,7 @@ class SudokuEngine {
 
         // Remove numbers based on difficulty
         const cellsToRemove = {
-            easy: 25,    // ~56 given numbers - much more approachable
+            easy: 35,    // ~46 given numbers - more approachable
             medium: 45,  // ~36 given numbers - balanced challenge
             hard: 52     // ~29 given numbers - difficult but fair
         };
@@ -567,8 +567,8 @@ class SudokuEngine {
                     } else {
                         cell.classList.add('user-input');
 
-                        // Check for errors by comparing with the correct solution (only if game not completed)
-                        if (!this.gameCompleted && this.playerGrid[row][col] !== this.solution[row][col]) {
+                        // Check for errors by comparing with the correct solution
+                        if (this.playerGrid[row][col] !== this.solution[row][col]) {
                             cell.classList.add('error');
                         }
                     }
