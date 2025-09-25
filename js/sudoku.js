@@ -4,6 +4,7 @@ class SudokuEngine {
         this.solution = Array(9).fill().map(() => Array(9).fill(0));
         this.initialGrid = Array(9).fill().map(() => Array(9).fill(0));
         this.playerGrid = Array(9).fill().map(() => Array(9).fill(0));
+        this.lockedGrid = Array(9).fill().map(() => Array(9).fill(false));
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.manualCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.selectedCell = null;
@@ -236,6 +237,9 @@ class SudokuEngine {
         if (col % 3 === 2 && col < 8) classes.push('right-thick');
         if (row % 3 === 0 && row > 0) classes.push('top-thick');
         if (col % 3 === 0 && col > 0) classes.push('left-thick');
+
+        // Add locked class for locked user inputs
+        if (this.lockedGrid[row][col]) classes.push('locked');
 
         return classes.join(' ');
     }
@@ -571,6 +575,7 @@ class SudokuEngine {
         this.initialGrid = puzzleData.puzzle.map(row => [...row]);
         this.solution = puzzleData.solution.map(row => [...row]);
         this.playerGrid = puzzleData.puzzle.map(row => [...row]);
+        this.lockedGrid = Array(9).fill().map(() => Array(9).fill(false));
 
         // Validate that the solution is actually valid
         console.log(`🔍 Loading ${difficulty} solution. R6C5 should be:`, this.solution[5][4]);
@@ -756,8 +761,8 @@ class SudokuEngine {
 
         const { row, col } = this.selectedCell;
 
-        // Don't allow changing given numbers
-        if (this.initialGrid[row][col] !== 0) return;
+        // Don't allow changing given numbers or locked cells
+        if (this.initialGrid[row][col] !== 0 || this.lockedGrid[row][col]) return;
 
         // Save current state for undo
         const previousValue = this.playerGrid[row][col];
@@ -778,6 +783,7 @@ class SudokuEngine {
             previousValue,
             previousCandidates: previousCandidates,
             previousManualCandidates: previousManualCandidates,
+            previousLocked: this.lockedGrid[row][col],
             moveType: moveType,
             candidateNumber: this.candidateMode ? number : null,
             timestamp: Date.now()
@@ -788,6 +794,7 @@ class SudokuEngine {
             this.playerGrid[row][col] = 0;
             this.candidates[row][col].clear();
             this.manualCandidates[row][col].clear();
+            this.lockedGrid[row][col] = false;
         } else if (this.candidateMode) {
             // Toggle candidate - allow even if cell has a value
             if (this.candidates[row][col].has(number)) {
@@ -814,6 +821,8 @@ class SudokuEngine {
                 // Provide immediate feedback for errors
                 this.showErrorFeedback(row, col);
             } else {
+                // Lock the cell when correct number is entered
+                this.lockedGrid[row][col] = true;
                 // Check if user solved the hinted cell manually
                 if (this.hintState === 'pointing' && this.currentHintCell &&
                     this.currentHintCell.row === row && this.currentHintCell.col === col) {
@@ -1808,6 +1817,7 @@ class SudokuEngine {
         const gameState = {
             playerGrid: this.playerGrid,
             initialGrid: this.initialGrid,
+            lockedGrid: this.lockedGrid,
             candidates: this.candidates.map(row => row.map(cell => Array.from(cell))),
             timer: this.timer,
             hints: this.hints,
@@ -1883,6 +1893,7 @@ class SudokuEngine {
             if (gameState) {
                 this.playerGrid = gameState.playerGrid || this.playerGrid;
                 this.initialGrid = gameState.initialGrid || this.initialGrid;
+                this.lockedGrid = gameState.lockedGrid || Array(9).fill().map(() => Array(9).fill(false));
                 this.candidates = gameState.candidates ?
                     gameState.candidates.map(row => row.map(cell => new Set(cell))) :
                     this.candidates;
@@ -2603,7 +2614,7 @@ class SudokuEngine {
         }
 
         const lastMove = this.moveHistory.pop();
-        const { row, col, previousValue, previousCandidates, previousManualCandidates, moveType, candidateNumber } = lastMove;
+        const { row, col, previousValue, previousCandidates, previousManualCandidates, previousLocked, moveType, candidateNumber } = lastMove;
 
         // Clear any existing conflict highlights before undoing
         document.querySelectorAll('.sudoku-cell.conflict').forEach(cell => {
@@ -2625,6 +2636,7 @@ class SudokuEngine {
             // For number and erase moves, restore the full previous state
             this.playerGrid[row][col] = previousValue;
             this.candidates[row][col] = new Set(previousCandidates);
+            this.lockedGrid[row][col] = previousLocked || false;
 
             // Restore manual candidates (handle backwards compatibility)
             if (previousManualCandidates) {

@@ -3534,6 +3534,15 @@ select:focus-visible,
     font-weight: 900;
 }
 
+.sudoku-cell.locked {
+    /* Inherit from base or alternating pattern */
+}
+
+.sudoku-cell.locked .cell-value {
+    color: #16a085;
+    font-weight: 900;
+}
+
 .sudoku-cell.error {
     background: #ffeeee !important;
     position: relative;
