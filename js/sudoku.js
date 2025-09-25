@@ -144,9 +144,6 @@ class SudokuEngine {
                         ${Array.from({length: 9}, (_, i) =>
                             `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
                         ).join('')}
-                        <button class="number-btn erase-btn" data-number="0">
-                            <i class="fas fa-eraser"></i>
-                        </button>
                     </div>
                 </div>
 
