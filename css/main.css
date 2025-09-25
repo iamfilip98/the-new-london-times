@@ -3545,43 +3545,41 @@ select:focus-visible,
     z-index: 1;
 }
 
-/* Default inset border for cells not touching thick borders */
-.sudoku-cell.selected:not(.right-thick):not(.bottom-thick):not(.left-thick):not(.top-thick) {
-    box-shadow: inset 0 0 0 3px #000000;
+/* Selected cell border - thicker and more visible */
+.sudoku-cell.selected {
+    position: relative;
 }
 
-/* Selective inset borders for cells touching thick borders */
-.sudoku-cell.selected.right-thick:not(.bottom-thick):not(.left-thick):not(.top-thick) {
-    box-shadow: inset 3px 0 0 0 #000000, inset 0 3px 0 0 #000000, inset -3px 0 0 0 #000000;
+.sudoku-cell.selected::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    border: 4px solid #000000;
+    pointer-events: none;
+    z-index: 10;
 }
 
-.sudoku-cell.selected.bottom-thick:not(.right-thick):not(.left-thick):not(.top-thick) {
-    box-shadow: inset 3px 0 0 0 #000000, inset 0 3px 0 0 #000000, inset -3px 0 0 0 #000000;
+/* For cells with right thick border - adjust right edge */
+.sudoku-cell.selected.right-thick::after {
+    right: 6px;
 }
 
-.sudoku-cell.selected.left-thick:not(.right-thick):not(.bottom-thick):not(.top-thick) {
-    box-shadow: inset 0 3px 0 0 #000000, inset -3px 0 0 0 #000000, inset 0 -3px 0 0 #000000;
+/* For cells with bottom thick border - adjust bottom edge */
+.sudoku-cell.selected.bottom-thick::after {
+    bottom: 6px;
 }
 
-.sudoku-cell.selected.top-thick:not(.right-thick):not(.bottom-thick):not(.left-thick) {
-    box-shadow: inset 3px 0 0 0 #000000, inset -3px 0 0 0 #000000, inset 0 -3px 0 0 #000000;
+/* For cells with left thick border - adjust left edge */
+.sudoku-cell.selected.left-thick::after {
+    left: 6px;
 }
 
-/* Corner cells with multiple thick borders */
-.sudoku-cell.selected.right-thick.bottom-thick:not(.left-thick):not(.top-thick) {
-    box-shadow: inset 3px 0 0 0 #000000, inset 0 3px 0 0 #000000;
-}
-
-.sudoku-cell.selected.left-thick.bottom-thick:not(.right-thick):not(.top-thick) {
-    box-shadow: inset 0 3px 0 0 #000000, inset -3px 0 0 0 #000000;
-}
-
-.sudoku-cell.selected.left-thick.top-thick:not(.right-thick):not(.bottom-thick) {
-    box-shadow: inset -3px 0 0 0 #000000, inset 0 -3px 0 0 #000000;
-}
-
-.sudoku-cell.selected.right-thick.top-thick:not(.left-thick):not(.bottom-thick) {
-    box-shadow: inset 3px 0 0 0 #000000, inset 0 -3px 0 0 #000000;
+/* For cells with top thick border - adjust top edge */
+.sudoku-cell.selected.top-thick::after {
+    top: 6px;
 }
 
 .sudoku-cell.selected.given,
