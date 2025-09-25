@@ -3542,44 +3542,21 @@ select:focus-visible,
 /* Accurate NYT orange selection */
 .sudoku-cell.selected {
     background: #ff9500 !important;
+    position: relative;
     z-index: 1;
 }
 
-/* Selected cell border - thicker and more visible */
-.sudoku-cell.selected {
-    position: relative;
-}
-
+/* Selected cell border - consistent thickness */
 .sudoku-cell.selected::after {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 3px;
-    right: 3px;
-    bottom: 3px;
-    border: 4px solid #000000;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 2.5px solid #000000;
     pointer-events: none;
     z-index: 10;
-}
-
-/* For cells with right thick border - adjust right edge */
-.sudoku-cell.selected.right-thick::after {
-    right: 6px;
-}
-
-/* For cells with bottom thick border - adjust bottom edge */
-.sudoku-cell.selected.bottom-thick::after {
-    bottom: 6px;
-}
-
-/* For cells with left thick border - adjust left edge */
-.sudoku-cell.selected.left-thick::after {
-    left: 6px;
-}
-
-/* For cells with top thick border - adjust top edge */
-.sudoku-cell.selected.top-thick::after {
-    top: 6px;
 }
 
 .sudoku-cell.selected.given,
