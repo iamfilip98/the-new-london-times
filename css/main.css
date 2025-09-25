@@ -3353,22 +3353,22 @@ select:focus-visible,
 
 /* Row, column, box highlighting */
 .sudoku-cell.highlighted {
-    background: #fff4e6 !important;
+    background: #ff950080 !important;
 }
 
 .sudoku-cell.highlighted.given,
 .sudoku-cell.highlighted.user-input {
-    background: #fff4e6 !important;
+    background: #ff950080 !important;
 }
 
 /* Same number highlighting */
 .sudoku-cell.same-number {
-    background: #fabb61 !important;
+    background: #ff9500 !important;
 }
 
 .sudoku-cell.same-number.given,
 .sudoku-cell.same-number.user-input {
-    background: #fabb61 !important;
+    background: #ff9500 !important;
 }
 
 /* Paused state */
