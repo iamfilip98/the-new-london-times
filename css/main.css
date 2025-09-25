@@ -3312,8 +3312,8 @@ select:focus-visible,
 
 .hints-count {
     color: var(--accent-blue);
-    width: 3rem;
-    height: 3rem;
+    width: 122.47px;
+    height: 122.47px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3323,8 +3323,8 @@ select:focus-visible,
 
 .errors-count {
     color: var(--accent-pink);
-    width: 3rem;
-    height: 3rem;
+    width: 122.47px;
+    height: 122.47px;
     display: flex;
     align-items: center;
     justify-content: center;
