@@ -3741,22 +3741,6 @@ select:focus-visible,
     border-top: 3px solid #000000;
 }
 
-/* Keep thick borders visible over selection */
-.sudoku-cell.selected.right-thick {
-    border-right: 3px solid #000000 !important;
-}
-
-.sudoku-cell.selected.bottom-thick {
-    border-bottom: 3px solid #000000 !important;
-}
-
-.sudoku-cell.selected.left-thick {
-    border-left: 3px solid #000000 !important;
-}
-
-.sudoku-cell.selected.top-thick {
-    border-top: 3px solid #000000 !important;
-}
 
 /* Subtle hover effect */
 .sudoku-cell:hover:not(.selected) {
