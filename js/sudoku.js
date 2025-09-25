@@ -1423,6 +1423,8 @@ class SudokuEngine {
     }
 
     showCompletionNotification(isPersistent = false) {
+        console.log('showCompletionNotification called, isPersistent:', isPersistent);
+
         // Remove any existing notification
         const existingNotification = document.querySelector('.completion-notification-overlay');
         if (existingNotification) {
@@ -1447,9 +1449,23 @@ class SudokuEngine {
         `;
 
         // Find the sudoku grid container and add the notification
-        const gridContainer = document.querySelector('.sudoku-grid-container');
+        let gridContainer = document.querySelector('.sudoku-grid-container');
+        console.log('Grid container found:', !!gridContainer);
+
+        // Fallback: try to find by ID or other selector
+        if (!gridContainer) {
+            gridContainer = document.querySelector('.sudoku-game-container');
+            console.log('Fallback: using sudoku-game-container:', !!gridContainer);
+        }
+
         if (gridContainer) {
+            // Ensure the container has relative positioning for absolute positioning of notification
+            if (gridContainer.style.position !== 'relative') {
+                gridContainer.style.position = 'relative';
+            }
+
             gridContainer.appendChild(notification);
+            console.log('Notification added to grid container');
 
             if (isPersistent) {
                 // Add click handler to dismiss persistent notification
@@ -1480,6 +1496,8 @@ class SudokuEngine {
                     }, 500);
                 }, 3000);
             }
+        } else {
+            console.error('Could not find grid container for completion notification');
         }
     }
 
@@ -1690,8 +1708,9 @@ class SudokuEngine {
 
                     // Show completion notification overlay for previously completed games
                     setTimeout(() => {
+                        console.log('Showing completion notification for completed game');
                         this.showCompletionNotification(true); // Make it persistent
-                    }, 500); // Small delay to ensure display is updated first
+                    }, 800); // Increased delay to ensure interface is fully loaded
                 } else if (this.gameStarted) {
                     if (this.gamePaused) {
                         // Game was paused - update UI but don't start timer
