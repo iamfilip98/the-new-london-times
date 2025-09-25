@@ -738,14 +738,7 @@ class SudokuEngine {
             // Check if the number matches the correct solution
             const isCorrectSolution = (this.solution[row][col] === number);
 
-            // Debug: Check if the number was shown as a valid candidate but doesn't match solution
-            if (!isCorrectSolution && this.candidates[row][col].has(number)) {
-                console.warn(`⚠️ Candidate mismatch at R${row+1}C${col+1}: Candidate ${number} shown as valid but solution is ${this.solution[row][col]}`);
-                console.log('Current candidates:', Array.from(this.candidates[row][col]));
-                console.log('Solution array check - row 5:', this.solution[5]);
-                console.log('Solution type check:', typeof this.solution[row][col], Array.isArray(this.solution));
-                console.log('Player grid state:', this.playerGrid.map(r => r.join('')).join('\n'));
-            }
+            // Player chose to place this number (whether correct or not)
 
             // Place number - clear candidates when placing a number
             this.playerGrid[row][col] = number;
@@ -828,10 +821,9 @@ class SudokuEngine {
                     // Clear and regenerate all candidates
                     this.candidates[row][col].clear();
 
-                    // Add valid auto-generated candidates - only add if it's the correct solution
+                    // Add valid auto-generated candidates
                     for (let num = 1; num <= 9; num++) {
-                        if (this.isValidMove(this.playerGrid, row, col, num) &&
-                            this.solution[row][col] === num) {
+                        if (this.isValidMove(this.playerGrid, row, col, num)) {
                             this.candidates[row][col].add(num);
                         }
                     }
@@ -891,10 +883,9 @@ class SudokuEngine {
                         const manualCands = new Set(this.manualCandidates[row][col]);
                         const autoCands = new Set();
 
-                        // Generate auto candidates - only add if it's the correct solution
+                        // Generate auto candidates
                         for (let num = 1; num <= 9; num++) {
-                            if (this.isValidMove(this.playerGrid, row, col, num) &&
-                                this.solution[row][col] === num) {
+                            if (this.isValidMove(this.playerGrid, row, col, num)) {
                                 autoCands.add(num);
                             }
                         }
