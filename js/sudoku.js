@@ -590,15 +590,9 @@ class SudokuEngine {
                     }
                 }
 
-                // Highlight selected cell and related cells
+                // Highlight selected cell only
                 if (this.selectedCell && this.selectedCell.row === row && this.selectedCell.col === col) {
                     cell.classList.add('selected');
-                } else if (this.selectedCell && (
-                    this.selectedCell.row === row ||
-                    this.selectedCell.col === col ||
-                    this.isInSameBox(row, col, this.selectedCell.row, this.selectedCell.col)
-                )) {
-                    cell.classList.add('highlighted');
                 }
 
                 // Highlight cells with the same number as the selected cell
