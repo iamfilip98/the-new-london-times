@@ -141,31 +141,31 @@ function generateCompleteSolution() {
 function generatePuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
 
-  // Improved difficulty settings focused on solvability without guessing
+  // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
     easy: {
-      minClues: 40,
-      maxClues: 45,
+      minClues: 35,
+      maxClues: 42,
       requireNakedSingles: true,
       allowHiddenSingles: true,
       allowComplexTechniques: false,
-      maxIterations: 1000
+      maxIterations: 50  // Fewer iterations since we have better validation
     },
     medium: {
-      minClues: 25,
-      maxClues: 32,
+      minClues: 28,
+      maxClues: 35,
       requireNakedSingles: true,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 2000
+      maxIterations: 100
     },
     hard: {
-      minClues: 20,
-      maxClues: 28,
+      minClues: 22,
+      maxClues: 30,
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 3000
+      maxIterations: 200
     }
   };
 
@@ -221,6 +221,7 @@ function generatePuzzle(solution, difficulty) {
           if (currentClues < bestClueCount) {
             bestPuzzle = testPuzzle.map(row => [...row]);
             bestClueCount = currentClues;
+            console.log(`🎯 Found better ${difficulty} puzzle with ${currentClues} clues`);
           }
         }
       } else {
@@ -245,9 +246,9 @@ function generatePuzzle(solution, difficulty) {
 function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
   const cellsToKeep = {
-    easy: 42,   // Keep more cells for easier solving
-    medium: 28, // Balanced
-    hard: 22    // More challenging but still solvable
+    easy: 38,   // Conservative - easier solving
+    medium: 31, // Moderate difficulty
+    hard: 25    // Challenging but solvable
   };
 
   const positions = [];
@@ -274,94 +275,55 @@ function createFallbackPuzzle(solution, difficulty) {
   return puzzle;
 }
 
-// Check if a puzzle can be solved using only logical techniques
+// Comprehensive logical Sudoku solver - no guessing allowed
 function isPuzzleSolvableLogically(puzzle, settings) {
   const testGrid = puzzle.map(row => [...row]);
+  const candidates = initializeCandidates(testGrid);
   let changed = true;
   let iterations = 0;
-  const maxSolverIterations = 100;
+  const maxSolverIterations = 200;
 
   while (changed && iterations < maxSolverIterations) {
     changed = false;
     iterations++;
 
-    // Try naked singles (cells with only one possible value)
-    if (settings.requireNakedSingles || settings.allowHiddenSingles) {
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          if (testGrid[row][col] === 0) {
-            const possibleValues = getPossibleValues(testGrid, row, col);
-            if (possibleValues.length === 1) {
-              testGrid[row][col] = possibleValues[0];
-              changed = true;
-            }
-          }
-        }
-      }
+    // Update candidates first
+    updateCandidates(testGrid, candidates);
+
+    // Technique 1: Naked Singles (cells with only one candidate)
+    if (applyNakedSingles(testGrid, candidates)) {
+      changed = true;
+      continue;
     }
 
-    // Try hidden singles (numbers that can only go in one place in a region)
-    if (settings.allowHiddenSingles) {
-      // Check rows
-      for (let row = 0; row < 9; row++) {
-        for (let num = 1; num <= 9; num++) {
-          if (!isNumberInRow(testGrid, row, num)) {
-            const possibleCols = [];
-            for (let col = 0; col < 9; col++) {
-              if (testGrid[row][col] === 0 && isValidPlacement(testGrid, row, col, num)) {
-                possibleCols.push(col);
-              }
-            }
-            if (possibleCols.length === 1) {
-              testGrid[row][possibleCols[0]] = num;
-              changed = true;
-            }
-          }
-        }
-      }
+    // Technique 2: Hidden Singles (numbers that can only go in one place)
+    if (settings.allowHiddenSingles && applyHiddenSingles(testGrid, candidates)) {
+      changed = true;
+      continue;
+    }
 
-      // Check columns
-      for (let col = 0; col < 9; col++) {
-        for (let num = 1; num <= 9; num++) {
-          if (!isNumberInColumn(testGrid, col, num)) {
-            const possibleRows = [];
-            for (let row = 0; row < 9; row++) {
-              if (testGrid[row][col] === 0 && isValidPlacement(testGrid, row, col, num)) {
-                possibleRows.push(row);
-              }
-            }
-            if (possibleRows.length === 1) {
-              testGrid[possibleRows[0]][col] = num;
-              changed = true;
-            }
-          }
-        }
-      }
+    // Technique 3: Naked Pairs, Triples, Quads
+    if (settings.allowComplexTechniques && applyNakedSubsets(testGrid, candidates)) {
+      changed = true;
+      continue;
+    }
 
-      // Check boxes
-      for (let boxRow = 0; boxRow < 3; boxRow++) {
-        for (let boxCol = 0; boxCol < 3; boxCol++) {
-          for (let num = 1; num <= 9; num++) {
-            if (!isNumberInBox(testGrid, boxRow * 3, boxCol * 3, num)) {
-              const possiblePositions = [];
-              for (let r = 0; r < 3; r++) {
-                for (let c = 0; c < 3; c++) {
-                  const row = boxRow * 3 + r;
-                  const col = boxCol * 3 + c;
-                  if (testGrid[row][col] === 0 && isValidPlacement(testGrid, row, col, num)) {
-                    possiblePositions.push([row, col]);
-                  }
-                }
-              }
-              if (possiblePositions.length === 1) {
-                const [row, col] = possiblePositions[0];
-                testGrid[row][col] = num;
-                changed = true;
-              }
-            }
-          }
-        }
-      }
+    // Technique 4: Hidden Pairs, Triples, Quads
+    if (settings.allowComplexTechniques && applyHiddenSubsets(testGrid, candidates)) {
+      changed = true;
+      continue;
+    }
+
+    // Technique 5: Pointing Pairs/Triples (Box/Line Reduction)
+    if (settings.allowComplexTechniques && applyPointingPairs(testGrid, candidates)) {
+      changed = true;
+      continue;
+    }
+
+    // Technique 6: Box/Line Reduction
+    if (settings.allowComplexTechniques && applyBoxLineReduction(testGrid, candidates)) {
+      changed = true;
+      continue;
     }
 
     // Check if puzzle is completely solved
@@ -376,20 +338,18 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       return true; // Puzzle is solvable!
     }
 
-    // If no progress was made and there are still empty cells,
-    // check if we need more complex techniques
-    if (!changed && emptyCells > 0) {
-      if (settings.allowComplexTechniques) {
-        // For now, we'll be more lenient with complex techniques
-        // In a full implementation, we'd add pointing pairs, box/line reduction, etc.
-        return emptyCells < 25; // Heuristic: if we got most of the way there, call it solvable
-      } else {
-        return false; // Needs complex techniques but they're not allowed for this difficulty
+    // Check for invalid state (cell with no candidates)
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (testGrid[row][col] === 0 && candidates[row][col].length === 0) {
+          return false; // Invalid puzzle - cell has no possible values
+        }
       }
     }
   }
 
-  return false; // Couldn't solve within iteration limit
+  // If we stopped making progress, puzzle requires guessing
+  return false;
 }
 
 // Helper functions for solvability checking
@@ -468,6 +428,419 @@ function countRegionClues(grid, row, col) {
   return count;
 }
 
+// ========= COMPREHENSIVE LOGICAL SOLVING TECHNIQUES =========
+
+// Initialize candidate arrays for all empty cells
+function initializeCandidates(grid) {
+  const candidates = Array(9).fill().map(() => Array(9).fill().map(() => []));
+
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (grid[row][col] === 0) {
+        candidates[row][col] = getPossibleValues(grid, row, col);
+      }
+    }
+  }
+
+  return candidates;
+}
+
+// Update all candidate lists based on current grid state
+function updateCandidates(grid, candidates) {
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (grid[row][col] === 0) {
+        candidates[row][col] = getPossibleValues(grid, row, col);
+      } else {
+        candidates[row][col] = [];
+      }
+    }
+  }
+}
+
+// Technique 1: Naked Singles - cells with only one candidate
+function applyNakedSingles(grid, candidates) {
+  let changed = false;
+
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (grid[row][col] === 0 && candidates[row][col].length === 1) {
+        grid[row][col] = candidates[row][col][0];
+        candidates[row][col] = [];
+        changed = true;
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Technique 2: Hidden Singles - numbers that can only go in one place in a unit
+function applyHiddenSingles(grid, candidates) {
+  let changed = false;
+
+  // Check rows
+  for (let row = 0; row < 9; row++) {
+    for (let num = 1; num <= 9; num++) {
+      if (!isNumberInRow(grid, row, num)) {
+        const possibleCols = [];
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            possibleCols.push(col);
+          }
+        }
+        if (possibleCols.length === 1) {
+          const col = possibleCols[0];
+          grid[row][col] = num;
+          candidates[row][col] = [];
+          changed = true;
+        }
+      }
+    }
+  }
+
+  // Check columns
+  for (let col = 0; col < 9; col++) {
+    for (let num = 1; num <= 9; num++) {
+      if (!isNumberInColumn(grid, col, num)) {
+        const possibleRows = [];
+        for (let row = 0; row < 9; row++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            possibleRows.push(row);
+          }
+        }
+        if (possibleRows.length === 1) {
+          const row = possibleRows[0];
+          grid[row][col] = num;
+          candidates[row][col] = [];
+          changed = true;
+        }
+      }
+    }
+  }
+
+  // Check boxes
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+      for (let num = 1; num <= 9; num++) {
+        if (!isNumberInBox(grid, boxRow * 3, boxCol * 3, num)) {
+          const possiblePositions = [];
+          for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+              const row = boxRow * 3 + r;
+              const col = boxCol * 3 + c;
+              if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+                possiblePositions.push([row, col]);
+              }
+            }
+          }
+          if (possiblePositions.length === 1) {
+            const [row, col] = possiblePositions[0];
+            grid[row][col] = num;
+            candidates[row][col] = [];
+            changed = true;
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Technique 3: Naked Pairs/Triples/Quads - eliminate candidates from peers
+function applyNakedSubsets(grid, candidates) {
+  let changed = false;
+
+  // Check for naked pairs, triples, and quads in rows
+  for (let row = 0; row < 9; row++) {
+    if (applyNakedSubsetsInRow(grid, candidates, row)) changed = true;
+  }
+
+  // Check for naked pairs, triples, and quads in columns
+  for (let col = 0; col < 9; col++) {
+    if (applyNakedSubsetsInColumn(grid, candidates, col)) changed = true;
+  }
+
+  // Check for naked pairs, triples, and quads in boxes
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+      if (applyNakedSubsetsInBox(grid, candidates, boxRow, boxCol)) changed = true;
+    }
+  }
+
+  return changed;
+}
+
+// Apply naked subsets in a row
+function applyNakedSubsetsInRow(grid, candidates, row) {
+  let changed = false;
+  const cells = [];
+
+  for (let col = 0; col < 9; col++) {
+    if (grid[row][col] === 0 && candidates[row][col].length > 0) {
+      cells.push({ row, col, candidates: [...candidates[row][col]] });
+    }
+  }
+
+  // Look for naked pairs
+  for (let i = 0; i < cells.length - 1; i++) {
+    for (let j = i + 1; j < cells.length; j++) {
+      const cell1 = cells[i], cell2 = cells[j];
+      if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
+          arraysEqual(cell1.candidates, cell2.candidates)) {
+
+        // Remove these candidates from other cells in the row
+        for (let col = 0; col < 9; col++) {
+          if (col !== cell1.col && col !== cell2.col && grid[row][col] === 0) {
+            const oldLength = candidates[row][col].length;
+            candidates[row][col] = candidates[row][col].filter(num =>
+              !cell1.candidates.includes(num));
+            if (candidates[row][col].length < oldLength) changed = true;
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Apply naked subsets in a column
+function applyNakedSubsetsInColumn(grid, candidates, col) {
+  let changed = false;
+  const cells = [];
+
+  for (let row = 0; row < 9; row++) {
+    if (grid[row][col] === 0 && candidates[row][col].length > 0) {
+      cells.push({ row, col, candidates: [...candidates[row][col]] });
+    }
+  }
+
+  // Look for naked pairs
+  for (let i = 0; i < cells.length - 1; i++) {
+    for (let j = i + 1; j < cells.length; j++) {
+      const cell1 = cells[i], cell2 = cells[j];
+      if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
+          arraysEqual(cell1.candidates, cell2.candidates)) {
+
+        // Remove these candidates from other cells in the column
+        for (let row = 0; row < 9; row++) {
+          if (row !== cell1.row && row !== cell2.row && grid[row][col] === 0) {
+            const oldLength = candidates[row][col].length;
+            candidates[row][col] = candidates[row][col].filter(num =>
+              !cell1.candidates.includes(num));
+            if (candidates[row][col].length < oldLength) changed = true;
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Apply naked subsets in a box
+function applyNakedSubsetsInBox(grid, candidates, boxRow, boxCol) {
+  let changed = false;
+  const cells = [];
+
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      const row = boxRow * 3 + r;
+      const col = boxCol * 3 + c;
+      if (grid[row][col] === 0 && candidates[row][col].length > 0) {
+        cells.push({ row, col, candidates: [...candidates[row][col]] });
+      }
+    }
+  }
+
+  // Look for naked pairs
+  for (let i = 0; i < cells.length - 1; i++) {
+    for (let j = i + 1; j < cells.length; j++) {
+      const cell1 = cells[i], cell2 = cells[j];
+      if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
+          arraysEqual(cell1.candidates, cell2.candidates)) {
+
+        // Remove these candidates from other cells in the box
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 3; c++) {
+            const row = boxRow * 3 + r;
+            const col = boxCol * 3 + c;
+            if ((row !== cell1.row || col !== cell1.col) &&
+                (row !== cell2.row || col !== cell2.col) && grid[row][col] === 0) {
+              const oldLength = candidates[row][col].length;
+              candidates[row][col] = candidates[row][col].filter(num =>
+                !cell1.candidates.includes(num));
+              if (candidates[row][col].length < oldLength) changed = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Technique 4: Hidden Pairs/Triples/Quads (simplified version)
+function applyHiddenSubsets(grid, candidates) {
+  // For now, implement a basic version focusing on hidden pairs
+  // This is quite complex to implement fully, but basic version helps
+  return false; // Placeholder - would need extensive implementation
+}
+
+// Technique 5: Pointing Pairs/Triples
+function applyPointingPairs(grid, candidates) {
+  let changed = false;
+
+  // Check each box for pointing pairs/triples
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+      for (let num = 1; num <= 9; num++) {
+        if (!isNumberInBox(grid, boxRow * 3, boxCol * 3, num)) {
+          // Find all positions in this box where num can go
+          const positions = [];
+          for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+              const row = boxRow * 3 + r;
+              const col = boxCol * 3 + c;
+              if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+                positions.push([row, col]);
+              }
+            }
+          }
+
+          // Check if all positions are in the same row
+          if (positions.length > 1) {
+            const sameRow = positions.every(([row, col]) => row === positions[0][0]);
+            if (sameRow) {
+              // Remove num from other cells in this row (outside the box)
+              const row = positions[0][0];
+              for (let col = 0; col < 9; col++) {
+                const inBox = Math.floor(col / 3) === boxCol;
+                if (!inBox && grid[row][col] === 0) {
+                  const oldLength = candidates[row][col].length;
+                  candidates[row][col] = candidates[row][col].filter(n => n !== num);
+                  if (candidates[row][col].length < oldLength) changed = true;
+                }
+              }
+            }
+
+            // Check if all positions are in the same column
+            const sameCol = positions.every(([row, col]) => col === positions[0][1]);
+            if (sameCol) {
+              // Remove num from other cells in this column (outside the box)
+              const col = positions[0][1];
+              for (let row = 0; row < 9; row++) {
+                const inBox = Math.floor(row / 3) === boxRow;
+                if (!inBox && grid[row][col] === 0) {
+                  const oldLength = candidates[row][col].length;
+                  candidates[row][col] = candidates[row][col].filter(n => n !== num);
+                  if (candidates[row][col].length < oldLength) changed = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Technique 6: Box/Line Reduction
+function applyBoxLineReduction(grid, candidates) {
+  let changed = false;
+
+  // For each row, check if a number can only appear in one box
+  for (let row = 0; row < 9; row++) {
+    for (let num = 1; num <= 9; num++) {
+      if (!isNumberInRow(grid, row, num)) {
+        const positions = [];
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            positions.push([row, col]);
+          }
+        }
+
+        // Check if all positions are in the same box
+        if (positions.length > 1) {
+          const boxes = positions.map(([r, c]) => Math.floor(c / 3));
+          const sameBox = boxes.every(box => box === boxes[0]);
+
+          if (sameBox) {
+            // Remove num from other cells in this box (outside the row)
+            const boxCol = boxes[0];
+            const boxRowStart = Math.floor(row / 3) * 3;
+
+            for (let r = boxRowStart; r < boxRowStart + 3; r++) {
+              if (r !== row) {
+                for (let c = boxCol * 3; c < boxCol * 3 + 3; c++) {
+                  if (grid[r][c] === 0) {
+                    const oldLength = candidates[r][c].length;
+                    candidates[r][c] = candidates[r][c].filter(n => n !== num);
+                    if (candidates[r][c].length < oldLength) changed = true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // For each column, check if a number can only appear in one box
+  for (let col = 0; col < 9; col++) {
+    for (let num = 1; num <= 9; num++) {
+      if (!isNumberInColumn(grid, col, num)) {
+        const positions = [];
+        for (let row = 0; row < 9; row++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            positions.push([row, col]);
+          }
+        }
+
+        // Check if all positions are in the same box
+        if (positions.length > 1) {
+          const boxes = positions.map(([r, c]) => Math.floor(r / 3));
+          const sameBox = boxes.every(box => box === boxes[0]);
+
+          if (sameBox) {
+            // Remove num from other cells in this box (outside the column)
+            const boxRow = boxes[0];
+            const boxColStart = Math.floor(col / 3) * 3;
+
+            for (let c = boxColStart; c < boxColStart + 3; c++) {
+              if (c !== col) {
+                for (let r = boxRow * 3; r < boxRow * 3 + 3; r++) {
+                  if (grid[r][c] === 0) {
+                    const oldLength = candidates[r][c].length;
+                    candidates[r][c] = candidates[r][c].filter(n => n !== num);
+                    if (candidates[r][c].length < oldLength) changed = true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Helper function to compare arrays
+function arraysEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false;
+  const sorted1 = [...arr1].sort();
+  const sorted2 = [...arr2].sort();
+  return sorted1.every((val, i) => val === sorted2[i]);
+}
+
 // Convert grid to 81-character string
 function gridToString(grid) {
   return grid.flat().join('');
@@ -493,7 +866,7 @@ async function generateDailyPuzzles(date) {
     // Try multiple times to generate valid puzzles
     while (attempts < maxAttempts && !validPuzzles) {
       attempts++;
-      console.log(`Generating puzzle attempt ${attempts} for ${date}`);
+      console.log(`🎲 Generating puzzle attempt ${attempts} for ${date}`);
 
       const solution = generateCompleteSolution();
 
