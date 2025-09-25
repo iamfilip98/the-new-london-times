@@ -3773,28 +3773,45 @@ select:focus-visible,
     align-items: center;
 }
 
-/* Desktop: Display number rows as single horizontal line spanning full width */
+/* Desktop: Single row number input layout */
 .number-input {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
     padding: 1.5rem;
     border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.number-input.number-input-desktop {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 0.5rem;
     align-items: center;
 }
 
+/* Mobile: Two rows layout (only when using number-row-1 and number-row-2) */
+.number-input:not(.number-input-desktop) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
 .number-row-1 {
-    display: contents;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    min-height: 50px;
 }
 
 .number-row-2 {
-    display: contents;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    min-height: 50px;
 }
 
 /* Desktop: Make undo button match number button styling exactly */
+.number-input-desktop .undo-btn,
 .number-row-2 .undo-btn {
     background: white;
     border: 2px solid #ddd;

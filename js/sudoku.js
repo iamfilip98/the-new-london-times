@@ -142,22 +142,7 @@ class SudokuEngine {
                 </div>
 
                 <!-- Number Input Rows -->
-                <div class="number-input">
-                    <div class="number-row-1">
-                        ${Array.from({length: 5}, (_, i) =>
-                            `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
-                        ).join('')}
-                    </div>
-                    <div class="number-row-2">
-                        ${Array.from({length: 4}, (_, i) =>
-                            `<button class="number-btn" data-number="${i + 6}">${i + 6}</button>`
-                        ).join('')}
-                        <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
-                            <i class="fas fa-undo-alt"></i>
-                            <span>Undo</span>
-                        </button>
-                    </div>
-                </div>
+                ${this.generateNumberInputHTML()}
 
                 <!-- Action Buttons Row -->
                 <div class="action-buttons">
@@ -204,6 +189,45 @@ class SudokuEngine {
         return html;
     }
 
+    generateNumberInputHTML() {
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Mobile: Two rows layout
+            return `
+                <div class="number-input">
+                    <div class="number-row-1">
+                        ${Array.from({length: 5}, (_, i) =>
+                            `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
+                        ).join('')}
+                    </div>
+                    <div class="number-row-2">
+                        ${Array.from({length: 4}, (_, i) =>
+                            `<button class="number-btn" data-number="${i + 6}">${i + 6}</button>`
+                        ).join('')}
+                        <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
+                            <i class="fas fa-undo-alt"></i>
+                            <span>Undo</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Desktop: Single row layout
+            return `
+                <div class="number-input number-input-desktop">
+                    ${Array.from({length: 9}, (_, i) =>
+                        `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
+                    ).join('')}
+                    <button class="action-btn undo-btn" id="undoBtn" title="Undo last move">
+                        <i class="fas fa-undo-alt"></i>
+                        <span>Undo</span>
+                    </button>
+                </div>
+            `;
+        }
+    }
+
     getCellClasses(row, col) {
         let classes = [];
 
@@ -234,17 +258,11 @@ class SudokuEngine {
             }
         });
 
-        // Number input
-        document.querySelectorAll('.number-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const number = parseInt(e.target.dataset.number || e.target.closest('.number-btn').dataset.number);
-                await this.inputNumber(number);
-            });
-        });
+        // Number input and action buttons
+        this.attachNumberInputListeners();
 
-        // Action buttons
+        // Other action buttons
         document.getElementById('hintBtn')?.addEventListener('click', async () => await this.getHint());
-        document.getElementById('undoBtn')?.addEventListener('click', () => this.undo());
         document.getElementById('eraseBtn')?.addEventListener('click', async () => await this.eraseSelectedCell());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
@@ -260,6 +278,40 @@ class SudokuEngine {
                 this.saveGameState();
             }
         }, 10000);
+
+        // Handle window resize for responsive number input
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                this.updateNumberInputLayout();
+            }, 150);
+        });
+    }
+
+    updateNumberInputLayout() {
+        const numberInputContainer = document.querySelector('.number-input');
+        if (numberInputContainer) {
+            numberInputContainer.outerHTML = this.generateNumberInputHTML();
+            // Re-attach event listeners for the new buttons
+            this.attachNumberInputListeners();
+        }
+    }
+
+    attachNumberInputListeners() {
+        // Number input buttons
+        document.querySelectorAll('.number-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const number = parseInt(e.target.dataset.number);
+                await this.inputNumber(number);
+            });
+        });
+
+        // Undo button
+        const undoBtn = document.getElementById('undoBtn');
+        if (undoBtn) {
+            undoBtn.addEventListener('click', () => this.undo());
+        }
     }
 
     changeDifficulty(difficulty) {
