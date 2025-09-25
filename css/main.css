@@ -3347,7 +3347,8 @@ select:focus-visible,
     padding: 0;
     background: transparent;
     margin: 0;
-    max-width: fit-content;
+    width: 700px;
+    height: 700px;
     position: relative;
 }
 
