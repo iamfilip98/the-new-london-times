@@ -5493,4 +5493,9 @@ select:focus-visible,
     .difficulty-option h3 {
         font-size: 1.3rem;
     }
+
+    /* Hide page-header for Play Sudoku tab on mobile only */
+    #sudoku .page-header {
+        display: none;
+    }
 }
