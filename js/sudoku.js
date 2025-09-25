@@ -828,9 +828,10 @@ class SudokuEngine {
                     // Clear and regenerate all candidates
                     this.candidates[row][col].clear();
 
-                    // Add valid auto-generated candidates
+                    // Add valid auto-generated candidates - only add if it's the correct solution
                     for (let num = 1; num <= 9; num++) {
-                        if (this.isValidMove(this.playerGrid, row, col, num)) {
+                        if (this.isValidMove(this.playerGrid, row, col, num) &&
+                            this.solution[row][col] === num) {
                             this.candidates[row][col].add(num);
                         }
                     }
@@ -890,9 +891,10 @@ class SudokuEngine {
                         const manualCands = new Set(this.manualCandidates[row][col]);
                         const autoCands = new Set();
 
-                        // Generate auto candidates
+                        // Generate auto candidates - only add if it's the correct solution
                         for (let num = 1; num <= 9; num++) {
-                            if (this.isValidMove(this.playerGrid, row, col, num)) {
+                            if (this.isValidMove(this.playerGrid, row, col, num) &&
+                                this.solution[row][col] === num) {
                                 autoCands.add(num);
                             }
                         }
