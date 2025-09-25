@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Layout Test</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .test-section {
+            margin: 20px;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-row {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            align-items: baseline;
+        }
+        .debug-outline {
+            outline: 1px solid red !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <h3>Content Comparison Test</h3>
+
+        <div class="test-row">
+            <button class="number-btn">5</button>
+            <button class="undo-btn debug-outline">
+                <i class="fas fa-undo-alt"></i>
+                <span>Undo</span>
+            </button>
+            <button class="undo-btn debug-outline">
+                <span>Text</span>
+            </button>
+            <button class="undo-btn debug-outline">5</button>
+        </div>
+
+        <p>From left to right:</p>
+        <ol>
+            <li>Normal number button with "5"</li>
+            <li>Normal undo button with icon + "Undo" text</li>
+            <li>Undo button with just "Text" (no icon)</li>
+            <li>Undo button with just "5" (same content as number button)</li>
+        </ol>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach((btn, i) => {
+                const rect = btn.getBoundingClientRect();
+                console.log(`Button ${i + 1}: ${rect.height}px height`);
+            });
+        });
+    </script>
+</body>
+</html>

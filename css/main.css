@@ -3824,13 +3824,32 @@ select:focus-visible,
     transition: all 0.2s ease;
     min-width: 48px;
     min-height: 48px;
-    height: 48px;
+    height: 48px !important;
+    max-height: 48px !important;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.3rem;
     line-height: 1;
     box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Force icon and text to not affect button height */
+.undo-btn i {
+    font-size: 1.2rem !important;
+    line-height: 1 !important;
+    height: auto !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.undo-btn span {
+    font-size: 1.2rem !important;
+    line-height: 1 !important;
+    height: auto !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
 }
 
 .undo-btn:hover {
@@ -4694,21 +4713,26 @@ select:focus-visible,
     }
 
     .undo-btn {
-        height: 44px;
+        height: 44px !important;
+        max-height: 44px !important;
         font-size: 1.2rem;
         min-width: 44px;
         min-height: 44px;
         padding: 0.5rem;
         line-height: 1;
         box-sizing: border-box;
+        overflow: hidden;
     }
 
     .undo-btn span {
-        display: none;
+        display: none !important;
     }
 
     .undo-btn i {
-        font-size: 1.2rem;
+        font-size: 1.2rem !important;
+        line-height: 1 !important;
+        height: auto !important;
+        vertical-align: middle !important;
     }
 
     .difficulty-buttons {
@@ -4759,9 +4783,22 @@ select:focus-visible,
         font-size: 0.9rem;
         min-width: 35px;
         min-height: 35px;
-        height: 35px;
+        height: 35px !important;
+        max-height: 35px !important;
         line-height: 1;
         box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .undo-btn i {
+        font-size: 0.9rem !important;
+        line-height: 1 !important;
+        height: auto !important;
+        vertical-align: middle !important;
+    }
+
+    .undo-btn span {
+        display: none !important;
     }
 
     .timer-section,
