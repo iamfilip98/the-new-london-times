@@ -1891,6 +1891,14 @@ class SudokuEngine {
             }
 
             if (gameState) {
+                // First load the puzzle to ensure we have the correct solution
+                const savedDifficulty = gameState.difficulty || this.currentDifficulty;
+                if (savedDifficulty && this.dailyPuzzles && this.dailyPuzzles[savedDifficulty]) {
+                    const puzzleData = this.dailyPuzzles[savedDifficulty];
+                    this.solution = puzzleData.solution.map(row => [...row]);
+                    this.currentDifficulty = savedDifficulty;
+                }
+
                 this.playerGrid = gameState.playerGrid || this.playerGrid;
                 this.initialGrid = gameState.initialGrid || this.initialGrid;
                 this.lockedGrid = gameState.lockedGrid || Array(9).fill().map(() => Array(9).fill(false));
