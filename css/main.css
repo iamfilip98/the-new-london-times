@@ -4265,42 +4265,218 @@ select:focus-visible,
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-    .sudoku-game {
-        gap: 1rem;
+    /* Main app layout */
+    .app-container {
+        padding-top: 60px;
+    }
+
+    .main-content {
         padding: 1rem;
+        max-width: 100%;
+    }
+
+    /* Navigation improvements */
+    .main-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-brand span {
+        font-size: 1.1rem;
+    }
+
+    /* Sudoku game improvements */
+    .sudoku-game {
+        gap: 0.5rem;
+        padding: 0.5rem;
+        max-width: 100%;
     }
 
     .game-info-panel {
         grid-template-columns: 1fr;
         gap: 1rem;
         text-align: center;
+        margin-bottom: 1rem;
     }
 
     .game-controls {
         justify-content: center;
         margin-top: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
 
     .stats-section {
         justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive Sudoku grid - scale with viewport */
+    .sudoku-grid-container {
+        width: 100%;
+        max-width: 100vw;
+        padding: 0 0.5rem;
+        display: flex;
+        justify-content: center;
+        overflow-x: auto;
     }
 
     .sudoku-grid {
-        width: 540px;
-        height: 540px;
+        width: min(calc(100vw - 2rem), 360px);
+        height: min(calc(100vw - 2rem), 360px);
+        border-width: 2px;
+    }
+
+    .sudoku-cell {
+        border-width: 0.5px;
     }
 
     .cell-value {
-        font-size: 2.1rem;
-        font-weight: 900;
+        font-size: min(1.8rem, 5vw);
+        font-weight: 700;
+    }
+
+    /* Number input buttons */
+    .number-buttons {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+        margin: 1rem 0;
+        max-width: 100%;
+    }
+
+    .number-button {
+        height: 44px;
+        font-size: 1.2rem;
+        min-width: 44px;
+    }
+
+    /* Action buttons */
+    .game-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin: 1rem 0;
+    }
+
+    .game-actions button {
+        flex: 1;
+        min-width: 120px;
+        height: 44px;
+        font-size: 0.9rem;
+    }
+
+    /* Dashboard improvements */
+    .streak-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .vs-divider {
+        order: -1;
+        margin: 1rem 0;
+    }
+
+    .difficulty-selection-grid {
+        gap: 1rem;
+    }
+
+    .difficulty-option {
+        padding: 1.5rem 1rem;
+    }
+
+    /* General spacing improvements */
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+    }
+
+    /* Touch targets */
+    button, .nav-link, .difficulty-option {
+        min-height: 44px;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    .main-content {
+        padding: 0.5rem;
+    }
+
+    .sudoku-grid {
+        width: min(calc(100vw - 1rem), 320px);
+        height: min(calc(100vw - 1rem), 320px);
+        border-width: 1px;
+    }
+
+    .cell-value {
+        font-size: min(1.4rem, 4.5vw);
+        font-weight: 600;
     }
 
     .number-buttons {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.3rem;
+        margin: 0.5rem 0;
     }
 
-    .number-btn {
+    .number-button {
+        height: 40px;
+        font-size: 1.1rem;
+        min-width: 40px;
+    }
+
+    .game-actions button {
+        min-width: 100px;
+        height: 40px;
+        font-size: 0.8rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .nav-brand span {
+        font-size: 1rem;
+    }
+
+    .difficulty-option {
+        padding: 1rem 0.5rem;
+    }
+
+    .difficulty-option h3 {
+        font-size: 1.2rem;
+    }
+
+    .difficulty-icon {
+        font-size: 2rem;
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .sudoku-grid {
+        width: min(calc(100vh - 2rem), 300px);
+        height: min(calc(100vh - 2rem), 300px);
+    }
+
+    .main-content {
+        padding: 0.5rem;
+    }
+
+    .sudoku-game {
+        gap: 0.3rem;
+        padding: 0.3rem;
+    }
+}
         padding: 0.75rem;
         font-size: 1rem;
         min-width: 40px;
