@@ -608,5 +608,64 @@
             }
         });
     </script>
+
+    <!-- Auto-hide Navigation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let lastScrollTop = 0;
+            let navBar = document.querySelector('.main-nav');
+            let scrollThreshold = 10; // Minimum scroll distance to trigger hide/show
+
+            // Only apply auto-hide on mobile devices
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+
+            function handleScroll() {
+                if (!isMobile()) {
+                    navBar.classList.remove('nav-hidden');
+                    return;
+                }
+
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                // Don't hide if we're at the very top
+                if (scrollTop <= 50) {
+                    navBar.classList.remove('nav-hidden');
+                    lastScrollTop = scrollTop;
+                    return;
+                }
+
+                // Check scroll direction and distance
+                if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
+                    if (scrollTop > lastScrollTop) {
+                        // Scrolling down - hide nav
+                        navBar.classList.add('nav-hidden');
+                    } else {
+                        // Scrolling up - show nav
+                        navBar.classList.remove('nav-hidden');
+                    }
+                }
+
+                lastScrollTop = scrollTop;
+            }
+
+            // Throttle scroll events for better performance
+            let scrollTimeout;
+            window.addEventListener('scroll', function() {
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+                scrollTimeout = setTimeout(handleScroll, 10);
+            });
+
+            // Handle window resize to reset nav state
+            window.addEventListener('resize', function() {
+                if (!isMobile()) {
+                    navBar.classList.remove('nav-hidden');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
