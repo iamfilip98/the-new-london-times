@@ -3469,13 +3469,13 @@ select:focus-visible,
 
 .candidate-num {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    font-size: 0.7rem;
+    font-size: 1.32rem;
     color: #666666;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 /* 3x3 Candidates Grid Layout */
@@ -4507,8 +4507,8 @@ select:focus-visible,
     }
 
     .candidate-num {
-        font-size: 0.5rem;
-        font-weight: 300;
+        font-size: 0.6rem;
+        font-weight: 200;
     }
 
     /* Number input buttons */
@@ -4774,7 +4774,7 @@ select:focus-visible,
 
     .candidate-num {
         font-size: 0.4rem;
-        font-weight: 200;
+        font-weight: 100;
     }
 
     /* Mobile responsiveness for 3x3 candidate grid */
