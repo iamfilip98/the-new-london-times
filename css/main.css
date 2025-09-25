@@ -4840,13 +4840,7 @@ select:focus-visible,
 
 /* Progress Notifications */
 .progress-notifications {
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    box-shadow: var(--box-shadow);
+    display: none;
 }
 
 .progress-notifications h3 {
