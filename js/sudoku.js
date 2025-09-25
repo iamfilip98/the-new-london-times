@@ -556,7 +556,7 @@ class SudokuEngine {
                 const candidatesDiv = cell.querySelector('.cell-candidates');
 
                 // Clear existing classes
-                cell.classList.remove('given', 'user-input', 'error', 'selected');
+                cell.classList.remove('given', 'user-input', 'error', 'selected', 'highlighted', 'same-number');
 
                 if (this.playerGrid[row][col] !== 0) {
                     valueDiv.textContent = this.playerGrid[row][col];
@@ -590,9 +590,23 @@ class SudokuEngine {
                     }
                 }
 
-                // Only highlight the selected cell itself
+                // Highlight selected cell and related cells
                 if (this.selectedCell && this.selectedCell.row === row && this.selectedCell.col === col) {
                     cell.classList.add('selected');
+                } else if (this.selectedCell && (
+                    this.selectedCell.row === row ||
+                    this.selectedCell.col === col ||
+                    this.isInSameBox(row, col, this.selectedCell.row, this.selectedCell.col)
+                )) {
+                    cell.classList.add('highlighted');
+                }
+
+                // Highlight cells with the same number as the selected cell
+                if (this.selectedCell && this.playerGrid[row][col] !== 0) {
+                    const selectedValue = this.playerGrid[this.selectedCell.row][this.selectedCell.col];
+                    if (selectedValue !== 0 && this.playerGrid[row][col] === selectedValue) {
+                        cell.classList.add('same-number');
+                    }
                 }
             }
         }
