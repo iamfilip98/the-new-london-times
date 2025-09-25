@@ -541,6 +541,15 @@
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById('sudoku').classList.add('active');
 
+            // Reset navigation visibility when entering sudoku page
+            const navBar = document.querySelector('.main-nav');
+            if (navBar) {
+                navBar.classList.remove('nav-hidden');
+            }
+
+            // Scroll to top when entering sudoku page
+            window.scrollTo(0, 0);
+
             // The sudoku engine will pick up the stored difficulty when it initializes
             // No need to call changeDifficulty since we stored it in sessionStorage
             console.log('Difficulty stored for initialization:', difficulty);
@@ -616,21 +625,27 @@
             let navBar = document.querySelector('.main-nav');
             let scrollThreshold = 10; // Minimum scroll distance to trigger hide/show
 
-            // Only apply auto-hide on mobile devices
+            // Only apply auto-hide on mobile devices and when in Play Sudoku tab
             function isMobile() {
                 return window.innerWidth <= 768;
             }
 
+            function isOnSudokuPage() {
+                const sudokuPage = document.getElementById('sudoku');
+                return sudokuPage && sudokuPage.classList.contains('active');
+            }
+
             function handleScroll() {
-                if (!isMobile()) {
+                // Only apply auto-hide on mobile and when on sudoku page
+                if (!isMobile() || !isOnSudokuPage()) {
                     navBar.classList.remove('nav-hidden');
                     return;
                 }
 
                 let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-                // Don't hide if we're at the very top
-                if (scrollTop <= 50) {
+                // Don't hide if we're at the very top (show nav when scrolled to top)
+                if (scrollTop <= 10) {
                     navBar.classList.remove('nav-hidden');
                     lastScrollTop = scrollTop;
                     return;
@@ -661,9 +676,22 @@
 
             // Handle window resize to reset nav state
             window.addEventListener('resize', function() {
-                if (!isMobile()) {
+                if (!isMobile() || !isOnSudokuPage()) {
                     navBar.classList.remove('nav-hidden');
                 }
+            });
+
+            // Reset nav visibility when switching pages
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Small delay to ensure page switching is complete
+                    setTimeout(() => {
+                        if (!isOnSudokuPage()) {
+                            navBar.classList.remove('nav-hidden');
+                        }
+                    }, 100);
+                });
             });
         });
 
