@@ -3614,6 +3614,30 @@ select:focus-visible,
     opacity: 0.8;
 }
 
+.completion-hint {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-top: 1rem;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.completion-notification-overlay.persistent .completion-notification {
+    border-color: var(--accent-blue);
+    box-shadow: 0 20px 40px rgba(79, 172, 254, 0.3),
+                0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.completion-notification-overlay.persistent .completion-text {
+    text-shadow: 0 0 10px var(--accent-blue);
+}
+
+.completion-notification-overlay.persistent .completion-time {
+    color: var(--accent-blue);
+}
+
 @keyframes completionPop {
     0% {
         transform: translate(-50%, -50%) scale(0.3);

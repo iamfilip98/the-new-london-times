@@ -1422,7 +1422,7 @@ class SudokuEngine {
         return this.calculateCurrentScore();
     }
 
-    showCompletionNotification() {
+    showCompletionNotification(isPersistent = false) {
         // Remove any existing notification
         const existingNotification = document.querySelector('.completion-notification-overlay');
         if (existingNotification) {
@@ -1432,11 +1432,17 @@ class SudokuEngine {
         // Create the completion notification overlay
         const notification = document.createElement('div');
         notification.className = 'completion-notification-overlay';
+
+        if (isPersistent) {
+            notification.classList.add('persistent');
+        }
+
         notification.innerHTML = `
             <div class="completion-notification">
                 <div class="completion-icon">🎉</div>
                 <div class="completion-text">Puzzle Complete!</div>
                 <div class="completion-time">${this.formatTime(this.timer)}</div>
+                ${isPersistent ? '<div class="completion-hint">Click anywhere to dismiss</div>' : ''}
             </div>
         `;
 
@@ -1445,15 +1451,35 @@ class SudokuEngine {
         if (gridContainer) {
             gridContainer.appendChild(notification);
 
-            // Auto-remove the notification after 3 seconds
-            setTimeout(() => {
-                notification.style.opacity = '0';
+            if (isPersistent) {
+                // Add click handler to dismiss persistent notification
+                const dismissNotification = () => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 500);
+                    document.removeEventListener('click', dismissNotification);
+                };
+
+                // Allow clicking to dismiss
+                notification.style.pointerEvents = 'auto';
+                notification.style.cursor = 'pointer';
                 setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 500);
-            }, 3000);
+                    document.addEventListener('click', dismissNotification);
+                }, 100); // Small delay to prevent immediate dismissal
+            } else {
+                // Auto-remove the notification after 3 seconds for fresh completions
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 500);
+                }, 3000);
+            }
         }
     }
 
@@ -1661,6 +1687,11 @@ class SudokuEngine {
                     // Keep completed state - don't start timer
                     document.getElementById('gameStatus').innerHTML =
                         '<div class="status-message success">Puzzle completed! Well done!</div>';
+
+                    // Show completion notification overlay for previously completed games
+                    setTimeout(() => {
+                        this.showCompletionNotification(true); // Make it persistent
+                    }, 500); // Small delay to ensure display is updated first
                 } else if (this.gameStarted) {
                     if (this.gamePaused) {
                         // Game was paused - update UI but don't start timer
