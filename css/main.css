@@ -4540,10 +4540,11 @@ select:focus-visible,
 
 .progress-status .score {
     display: block;
-    color: var(--accent-purple);
+    color: var(--accent-orange);
     font-size: 0.8rem;
     margin-top: 0.2rem;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    font-weight: 600;
 }
 
 /* Mobile Responsiveness for Progress */
