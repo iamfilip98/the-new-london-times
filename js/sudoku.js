@@ -1327,6 +1327,9 @@ class SudokuEngine {
             // Save the completed state to prevent the game from appearing unfinished when reloaded
             await this.saveGameState();
 
+            // Show completion notification overlay
+            this.showCompletionNotification();
+
             this.playSound('complete');
             this.incrementStreak();
 
@@ -1417,6 +1420,41 @@ class SudokuEngine {
 
     calculateFinalScore() {
         return this.calculateCurrentScore();
+    }
+
+    showCompletionNotification() {
+        // Remove any existing notification
+        const existingNotification = document.querySelector('.completion-notification-overlay');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        // Create the completion notification overlay
+        const notification = document.createElement('div');
+        notification.className = 'completion-notification-overlay';
+        notification.innerHTML = `
+            <div class="completion-notification">
+                <div class="completion-icon">🎉</div>
+                <div class="completion-text">Puzzle Complete!</div>
+                <div class="completion-time">${this.formatTime(this.timer)}</div>
+            </div>
+        `;
+
+        // Find the sudoku grid container and add the notification
+        const gridContainer = document.querySelector('.sudoku-grid-container');
+        if (gridContainer) {
+            gridContainer.appendChild(notification);
+
+            // Auto-remove the notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 500);
+            }, 3000);
+        }
     }
 
     startTimer() {
