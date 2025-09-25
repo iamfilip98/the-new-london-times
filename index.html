@@ -672,28 +672,28 @@
             console.log('🧪 Starting Hint Penalty Validation Test');
             console.log('========================================');
 
-            if (!window.sudokuGame) {
-                console.log('❌ No sudoku game found. Please start a game first.');
+            if (!window.sudokuEngine) {
+                console.log('❌ No sudoku engine found. Please start a game first.');
                 return;
             }
 
             console.log('Initial state:');
-            console.log(`- Hint time penalty: ${window.sudokuGame.hintTimePenalty} seconds`);
-            console.log(`- Hints used: ${window.sudokuGame.hints}`);
-            console.log(`- Hint state: ${window.sudokuGame.hintState}`);
+            console.log(`- Hint time penalty: ${window.sudokuEngine.hintTimePenalty} seconds`);
+            console.log(`- Hints used: ${window.sudokuEngine.hints}`);
+            console.log(`- Hint state: ${window.sudokuEngine.hintState}`);
             console.log('');
 
             // Test 1: First hint (pointing) - should add 5 seconds
             console.log('Test 1: First hint click (pointing)');
-            window.sudokuGame.hintState = 'none';
-            const penaltyBefore1 = window.sudokuGame.hintTimePenalty;
+            window.sudokuEngine.hintState = 'none';
+            const penaltyBefore1 = window.sudokuEngine.hintTimePenalty;
 
             // Simulate hint button click
             const hintBtn = document.getElementById('hintBtn');
             if (hintBtn) {
                 hintBtn.click();
                 setTimeout(() => {
-                    const penaltyAfter1 = window.sudokuGame.hintTimePenalty;
+                    const penaltyAfter1 = window.sudokuEngine.hintTimePenalty;
                     const penaltyAdded1 = penaltyAfter1 - penaltyBefore1;
 
                     console.log(`- Penalty before: ${penaltyBefore1} seconds`);
@@ -705,12 +705,12 @@
 
                     // Test 2: Second hint (revealing) - should add 10 more seconds
                     console.log('Test 2: Second hint click (revealing)');
-                    const penaltyBefore2 = window.sudokuGame.hintTimePenalty;
+                    const penaltyBefore2 = window.sudokuEngine.hintTimePenalty;
 
                     setTimeout(() => {
                         hintBtn.click();
                         setTimeout(() => {
-                            const penaltyAfter2 = window.sudokuGame.hintTimePenalty;
+                            const penaltyAfter2 = window.sudokuEngine.hintTimePenalty;
                             const penaltyAdded2 = penaltyAfter2 - penaltyBefore2;
 
                             console.log(`- Penalty before: ${penaltyBefore2} seconds`);
@@ -722,7 +722,7 @@
 
                             // Summary
                             const totalExpectedPenalty = penaltyBefore1 + 15;
-                            const actualTotalPenalty = window.sudokuGame.hintTimePenalty;
+                            const actualTotalPenalty = window.sudokuEngine.hintTimePenalty;
 
                             console.log('📊 Test Summary:');
                             console.log(`- Starting penalty: ${penaltyBefore1} seconds`);
@@ -743,14 +743,14 @@
             console.log('🔧 Manual Hint Penalty Test');
             console.log('===========================');
 
-            if (!window.sudokuGame) {
-                console.log('❌ No sudoku game found. Please start a game first.');
+            if (!window.sudokuEngine) {
+                console.log('❌ No sudoku engine found. Please start a game first.');
                 return;
             }
 
-            console.log('Current hint penalty:', window.sudokuGame.hintTimePenalty, 'seconds');
-            console.log('Current hints used:', window.sudokuGame.hints);
-            console.log('Current hint state:', window.sudokuGame.hintState);
+            console.log('Current hint penalty:', window.sudokuEngine.hintTimePenalty, 'seconds');
+            console.log('Current hints used:', window.sudokuEngine.hints);
+            console.log('Current hint state:', window.sudokuEngine.hintState);
             console.log('');
             console.log('Instructions:');
             console.log('1. Click the hint button once (should add 5 seconds)');
@@ -758,9 +758,9 @@
             console.log('3. Run this function again to see the changes');
 
             return {
-                currentPenalty: window.sudokuGame.hintTimePenalty,
-                hintsUsed: window.sudokuGame.hints,
-                hintState: window.sudokuGame.hintState
+                currentPenalty: window.sudokuEngine.hintTimePenalty,
+                hintsUsed: window.sudokuEngine.hints,
+                hintState: window.sudokuEngine.hintState
             };
         }
 
