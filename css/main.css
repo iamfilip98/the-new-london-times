@@ -4299,23 +4299,72 @@ select:focus-visible,
     }
 
     .game-info-panel {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
         text-align: center;
-        margin-bottom: 1rem;
     }
 
-    .game-controls {
-        justify-content: center;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+    .timer-section {
+        height: auto;
+        padding: 0.5rem;
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .timer-section .stat-label {
+        font-size: 0.7rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .timer-display {
+        font-size: 1.2rem;
+        line-height: 1;
     }
 
     .stats-section {
+        display: flex;
+        gap: 1rem;
+        flex: 2;
         justify-content: center;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
+
+    .stat-item {
+        flex-direction: row;
+        gap: 0.25rem;
+        align-items: center;
+    }
+
+    .stat-item .stat-label {
+        font-size: 0.7rem;
+        margin: 0;
+    }
+
+    .errors-count, .hints-count {
+        font-size: 1.1rem;
+        line-height: 1;
+    }
+
+    .game-controls {
+        flex: 1;
+        justify-content: center;
+        margin-top: 0;
+        gap: 0.25rem;
+        min-width: 120px;
+    }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+
 
     /* Responsive Sudoku grid - scale with viewport */
     .sudoku-grid-container {
