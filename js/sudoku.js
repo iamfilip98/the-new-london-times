@@ -513,9 +513,12 @@ class SudokuEngine {
         this.playerGrid = puzzleData.puzzle.map(row => [...row]);
 
         // Validate that the solution is actually valid
+        console.log(`🔍 Loading ${difficulty} solution. R6C5 should be:`, this.solution[5][4]);
         if (!this.isValidSudokuSolution(this.solution)) {
             console.error(`❌ Invalid solution loaded for ${difficulty} difficulty!`);
             console.log('Solution:', this.solution.map(r => r.join('')).join('\n'));
+        } else {
+            console.log(`✅ Valid ${difficulty} solution loaded`);
         }
 
         // Reset game state
@@ -739,6 +742,8 @@ class SudokuEngine {
             if (!isCorrectSolution && this.candidates[row][col].has(number)) {
                 console.warn(`⚠️ Candidate mismatch at R${row+1}C${col+1}: Candidate ${number} shown as valid but solution is ${this.solution[row][col]}`);
                 console.log('Current candidates:', Array.from(this.candidates[row][col]));
+                console.log('Solution array check - row 5:', this.solution[5]);
+                console.log('Solution type check:', typeof this.solution[row][col], Array.isArray(this.solution));
                 console.log('Player grid state:', this.playerGrid.map(r => r.join('')).join('\n'));
             }
 
@@ -2305,6 +2310,11 @@ class SudokuEngine {
 
         const lastMove = this.moveHistory.pop();
         const { row, col, previousValue, previousCandidates, previousManualCandidates, moveType, candidateNumber } = lastMove;
+
+        // Clear any existing conflict highlights before undoing
+        document.querySelectorAll('.sudoku-cell.conflict').forEach(cell => {
+            cell.classList.remove('conflict');
+        });
 
         if (moveType === 'candidate' && candidateNumber) {
             // For candidate moves, just toggle the specific candidate that was changed
