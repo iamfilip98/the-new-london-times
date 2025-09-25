@@ -4377,20 +4377,22 @@ select:focus-visible,
 
 
 
-    /* Responsive Sudoku grid - fixed size for quality */
+    /* Responsive Sudoku grid - fit screen with quality */
     .sudoku-grid-container {
-        width: 420px;
-        height: 420px;
+        width: 100%;
+        max-width: calc(100vw - 20px);
+        height: auto;
         padding: 10px;
         display: flex;
         justify-content: center;
         overflow: hidden;
         margin: 0 auto;
+        box-sizing: border-box;
     }
 
     .sudoku-grid {
-        width: 400px;
-        height: 400px;
+        width: min(360px, calc(100vw - 40px));
+        height: min(360px, calc(100vw - 40px));
         border-width: 2px;
         aspect-ratio: 1;
     }
