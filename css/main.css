@@ -341,10 +341,6 @@ body {
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    /* Fallback text shadow for better readability */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-    /* Ensure text shadow shows even with transparent text */
-    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .current-date {
