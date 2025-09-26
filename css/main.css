@@ -5917,6 +5917,7 @@ select:focus-visible,
     font-size: 0.9rem;
     width: 70px;
     flex-shrink: 0;
+    text-align: left;
 }
 
 .progress-status {
@@ -5928,8 +5929,7 @@ select:focus-visible,
     min-height: 2.5rem;
     display: flex;
     flex-direction: row;
-    gap: 1rem;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     flex: 1;
     min-width: 0;
@@ -5939,8 +5939,9 @@ select:focus-visible,
     color: var(--accent-green);
     font-weight: 700;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
-    min-width: 70px;
+    width: 70px;
     text-align: left;
+    flex-shrink: 0;
 }
 
 .progress-status .completion-score {
@@ -5948,8 +5949,9 @@ select:focus-visible,
     font-size: 0.8rem;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     font-weight: 600;
-    min-width: 50px;
+    width: 50px;
     text-align: right;
+    flex-shrink: 0;
 }
 
 .progress-status .loading {
@@ -5996,12 +5998,11 @@ select:focus-visible,
 
     .progress-status {
         text-align: left;
-        gap: 0.5rem;
     }
 
     /* Keep progress status inline for completed items on mobile */
     .progress-item.completed .progress-status {
-        justify-content: flex-end;
+        justify-content: space-between;
         text-align: right;
     }
 
