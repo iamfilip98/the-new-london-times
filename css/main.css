@@ -246,12 +246,14 @@ body {
     border-radius: var(--border-radius);
     text-decoration: none;
     color: var(--text-secondary);
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
-    border: 2px solid transparent;
+    border: 2px solid rgba(255, 255, 255, 0.1);
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
+    background: rgba(255, 255, 255, 0.08);
+    animation: navLinkBreathe 4s ease-in-out infinite;
 }
 
 .nav-link::before {
@@ -304,11 +306,15 @@ body {
 
 .nav-link:hover,
 .nav-link.active {
-    background: var(--card-bg);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
     color: var(--text-primary);
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: var(--shadow-hover);
-    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-8px) scale(1.03);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(79, 172, 254, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(79, 172, 254, 0.5);
+    animation: none;
 }
 
 .nav-link i {
@@ -483,12 +489,12 @@ body {
 }
 
 .streak-card {
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
     padding: 2rem;
     border: 2px solid rgba(255, 255, 255, 0.1);
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
     display: grid;
@@ -496,7 +502,7 @@ body {
     gap: 2rem;
     align-items: start;
     box-shadow: var(--shadow-glass);
-    animation: fadeInUp 0.8s ease-out;
+    animation: streakCardBreathe 4s ease-in-out infinite;
 }
 
 .streak-card.faidao {
@@ -508,9 +514,14 @@ body {
 }
 
 .streak-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
-    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.2),
+        0 0 40px rgba(79, 172, 254, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(79, 172, 254, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
+    animation: none;
 }
 
 .streak-header {
@@ -2389,22 +2400,31 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 25px;
     color: var(--text-secondary);
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     white-space: nowrap;
     font-size: 0.9rem;
     font-weight: 500;
     min-width: fit-content;
+    position: relative;
+    overflow: hidden;
+    animation: filterTabBreathe 4s ease-in-out infinite;
 }
 
 .filter-tab:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
     color: var(--text-primary);
-    transform: translateY(-2px);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow:
+        0 15px 30px rgba(0, 0, 0, 0.2),
+        0 0 25px rgba(79, 172, 254, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(79, 172, 254, 0.3);
+    animation: none;
 }
 
 .filter-tab.active {
@@ -6513,6 +6533,60 @@ select:focus-visible,
             0 8px 25px rgba(0, 0, 0, 0.15),
             0 0 25px rgba(244, 67, 54, 0.7),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Navigation link breathing animation */
+@keyframes navLinkBreathe {
+    0%, 100% {
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.1),
+            0 0 0 0 rgba(79, 172, 254, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.1),
+            0 0 20px rgba(79, 172, 254, 0.4);
+    }
+}
+
+/* Staggered nav link animations */
+.nav-link:nth-child(1) { animation-delay: 0s; }
+.nav-link:nth-child(2) { animation-delay: 0.5s; }
+.nav-link:nth-child(3) { animation-delay: 1s; }
+.nav-link:nth-child(4) { animation-delay: 1.5s; }
+.nav-link:nth-child(5) { animation-delay: 2s; }
+.nav-link:nth-child(6) { animation-delay: 2.5s; }
+
+/* Filter tab breathing animation */
+@keyframes filterTabBreathe {
+    0%, 100% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            0 0 0 0 rgba(254, 225, 64, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            0 0 15px rgba(254, 225, 64, 0.3);
+    }
+}
+
+/* Staggered filter tab animations */
+.filter-tab:nth-child(1) { animation-delay: 0s; }
+.filter-tab:nth-child(2) { animation-delay: 0.7s; }
+
+/* Streak card breathing animation */
+@keyframes streakCardBreathe {
+    0%, 100% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 0 0 rgba(79, 172, 254, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 30px rgba(79, 172, 254, 0.3);
     }
 }
 
