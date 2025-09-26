@@ -164,25 +164,27 @@ function generatePuzzle(solution, difficulty) {
       maxEmptyRegions: 4
     },
     hard: {
-      minClues: 20,
-      maxClues: 27,  // More clues for easier starting positions
+      minClues: 20,       // Very aggressive minimum
+      maxClues: 23,       // Much more challenging
       requireNakedSingles: false,
       allowHiddenSingles: true,
-      allowComplexTechniques: true,
-      maxIterations: 250,  // Reasonable iterations for good puzzles
+      allowComplexTechniques: true,   // Must use intermediate techniques
+      maxIterations: 400,             // Even more iterations for complex generation
       requireEvenDistribution: false,
-      maxEmptyRegions: 4,  // Fewer empty regions for better starting positions
-      allowAdvancedTechniques: false,  // Disable expert-level techniques
-      requireAdvancedSolving: false,   // Don't require ultra-advanced techniques
-      minAdvancedMoves: 0,            // No requirement for expert techniques
-      allowXWing: false,              // Too advanced for most players
-      allowSwordfish: false,          // Too advanced for most players
-      allowYWing: false,              // Too advanced for most players
-      allowXYZWing: false,            // Too advanced for most players
-      allowChains: false,             // Too advanced for most players
-      requireHiddenSubsets: true,     // Require hidden pairs/triples only
-      minHiddenSubsets: 1,            // Require at least 1 hidden subset application
-      maxHiddenLevel: 3               // Maximum hidden triples (no quads)
+      maxEmptyRegions: 6,             // Allow even more empty regions
+      allowAdvancedTechniques: false, // Keep expert techniques off
+      requireAdvancedSolving: false,
+      minAdvancedMoves: 0,
+      allowXWing: false,
+      allowSwordfish: false,
+      allowYWing: false,
+      allowXYZWing: false,
+      allowChains: false,
+      requireHiddenSubsets: true,     // MUST require hidden subsets
+      minHiddenSubsets: 1,            // Require at least 1 hidden subset move
+      maxHiddenLevel: 3,              // Hidden pairs/triples required
+      requireNakedSubsets: true,      // Also require naked pairs/triples
+      minNakedSubsets: 1              // At least 1 naked subset move
     }
   };
 
@@ -276,7 +278,7 @@ function createFallbackPuzzle(solution, difficulty) {
   const targetClues = {
     easy: 42,   // Increased for truly easy solving (no candidates needed)
     medium: 28, // Increased for better uniqueness
-    hard: 25    // Increased for better uniqueness
+    hard: 21    // Much more aggressive for intermediate techniques
   };
 
   const positions = [];
@@ -294,10 +296,13 @@ function createFallbackPuzzle(solution, difficulty) {
 
   let currentClues = 81;
   const minClues = targetClues[difficulty];
+  let attempts = 0;
+  const maxAttempts = difficulty === 'hard' ? 150 : 100; // More attempts for hard puzzles
 
   // Remove cells one by one while maintaining uniqueness
   for (let [row, col] of positions) {
-    if (currentClues <= minClues) break;
+    if (currentClues <= minClues || attempts >= maxAttempts) break;
+    attempts++;
 
     // Try removing this cell
     const originalValue = puzzle[row][col];
@@ -314,8 +319,9 @@ function createFallbackPuzzle(solution, difficulty) {
       puzzle[row][col] = originalValue;
     }
 
-    // Stop if we've tried enough removals
-    if (currentClues <= minClues + 3) break;
+    // For hard puzzles, be more aggressive - keep trying even if above minimum
+    const buffer = difficulty === 'hard' ? 1 : 3;
+    if (currentClues <= minClues + buffer && attempts >= maxAttempts / 2) break;
   }
 
   console.log(`🔧 Fallback puzzle created for ${difficulty} with ${currentClues} clues`);
@@ -331,6 +337,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
   const maxSolverIterations = 200;
   let advancedTechniquesUsed = 0;  // Track usage of advanced techniques
   let hiddenSubsetsUsed = 0;       // Track usage of hidden subsets
+  let nakedSubsetsUsed = 0;        // Track usage of naked subsets
 
   while (changed && iterations < maxSolverIterations) {
     changed = false;
@@ -354,6 +361,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
     // Technique 3: Naked Pairs, Triples, Quads
     if (settings.allowComplexTechniques && applyNakedSubsets(testGrid, candidates)) {
       changed = true;
+      nakedSubsetsUsed++;
       continue;
     }
 
@@ -434,6 +442,13 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       if (settings.requireHiddenSubsets && settings.minHiddenSubsets) {
         if (hiddenSubsetsUsed < settings.minHiddenSubsets) {
           return false; // Hard puzzle should require hidden subset techniques
+        }
+      }
+
+      // Check if hard puzzles require naked subsets
+      if (settings.requireNakedSubsets && settings.minNakedSubsets) {
+        if (nakedSubsetsUsed < settings.minNakedSubsets) {
+          return false; // Hard puzzle should require naked subset techniques
         }
       }
 
