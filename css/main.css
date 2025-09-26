@@ -5980,6 +5980,13 @@ select:focus-visible,
         gap: 0.5rem;
     }
 
+    /* Keep completed progress items inline on mobile */
+    .progress-item.completed {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     .progress-status {
         text-align: left;
     }
