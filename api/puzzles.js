@@ -164,14 +164,14 @@ function generatePuzzle(solution, difficulty) {
       maxEmptyRegions: 4
     },
     hard: {
-      minClues: 18,
-      maxClues: 25,  // Challenging but solvable with intermediate techniques
+      minClues: 20,
+      maxClues: 27,  // More clues for easier starting positions
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 300,  // Reasonable iterations for good puzzles
+      maxIterations: 250,  // Reasonable iterations for good puzzles
       requireEvenDistribution: false,
-      maxEmptyRegions: 5,  // Moderate empty regions
+      maxEmptyRegions: 4,  // Fewer empty regions for better starting positions
       allowAdvancedTechniques: false,  // Disable expert-level techniques
       requireAdvancedSolving: false,   // Don't require ultra-advanced techniques
       minAdvancedMoves: 0,            // No requirement for expert techniques
@@ -180,8 +180,9 @@ function generatePuzzle(solution, difficulty) {
       allowYWing: false,              // Too advanced for most players
       allowXYZWing: false,            // Too advanced for most players
       allowChains: false,             // Too advanced for most players
-      requireHiddenSubsets: true,     // Require hidden pairs/triples/quads
-      minHiddenSubsets: 2             // Require at least 2 hidden subset applications
+      requireHiddenSubsets: true,     // Require hidden pairs/triples only
+      minHiddenSubsets: 1,            // Require at least 1 hidden subset application
+      maxHiddenLevel: 3               // Maximum hidden triples (no quads)
     }
   };
 
@@ -275,7 +276,7 @@ function createFallbackPuzzle(solution, difficulty) {
   const cellsToKeep = {
     easy: 35,   // Updated for better solving experience
     medium: 26, // Former hard difficulty (now medium)
-    hard: 22    // Challenging but reasonable for fallback
+    hard: 24    // More clues for easier starting positions
   };
 
   const positions = [];
@@ -817,21 +818,21 @@ function applyNakedSubsetsInBox(grid, candidates, boxRow, boxCol) {
   return changed;
 }
 
-// Technique 4: Hidden Pairs/Triples/Quads
+// Technique 4: Hidden Pairs/Triples (no quads for accessibility)
 function applyHiddenSubsets(grid, candidates) {
   let changed = false;
 
-  // Check for hidden pairs, triples, and quads in rows
+  // Check for hidden pairs and triples in rows (no quads)
   for (let row = 0; row < 9; row++) {
     if (applyHiddenSubsetsInRow(grid, candidates, row)) changed = true;
   }
 
-  // Check for hidden pairs, triples, and quads in columns
+  // Check for hidden pairs and triples in columns (no quads)
   for (let col = 0; col < 9; col++) {
     if (applyHiddenSubsetsInColumn(grid, candidates, col)) changed = true;
   }
 
-  // Check for hidden pairs, triples, and quads in boxes
+  // Check for hidden pairs and triples in boxes (no quads)
   for (let boxRow = 0; boxRow < 3; boxRow++) {
     for (let boxCol = 0; boxCol < 3; boxCol++) {
       if (applyHiddenSubsetsInBox(grid, candidates, boxRow, boxCol)) changed = true;
