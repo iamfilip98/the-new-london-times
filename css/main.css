@@ -6553,19 +6553,42 @@ select:focus-visible,
     }
 
     .mobile-vs-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+        width: 80px;
+        height: 80px;
+        background: var(--primary-gradient);
+        border-radius: var(--border-radius);
+        border: 3px solid rgba(255, 255, 255, 0.25);
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: 'Orbitron', monospace;
-        font-weight: 900;
-        font-size: 1rem;
-        color: white;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        box-shadow: 0 4px 15px rgba(254, 225, 64, 0.3);
+        font-weight: 600;
+        font-size: 1.4rem;
+        color: var(--text-primary);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-xl);
+        backdrop-filter: blur(24px);
+    }
+
+    .mobile-vs-circle::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--secondary-gradient);
+        opacity: 0;
+        transition: var(--transition);
+        border-radius: calc(var(--border-radius) - 3px);
+        z-index: -1;
+    }
+
+    .mobile-vs-circle:hover::before {
+        opacity: 1;
     }
 
     .mobile-overall-record {
@@ -6618,6 +6641,11 @@ select:focus-visible,
         margin-top: 0.5rem;
     }
 
+    /* Hide win streaks section on mobile since we have the VS section */
+    .win-streaks-section {
+        display: none;
+    }
+
     /* Compact other sections but keep them visible */
     .dashboard-header {
         margin-bottom: 1rem;
@@ -6625,10 +6653,6 @@ select:focus-visible,
 
     .dashboard-header h1 {
         font-size: 1.4rem;
-    }
-
-    .win-streaks-section {
-        margin-bottom: 1.5rem;
     }
 
     .streak-cards {
