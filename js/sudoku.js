@@ -501,8 +501,8 @@ class SudokuEngine {
         // Remove numbers based on difficulty
         const cellsToRemove = {
             easy: 35,    // ~46 given numbers - more approachable
-            medium: 45,  // ~36 given numbers - balanced challenge
-            hard: 52     // ~29 given numbers - difficult but fair
+            medium: 50,  // ~31 given numbers - more challenging
+            hard: 60     // ~21 given numbers - very difficult
         };
 
         // Copy solution to puzzle

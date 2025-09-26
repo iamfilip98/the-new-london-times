@@ -154,37 +154,39 @@ function generatePuzzle(solution, difficulty) {
       maxEmptyRegions: 1   // Max 1 empty 3x3 region for easier solving
     },
     medium: {
-      minClues: 22,
-      maxClues: 30,  // Former hard difficulty settings
+      minClues: 26,      // Reduced from 30 for more challenge
+      maxClues: 32,      // Increased minimum difficulty
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 200,
+      requireHiddenSubsets: true,     // Now requires at least basic subset techniques
+      minHiddenSubsets: 1,           // Must require at least 1 hidden subset move
+      maxIterations: 250,            // More iterations for better generation
       requireEvenDistribution: false,
-      maxEmptyRegions: 4
+      maxEmptyRegions: 5             // Allow more empty regions for complexity
     },
     hard: {
-      minClues: 20,       // Very aggressive minimum
-      maxClues: 23,       // Much more challenging
+      minClues: 17,       // Even more aggressive for true challenge
+      maxClues: 21,       // Reduced maximum for increased difficulty
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,   // Must use intermediate techniques
-      maxIterations: 400,             // Even more iterations for complex generation
+      maxIterations: 500,             // More iterations for complex generation
       requireEvenDistribution: false,
-      maxEmptyRegions: 6,             // Allow even more empty regions
-      allowAdvancedTechniques: false, // Keep expert techniques off
-      requireAdvancedSolving: false,
+      maxEmptyRegions: 7,             // Allow more empty regions
+      allowAdvancedTechniques: true,  // Now allow advanced techniques
+      requireAdvancedSolving: false,  // Don't require them, but allow them
       minAdvancedMoves: 0,
-      allowXWing: false,
-      allowSwordfish: false,
-      allowYWing: false,
-      allowXYZWing: false,
-      allowChains: false,
+      allowXWing: true,               // Enable X-Wing patterns
+      allowSwordfish: false,          // Keep Swordfish off for accessibility
+      allowYWing: false,              // Keep Y-Wing off for accessibility
+      allowXYZWing: false,            // Keep XYZ-Wing off
+      allowChains: false,             // Keep chains off
       requireHiddenSubsets: true,     // MUST require hidden subsets
-      minHiddenSubsets: 1,            // Require at least 1 hidden subset move
+      minHiddenSubsets: 2,            // Require at least 2 hidden subset moves
       maxHiddenLevel: 3,              // Hidden pairs/triples required
       requireNakedSubsets: true,      // Also require naked pairs/triples
-      minNakedSubsets: 1              // At least 1 naked subset move
+      minNakedSubsets: 2              // At least 2 naked subset moves
     }
   };
 
@@ -277,8 +279,8 @@ function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
   const targetClues = {
     easy: 42,   // Increased for truly easy solving (no candidates needed)
-    medium: 28, // Increased for better uniqueness
-    hard: 21    // Much more aggressive for intermediate techniques
+    medium: 29, // Slightly more challenging
+    hard: 19    // Even more aggressive for advanced techniques
   };
 
   const positions = [];
