@@ -4517,8 +4517,7 @@ select:focus-visible,
 }
 
 .status-message.success {
-    border-color: var(--accent-green);
-    color: var(--accent-green);
+    display: none;
 }
 
 .status-message.hint {
