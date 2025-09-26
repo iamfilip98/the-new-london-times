@@ -2941,6 +2941,11 @@ select:focus-visible,
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+
+    .vs-divider {
+        opacity: 1 !important;
+        animation: none !important;
+    }
 }
 
 /* Improved button contrast */
