@@ -3207,3 +3207,122 @@ window.refreshPuzzles = function(clearSavedGames = false) {
 window.refreshPuzzlesCompletely = function() {
     return window.refreshPuzzles(true);
 };
+
+// Master refresh function for development - clears EVERYTHING and forces new puzzles
+window.masterRefresh = async function() {
+    console.log('🚀 MASTER REFRESH - Nuclear option for development');
+    console.log('=' .repeat(60));
+
+    const today = new Date().toISOString().split('T')[0];
+    const player = sessionStorage.getItem('currentPlayer');
+
+    try {
+        // Step 1: Clear all browser storage
+        console.log('🧹 Step 1: Clearing all browser storage...');
+        localStorage.clear();
+        sessionStorage.setItem('currentPlayer', player); // Restore player
+        window.preloadedPuzzles = null;
+        console.log('✅ Browser storage cleared');
+
+        // Step 2: Clear all app caches
+        console.log('🧹 Step 2: Clearing all app caches...');
+        if (window.sudokuApp) {
+            window.sudokuApp.puzzleCache.puzzles = null;
+            window.sudokuApp.puzzleCache.loadTime = null;
+            window.sudokuApp.cache.data = null;
+            window.sudokuApp.cache.lastUpdate = null;
+            console.log('✅ App caches cleared');
+        }
+
+        // Step 3: Reset database puzzles via API
+        console.log('🗃️ Step 3: Resetting database puzzles...');
+        try {
+            const resetResponse = await fetch('/api/puzzles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'reset', date: today })
+            });
+            if (resetResponse.ok) {
+                console.log('✅ Database puzzles reset');
+            } else {
+                console.warn('⚠️ Database reset failed, continuing...');
+            }
+        } catch (error) {
+            console.warn('⚠️ Database reset error:', error.message);
+        }
+
+        // Step 4: Force generate new puzzles
+        console.log('🎲 Step 4: Force generating new puzzles...');
+        try {
+            const generateResponse = await fetch('/api/puzzles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate', date: today })
+            });
+            if (generateResponse.ok) {
+                const newPuzzles = await generateResponse.json();
+                console.log('✅ New puzzles generated');
+
+                // Show puzzle stats
+                if (newPuzzles.easy?.puzzle) {
+                    const easyClues = newPuzzles.easy.puzzle.flat().filter(n => n !== 0).length;
+                    console.log('🟢 Easy puzzle:', easyClues, 'clues');
+                }
+                if (newPuzzles.medium?.puzzle) {
+                    const mediumClues = newPuzzles.medium.puzzle.flat().filter(n => n !== 0).length;
+                    console.log('🟡 Medium puzzle:', mediumClues, 'clues');
+                }
+                if (newPuzzles.hard?.puzzle) {
+                    const hardClues = newPuzzles.hard.puzzle.flat().filter(n => n !== 0).length;
+                    console.log('🔴 Hard puzzle:', hardClues, 'clues');
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Puzzle generation error:', error.message);
+        }
+
+        // Step 5: Force reload current page data
+        console.log('🔄 Step 5: Reloading puzzle engine...');
+        if (window.sudokuEngine) {
+            // Clear current game state
+            window.sudokuEngine.gameStarted = false;
+            window.sudokuEngine.currentDifficulty = null;
+            window.sudokuEngine.dailyPuzzles = null;
+
+            // Force reload puzzles
+            await window.sudokuEngine.loadDailyPuzzles(true);
+            console.log('✅ Puzzle engine reloaded');
+
+            // Show what's loaded in memory
+            if (window.sudokuEngine.dailyPuzzles) {
+                console.log('📊 Puzzles now in memory:');
+                Object.keys(window.sudokuEngine.dailyPuzzles).forEach(diff => {
+                    const puzzle = window.sudokuEngine.dailyPuzzles[diff];
+                    if (puzzle?.puzzle) {
+                        const clues = puzzle.puzzle.flat().filter(n => n !== 0).length;
+                        console.log(`  ${diff}: ${clues} clues`);
+                    }
+                });
+            }
+        }
+
+        // Step 6: Force UI refresh
+        console.log('🖼️ Step 6: Force refreshing UI...');
+        if (window.location.pathname.includes('sudoku') || window.location.pathname.includes('puzzle')) {
+            console.log('On puzzle page - you may need to select a difficulty to see new puzzles');
+        } else {
+            console.log('Navigate to puzzle page to test new puzzles');
+        }
+
+        console.log('=' .repeat(60));
+        console.log('🎯 MASTER REFRESH COMPLETE!');
+        console.log('💡 Try selecting a difficulty level to see the new puzzles');
+        console.log('📝 New algorithm: Easy=32-38, Medium=22-30, Hard=17-25 clues');
+
+        return true;
+
+    } catch (error) {
+        console.error('❌ Master refresh failed:', error);
+        return false;
+    }
+};
