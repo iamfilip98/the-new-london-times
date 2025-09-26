@@ -2418,7 +2418,6 @@ body {
 .filter-tab:hover {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
     color: var(--text-primary);
-    transform: translateY(-5px) scale(1.02);
     box-shadow:
         0 15px 30px rgba(0, 0, 0, 0.2),
         0 0 25px rgba(79, 172, 254, 0.2),
