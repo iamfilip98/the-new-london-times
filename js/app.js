@@ -574,7 +574,7 @@ class SudokuChampionship {
 
         document.getElementById('overallRecord').textContent = `${faidaoWins} - ${filipWins}`;
 
-        // Update mobile head-to-head section
+        // Update mobile head-to-head section on dashboard
         const mobileScoreFaidao = document.getElementById('mobileScoreFaidao');
         const mobileScoreFilip = document.getElementById('mobileScoreFilip');
         const mobileOverallRecord = document.getElementById('mobileOverallRecord');
@@ -582,6 +582,15 @@ class SudokuChampionship {
         if (mobileScoreFaidao) mobileScoreFaidao.textContent = faidaoWins;
         if (mobileScoreFilip) mobileScoreFilip.textContent = filipWins;
         if (mobileOverallRecord) mobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}`;
+
+        // Update mobile head-to-head section on achievements page
+        const achievementsMobileScoreFaidao = document.getElementById('achievementsMobileScoreFaidao');
+        const achievementsMobileScoreFilip = document.getElementById('achievementsMobileScoreFilip');
+        const achievementsMobileOverallRecord = document.getElementById('achievementsMobileOverallRecord');
+
+        if (achievementsMobileScoreFaidao) achievementsMobileScoreFaidao.textContent = faidaoWins;
+        if (achievementsMobileScoreFilip) achievementsMobileScoreFilip.textContent = filipWins;
+        if (achievementsMobileOverallRecord) achievementsMobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}`;
     }
 
     updateRecentHistory() {
