@@ -6619,11 +6619,6 @@ select:focus-visible,
         font-family: 'Orbitron', monospace;
     }
 
-    /* Hide desktop difficulty grid on mobile */
-    .desktop-only {
-        display: none;
-    }
-
     /* Show and style mobile difficulty selector */
     .mobile-difficulty-selector {
         display: block;
