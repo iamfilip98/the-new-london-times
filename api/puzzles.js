@@ -1297,6 +1297,11 @@ async function generateDailyPuzzles(date) {
 
 // Critical function: Count the number of solutions to verify uniqueness
 function countSolutions(puzzle, maxSolutions = 2) {
+  // First check if the puzzle has any immediate conflicts
+  if (!isValidPuzzleState(puzzle)) {
+    return 0; // Invalid puzzle
+  }
+
   const solutions = [];
   const testGrid = puzzle.map(row => [...row]);
 
@@ -1324,38 +1329,80 @@ function countSolutions(puzzle, maxSolutions = 2) {
   }
 
   function solveAndCount(grid) {
-    if (solutions.length >= maxSolutions) return false; // Stop if we found multiple solutions
+    if (solutions.length >= maxSolutions) return; // Stop if we found enough solutions
 
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         if (grid[row][col] === 0) {
+          let foundValid = false;
           for (let num = 1; num <= 9; num++) {
             if (isValidForSolver(grid, row, col, num)) {
+              foundValid = true;
               grid[row][col] = num;
-
-              if (solveAndCount(grid)) {
-                // Found a solution
-                if (solutions.length === 0) {
-                  solutions.push(grid.map(row => [...row]));
-                }
-                return true;
-              }
-
+              solveAndCount(grid);
               grid[row][col] = 0;
+
+              // Early exit if we found enough solutions
+              if (solutions.length >= maxSolutions) return;
             }
           }
-          return false;
+          if (!foundValid) return; // No valid numbers for this cell
+          return; // Processed this empty cell
         }
       }
     }
 
     // Grid is complete - found a solution
     solutions.push(grid.map(row => [...row]));
-    return false; // Continue searching for more solutions
   }
 
   solveAndCount(testGrid);
   return solutions.length;
+}
+
+// Helper function to check if puzzle has any immediate conflicts
+function isValidPuzzleState(puzzle) {
+  // Check rows for duplicates
+  for (let row = 0; row < 9; row++) {
+    const seen = new Set();
+    for (let col = 0; col < 9; col++) {
+      const num = puzzle[row][col];
+      if (num !== 0) {
+        if (seen.has(num)) return false; // Duplicate in row
+        seen.add(num);
+      }
+    }
+  }
+
+  // Check columns for duplicates
+  for (let col = 0; col < 9; col++) {
+    const seen = new Set();
+    for (let row = 0; row < 9; row++) {
+      const num = puzzle[row][col];
+      if (num !== 0) {
+        if (seen.has(num)) return false; // Duplicate in column
+        seen.add(num);
+      }
+    }
+  }
+
+  // Check 3x3 boxes for duplicates
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+      const seen = new Set();
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const num = puzzle[boxRow * 3 + r][boxCol * 3 + c];
+          if (num !== 0) {
+            if (seen.has(num)) return false; // Duplicate in box
+            seen.add(num);
+          }
+        }
+      }
+    }
+  }
+
+  return true; // No conflicts found
 }
 
 // Enhanced validation that includes uniqueness check
