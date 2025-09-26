@@ -1694,6 +1694,7 @@ body {
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
     font-weight: 600;
     margin-bottom: 1rem;
 }
@@ -3770,6 +3771,7 @@ select:focus-visible,
     font-weight: 700;
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .game-controls {
@@ -3926,14 +3928,17 @@ select:focus-visible,
 
 .stat-item i {
     color: var(--accent-orange);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .hints-count {
-    color: var(--accent-blue);
+    color: #1e90ff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(30, 144, 255, 0.3);
 }
 
 .errors-count {
-    color: var(--accent-pink);
+    color: #ff3030;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(255, 48, 48, 0.3);
 }
 
 .score-section {
