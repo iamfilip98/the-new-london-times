@@ -6449,29 +6449,127 @@ select:focus-visible,
 
 /* Mobile responsiveness for Sudoku selection */
 @media (max-width: 768px) {
-    .difficulty-selection-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+    /* Move game selection to top for better mobile UX */
+    .sudoku-game-selection {
+        order: -1;
+        margin: 1rem 0;
+        padding: 1.5rem;
     }
 
-    .difficulty-option {
-        padding: 1.5rem 1rem;
+    .game-selection-header {
+        margin-bottom: 1rem;
     }
 
     .game-selection-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .game-selection-header p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    .difficulty-selection-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .difficulty-option {
+        padding: 1rem;
+        border-radius: 12px;
     }
 
     .difficulty-icon {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
     }
 
     .difficulty-option h3 {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
+        margin: 0.5rem 0;
+    }
+
+    .play-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
     }
 
     /* Hide page-header for Play Sudoku tab on mobile only */
     #sudoku .page-header {
         display: none;
+    }
+}
+
+/* Mobile optimizations for dashboard sections */
+@media (max-width: 768px) {
+    /* Simplify battle results for mobile */
+    .battle-results {
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .results-header h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .winner-announcement {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .score-comparison {
+        gap: 0.75rem;
+    }
+
+    .score-bar {
+        height: 45px;
+        border-radius: 22px;
+    }
+
+    .score-text {
+        font-size: 0.9rem;
+    }
+
+    /* Make dashboard sections stack better on mobile */
+    .dashboard-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Simplify streak cards for mobile */
+    .win-streaks-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .streak-cards {
+        gap: 1rem;
+    }
+
+    .streak-card {
+        padding: 1.25rem;
+    }
+
+    .streak-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .streak-number {
+        font-size: 1.8rem;
+    }
+
+    .vs-divider {
+        padding: 0.75rem 0;
+    }
+
+    .overall-record {
+        font-size: 0.9rem;
     }
 }
