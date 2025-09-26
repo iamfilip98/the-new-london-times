@@ -2455,12 +2455,12 @@ class SudokuEngine {
                         });
                         return this.gameStarted && !this.gameCompleted;
                     })() ? `
-                    <div class="setting-item">
-                        <hr style="margin: 1rem 0; border: 1px solid #333;">
-                        <button class="btn-secondary" onclick="window.sudokuEngine.restartPuzzle(); this.closest('.settings-modal').remove();" style="width: 100%; margin-top: 0.5rem;">
+                    <div class="setting-item restart-section">
+                        <hr>
+                        <button class="btn-secondary restart-btn" onclick="window.sudokuEngine.restartPuzzle(); this.closest('.settings-modal').remove();">
                             🔄 Restart Current Puzzle
                         </button>
-                        <small style="color: #888; display: block; margin-top: 0.5rem;">This will clear your progress and start the puzzle fresh</small>
+                        <small>This will clear your progress and start the puzzle fresh</small>
                     </div>
                     ` : ''}
                 </div>

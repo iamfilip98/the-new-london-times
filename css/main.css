@@ -4353,36 +4353,78 @@ select:focus-visible,
     margin-top: 1rem;
 }
 
-/* Settings modal specific button improvements */
+/* Settings modal specific button improvements using btn-base system */
 .settings-modal .btn-secondary {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    color: var(--text-primary);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    /* Inherit from btn-base system for consistency */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem !important;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 1rem !important;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    min-height: 56px !important;
+    box-shadow: var(--shadow-sm);
     backdrop-filter: blur(10px);
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+
+    /* Settings modal specific styling */
+    background: var(--card-bg);
+    color: var(--text-primary);
+    width: 100% !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    margin-left: 0 !important;
 }
 
 .settings-modal .btn-secondary:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .settings-modal .btn-primary {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Inherit from btn-base system for consistency */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    min-height: 48px;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+
+    /* Primary button specific styling */
+    background: var(--success-gradient);
+    color: white;
 }
 
 .settings-modal .btn-primary:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover), 0 0 20px rgba(var(--accent-blue-rgb), 0.4);
 }
 
 /* Better spacing for restart button section */
 .settings-modal hr {
-    margin: 1.5rem 0 !important;
+    margin: 2rem 0 1rem 0 !important;
     border: none;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
@@ -4390,10 +4432,25 @@ select:focus-visible,
 
 .settings-modal small {
     display: block;
-    margin-top: 0.75rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
     color: rgba(255, 255, 255, 0.7) !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    line-height: 1.4;
+    line-height: 1.5;
+    font-size: 0.875rem;
+    padding: 0 0.5rem;
+}
+
+/* Restart section specific styling */
+.settings-modal .restart-section {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.settings-modal .restart-btn {
+    margin-left: 0 !important;
 }
 
 .btn-primary, .btn-secondary {
