@@ -5578,6 +5578,9 @@ select:focus-visible,
     border-radius: 10px;
     padding: 1.5rem;
     border: 2px solid rgba(255, 255, 255, 0.1);
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
 }
 
 .player-progress h4 {
@@ -5600,6 +5603,8 @@ select:focus-visible,
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    flex: 1;
+    justify-content: space-evenly;
 }
 
 .progress-item {
@@ -5633,6 +5638,11 @@ select:focus-visible,
     font-size: 0.9rem;
     text-align: right;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    min-height: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
 }
 
 .progress-status .completed {
