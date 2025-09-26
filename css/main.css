@@ -1854,9 +1854,10 @@ body {
     border-radius: var(--border-radius);
     background: transparent;
     color: var(--text-secondary);
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
-    font-weight: 600;
 }
 
 .tab-btn.active,
@@ -2407,9 +2408,10 @@ body {
     color: var(--text-secondary);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
     white-space: nowrap;
     font-size: 0.9rem;
-    font-weight: 500;
     min-width: fit-content;
     position: relative;
     overflow: hidden;
@@ -2549,6 +2551,8 @@ body {
 .no-results h3 {
     margin-bottom: 0.5rem;
     color: var(--text-primary);
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
 }
 
 /* Mobile optimizations for achievement filters */
@@ -2657,6 +2661,8 @@ body {
     font-size: 1.5rem;
     margin: 0 0 0.5rem 0;
     color: var(--text-primary);
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
 }
 
 .challenge-description {
@@ -3528,6 +3534,8 @@ select:focus-visible,
     cursor: pointer;
     transition: var(--transition);
     font-size: 1rem;
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
 }
 
 .logout-btn:hover {
@@ -6433,9 +6441,9 @@ select:focus-visible,
     border-radius: 50px;
     padding: 1rem 2rem;
     color: white;
+    font-family: 'Orbitron', monospace;
     font-weight: 600;
     font-size: 1rem;
-    font-family: 'Orbitron', monospace;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
