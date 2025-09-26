@@ -4979,13 +4979,6 @@ select:focus-visible,
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Stats Grid */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
 
 .stat-card {
     background: rgba(255, 255, 255, 0.05);
