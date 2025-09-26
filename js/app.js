@@ -1192,8 +1192,8 @@ class SudokuChampionship {
                 if (gameData && gameData.time) {
                     const time = this.formatSecondsToTime(gameData.time);
                     statusElement.innerHTML = `
-                        <span class="completed">✓ ${time}</span>
-                        <span class="score">${Math.round(gameData.score || 0)}pts</span>
+                        <span class="completion-time">✓ ${time}</span>
+                        <span class="completion-score">${Math.round(gameData.score || 0)}pts</span>
                     `;
                     progressElement.classList.add('completed');
                 } else {
