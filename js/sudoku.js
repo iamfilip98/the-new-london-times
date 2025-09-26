@@ -7,6 +7,7 @@ class SudokuEngine {
         this.lockedGrid = Array(9).fill().map(() => Array(9).fill(false));
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.manualCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+        this.removedCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.selectedCell = null;
         this.timer = 0;
         this.timerInterval = null;
@@ -622,6 +623,7 @@ class SudokuEngine {
 
         // Clear any previous candidates
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+        this.removedCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
         // Generate candidates if in show all mode (medium/hard)
         if (this.showAllCandidates) {
@@ -783,6 +785,7 @@ class SudokuEngine {
         const previousValue = this.playerGrid[row][col];
         const previousCandidates = new Set(this.candidates[row][col]);
         const previousManualCandidates = new Set(this.manualCandidates[row][col]);
+        const previousRemovedCandidates = new Set(this.removedCandidates[row][col]);
 
         // Determine move type
         let moveType = 'number';
@@ -798,6 +801,7 @@ class SudokuEngine {
             previousValue,
             previousCandidates: previousCandidates,
             previousManualCandidates: previousManualCandidates,
+            previousRemovedCandidates: previousRemovedCandidates,
             previousLocked: this.lockedGrid[row][col],
             moveType: moveType,
             candidateNumber: this.candidateMode ? number : null,
@@ -809,15 +813,22 @@ class SudokuEngine {
             this.playerGrid[row][col] = 0;
             this.candidates[row][col].clear();
             this.manualCandidates[row][col].clear();
+            this.removedCandidates[row][col].clear();
             this.lockedGrid[row][col] = false;
         } else if (this.candidateMode) {
             // Toggle candidate - allow even if cell has a value
             if (this.candidates[row][col].has(number)) {
+                // Removing candidate
                 this.candidates[row][col].delete(number);
                 this.manualCandidates[row][col].delete(number);
+                // Track that this candidate was explicitly removed
+                this.removedCandidates[row][col].add(number);
             } else {
+                // Adding candidate
                 this.candidates[row][col].add(number);
                 this.manualCandidates[row][col].add(number);
+                // Remove from removed list since it's being re-added
+                this.removedCandidates[row][col].delete(number);
             }
         } else {
             // Check if the number matches the correct solution
@@ -829,6 +840,7 @@ class SudokuEngine {
             this.playerGrid[row][col] = number;
             this.candidates[row][col].clear();
             this.manualCandidates[row][col].clear();
+            this.removedCandidates[row][col].clear();
 
             // Increment errors if this doesn't match the solution
             if (!isCorrectSolution) {
@@ -995,11 +1007,12 @@ class SudokuEngine {
                     if (this.showAllCandidates) {
                         // In show-all mode, combine auto-generated and manual candidates
                         const manualCands = new Set(this.manualCandidates[row][col]);
+                        const removedCands = this.removedCandidates[row][col];
                         const autoCands = new Set();
 
-                        // Generate auto candidates
+                        // Generate auto candidates, but exclude explicitly removed ones
                         for (let num = 1; num <= 9; num++) {
-                            if (this.isValidMove(this.playerGrid, row, col, num)) {
+                            if (this.isValidMove(this.playerGrid, row, col, num) && !removedCands.has(num)) {
                                 autoCands.add(num);
                             }
                         }
@@ -1020,6 +1033,7 @@ class SudokuEngine {
                     // Clear candidates for filled cells
                     this.candidates[row][col].clear();
                     this.manualCandidates[row][col].clear();
+                    this.removedCandidates[row][col].clear();
                 }
             }
         }
@@ -1142,6 +1156,7 @@ class SudokuEngine {
                 // Place the value
                 this.playerGrid[row][col] = value;
                 this.candidates[row][col].clear();
+                this.removedCandidates[row][col].clear();
 
                 // Update candidates
                 if (this.showAllCandidates) {
@@ -1834,6 +1849,7 @@ class SudokuEngine {
             initialGrid: this.initialGrid,
             lockedGrid: this.lockedGrid,
             candidates: this.candidates.map(row => row.map(cell => Array.from(cell))),
+            removedCandidates: this.removedCandidates.map(row => row.map(cell => Array.from(cell))),
             timer: this.timer,
             hints: this.hints,
             errors: this.errors,
@@ -1920,6 +1936,9 @@ class SudokuEngine {
                 this.candidates = gameState.candidates ?
                     gameState.candidates.map(row => row.map(cell => new Set(cell))) :
                     this.candidates;
+                this.removedCandidates = gameState.removedCandidates ?
+                    gameState.removedCandidates.map(row => row.map(cell => new Set(cell))) :
+                    Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
                 this.timer = gameState.timer || 0;
                 this.hints = gameState.hints || 0;
                 this.errors = gameState.errors || 0;
@@ -2637,7 +2656,7 @@ class SudokuEngine {
         }
 
         const lastMove = this.moveHistory.pop();
-        const { row, col, previousValue, previousCandidates, previousManualCandidates, previousLocked, moveType, candidateNumber } = lastMove;
+        const { row, col, previousValue, previousCandidates, previousManualCandidates, previousRemovedCandidates, previousLocked, moveType, candidateNumber } = lastMove;
 
         // Clear any existing conflict highlights before undoing
         document.querySelectorAll('.sudoku-cell.conflict').forEach(cell => {
@@ -2645,16 +2664,10 @@ class SudokuEngine {
         });
 
         if (moveType === 'candidate' && candidateNumber) {
-            // For candidate moves, just toggle the specific candidate that was changed
-            if (this.candidates[row][col].has(candidateNumber)) {
-                // Remove the candidate that was just added
-                this.candidates[row][col].delete(candidateNumber);
-                this.manualCandidates[row][col].delete(candidateNumber);
-            } else {
-                // Add back the candidate that was just removed
-                this.candidates[row][col].add(candidateNumber);
-                this.manualCandidates[row][col].add(candidateNumber);
-            }
+            // For candidate moves, restore the previous state for all tracking
+            this.candidates[row][col] = new Set(previousCandidates);
+            this.manualCandidates[row][col] = new Set(previousManualCandidates);
+            this.removedCandidates[row][col] = new Set(previousRemovedCandidates);
         } else {
             // For number and erase moves, restore the full previous state
             this.playerGrid[row][col] = previousValue;
@@ -2666,11 +2679,17 @@ class SudokuEngine {
                 this.manualCandidates[row][col] = new Set(previousManualCandidates);
             }
 
+            // Restore removed candidates (handle backwards compatibility)
+            if (previousRemovedCandidates) {
+                this.removedCandidates[row][col] = new Set(previousRemovedCandidates);
+            }
+
             // Only update other cells' candidates if in show all mode, but preserve this cell's restored candidates
             if (this.showAllCandidates) {
                 // Save the restored candidates for this cell
                 const restoredCandidates = new Set(this.candidates[row][col]);
                 const restoredManualCandidates = new Set(this.manualCandidates[row][col]);
+                const restoredRemovedCandidates = new Set(this.removedCandidates[row][col]);
 
                 // Update all other cells
                 this.updateAllCandidates();
@@ -2678,6 +2697,7 @@ class SudokuEngine {
                 // Restore this specific cell's candidates after the update
                 this.candidates[row][col] = restoredCandidates;
                 this.manualCandidates[row][col] = restoredManualCandidates;
+                this.removedCandidates[row][col] = restoredRemovedCandidates;
             }
         }
 
@@ -3051,6 +3071,7 @@ class SudokuEngine {
         // Explicitly clear the player grid before reloading
         this.playerGrid = Array(9).fill().map(() => Array(9).fill(0));
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+        this.removedCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
         // Force a display update to clear the DOM
         this.updateDisplay();
