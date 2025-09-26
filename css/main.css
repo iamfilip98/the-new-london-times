@@ -3797,16 +3797,17 @@ select:focus-visible,
 }
 
 .completion-notification {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 2rem 3rem;
+    background: rgba(13, 17, 23, 0.95);
+    border-radius: var(--border-radius);
+    padding: 1.5rem 2rem;
     text-align: center;
-    border: 2px solid var(--accent-green);
-    box-shadow: 0 20px 40px rgba(0, 242, 254, 0.3),
-                0 10px 20px rgba(0, 0, 0, 0.5);
-    transform: scale(0.3);
-    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 1px solid var(--accent-green);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+                0 2px 8px rgba(0, 242, 254, 0.1);
+    transform: scale(0.8);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    max-width: 300px;
+    min-width: 250px;
 }
 
 .completion-notification.show {
@@ -3814,46 +3815,46 @@ select:focus-visible,
 }
 
 .completion-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
     animation: celebrationBounce 1s ease-in-out infinite alternate;
 }
 
 .completion-text {
     font-family: 'Orbitron', monospace;
-    font-size: 1.8rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 0.5rem;
-    text-shadow: 0 0 10px var(--accent-green);
+    text-shadow: none;
 }
 
 .completion-time {
     font-family: 'Orbitron', monospace;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--accent-green);
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .completion-hint {
     font-family: 'Roboto', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 500;
     color: var(--text-secondary);
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     opacity: 0.7;
     font-style: italic;
 }
 
 .completion-notification-overlay.persistent .completion-notification {
     border-color: var(--accent-blue);
-    box-shadow: 0 20px 40px rgba(79, 172, 254, 0.3),
-                0 10px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+                0 2px 8px rgba(79, 172, 254, 0.1);
 }
 
 .completion-notification-overlay.persistent .completion-text {
-    text-shadow: 0 0 10px var(--accent-blue);
+    text-shadow: none;
 }
 
 .completion-notification-overlay.persistent .completion-time {
@@ -3880,6 +3881,55 @@ select:focus-visible,
     }
     100% {
         transform: translateY(-10px);
+    }
+}
+
+/* Mobile responsiveness for completion notification */
+@media (max-width: 768px) {
+    .completion-notification {
+        padding: 1rem 1.5rem;
+        max-width: 280px;
+        min-width: 220px;
+        margin: 0 1rem;
+    }
+
+    .completion-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .completion-text {
+        font-size: 1.1rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .completion-time {
+        font-size: 0.9rem;
+    }
+
+    .completion-hint {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .completion-notification {
+        padding: 0.75rem 1.25rem;
+        max-width: 260px;
+        min-width: 200px;
+    }
+
+    .completion-icon {
+        font-size: 1.8rem;
+    }
+
+    .completion-text {
+        font-size: 1rem;
+    }
+
+    .completion-time {
+        font-size: 0.85rem;
     }
 }
 
