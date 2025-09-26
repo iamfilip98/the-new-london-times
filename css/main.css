@@ -6393,7 +6393,25 @@ select:focus-visible,
 /* Mobile responsiveness for Recent Battles */
 @media (max-width: 768px) {
     .history-cards {
-        max-height: 300px; /* Reduced height for mobile */
+        max-height: 240px; /* Height to show exactly 2 rows cleanly */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-orange) transparent;
+    }
+
+    .history-cards::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .history-cards::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+    }
+
+    .history-cards::-webkit-scrollbar-thumb {
+        background: var(--accent-orange);
+        border-radius: 2px;
     }
 
     .history-card {
@@ -6402,6 +6420,8 @@ select:focus-visible,
         gap: 0.75rem;
         padding: 1rem;
         text-align: center;
+        min-height: 110px; /* Consistent height for mobile cards */
+        margin-bottom: 0.5rem; /* Small gap between cards */
     }
 
     .history-date {
