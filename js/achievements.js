@@ -2009,10 +2009,50 @@ class AchievementsManager {
             achievementsGrid.style.display = 'grid';
             noResults.style.display = 'none';
             achievementsGrid.innerHTML = filteredAchievements.map(a => a.html).join('');
+
+            // Add click event listeners for mobile popup
+            this.addMobileClickHandlers(filteredAchievements);
         }
 
         // Update filter counts
         this.updateFilterCounts();
+    }
+
+    addMobileClickHandlers(achievements) {
+        // Only add click handlers on mobile devices
+        if (window.innerWidth > 768) return;
+
+        const achievementBadges = document.querySelectorAll('.achievement-badge');
+        achievementBadges.forEach((badge, index) => {
+            const achievement = achievements[index];
+            if (!achievement) return;
+
+            badge.addEventListener('click', () => {
+                // Find the achievement definition
+                const achievementDef = this.achievementDefinitions.find(def => def.id === achievement.id);
+                if (!achievementDef) return;
+
+                // Get additional data from the badge element
+                const progressElement = badge.querySelector('.badge-progress');
+                const unlockedByElement = badge.querySelector('.badge-unlocked-by');
+                const dateElement = badge.querySelector('.badge-date');
+
+                const achievementData = {
+                    icon: achievementDef.icon,
+                    title: achievementDef.title,
+                    description: achievementDef.description,
+                    rarity: achievementDef.rarity,
+                    progressHTML: progressElement ? progressElement.outerHTML : '',
+                    unlockedByHTML: unlockedByElement ? unlockedByElement.outerHTML : '',
+                    dateHTML: dateElement ? dateElement.outerHTML : ''
+                };
+
+                // Show popup if available
+                if (window.achievementPopup) {
+                    window.achievementPopup.showPopup(achievementData);
+                }
+            });
+        });
     }
 
     updateFilterCounts() {
@@ -2279,6 +2319,81 @@ class AchievementsManager {
 
 // Initialize achievements manager
 window.achievementsManager = new AchievementsManager();
+
+// Mobile popup functionality
+class AchievementPopup {
+    constructor() {
+        this.popup = document.getElementById('achievementPopup');
+        this.popupContent = document.getElementById('achievementPopupContent');
+        this.closeBtn = document.getElementById('achievementPopupClose');
+
+        this.initializePopup();
+    }
+
+    initializePopup() {
+        if (!this.popup || !this.closeBtn) return;
+
+        // Close popup when clicking close button
+        this.closeBtn.addEventListener('click', () => {
+            this.hidePopup();
+        });
+
+        // Close popup when clicking outside content
+        this.popup.addEventListener('click', (e) => {
+            if (e.target === this.popup) {
+                this.hidePopup();
+            }
+        });
+
+        // Close popup on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.popup.classList.contains('show')) {
+                this.hidePopup();
+            }
+        });
+    }
+
+    showPopup(achievementData) {
+        if (!this.popup || !this.popupContent) return;
+
+        // Create popup content
+        const content = `
+            <button class="achievement-popup-close" id="achievementPopupClose">&times;</button>
+            <div class="badge-icon">
+                <i class="${achievementData.icon}"></i>
+            </div>
+            <h3 class="badge-title">${achievementData.title}</h3>
+            <p class="badge-description">${achievementData.description}</p>
+            <div class="badge-rarity ${achievementData.rarity}">${achievementData.rarity.toUpperCase()}</div>
+            ${achievementData.progressHTML || ''}
+            ${achievementData.unlockedByHTML || ''}
+            ${achievementData.dateHTML || ''}
+        `;
+
+        this.popupContent.innerHTML = content;
+
+        // Re-add close button event listener
+        const newCloseBtn = this.popupContent.querySelector('.achievement-popup-close');
+        if (newCloseBtn) {
+            newCloseBtn.addEventListener('click', () => {
+                this.hidePopup();
+            });
+        }
+
+        this.popup.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    hidePopup() {
+        if (!this.popup) return;
+
+        this.popup.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+}
+
+// Initialize popup manager
+window.achievementPopup = new AchievementPopup();
 
 // Add global refresh function for easy access
 window.refreshAchievements = async function() {

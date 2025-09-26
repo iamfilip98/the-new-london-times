@@ -2145,6 +2145,30 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+    max-height: calc(2 * (300px + 2rem) + 2rem); /* Limit to 2 rows */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-orange) rgba(255, 255, 255, 0.1);
+}
+
+.achievements-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.achievements-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.achievements-grid::-webkit-scrollbar-thumb {
+    background: var(--accent-orange);
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.achievements-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
 }
 
 .achievement-badge {
@@ -2604,13 +2628,129 @@ body {
     }
 
     .achievements-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        max-height: none; /* Remove height limit on mobile for scrolling */
+        padding: 0.5rem;
     }
 
     .achievement-badge {
-        min-height: 250px;
-        padding: 1.5rem;
+        min-height: 80px;
+        padding: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .achievement-badge:hover {
+        transform: scale(1.05);
+    }
+
+    /* Hide all text content on mobile, show only icon */
+    .achievement-badge .badge-title,
+    .achievement-badge .badge-description,
+    .achievement-badge .badge-rarity,
+    .achievement-badge .badge-progress,
+    .achievement-badge .badge-unlocked-by,
+    .achievement-badge .badge-date {
+        display: none;
+    }
+
+    /* Show only the icon, larger on mobile */
+    .achievement-badge .badge-icon {
+        font-size: 2rem;
+        margin: 0;
+    }
+
+    /* Achievement popup modal for mobile */
+    .achievement-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+
+    .achievement-popup.show {
+        display: flex;
+    }
+
+    .achievement-popup-content {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        max-width: 90%;
+        max-height: 80%;
+        overflow-y: auto;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        box-shadow: var(--box-shadow);
+        position: relative;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .achievement-popup-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .achievement-popup-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .achievement-popup .badge-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .achievement-popup .badge-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .achievement-popup .badge-description {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+    }
+
+    .achievement-popup .badge-rarity {
+        margin-bottom: 0.5rem;
+    }
+
+    .achievement-popup .badge-progress,
+    .achievement-popup .badge-unlocked-by,
+    .achievement-popup .badge-date {
+        display: block;
+        margin-bottom: 0.5rem;
     }
 
     .no-results {
