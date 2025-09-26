@@ -239,8 +239,8 @@ function generatePuzzle(solution, difficulty) {
       // Remove the cell temporarily
       testPuzzle[row][col] = 0;
 
-      // Check if puzzle is still solvable with logical techniques only
-      if (isPuzzleSolvableLogically(testPuzzle, settings)) {
+      // Check if puzzle is still solvable with logical techniques AND has unique solution
+      if (isPuzzleSolvableLogically(testPuzzle, settings) && countSolutions(testPuzzle) === 1) {
         removedCells++;
 
         // Check if we've reached a good balance
@@ -249,7 +249,7 @@ function generatePuzzle(solution, difficulty) {
           if (currentClues < bestClueCount) {
             bestPuzzle = testPuzzle.map(row => [...row]);
             bestClueCount = currentClues;
-            console.log(`🎯 Found better ${difficulty} puzzle with ${currentClues} clues`);
+            console.log(`🎯 Found better ${difficulty} puzzle with ${currentClues} clues (unique solution verified)`);
           }
         }
       } else {
@@ -270,13 +270,13 @@ function generatePuzzle(solution, difficulty) {
   return bestPuzzle || createFallbackPuzzle(solution, difficulty);
 }
 
-// Fallback puzzle creation if the sophisticated method fails
+// Improved fallback puzzle creation that ensures unique solutions
 function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
-  const cellsToKeep = {
-    easy: 35,   // Updated for better solving experience
-    medium: 26, // Former hard difficulty (now medium)
-    hard: 24    // More clues for easier starting positions
+  const targetClues = {
+    easy: 35,
+    medium: 28, // Increased for better uniqueness
+    hard: 25    // Increased for better uniqueness
   };
 
   const positions = [];
@@ -286,20 +286,39 @@ function createFallbackPuzzle(solution, difficulty) {
     }
   }
 
-  // Shuffle positions
+  // Shuffle positions for randomness
   for (let i = positions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [positions[i], positions[j]] = [positions[j], positions[i]];
   }
 
-  const toKeep = cellsToKeep[difficulty];
-  const toRemove = 81 - toKeep;
+  let currentClues = 81;
+  const minClues = targetClues[difficulty];
 
-  for (let i = 0; i < toRemove && i < positions.length; i++) {
-    const [row, col] = positions[i];
+  // Remove cells one by one while maintaining uniqueness
+  for (let [row, col] of positions) {
+    if (currentClues <= minClues) break;
+
+    // Try removing this cell
+    const originalValue = puzzle[row][col];
     puzzle[row][col] = 0;
+
+    // Check if puzzle still has unique solution
+    const solutionCount = countSolutions(puzzle);
+
+    if (solutionCount === 1) {
+      // Good! We can remove this cell
+      currentClues--;
+    } else {
+      // Bad! Restore the cell
+      puzzle[row][col] = originalValue;
+    }
+
+    // Stop if we've tried enough removals
+    if (currentClues <= minClues + 3) break;
   }
 
+  console.log(`🔧 Fallback puzzle created for ${difficulty} with ${currentClues} clues`);
   return puzzle;
 }
 
@@ -1276,7 +1295,70 @@ async function generateDailyPuzzles(date) {
   }
 }
 
-// Simplified validation focusing on basic requirements
+// Critical function: Count the number of solutions to verify uniqueness
+function countSolutions(puzzle, maxSolutions = 2) {
+  const solutions = [];
+  const testGrid = puzzle.map(row => [...row]);
+
+  function isValidForSolver(grid, row, col, num) {
+    // Check row
+    for (let x = 0; x < 9; x++) {
+      if (grid[row][x] === num) return false;
+    }
+
+    // Check column
+    for (let x = 0; x < 9; x++) {
+      if (grid[x][col] === num) return false;
+    }
+
+    // Check 3x3 box
+    const startRow = row - row % 3;
+    const startCol = col - col % 3;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (grid[i + startRow][j + startCol] === num) return false;
+      }
+    }
+
+    return true;
+  }
+
+  function solveAndCount(grid) {
+    if (solutions.length >= maxSolutions) return false; // Stop if we found multiple solutions
+
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0) {
+          for (let num = 1; num <= 9; num++) {
+            if (isValidForSolver(grid, row, col, num)) {
+              grid[row][col] = num;
+
+              if (solveAndCount(grid)) {
+                // Found a solution
+                if (solutions.length === 0) {
+                  solutions.push(grid.map(row => [...row]));
+                }
+                return true;
+              }
+
+              grid[row][col] = 0;
+            }
+          }
+          return false;
+        }
+      }
+    }
+
+    // Grid is complete - found a solution
+    solutions.push(grid.map(row => [...row]));
+    return false; // Continue searching for more solutions
+  }
+
+  solveAndCount(testGrid);
+  return solutions.length;
+}
+
+// Enhanced validation that includes uniqueness check
 function validatePuzzleSimple(puzzle, expectedSolution) {
   // Count clues
   let clueCount = 0;
@@ -1322,7 +1404,15 @@ function validatePuzzleSimple(puzzle, expectedSolution) {
     }
   }
 
-  return { isValid: true, reason: 'Valid puzzle', clueCount };
+  // CRITICAL: Check for unique solution
+  const solutionCount = countSolutions(puzzle);
+  if (solutionCount === 0) {
+    return { isValid: false, reason: `No solutions found`, clueCount };
+  } else if (solutionCount > 1) {
+    return { isValid: false, reason: `Multiple solutions (${solutionCount}+) - not logically solvable`, clueCount };
+  }
+
+  return { isValid: true, reason: 'Valid puzzle with unique solution', clueCount };
 }
 
 // Keep the original validation function for reference
