@@ -4322,10 +4322,11 @@ select:focus-visible,
 }
 
 .setting-item {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0.5rem 0;
 }
 
 .setting-item label {
@@ -4346,9 +4347,53 @@ select:focus-visible,
 }
 
 .settings-footer {
-    padding: 1rem 1.5rem;
+    padding: 1.5rem;
     border-top: 2px solid rgba(255, 255, 255, 0.1);
     text-align: right;
+    margin-top: 1rem;
+}
+
+/* Settings modal specific button improvements */
+.settings-modal .btn-secondary {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.settings-modal .btn-secondary:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.settings-modal .btn-primary {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.settings-modal .btn-primary:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Better spacing for restart button section */
+.settings-modal hr {
+    margin: 1.5rem 0 !important;
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.settings-modal small {
+    display: block;
+    margin-top: 0.75rem !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    line-height: 1.4;
 }
 
 .btn-primary, .btn-secondary {
@@ -4359,6 +4404,9 @@ select:focus-visible,
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.9rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 0.25rem 0;
 }
 
 .btn-primary {
@@ -4371,6 +4419,8 @@ select:focus-visible,
     color: var(--text-primary);
     border: 2px solid rgba(255, 255, 255, 0.2);
     margin-left: 0.5rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
 }
 
 .btn-primary:hover, .btn-secondary:hover {
