@@ -6531,6 +6531,11 @@ select:focus-visible,
     display: none;
 }
 
+/* Show desktop-only elements on desktop */
+.desktop-only {
+    display: grid;
+}
+
 /* Mobile dashboard improvements - keep all content but prioritize key sections */
 @media (max-width: 768px) {
     /* Show and style mobile head-to-head section */
@@ -6617,6 +6622,11 @@ select:focus-visible,
         font-size: 0.9rem;
         color: var(--text-secondary);
         font-family: 'Orbitron', monospace;
+    }
+
+    /* Hide desktop difficulty grid on mobile */
+    .desktop-only {
+        display: none;
     }
 
     /* Show and style mobile difficulty selector */
