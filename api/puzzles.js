@@ -164,22 +164,24 @@ function generatePuzzle(solution, difficulty) {
       maxEmptyRegions: 4
     },
     hard: {
-      minClues: 15,
-      maxClues: 22,  // Extremely challenging - very few clues
+      minClues: 18,
+      maxClues: 25,  // Challenging but solvable with intermediate techniques
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 500,  // Much more iterations for ultra-challenging puzzles
+      maxIterations: 300,  // Reasonable iterations for good puzzles
       requireEvenDistribution: false,
-      maxEmptyRegions: 7,  // Allow even more empty regions for difficulty
-      allowAdvancedTechniques: true,  // Enable most complex solving techniques
-      requireAdvancedSolving: true,   // Puzzle must require advanced techniques to solve
-      minAdvancedMoves: 3,           // Require at least 3 advanced technique applications
-      allowXWing: true,              // Enable X-Wing technique
-      allowSwordfish: true,          // Enable Swordfish technique
-      allowYWing: true,              // Enable Y-Wing technique
-      allowXYZWing: true,            // Enable XYZ-Wing technique
-      allowChains: true              // Enable simple coloring/chains
+      maxEmptyRegions: 5,  // Moderate empty regions
+      allowAdvancedTechniques: false,  // Disable expert-level techniques
+      requireAdvancedSolving: false,   // Don't require ultra-advanced techniques
+      minAdvancedMoves: 0,            // No requirement for expert techniques
+      allowXWing: false,              // Too advanced for most players
+      allowSwordfish: false,          // Too advanced for most players
+      allowYWing: false,              // Too advanced for most players
+      allowXYZWing: false,            // Too advanced for most players
+      allowChains: false,             // Too advanced for most players
+      requireHiddenSubsets: true,     // Require hidden pairs/triples/quads
+      minHiddenSubsets: 2             // Require at least 2 hidden subset applications
     }
   };
 
@@ -273,7 +275,7 @@ function createFallbackPuzzle(solution, difficulty) {
   const cellsToKeep = {
     easy: 35,   // Updated for better solving experience
     medium: 26, // Former hard difficulty (now medium)
-    hard: 18    // Extremely challenging - minimal clues for fallback
+    hard: 22    // Challenging but reasonable for fallback
   };
 
   const positions = [];
@@ -308,6 +310,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
   let iterations = 0;
   const maxSolverIterations = 200;
   let advancedTechniquesUsed = 0;  // Track usage of advanced techniques
+  let hiddenSubsetsUsed = 0;       // Track usage of hidden subsets
 
   while (changed && iterations < maxSolverIterations) {
     changed = false;
@@ -337,6 +340,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
     // Technique 4: Hidden Pairs, Triples, Quads
     if (settings.allowComplexTechniques && applyHiddenSubsets(testGrid, candidates)) {
       changed = true;
+      hiddenSubsetsUsed++;
       continue;
     }
 
@@ -405,6 +409,14 @@ function isPuzzleSolvableLogically(puzzle, settings) {
           return false; // Hard puzzle should require more advanced techniques
         }
       }
+
+      // Check if hard puzzles require hidden subsets
+      if (settings.requireHiddenSubsets && settings.minHiddenSubsets) {
+        if (hiddenSubsetsUsed < settings.minHiddenSubsets) {
+          return false; // Hard puzzle should require hidden subset techniques
+        }
+      }
+
       return true; // Puzzle is solvable!
     }
 
@@ -805,11 +817,205 @@ function applyNakedSubsetsInBox(grid, candidates, boxRow, boxCol) {
   return changed;
 }
 
-// Technique 4: Hidden Pairs/Triples/Quads (simplified version)
+// Technique 4: Hidden Pairs/Triples/Quads
 function applyHiddenSubsets(grid, candidates) {
-  // For now, implement a basic version focusing on hidden pairs
-  // This is quite complex to implement fully, but basic version helps
-  return false; // Placeholder - would need extensive implementation
+  let changed = false;
+
+  // Check for hidden pairs, triples, and quads in rows
+  for (let row = 0; row < 9; row++) {
+    if (applyHiddenSubsetsInRow(grid, candidates, row)) changed = true;
+  }
+
+  // Check for hidden pairs, triples, and quads in columns
+  for (let col = 0; col < 9; col++) {
+    if (applyHiddenSubsetsInColumn(grid, candidates, col)) changed = true;
+  }
+
+  // Check for hidden pairs, triples, and quads in boxes
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+      if (applyHiddenSubsetsInBox(grid, candidates, boxRow, boxCol)) changed = true;
+    }
+  }
+
+  return changed;
+}
+
+// Apply hidden pairs in a row
+function applyHiddenSubsetsInRow(grid, candidates, row) {
+  let changed = false;
+
+  // Check for hidden pairs
+  for (let num1 = 1; num1 <= 8; num1++) {
+    for (let num2 = num1 + 1; num2 <= 9; num2++) {
+      if (!isNumberInRow(grid, row, num1) && !isNumberInRow(grid, row, num2)) {
+        const positions1 = [];
+        const positions2 = [];
+
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0) {
+            if (candidates[row][col].includes(num1)) positions1.push(col);
+            if (candidates[row][col].includes(num2)) positions2.push(col);
+          }
+        }
+
+        // Check if both numbers appear in exactly the same 2 positions (hidden pair)
+        if (positions1.length === 2 && positions2.length === 2 &&
+            positions1[0] === positions2[0] && positions1[1] === positions2[1]) {
+
+          // Remove all other candidates from these two positions
+          for (let col of positions1) {
+            const oldLength = candidates[row][col].length;
+            candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2);
+            if (candidates[row][col].length < oldLength) changed = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Check for hidden triples
+  for (let num1 = 1; num1 <= 7; num1++) {
+    for (let num2 = num1 + 1; num2 <= 8; num2++) {
+      for (let num3 = num2 + 1; num3 <= 9; num3++) {
+        if (!isNumberInRow(grid, row, num1) && !isNumberInRow(grid, row, num2) && !isNumberInRow(grid, row, num3)) {
+          const positions1 = [], positions2 = [], positions3 = [];
+
+          for (let col = 0; col < 9; col++) {
+            if (grid[row][col] === 0) {
+              if (candidates[row][col].includes(num1)) positions1.push(col);
+              if (candidates[row][col].includes(num2)) positions2.push(col);
+              if (candidates[row][col].includes(num3)) positions3.push(col);
+            }
+          }
+
+          // Find union of positions
+          const allPositions = [...new Set([...positions1, ...positions2, ...positions3])];
+
+          // Check if exactly 3 positions contain all three numbers
+          if (allPositions.length === 3 &&
+              allPositions.every(col =>
+                candidates[row][col].includes(num1) ||
+                candidates[row][col].includes(num2) ||
+                candidates[row][col].includes(num3))) {
+
+            // Remove all other candidates from these positions
+            for (let col of allPositions) {
+              const oldLength = candidates[row][col].length;
+              candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2 || n === num3);
+              if (candidates[row][col].length < oldLength) changed = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Apply hidden subsets in a column (similar to row logic)
+function applyHiddenSubsetsInColumn(grid, candidates, col) {
+  let changed = false;
+
+  // Check for hidden pairs
+  for (let num1 = 1; num1 <= 8; num1++) {
+    for (let num2 = num1 + 1; num2 <= 9; num2++) {
+      if (!isNumberInColumn(grid, col, num1) && !isNumberInColumn(grid, col, num2)) {
+        const positions1 = [];
+        const positions2 = [];
+
+        for (let row = 0; row < 9; row++) {
+          if (grid[row][col] === 0) {
+            if (candidates[row][col].includes(num1)) positions1.push(row);
+            if (candidates[row][col].includes(num2)) positions2.push(row);
+          }
+        }
+
+        if (positions1.length === 2 && positions2.length === 2 &&
+            positions1[0] === positions2[0] && positions1[1] === positions2[1]) {
+
+          for (let row of positions1) {
+            const oldLength = candidates[row][col].length;
+            candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2);
+            if (candidates[row][col].length < oldLength) changed = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Check for hidden triples
+  for (let num1 = 1; num1 <= 7; num1++) {
+    for (let num2 = num1 + 1; num2 <= 8; num2++) {
+      for (let num3 = num2 + 1; num3 <= 9; num3++) {
+        if (!isNumberInColumn(grid, col, num1) && !isNumberInColumn(grid, col, num2) && !isNumberInColumn(grid, col, num3)) {
+          const positions1 = [], positions2 = [], positions3 = [];
+
+          for (let row = 0; row < 9; row++) {
+            if (grid[row][col] === 0) {
+              if (candidates[row][col].includes(num1)) positions1.push(row);
+              if (candidates[row][col].includes(num2)) positions2.push(row);
+              if (candidates[row][col].includes(num3)) positions3.push(row);
+            }
+          }
+
+          const allPositions = [...new Set([...positions1, ...positions2, ...positions3])];
+
+          if (allPositions.length === 3) {
+            for (let row of allPositions) {
+              const oldLength = candidates[row][col].length;
+              candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2 || n === num3);
+              if (candidates[row][col].length < oldLength) changed = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Apply hidden subsets in a box
+function applyHiddenSubsetsInBox(grid, candidates, boxRow, boxCol) {
+  let changed = false;
+
+  // Check for hidden pairs
+  for (let num1 = 1; num1 <= 8; num1++) {
+    for (let num2 = num1 + 1; num2 <= 9; num2++) {
+      if (!isNumberInBox(grid, boxRow * 3, boxCol * 3, num1) &&
+          !isNumberInBox(grid, boxRow * 3, boxCol * 3, num2)) {
+
+        const positions1 = [];
+        const positions2 = [];
+
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 3; c++) {
+            const row = boxRow * 3 + r;
+            const col = boxCol * 3 + c;
+            if (grid[row][col] === 0) {
+              if (candidates[row][col].includes(num1)) positions1.push([row, col]);
+              if (candidates[row][col].includes(num2)) positions2.push([row, col]);
+            }
+          }
+        }
+
+        if (positions1.length === 2 && positions2.length === 2 &&
+            positions1[0][0] === positions2[0][0] && positions1[0][1] === positions2[0][1] &&
+            positions1[1][0] === positions2[1][0] && positions1[1][1] === positions2[1][1]) {
+
+          for (let [row, col] of positions1) {
+            const oldLength = candidates[row][col].length;
+            candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2);
+            if (candidates[row][col].length < oldLength) changed = true;
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
 }
 
 // Technique 5: Pointing Pairs/Triples
