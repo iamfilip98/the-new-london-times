@@ -144,28 +144,35 @@ function generatePuzzle(solution, difficulty) {
   // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
     easy: {
-      minClues: 35,
-      maxClues: 42,
+      minClues: 32,
+      maxClues: 38,
       requireNakedSingles: true,
       allowHiddenSingles: true,
       allowComplexTechniques: false,
-      maxIterations: 50  // Fewer iterations since we have better validation
+      maxIterations: 75,  // More iterations for better placement
+      requireEvenDistribution: true,  // Ensure clues are spread across regions
+      maxEmptyRegions: 2  // Max 2 empty 3x3 regions for better initial placement
     },
     medium: {
-      minClues: 28,
-      maxClues: 35,
-      requireNakedSingles: true,
-      allowHiddenSingles: true,
-      allowComplexTechniques: true,
-      maxIterations: 100
-    },
-    hard: {
       minClues: 22,
-      maxClues: 30,
+      maxClues: 30,  // Former hard difficulty settings
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 200
+      maxIterations: 200,
+      requireEvenDistribution: false,
+      maxEmptyRegions: 4
+    },
+    hard: {
+      minClues: 17,
+      maxClues: 25,  // Much harder - fewer clues
+      requireNakedSingles: false,
+      allowHiddenSingles: true,
+      allowComplexTechniques: true,
+      maxIterations: 300,  // More iterations for challenging puzzles
+      requireEvenDistribution: false,
+      maxEmptyRegions: 6,  // Allow more empty regions for difficulty
+      allowAdvancedTechniques: true  // Enable most complex solving techniques
     }
   };
 
@@ -208,6 +215,17 @@ function generatePuzzle(solution, difficulty) {
       const originalValue = testPuzzle[row][col];
       if (originalValue === 0) continue;
 
+      // For Easy difficulty, check distribution constraints
+      if (settings.requireEvenDistribution || settings.maxEmptyRegions) {
+        const testPuzzleAfterRemoval = testPuzzle.map(row => [...row]);
+        testPuzzleAfterRemoval[row][col] = 0;
+
+        // Check if this removal violates distribution rules
+        if (!isValidDistribution(testPuzzleAfterRemoval, settings)) {
+          continue; // Skip this cell removal
+        }
+      }
+
       // Remove the cell temporarily
       testPuzzle[row][col] = 0;
 
@@ -246,9 +264,9 @@ function generatePuzzle(solution, difficulty) {
 function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
   const cellsToKeep = {
-    easy: 38,   // Conservative - easier solving
-    medium: 31, // Moderate difficulty
-    hard: 25    // Challenging but solvable
+    easy: 35,   // Updated for better solving experience
+    medium: 26, // Former hard difficulty (now medium)
+    hard: 21    // Much more challenging
   };
 
   const positions = [];
@@ -426,6 +444,58 @@ function countRegionClues(grid, row, col) {
   }
 
   return count;
+}
+
+// Helper function to validate clue distribution for better placement
+function isValidDistribution(grid, settings) {
+  if (!settings.requireEvenDistribution && !settings.maxEmptyRegions) {
+    return true;
+  }
+
+  // Count clues in each 3x3 region
+  const regionCounts = [];
+  let emptyRegions = 0;
+
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+      const count = countRegionClues(grid, boxRow * 3, boxCol * 3);
+      regionCounts.push(count);
+
+      if (count === 0) {
+        emptyRegions++;
+      }
+    }
+  }
+
+  // Check empty regions constraint
+  if (settings.maxEmptyRegions && emptyRegions > settings.maxEmptyRegions) {
+    return false;
+  }
+
+  // For easy puzzles, ensure more even distribution
+  if (settings.requireEvenDistribution) {
+    const minCluesPerRegion = Math.floor(settings.minClues / 9);
+    const maxCluesPerRegion = Math.ceil(settings.maxClues / 9) + 2; // Allow some flexibility
+
+    // Each region should have at least minCluesPerRegion clues (unless empty)
+    // and not exceed maxCluesPerRegion
+    for (let count of regionCounts) {
+      if (count > 0 && count < minCluesPerRegion) {
+        return false; // Region has too few clues
+      }
+      if (count > maxCluesPerRegion) {
+        return false; // Region has too many clues
+      }
+    }
+
+    // Check that clues aren't all bunched in just a few regions
+    const occupiedRegions = regionCounts.filter(count => count > 0).length;
+    if (occupiedRegions < 6) { // Require at least 6 of 9 regions to have clues
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // ========= COMPREHENSIVE LOGICAL SOLVING TECHNIQUES =========
