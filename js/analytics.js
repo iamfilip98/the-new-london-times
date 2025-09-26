@@ -4,17 +4,38 @@ class AnalyticsManager {
         this.chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            },
             plugins: {
                 legend: {
                     labels: {
-                        color: '#ffffff'
+                        color: '#ffffff',
+                        usePointStyle: true,
+                        padding: 15,
+                        font: {
+                            size: window.innerWidth < 768 ? 10 : 12
+                        }
                     }
                 }
             },
             scales: {
                 x: {
                     ticks: {
-                        color: '#b0b8c1'
+                        color: '#b0b8c1',
+                        maxTicksLimit: window.innerWidth < 768 ? 5 : 10,
+                        font: {
+                            size: window.innerWidth < 768 ? 9 : 11
+                        }
                     },
                     grid: {
                         color: 'rgba(255, 255, 255, 0.1)'
@@ -22,7 +43,11 @@ class AnalyticsManager {
                 },
                 y: {
                     ticks: {
-                        color: '#b0b8c1'
+                        color: '#b0b8c1',
+                        maxTicksLimit: window.innerWidth < 768 ? 4 : 6,
+                        font: {
+                            size: window.innerWidth < 768 ? 9 : 11
+                        }
                     },
                     grid: {
                         color: 'rgba(255, 255, 255, 0.1)'
