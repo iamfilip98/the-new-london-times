@@ -3181,11 +3181,29 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Global function to force refresh puzzles from browser console
-window.refreshPuzzles = function() {
+window.refreshPuzzles = function(clearSavedGames = false) {
     if (window.sudokuEngine) {
+        if (clearSavedGames) {
+            console.log('🗑️ Clearing saved game states...');
+            const player = sessionStorage.getItem('currentPlayer');
+            const today = new Date().toISOString().split('T')[0];
+            if (player) {
+                ['easy', 'medium', 'hard'].forEach(diff => {
+                    const key = `sudoku_${player}_${today}_${diff}`;
+                    localStorage.removeItem(key);
+                    console.log('Cleared saved game:', key);
+                });
+                console.log('✅ All saved games cleared for today');
+            }
+        }
         return window.sudokuEngine.forceRefreshPuzzles();
     } else {
         console.warn('Sudoku engine not available. Try running this on the puzzle page.');
         return false;
     }
+};
+
+// Convenience function to refresh puzzles and clear saved games
+window.refreshPuzzlesCompletely = function() {
+    return window.refreshPuzzles(true);
 };
