@@ -552,7 +552,7 @@
 
             // The sudoku engine will pick up the stored difficulty when it initializes
             // No need to call changeDifficulty since we stored it in sessionStorage
-            console.log('Difficulty stored for initialization:', difficulty);
+            //console.log('Difficulty stored for initialization:', difficulty);
         }
 
         // Function to navigate to dashboard when clicking on brand
@@ -697,22 +697,22 @@
 
         // Test function to validate hint penalties
         function testHintPenalties() {
-            console.log('🧪 Starting Hint Penalty Validation Test');
-            console.log('========================================');
+            //console.log('🧪 Starting Hint Penalty Validation Test');
+            //console.log('========================================');
 
             if (!window.sudokuEngine) {
-                console.log('❌ No sudoku engine found. Please start a game first.');
+                //console.log('❌ No sudoku engine found. Please start a game first.');
                 return;
             }
 
-            console.log('Initial state:');
-            console.log(`- Hint time penalty: ${window.sudokuEngine.hintTimePenalty} seconds`);
-            console.log(`- Hints used: ${window.sudokuEngine.hints}`);
-            console.log(`- Hint state: ${window.sudokuEngine.hintState}`);
-            console.log('');
+            //console.log('Initial state:');
+            //console.log(`- Hint time penalty: ${window.sudokuEngine.hintTimePenalty} seconds`);
+            //console.log(`- Hints used: ${window.sudokuEngine.hints}`);
+            //console.log(`- Hint state: ${window.sudokuEngine.hintState}`);
+            //console.log('');
 
             // Test 1: First hint (pointing) - should add 5 seconds
-            console.log('Test 1: First hint click (pointing)');
+            //console.log('Test 1: First hint click (pointing)');
             window.sudokuEngine.hintState = 'none';
             const penaltyBefore1 = window.sudokuEngine.hintTimePenalty;
 
@@ -724,15 +724,15 @@
                     const penaltyAfter1 = window.sudokuEngine.hintTimePenalty;
                     const penaltyAdded1 = penaltyAfter1 - penaltyBefore1;
 
-                    console.log(`- Penalty before: ${penaltyBefore1} seconds`);
-                    console.log(`- Penalty after: ${penaltyAfter1} seconds`);
-                    console.log(`- Penalty added: ${penaltyAdded1} seconds`);
-                    console.log(`- Expected: 5 seconds`);
-                    console.log(`- ✅ Test 1 ${penaltyAdded1 === 5 ? 'PASSED' : 'FAILED'}`);
-                    console.log('');
+                    //console.log(`- Penalty before: ${penaltyBefore1} seconds`);
+                    //console.log(`- Penalty after: ${penaltyAfter1} seconds`);
+                    //console.log(`- Penalty added: ${penaltyAdded1} seconds`);
+                    //console.log(`- Expected: 5 seconds`);
+                    //console.log(`- ✅ Test 1 ${penaltyAdded1 === 5 ? 'PASSED' : 'FAILED'}`);
+                    //console.log('');
 
                     // Test 2: Second hint (revealing) - should add 10 more seconds
-                    console.log('Test 2: Second hint click (revealing)');
+                    //console.log('Test 2: Second hint click (revealing)');
                     const penaltyBefore2 = window.sudokuEngine.hintTimePenalty;
 
                     setTimeout(() => {
@@ -741,49 +741,49 @@
                             const penaltyAfter2 = window.sudokuEngine.hintTimePenalty;
                             const penaltyAdded2 = penaltyAfter2 - penaltyBefore2;
 
-                            console.log(`- Penalty before: ${penaltyBefore2} seconds`);
-                            console.log(`- Penalty after: ${penaltyAfter2} seconds`);
-                            console.log(`- Penalty added: ${penaltyAdded2} seconds`);
-                            console.log(`- Expected: 10 seconds`);
-                            console.log(`- ✅ Test 2 ${penaltyAdded2 === 10 ? 'PASSED' : 'FAILED'}`);
-                            console.log('');
+                            //console.log(`- Penalty before: ${penaltyBefore2} seconds`);
+                            //console.log(`- Penalty after: ${penaltyAfter2} seconds`);
+                            //console.log(`- Penalty added: ${penaltyAdded2} seconds`);
+                            //console.log(`- Expected: 10 seconds`);
+                            //console.log(`- ✅ Test 2 ${penaltyAdded2 === 10 ? 'PASSED' : 'FAILED'}`);
+                            //console.log('');
 
                             // Summary
                             const totalExpectedPenalty = penaltyBefore1 + 15;
                             const actualTotalPenalty = window.sudokuEngine.hintTimePenalty;
 
-                            console.log('📊 Test Summary:');
-                            console.log(`- Starting penalty: ${penaltyBefore1} seconds`);
-                            console.log(`- Expected total penalty: ${totalExpectedPenalty} seconds`);
-                            console.log(`- Actual total penalty: ${actualTotalPenalty} seconds`);
-                            console.log(`- Overall result: ${actualTotalPenalty === totalExpectedPenalty ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
+                            //console.log('📊 Test Summary:');
+                            //console.log(`- Starting penalty: ${penaltyBefore1} seconds`);
+                            //console.log(`- Expected total penalty: ${totalExpectedPenalty} seconds`);
+                            //console.log(`- Actual total penalty: ${actualTotalPenalty} seconds`);
+                            //console.log(`- Overall result: ${actualTotalPenalty === totalExpectedPenalty ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
 
                         }, 100);
                     }, 100);
                 }, 100);
             } else {
-                console.log('❌ Hint button not found. Make sure you\'re on the sudoku game page.');
+                //console.log('❌ Hint button not found. Make sure you\'re on the sudoku game page.');
             }
         }
 
         // Alternative manual test function
         function manualHintPenaltyTest() {
-            console.log('🔧 Manual Hint Penalty Test');
-            console.log('===========================');
+            //console.log('🔧 Manual Hint Penalty Test');
+            //console.log('===========================');
 
             if (!window.sudokuEngine) {
-                console.log('❌ No sudoku engine found. Please start a game first.');
+                //console.log('❌ No sudoku engine found. Please start a game first.');
                 return;
             }
 
-            console.log('Current hint penalty:', window.sudokuEngine.hintTimePenalty, 'seconds');
-            console.log('Current hints used:', window.sudokuEngine.hints);
-            console.log('Current hint state:', window.sudokuEngine.hintState);
-            console.log('');
-            console.log('Instructions:');
-            console.log('1. Click the hint button once (should add 5 seconds)');
-            console.log('2. Click the hint button again (should add 10 more seconds)');
-            console.log('3. Run this function again to see the changes');
+            //console.log('Current hint penalty:', window.sudokuEngine.hintTimePenalty, 'seconds');
+            //console.log('Current hints used:', window.sudokuEngine.hints);
+            //console.log('Current hint state:', window.sudokuEngine.hintState);
+            //console.log('');
+            //console.log('Instructions:');
+            //console.log('1. Click the hint button once (should add 5 seconds)');
+            //console.log('2. Click the hint button again (should add 10 more seconds)');
+            //console.log('3. Run this function again to see the changes');
 
             return {
                 currentPenalty: window.sudokuEngine.hintTimePenalty,
@@ -796,9 +796,9 @@
         window.testHintPenalties = testHintPenalties;
         window.manualHintPenaltyTest = manualHintPenaltyTest;
 
-        console.log('🎯 Hint penalty test functions loaded!');
-        console.log('Run testHintPenalties() to automatically test hint penalties');
-        console.log('Run manualHintPenaltyTest() for manual testing');
+        //console.log('🎯 Hint penalty test functions loaded!');
+        //console.log('Run testHintPenalties() to automatically test hint penalties');
+        //console.log('Run manualHintPenaltyTest() for manual testing');
     </script>
 </body>
 </html>

@@ -5,25 +5,15 @@ const https = require('https');
 
 async function forceRefreshAllPuzzles() {
     const today = new Date().toISOString().split('T')[0];
-    console.log(`🔄 Force refreshing all puzzles for ${today}...`);
 
     try {
         // First, delete existing puzzles
-        console.log('📤 Deleting existing puzzles...');
         await makeRequest('DELETE', { date: today });
 
         // Then force generate new ones
-        console.log('🎲 Generating fresh puzzles...');
         const result = await makeRequest('POST', { action: 'generate', date: today });
 
-        console.log('✅ Successfully refreshed all puzzles!');
-        console.log(`📊 Easy: ${result.easy.puzzle.flat().filter(x => x === 0).length} empty cells`);
-        console.log(`📊 Medium: ${result.medium.puzzle.flat().filter(x => x === 0).length} empty cells`);
-        console.log(`📊 Hard: ${result.hard.puzzle.flat().filter(x => x === 0).length} empty cells`);
 
-        console.log('\n🌐 To see the new puzzles in your browser, you have two options:');
-        console.log('   1. EASY: In browser console, run: refreshPuzzles()');
-        console.log('   2. OR do a hard refresh: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)');
 
         return true;
     } catch (error) {

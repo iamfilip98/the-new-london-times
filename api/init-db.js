@@ -28,11 +28,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('Starting database initialization...');
 
     // Test connection
     await pool.query('SELECT NOW()');
-    console.log('Database connection successful');
 
     // Create entries table
     await pool.query(`
@@ -76,7 +74,6 @@ module.exports = async function handler(req, res) {
       ON CONFLICT (player) DO NOTHING
     `);
 
-    console.log('Database initialization completed successfully');
 
     return res.status(200).json({
       success: true,

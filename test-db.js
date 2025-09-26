@@ -1,1 +1,0 @@
-const { Pool } = require('pg'); const pool = new Pool({ connectionString: process.env.POSTGRES_URL, ssl: { rejectUnauthorized: false } }); pool.query('SELECT NOW()', (err, result) => { if (err) console.error('Error:', err.message); else console.log('Success:', result.rows[0]); process.exit(0); });

@@ -67,7 +67,6 @@ class SudokuChampionship {
 
         // Mark initialization as complete
         this.initializationComplete = true;
-        console.log('✅ Application initialization complete');
     }
 
     initializeScoreDisplay() {
@@ -168,7 +167,6 @@ class SudokuChampionship {
 
         // If this is the first visit or date has changed
         if (!this.lastCheckedDate || this.lastCheckedDate !== today) {
-            console.log(`🗓️ Date change detected: ${this.lastCheckedDate} → ${today}`);
 
             // Clear today's progress from localStorage for fresh start
             this.clearTodayProgressFromLocalStorage(today);
@@ -191,7 +189,6 @@ class SudokuChampionship {
 
             // If initialization is complete, refresh data
             if (this.initializationComplete) {
-                console.log(`🔄 Refreshing data for new day: ${today}`);
 
                 // Preload fresh puzzles
                 await this.preloadPuzzles();
@@ -203,7 +200,6 @@ class SudokuChampionship {
                 await this.updateAllPages();
             }
 
-            console.log(`✨ Fresh start for ${today} - progress reset`);
         }
     }
 
@@ -223,7 +219,6 @@ class SudokuChampionship {
         });
 
         if (cleared > 0) {
-            console.log(`🧹 Cleared ${cleared} localStorage items for ${date}`);
         }
     }
 
@@ -353,7 +348,6 @@ class SudokuChampionship {
                 localStorage.removeItem('sudokuChampionshipChallenges');
                 localStorage.removeItem('sudokuChampionshipRecords');
 
-                console.log('Successfully migrated localStorage data to database');
             }
 
             // Check for preloaded data first
@@ -363,7 +357,6 @@ class SudokuChampionship {
             let entries, bulkData;
 
             if (preloadedEntries && preloadedBulkData) {
-                console.log('🚀 Using preloaded data for faster startup');
                 entries = JSON.parse(preloadedEntries);
                 bulkData = JSON.parse(preloadedBulkData);
 
@@ -371,7 +364,6 @@ class SudokuChampionship {
                 sessionStorage.removeItem('preloadedEntries');
                 sessionStorage.removeItem('preloadedBulkData');
             } else {
-                console.log('📡 Loading data from API');
                 // Load data from database - optimized with parallel loading
                 [entries, bulkData] = await Promise.all([
                     this.loadFromStorage(),
@@ -432,7 +424,6 @@ class SudokuChampionship {
     async saveEntry() {
         // This method is no longer used since manual input is disabled
         // Sudoku games now automatically save through the Sudoku engine
-        console.log('Manual entry saving is disabled - games are saved automatically through Sudoku play');
         return;
     }
 
@@ -525,19 +516,16 @@ class SudokuChampionship {
 
     clearEntry() {
         // This method is no longer used since manual input is disabled
-        console.log('Manual entry clearing is disabled - use Sudoku game controls instead');
         return;
     }
 
     checkExistingEntry() {
         // This method is no longer used since manual input is disabled
-        console.log('Manual entry loading is disabled - entries are managed through Sudoku play');
         return;
     }
 
     loadEntry(entry) {
         // This method is no longer used since manual input is disabled
-        console.log('Manual entry loading is disabled - entries are managed through Sudoku play');
         return;
     }
 
@@ -622,7 +610,6 @@ class SudokuChampionship {
 
     editEntry(date) {
         // Entry editing is disabled since manual input is removed
-        console.log('Entry editing is disabled - use Sudoku game to create new entries');
         return;
     }
 
@@ -1073,7 +1060,6 @@ class SudokuChampionship {
             const now = Date.now();
             if (this.cache.data && this.cache.lastUpdate &&
                 (now - this.cache.lastUpdate) < this.cache.duration) {
-                console.log('Using cached bulk data');
                 return this.cache.data;
             }
 
@@ -1244,7 +1230,6 @@ class SudokuChampionship {
         const targetDate = date || new Date().toISOString().split('T')[0];
 
         try {
-            console.log(`🔄 Resetting daily puzzles for ${targetDate}...`);
 
             // Call the puzzle API to reset puzzles for the date
             const response = await fetch('/api/puzzles', {
@@ -1273,18 +1258,14 @@ class SudokuChampionship {
                 }
             }
 
-            console.log(`✅ Database reset completed for ${targetDate}`);
 
             // Clear localStorage for the date
             this.clearLocalStorageForDate(targetDate);
 
-            console.log(`🎯 Successfully reset all puzzles for ${targetDate}`);
-            console.log(`💡 Refresh the page to load new puzzles`);
 
             return true;
         } catch (error) {
             console.error('❌ Failed to reset daily puzzles:', error);
-            console.log('💡 Try using: node reset-daily-puzzles.js reset ' + targetDate);
             return false;
         }
     }
@@ -1297,27 +1278,22 @@ class SudokuChampionship {
             if (key.includes(date)) {
                 localStorage.removeItem(key);
                 cleared++;
-                console.log(`🗑️ Cleared: ${key}`);
             }
         });
 
-        console.log(`✅ Cleared ${cleared} localStorage items for ${date}`);
         return cleared;
     }
 
     async fullReset(date) {
         const targetDate = date || new Date().toISOString().split('T')[0];
 
-        console.log(`🔄 Full reset for ${targetDate}...`);
 
         // Reset database
         const dbReset = await this.resetDailyPuzzles(targetDate);
 
         if (dbReset) {
-            console.log(`🏁 Full reset completed! Refresh the page to see new puzzles.`);
             return true;
         } else {
-            console.log(`❌ Reset failed. Use command line tool instead.`);
             return false;
         }
     }
@@ -1330,15 +1306,12 @@ class SudokuChampionship {
     clearAllLocalStorage() {
         const count = localStorage.length;
         localStorage.clear();
-        console.log(`🗑️ Cleared all ${count} localStorage items`);
-        console.log(`💡 Refresh the page to reload data`);
         return count;
     }
 
     // Force complete daily refresh
     forceDailyRefresh() {
         const today = this.getTodayDate();
-        console.log(`🔄 Forcing complete refresh for ${today}...`);
 
         // Clear all cached data
         localStorage.removeItem('lastCheckedDate');
@@ -1357,8 +1330,6 @@ class SudokuChampionship {
         // Clear session storage
         sessionStorage.clear();
 
-        console.log(`✅ Complete refresh initiated for ${today}`);
-        console.log(`🔄 Reloading page...`);
 
         // Force page reload
         location.reload(true);
@@ -1367,7 +1338,6 @@ class SudokuChampionship {
     // Test API connectivity
     async testApiConnectivity() {
         const today = this.getTodayDate();
-        console.log(`🔍 Testing API connectivity for ${today}...`);
 
         const endpoints = [
             `/api/puzzles?date=${today}&t=${Date.now()}`,
@@ -1378,15 +1348,11 @@ class SudokuChampionship {
 
         for (const endpoint of endpoints) {
             try {
-                console.log(`🌐 Testing: ${endpoint}`);
                 const response = await fetch(endpoint);
-                console.log(`✅ ${endpoint} - Status: ${response.status}`);
 
                 if (endpoint.includes('puzzles')) {
                     const data = await response.json();
-                    console.log(`🧩 Puzzle data structure:`, Object.keys(data));
                     if (data.easy && data.easy.puzzle) {
-                        console.log(`🎯 Easy puzzle first row:`, data.easy.puzzle[0]);
                     }
                 }
             } catch (error) {
@@ -1407,7 +1373,6 @@ class SudokuChampionship {
 
             // Use preloaded data if it's recent (within 5 minutes)
             if ((now - loadTime) < 300000) {
-                console.log('🚀 Using preloaded puzzles from login page');
                 this.puzzleCache.puzzles = JSON.parse(preloadedPuzzles);
                 this.puzzleCache.loadTime = loadTime;
 
@@ -1427,28 +1392,24 @@ class SudokuChampionship {
 
         // Don't preload if already loading or recently loaded
         if (this.puzzleCache.loading) {
-            console.log('Puzzle preloading already in progress');
             return;
         }
 
         const now = Date.now();
         if (this.puzzleCache.puzzles && this.puzzleCache.loadTime &&
             (now - this.puzzleCache.loadTime) < 300000) { // 5 minutes cache
-            console.log('Using cached puzzles, skipping preload');
             return;
         }
 
         this.puzzleCache.loading = true;
 
         try {
-            console.log('🧩 Preloading daily puzzles...');
             const today = this.getTodayDate();
             const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
 
             if (response.ok) {
                 this.puzzleCache.puzzles = await response.json();
                 this.puzzleCache.loadTime = now;
-                console.log('✅ Daily puzzles preloaded successfully');
 
                 // Make puzzles globally available
                 window.preloadedPuzzles = this.puzzleCache.puzzles;
@@ -1490,15 +1451,12 @@ window.forceDailyRefresh = () => sudokuApp.forceDailyRefresh();
 window.testApi = () => sudokuApp.testApiConnectivity();
 window.testPuzzles = () => {
     if (window.sudokuEngine && window.sudokuEngine.dailyPuzzles) {
-        console.log('🧩 Current daily puzzles:', window.sudokuEngine.dailyPuzzles);
         Object.keys(window.sudokuEngine.dailyPuzzles).forEach(difficulty => {
             const puzzle = window.sudokuEngine.dailyPuzzles[difficulty];
             if (puzzle && puzzle.puzzle) {
-                console.log(`${difficulty}: First row =`, puzzle.puzzle[0]);
             }
         });
     } else {
-        console.log('❌ No Sudoku engine or daily puzzles found');
     }
 };
 window.testDates = () => {
@@ -1506,11 +1464,4 @@ window.testDates = () => {
     const utcDate = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
     const localISODate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
 
-    console.log('📅 Date debugging:');
-    console.log('🌍 System timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
-    console.log('🕐 Current time:', now.toString());
-    console.log('🌐 UTC time:', utcDate.toString());
-    console.log('📊 ISO local date:', localISODate);
-    console.log('📊 ISO UTC date:', now.toISOString().split('T')[0]);
-    console.log('⏰ Timezone offset (minutes):', now.getTimezoneOffset());
 };

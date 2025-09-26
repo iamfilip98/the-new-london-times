@@ -177,7 +177,7 @@
         // Preload scores and puzzles in the background while user is on login page
         async function preloadDataInBackground() {
             try {
-                console.log('🔄 Starting background preload of scores and puzzles...');
+                //console.log('🔄 Starting background preload of scores and puzzles...');
 
                 // Preload scores data
                 const scoresPromise = Promise.all([
@@ -186,7 +186,7 @@
                 ]).then(([entries, bulkData]) => {
                     sessionStorage.setItem('preloadedEntries', JSON.stringify(entries));
                     sessionStorage.setItem('preloadedBulkData', JSON.stringify(bulkData));
-                    console.log('✅ Scores data preloaded');
+                    //console.log('✅ Scores data preloaded');
                 }).catch(error => {
                     console.warn('Scores preload failed:', error);
                 });
@@ -199,7 +199,7 @@
                         if (puzzles) {
                             sessionStorage.setItem('preloadedPuzzles', JSON.stringify(puzzles));
                             sessionStorage.setItem('puzzlesLoadTime', Date.now().toString());
-                            console.log('✅ Daily puzzles preloaded');
+                            //console.log('✅ Daily puzzles preloaded');
                         }
                     }).catch(error => {
                         console.warn('Puzzles preload failed:', error);
@@ -207,7 +207,7 @@
 
                 // Wait for both to complete
                 await Promise.all([scoresPromise, puzzlesPromise]);
-                console.log('🎯 Background preload completed');
+                //console.log('🎯 Background preload completed');
             } catch (error) {
                 console.warn('Background preload error:', error);
             }

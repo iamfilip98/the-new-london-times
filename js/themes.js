@@ -202,7 +202,6 @@ class ThemeManager {
         // Store current theme
         localStorage.setItem('currentTheme', this.currentTheme);
 
-        console.log(`Applied theme: ${theme.name} (${this.currentTheme})`);
     }
 
     updateThemeUI(theme) {

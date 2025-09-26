@@ -3,11 +3,11 @@
 
 async function forceRefreshPuzzlesInBrowser() {
     const today = new Date().toISOString().split('T')[0];
-    console.log(`🔄 Force refreshing all puzzles for ${today}...`);
+    //console.log(`🔄 Force refreshing all puzzles for ${today}...`);
 
     try {
         // First, delete existing puzzles
-        console.log('📤 Deleting existing puzzles...');
+        //console.log('📤 Deleting existing puzzles...');
         const deleteResponse = await fetch('/api/puzzles', {
             method: 'DELETE',
             headers: {
@@ -28,7 +28,7 @@ async function forceRefreshPuzzlesInBrowser() {
         }
 
         // Then force generate new ones
-        console.log('🎲 Generating fresh puzzles...');
+        //console.log('🎲 Generating fresh puzzles...');
         const generateResponse = await fetch('/api/puzzles', {
             method: 'POST',
             headers: {
@@ -43,13 +43,13 @@ async function forceRefreshPuzzlesInBrowser() {
 
         const result = await generateResponse.json();
 
-        console.log('✅ Successfully refreshed all puzzles!');
-        console.log(`📊 Easy: ${result.easy.puzzle.flat().filter(x => x === 0).length} empty cells`);
-        console.log(`📊 Medium: ${result.medium.puzzle.flat().filter(x => x === 0).length} empty cells`);
-        console.log(`📊 Hard: ${result.hard.puzzle.flat().filter(x => x === 0).length} empty cells`);
+        //console.log('✅ Successfully refreshed all puzzles!');
+        //console.log(`📊 Easy: ${result.easy.puzzle.flat().filter(x => x === 0).length} empty cells`);
+        //console.log(`📊 Medium: ${result.medium.puzzle.flat().filter(x => x === 0).length} empty cells`);
+        //console.log(`📊 Hard: ${result.hard.puzzle.flat().filter(x => x === 0).length} empty cells`);
 
         // Clear localStorage too
-        console.log('🧹 Clearing localStorage...');
+        //console.log('🧹 Clearing localStorage...');
         const keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
@@ -66,9 +66,9 @@ async function forceRefreshPuzzlesInBrowser() {
         keysToRemove.forEach(key => {
             localStorage.removeItem(key);
         });
-        console.log(`🗑️ Cleared ${keysToRemove.length} localStorage entries`);
+        //console.log(`🗑️ Cleared ${keysToRemove.length} localStorage entries`);
 
-        console.log('🔄 Now refreshing the page to load fresh puzzles...');
+        //console.log('🔄 Now refreshing the page to load fresh puzzles...');
 
         // Auto-refresh the page after a short delay
         setTimeout(() => {

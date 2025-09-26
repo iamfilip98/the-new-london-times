@@ -2,7 +2,7 @@
 // This should be run in the browser console after resetting puzzles
 
 const today = new Date().toISOString().split('T')[0];
-console.log(`Clearing localStorage entries for ${today}...`);
+//console.log(`Clearing localStorage entries for ${today}...`);
 
 let cleared = 0;
 const keysToRemove = [];
@@ -22,10 +22,10 @@ for (let i = 0; i < localStorage.length; i++) {
 
 // Remove the keys
 keysToRemove.forEach(key => {
-    console.log(`Removing: ${key}`);
+    //console.log(`Removing: ${key}`);
     localStorage.removeItem(key);
     cleared++;
 });
 
-console.log(`✅ Cleared ${cleared} localStorage entries for today's puzzles`);
-console.log('🔄 Please refresh the page to load fresh puzzles');
+//console.log(`✅ Cleared ${cleared} localStorage entries for today's puzzles`);
+//console.log('🔄 Please refresh the page to load fresh puzzles');
