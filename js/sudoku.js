@@ -1644,7 +1644,8 @@ class SudokuEngine {
             if (!completed) break;
         }
 
-        if (completed) {
+        // Only mark as completed if all cells are filled AND the solution is valid
+        if (completed && this.isValidSudokuSolution(this.playerGrid)) {
             this.gameCompleted = true;
             this.stopTimer();
 
