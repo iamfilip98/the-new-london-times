@@ -2038,6 +2038,7 @@ class AchievementsManager {
                 const dateElement = badge.querySelector('.badge-date');
 
                 const achievementData = {
+                    id: achievementDef.id,
                     icon: achievementDef.icon,
                     title: achievementDef.title,
                     description: achievementDef.description,
@@ -2326,6 +2327,7 @@ class AchievementPopup {
         this.popup = document.getElementById('achievementPopup');
         this.popupContent = document.getElementById('achievementPopupContent');
         this.closeBtn = document.getElementById('achievementPopupClose');
+        this.currentAchievementId = null; // Track currently displayed achievement
 
         this.initializePopup();
     }
@@ -2356,6 +2358,12 @@ class AchievementPopup {
     showPopup(achievementData) {
         if (!this.popup || !this.popupContent) return;
 
+        // Check if clicking the same achievement - toggle behavior
+        if (this.currentAchievementId === achievementData.id && this.popup.classList.contains('show')) {
+            this.hidePopup();
+            return;
+        }
+
         // Create popup content
         const content = `
             <button class="achievement-popup-close" id="achievementPopupClose">&times;</button>
@@ -2380,6 +2388,9 @@ class AchievementPopup {
             });
         }
 
+        // Store current achievement ID for toggle functionality
+        this.currentAchievementId = achievementData.id;
+
         this.popup.classList.add('show');
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
     }
@@ -2389,6 +2400,7 @@ class AchievementPopup {
 
         this.popup.classList.remove('show');
         document.body.style.overflow = ''; // Restore scrolling
+        this.currentAchievementId = null; // Clear current achievement
     }
 }
 
