@@ -3041,10 +3041,10 @@ class SudokuEngine {
                 playTone(800, 0.1);
                 break;
             case 'bubble':
-                // Create a bubble-like sound with multiple frequencies
-                playTone(600, 0.05, 'sine');
-                setTimeout(() => playTone(900, 0.03, 'sine'), 20);
-                setTimeout(() => playTone(1200, 0.02, 'sine'), 35);
+                // Create a soft, cute bubble-like sound with gentle frequencies
+                playTone(400, 0.08, 'sine');
+                setTimeout(() => playTone(600, 0.06, 'sine'), 30);
+                setTimeout(() => playTone(800, 0.04, 'sine'), 60);
                 break;
             case 'click':
                 // Sharp, quick click sound
