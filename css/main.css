@@ -606,8 +606,8 @@ body {
     position: relative;
     animation: bounceIn 1s ease-out;
     animation-delay: 0.2s;
-    opacity: 0;
     animation-fill-mode: forwards;
+    opacity: 0;
 }
 
 .vs-circle-container {
