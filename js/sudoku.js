@@ -1727,11 +1727,12 @@ class SudokuEngine {
         // Use progressive hint penalty system
         const adjustedTime = this.timer + (this.errors * 30) + this.hintTimePenalty;
         const adjustedMinutes = adjustedTime / 60;
-        const multipliers = { easy: 1, medium: 1.5, hard: 2 };
+        const multipliers = { easy: 1, medium: 1.8, hard: 3.2 };
 
         if (adjustedMinutes === 0) return 0;
 
-        let score = (1000 / adjustedMinutes) * multipliers[this.currentDifficulty];
+        // Square root scaling for better score distribution
+        let score = (1000 / Math.sqrt(adjustedMinutes)) * multipliers[this.currentDifficulty];
 
         // Apply theme multiplier if theme manager is available
         if (window.themeManager) {
