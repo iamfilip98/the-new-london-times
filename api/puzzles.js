@@ -166,14 +166,14 @@ function generatePuzzle(solution, difficulty) {
       maxEmptyRegions: 5             // Allow more empty regions for complexity
     },
     hard: {
-      minClues: 17,       // Even more aggressive for true challenge
-      maxClues: 21,       // Reduced maximum for increased difficulty
+      minClues: 22,       // More reasonable minimum for hard puzzles
+      maxClues: 28,       // Achievable maximum that still provides challenge
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,   // Must use intermediate techniques
-      maxIterations: 500,             // More iterations for complex generation
+      maxIterations: 300,             // Reduced iterations for better performance
       requireEvenDistribution: false,
-      maxEmptyRegions: 7,             // Allow more empty regions
+      maxEmptyRegions: 6,             // Allow more empty regions
       allowAdvancedTechniques: true,  // Now allow advanced techniques
       requireAdvancedSolving: false,  // Don't require them, but allow them
       minAdvancedMoves: 0,
@@ -183,10 +183,10 @@ function generatePuzzle(solution, difficulty) {
       allowXYZWing: false,            // Keep XYZ-Wing off
       allowChains: false,             // Keep chains off
       requireHiddenSubsets: true,     // MUST require hidden subsets
-      minHiddenSubsets: 2,            // Require at least 2 hidden subset moves
+      minHiddenSubsets: 1,            // Require at least 1 hidden subset move
       maxHiddenLevel: 3,              // Hidden pairs/triples required
       requireNakedSubsets: true,      // Also require naked pairs/triples
-      minNakedSubsets: 2              // At least 2 naked subset moves
+      minNakedSubsets: 1              // At least 1 naked subset move
     }
   };
 
@@ -280,7 +280,7 @@ function createFallbackPuzzle(solution, difficulty) {
   const targetClues = {
     easy: 42,   // Increased for truly easy solving (no candidates needed)
     medium: 29, // Slightly more challenging
-    hard: 19    // Even more aggressive for advanced techniques
+    hard: 25    // Reasonable challenge that can be consistently generated
   };
 
   const positions = [];
