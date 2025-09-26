@@ -1076,6 +1076,46 @@ class AchievementsManager {
                 type: 'competitive',
                 requirement: { type: 'time_pattern_mirror', value: 1 },
                 rarity: 'legendary'
+            },
+
+            // BONUS ACHIEVEMENTS (4 more to reach 121)
+            {
+                id: 'century_club',
+                title: 'Century Club',
+                description: 'Complete 100 total puzzles across all difficulties',
+                icon: 'fas fa-certificate',
+                type: 'milestone',
+                requirement: { type: 'total_puzzles_completed', value: 100 },
+                rarity: 'epic',
+                oneTime: true
+            },
+            {
+                id: 'double_trouble',
+                title: 'Double Trouble',
+                description: 'Complete both Easy and Medium in under 5 minutes total',
+                icon: 'fas fa-stopwatch',
+                type: 'speed',
+                requirement: { type: 'easy_medium_time_under', value: 300 },
+                rarity: 'rare'
+            },
+            {
+                id: 'puzzle_archaeologist',
+                title: 'Puzzle Archaeologist',
+                description: 'Complete a puzzle that was started over 24 hours ago',
+                icon: 'fas fa-hourglass-end',
+                type: 'patience',
+                requirement: { type: 'old_puzzle_completion', value: 24 },
+                rarity: 'epic'
+            },
+            {
+                id: 'the_chosen_one',
+                title: 'The Chosen One',
+                description: 'Unlock achievement #121 (this one!) - The final piece of the puzzle',
+                icon: 'fas fa-crown',
+                type: 'meta',
+                requirement: { type: 'final_achievement', value: 1 },
+                rarity: 'legendary',
+                oneTime: true
             }
         ];
 
@@ -1339,6 +1379,10 @@ class AchievementsManager {
             case 'player_switches':
             case 'exact_time':
             case 'identical_scores':
+            case 'total_puzzles_completed':
+            case 'easy_medium_time_under':
+            case 'old_puzzle_completion':
+            case 'final_achievement':
                 // These achievement types are not yet implemented
                 // They will be added as the underlying tracking systems are developed
                 return [];
@@ -2219,13 +2263,16 @@ class AchievementsManager {
         if (faidaoCountEl) faidaoCountEl.textContent = playerCounts.faidao;
         if (filipCountEl) filipCountEl.textContent = playerCounts.filip;
         if (totalUnlockedEl) {
-            const totalUnlocked = playerCounts.faidao + playerCounts.filip;
-            totalUnlockedEl.textContent = totalUnlocked;
+            // Count unique achievements unlocked (not per player)
+            const uniqueAchievementsUnlocked = new Set();
+            this.unlockedAchievements.forEach(achievement => {
+                uniqueAchievementsUnlocked.add(achievement.id);
+            });
+            totalUnlockedEl.textContent = uniqueAchievementsUnlocked.size;
         }
         if (totalAchievementsEl) {
-            // Total possible achievements = definitions * 2 players
-            const totalPossible = this.achievementDefinitions.length * 2;
-            totalAchievementsEl.textContent = totalPossible;
+            // Total unique achievements (encouraging teamwork to unlock all)
+            totalAchievementsEl.textContent = this.achievementDefinitions.length;
         }
     }
 }
