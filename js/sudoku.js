@@ -42,10 +42,17 @@ class SudokuEngine {
         this.loadSettings();
         this.createSudokuInterface();
 
+        // INSTANT LOADING: Generate fallback puzzles immediately before any async operations
+        if (!this.dailyPuzzles) {
+            console.log('⚡ Generating instant fallback puzzles...');
+            this.generateFallbackPuzzles();
+        }
+
         // Setup automatic daily refresh system
         this.setupAutomaticRefresh();
 
-        await this.loadDailyPuzzles();
+        // Load puzzles (now instant due to fallback)
+        this.loadDailyPuzzles();
         this.setupEventListeners();
 
         // Check if there's a selected difficulty from dashboard
@@ -165,7 +172,7 @@ class SudokuEngine {
                 <!-- Game Status -->
                 <div class="game-status" id="gameStatus">
                     <div class="status-message">
-                        Select a difficulty to start playing!
+                        Ready to play! Select a difficulty to start.
                     </div>
                 </div>
             </div>
@@ -366,9 +373,9 @@ class SudokuEngine {
 
     async loadDailyPuzzles() {
         try {
-            // Ensure fallback puzzles are always available for instant loading
+            // INSTANT LOADING: Always ensure fallback puzzles are available immediately
             if (!this.dailyPuzzles) {
-                console.log('🚀 Preloading fallback puzzles for instant access...');
+                console.log('⚡ Loading fallback puzzles instantly...');
                 this.generateFallbackPuzzles();
             }
 
@@ -386,20 +393,29 @@ class SudokuEngine {
                 return;
             }
 
-            // Fallback: Load daily puzzles from server API (non-blocking)
-            console.log('🔄 Preloaded puzzles not available, fetching from server...');
-            const today = this.getTodayDateString();
-            const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
+            // Background: Try to load daily puzzles from server API (non-blocking)
+            // This runs in background while user can play with fallback puzzles
+            console.log('🔄 Attempting background API update...');
+            setTimeout(async () => {
+                try {
+                    const today = this.getTodayDateString();
+                    const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
 
-            if (response.ok) {
-                const apiPuzzles = await response.json();
-                this.dailyPuzzles = apiPuzzles;
-                console.log('✅ Daily puzzles loaded from server, replacing fallback');
-            } else {
-                throw new Error('Failed to fetch daily puzzles');
-            }
+                    if (response.ok) {
+                        const apiPuzzles = await response.json();
+                        const validation = this.validatePuzzleData(apiPuzzles);
+                        if (validation.isValid) {
+                            this.dailyPuzzles = apiPuzzles;
+                            console.log('✅ Daily puzzles updated in background');
+                        }
+                    }
+                } catch (error) {
+                    console.log('ℹ️ Background API update failed, using fallback puzzles');
+                }
+            }, 100); // Minimal delay to not block UI
+
         } catch (error) {
-            console.log('ℹ️ API puzzles unavailable, using fallback puzzles (already loaded)');
+            console.log('ℹ️ Using fallback puzzles for instant loading');
             // Fallback puzzles are already loaded, so no delay here
         }
     }

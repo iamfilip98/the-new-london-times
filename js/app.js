@@ -53,8 +53,8 @@ class SudokuChampionship {
         this.setCurrentDate();
         this.initializeScoreDisplay();
 
-        // Preload puzzles immediately on website entry
-        this.preloadPuzzles();
+        // Preload puzzles in background for instant loading
+        setTimeout(() => this.preloadPuzzles(), 10);
 
         // Load data from database or migrate from localStorage
         await this.loadData();
