@@ -33,6 +33,7 @@ class SudokuEngine {
         this.showTimer = true;
         this.autoSave = true;
         this.soundLevel = 'medium';
+        this.inputSoundType = 'classic';
         this.streakCount = 0;
         this.bestTime = { easy: null, medium: null, hard: null };
     }
@@ -2439,6 +2440,15 @@ class SudokuEngine {
                             <option value="high" ${this.soundLevel === 'high' ? 'selected' : ''}>High</option>
                         </select>
                     </div>
+                    <div class="setting-item">
+                        <label>Number Input Sound</label>
+                        <select id="inputSoundType">
+                            <option value="classic" ${this.inputSoundType === 'classic' || !this.inputSoundType ? 'selected' : ''}>Classic</option>
+                            <option value="bubble" ${this.inputSoundType === 'bubble' ? 'selected' : ''}>Bubble</option>
+                            <option value="click" ${this.inputSoundType === 'click' ? 'selected' : ''}>Click</option>
+                            <option value="soft" ${this.inputSoundType === 'soft' ? 'selected' : ''}>Soft</option>
+                        </select>
+                    </div>
                     ${(() => {
                         debugLog('Settings modal debug:', {
                             gameStarted: this.gameStarted,
@@ -2476,12 +2486,14 @@ class SudokuEngine {
         this.autoCheckErrors = document.getElementById('autoCheckErrors').checked;
         this.showTimer = document.getElementById('showTimer').checked;
         this.soundLevel = document.getElementById('soundLevel').value;
+        this.inputSoundType = document.getElementById('inputSoundType').value;
 
         // Save to localStorage
         const settings = {
             autoCheckErrors: this.autoCheckErrors,
             showTimer: this.showTimer,
-            soundLevel: this.soundLevel
+            soundLevel: this.soundLevel,
+            inputSoundType: this.inputSoundType
         };
         localStorage.setItem('sudoku_settings', JSON.stringify(settings));
 
@@ -2499,6 +2511,7 @@ class SudokuEngine {
             this.autoCheckErrors = parsed.autoCheckErrors !== false;
             this.showTimer = parsed.showTimer !== false;
             this.soundLevel = parsed.soundLevel || 'medium';
+            this.inputSoundType = parsed.inputSoundType || 'classic';
         }
         // Auto-save is always enabled
         this.autoSave = true;
@@ -2977,7 +2990,7 @@ class SudokuEngine {
 
         switch (type) {
             case 'place':
-                playTone(800, 0.1);
+                this.playInputSound();
                 break;
             case 'error':
                 playTone(300, 0.2);
@@ -2989,6 +3002,57 @@ class SudokuEngine {
                 break;
             case 'hint':
                 playTone(1000, 0.15);
+                break;
+        }
+    }
+
+    playInputSound() {
+        if (this.soundLevel === 'off') return;
+
+        const volume = {
+            'low': 0.3,
+            'medium': 0.6,
+            'high': 1.0
+        }[this.soundLevel] || 0.6;
+
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        const playTone = (frequency, duration, waveType = 'sine') => {
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+
+            oscillator.frequency.value = frequency;
+            oscillator.type = waveType;
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
+
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + duration);
+        };
+
+        switch (this.inputSoundType) {
+            case 'classic':
+                playTone(800, 0.1);
+                break;
+            case 'bubble':
+                // Create a bubble-like sound with multiple frequencies
+                playTone(600, 0.05, 'sine');
+                setTimeout(() => playTone(900, 0.03, 'sine'), 20);
+                setTimeout(() => playTone(1200, 0.02, 'sine'), 35);
+                break;
+            case 'click':
+                // Sharp, quick click sound
+                playTone(1200, 0.03, 'square');
+                break;
+            case 'soft':
+                // Gentle, mellow sound
+                playTone(500, 0.15, 'triangle');
                 break;
         }
     }
