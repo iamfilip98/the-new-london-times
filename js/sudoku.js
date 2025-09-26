@@ -3275,22 +3275,61 @@ class SudokuEngine {
 
     // Navigation methods for completion notifications
     navigateToMedium() {
-        this.changeDifficulty('medium');
-        this.startNewGame();
-        // Remove completion notification
+        // Ensure we stay on sudoku page
+        this.ensureOnSudokuPage();
+
+        // Remove completion notification first
         const notification = document.querySelector('.completion-notification-overlay');
         if (notification) {
             notification.remove();
         }
+
+        // Close any modals and clear game status
+        document.querySelectorAll('.stats-modal, .completion-modal').forEach(modal => modal.remove());
+        document.getElementById('gameStatus').innerHTML = '';
+
+        // Change difficulty (this will load the new puzzle)
+        this.changeDifficulty('medium');
     }
 
     navigateToHard() {
-        this.changeDifficulty('hard');
-        this.startNewGame();
-        // Remove completion notification
+        // Ensure we stay on sudoku page
+        this.ensureOnSudokuPage();
+
+        // Remove completion notification first
         const notification = document.querySelector('.completion-notification-overlay');
         if (notification) {
             notification.remove();
+        }
+
+        // Close any modals and clear game status
+        document.querySelectorAll('.stats-modal, .completion-modal').forEach(modal => modal.remove());
+        document.getElementById('gameStatus').innerHTML = '';
+
+        // Change difficulty (this will load the new puzzle)
+        this.changeDifficulty('hard');
+    }
+
+    // Helper method to ensure we're on the sudoku page
+    ensureOnSudokuPage() {
+        // Check if we're not on the sudoku page and navigate there if needed
+        const sudokuPage = document.getElementById('sudoku');
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        if (!sudokuPage || !sudokuPage.classList.contains('active')) {
+            // Switch to sudoku page
+            pages.forEach(page => page.classList.remove('active'));
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            if (sudokuPage) {
+                sudokuPage.classList.add('active');
+            }
+
+            const sudokuNavLink = document.querySelector('.nav-link[data-page="sudoku"]');
+            if (sudokuNavLink) {
+                sudokuNavLink.classList.add('active');
+            }
         }
     }
 
