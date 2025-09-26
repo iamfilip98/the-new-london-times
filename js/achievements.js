@@ -1278,6 +1278,71 @@ class AchievementsManager {
             case 'win_with_errors':
                 return this.checkWinWithErrors(req.value, newEntry);
 
+            // Placeholder functions for new achievement types
+            // These will be implemented as needed when the underlying data tracking is available
+            case 'weekend_wins':
+            case 'monday_wins':
+            case 'friday_wins':
+            case 'friday_13th_win':
+            case 'new_year_win':
+            case 'birthday_win':
+            case 'valentines_win':
+            case 'halloween_win':
+            case 'christmas_win':
+            case 'thanksgiving_win':
+            case 'spring_equinox_win':
+            case 'summer_solstice_win':
+            case 'winter_solstice_win':
+            case 'april_fools_win':
+            case 'pi_day_win':
+            case 'leap_day_win':
+            case 'july_4th_win':
+            case 'eclipse_win':
+            case 'meteor_shower_win':
+            case 'full_moon_win':
+            case 'black_friday_win':
+            case 'fibonacci_score':
+            case 'prime_score':
+            case 'perfect_square_score':
+            case 'all_sevens_score':
+            case 'palindrome_score':
+            case 'exact_score':
+            case 'triple_digit_times':
+            case 'golden_ratio_score':
+            case 'power_of_two_score':
+            case 'triangular_score':
+            case 'catalan_score':
+            case 'factorial_score':
+            case 'even_score_streak':
+            case 'odd_score_streak':
+            case 'score_ends_in_zero':
+            case 'score_ends_in_000':
+            case 'digital_root_one':
+            case 'ascending_digits':
+            case 'one_point_wins':
+            case 'late_comeback':
+            case 'mirror_completion_order':
+            case 'influence_opponent_order':
+            case 'complete_all_before_opponent_one':
+            case 'final_puzzle_comeback':
+            case 'strategic_slow_wins':
+            case 'speed_dominance_wins':
+            case 'force_ties':
+            case 'clutch_wins':
+            case 'large_comeback':
+            case 'prevent_comebacks':
+            case 'perfect_order_wins':
+            case 'hard_first_wins':
+            case 'time_pattern_mirror':
+            case 'analytics_visits':
+            case 'achievements_visits':
+            case 'player_switches':
+            case 'exact_time':
+            case 'identical_scores':
+                // These achievement types are not yet implemented
+                // They will be added as the underlying tracking systems are developed
+                return [];
+
             default:
                 return [];
         }
