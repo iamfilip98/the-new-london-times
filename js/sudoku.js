@@ -3326,3 +3326,92 @@ window.masterRefresh = async function() {
         return false;
     }
 };
+
+// Debug function to inspect current puzzle state
+window.debugPuzzleState = function() {
+    console.log('🔍 PUZZLE STATE DIAGNOSTIC');
+    console.log('=' .repeat(50));
+
+    // Check if sudokuEngine exists
+    if (!window.sudokuEngine) {
+        console.log('❌ window.sudokuEngine not found');
+        console.log('💡 Make sure you\'re on the Sudoku game page');
+        return;
+    }
+
+    const engine = window.sudokuEngine;
+
+    // Basic engine state
+    console.log('📋 Basic Engine State:');
+    console.log('  Current difficulty:', engine.currentDifficulty);
+    console.log('  Game started:', engine.gameStarted);
+    console.log('  Last puzzle date:', engine.lastPuzzleDate);
+
+    // Check daily puzzles in memory
+    console.log('\n📊 Daily Puzzles in Memory:');
+    if (engine.dailyPuzzles) {
+        Object.keys(engine.dailyPuzzles).forEach(diff => {
+            const puzzle = engine.dailyPuzzles[diff];
+            if (puzzle?.puzzle) {
+                const clues = puzzle.puzzle.flat().filter(n => n !== 0).length;
+                console.log(`  ${diff}: ${clues} clues`);
+            } else {
+                console.log(`  ${diff}: Invalid puzzle data`);
+            }
+        });
+    } else {
+        console.log('  ❌ No dailyPuzzles loaded');
+    }
+
+    // Check what's displayed on screen
+    console.log('\n🖼️ Current Display State:');
+    if (engine.initialGrid) {
+        const displayedClues = engine.initialGrid.flat().filter(n => n !== 0).length;
+        console.log('  Displayed puzzle clues:', displayedClues);
+    } else {
+        console.log('  ❌ No initialGrid (nothing displayed)');
+    }
+
+    if (engine.playerGrid) {
+        const playerClues = engine.playerGrid.flat().filter(n => n !== 0).length;
+        console.log('  Player grid filled cells:', playerClues);
+    }
+
+    // Check caches
+    console.log('\n💾 Cache Status:');
+    console.log('  window.preloadedPuzzles:', !!window.preloadedPuzzles);
+    if (window.sudokuApp) {
+        console.log('  sudokuApp.puzzleCache:', !!window.sudokuApp.puzzleCache.puzzles);
+        console.log('  sudokuApp cache time:', window.sudokuApp.puzzleCache.loadTime);
+    }
+
+    // Check localStorage
+    const player = sessionStorage.getItem('currentPlayer');
+    const today = new Date().toISOString().split('T')[0];
+    console.log('\n💾 LocalStorage Saved Games:');
+    if (player) {
+        ['easy', 'medium', 'hard'].forEach(diff => {
+            const key = `sudoku_${player}_${today}_${diff}`;
+            const saved = localStorage.getItem(key);
+            console.log(`  ${diff}: ${saved ? 'SAVED GAME EXISTS' : 'No saved game'}`);
+        });
+    } else {
+        console.log('  No player found');
+    }
+
+    console.log('\n🔧 Recommendations:');
+    if (!engine.dailyPuzzles) {
+        console.log('  • Run masterRefresh() to reload puzzles');
+    } else if (engine.dailyPuzzles && engine.initialGrid) {
+        const memoryClues = engine.dailyPuzzles[engine.currentDifficulty]?.puzzle?.flat().filter(n => n !== 0).length;
+        const displayClues = engine.initialGrid.flat().filter(n => n !== 0).length;
+        if (memoryClues !== displayClues) {
+            console.log(`  • MISMATCH: Memory has ${memoryClues} clues but display shows ${displayClues}`);
+            console.log('  • Try masterRefresh() or switch difficulty levels');
+        } else {
+            console.log('  • Memory and display match - puzzle should be correct');
+        }
+    }
+
+    console.log('=' .repeat(50));
+};
