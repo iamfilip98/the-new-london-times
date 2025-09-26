@@ -2638,43 +2638,52 @@ body {
     }
 
     .achievement-badge {
-        aspect-ratio: 1; /* Force perfect square */
-        width: 100%; /* Take full grid cell width */
-        height: auto;
-        padding: 0.5rem;
+        width: 100%;
+        aspect-ratio: 1 / 1; /* Force perfect 1:1 square */
+        padding: 8px;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border-radius: 12px;
+        border-radius: 8px;
         box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+        /* Ensure no text content affects size */
+        min-height: unset;
+        max-height: unset;
+        height: unset;
     }
 
     .achievement-badge:hover {
         transform: scale(1.05);
     }
 
-    /* Hide all text content on mobile, show only icon */
-    .achievement-badge .badge-title,
-    .achievement-badge .badge-description,
-    .achievement-badge .badge-rarity,
-    .achievement-badge .badge-progress,
-    .achievement-badge .badge-unlocked-by,
-    .achievement-badge .badge-date {
-        display: none;
+    /* Hide ALL content except icon on mobile */
+    .achievement-badge > *:not(.badge-icon) {
+        display: none !important;
     }
 
-    /* Show only the icon, sized for mobile */
+    /* Show only the icon, properly sized for mobile squares */
     .achievement-badge .badge-icon {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         margin: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
+        padding: 0;
+        width: auto;
+        height: auto;
+        display: flex !important;
         align-items: center;
         justify-content: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .achievement-badge .badge-icon i {
+        font-size: inherit;
+        line-height: 1;
     }
 
     /* Achievement popup modal for mobile */
