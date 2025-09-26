@@ -4497,8 +4497,7 @@ select:focus-visible,
 
 /* Game Status */
 .game-status {
-    text-align: center;
-    padding: 1rem;
+    display: none;
 }
 
 .status-message {
