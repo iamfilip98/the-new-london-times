@@ -604,10 +604,7 @@ body {
     align-items: center;
     gap: 1.5rem;
     position: relative;
-    animation: bounceIn 1s ease-out;
-    animation-delay: 0.2s;
-    animation-fill-mode: forwards;
-    opacity: 0;
+    opacity: 1;
 }
 
 .vs-circle-container {
