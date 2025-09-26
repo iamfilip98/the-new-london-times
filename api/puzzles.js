@@ -144,37 +144,25 @@ function generatePuzzle(solution, difficulty) {
   // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
     easy: {
-      minClues: 40,      // Increased for true beginner-friendly puzzles
-      maxClues: 45,      // More clues = only naked/hidden singles needed
+      minClues: 35,      // Slightly reduced from previous easy for more challenge
+      maxClues: 42,      // Still beginner-friendly but requires some basic reasoning
       requireNakedSingles: true,
       allowHiddenSingles: true,
-      allowComplexTechniques: false,  // Absolutely no advanced techniques
-      maxIterations: 100,  // More iterations for better placement
-      requireEvenDistribution: true,  // Ensure clues are spread across regions
-      maxEmptyRegions: 1   // Max 1 empty 3x3 region for easier solving
+      allowComplexTechniques: false,  // Still no advanced techniques for true beginners
+      maxIterations: 100,
+      requireEvenDistribution: true,  // Keep even distribution for easier solving
+      maxEmptyRegions: 2   // Allow slightly more empty regions
     },
     medium: {
-      minClues: 26,      // Reduced from 30 for more challenge
-      maxClues: 32,      // Increased minimum difficulty
-      requireNakedSingles: false,
-      allowHiddenSingles: true,
-      allowComplexTechniques: true,
-      requireHiddenSubsets: true,     // Now requires at least basic subset techniques
-      minHiddenSubsets: 1,           // Must require at least 1 hidden subset move
-      maxIterations: 250,            // More iterations for better generation
-      requireEvenDistribution: false,
-      maxEmptyRegions: 5             // Allow more empty regions for complexity
-    },
-    hard: {
-      minClues: 22,       // More reasonable minimum for hard puzzles
-      maxClues: 28,       // Achievable maximum that still provides challenge
+      minClues: 22,      // Now matches old hard difficulty
+      maxClues: 28,      // Previous hard range becomes new medium
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,   // Must use intermediate techniques
-      maxIterations: 300,             // Reduced iterations for better performance
+      maxIterations: 300,
       requireEvenDistribution: false,
       maxEmptyRegions: 6,             // Allow more empty regions
-      allowAdvancedTechniques: true,  // Now allow advanced techniques
+      allowAdvancedTechniques: true,  // Allow some advanced techniques
       requireAdvancedSolving: false,  // Don't require them, but allow them
       minAdvancedMoves: 0,
       allowXWing: true,               // Enable X-Wing patterns
@@ -187,6 +175,31 @@ function generatePuzzle(solution, difficulty) {
       maxHiddenLevel: 3,              // Hidden pairs/triples required
       requireNakedSubsets: true,      // Also require naked pairs/triples
       minNakedSubsets: 1              // At least 1 naked subset move
+    },
+    hard: {
+      minClues: 17,       // Significantly fewer clues for true challenge
+      maxClues: 24,       // Maximum still allows logical solving but very challenging
+      requireNakedSingles: false,
+      allowHiddenSingles: true,
+      allowComplexTechniques: true,   // Must use intermediate techniques
+      maxIterations: 400,             // More iterations for complex generation
+      requireEvenDistribution: false,
+      maxEmptyRegions: 7,             // Allow even more empty regions
+      allowAdvancedTechniques: true,  // Enable all advanced techniques
+      requireAdvancedSolving: true,   // REQUIRE advanced techniques
+      minAdvancedMoves: 2,            // Must require at least 2 advanced moves
+      allowXWing: true,               // Enable X-Wing patterns
+      allowSwordfish: true,           // Now enable Swordfish for experts
+      allowYWing: true,               // Enable Y-Wing for experts
+      allowXYZWing: true,             // Enable XYZ-Wing for experts
+      allowChains: true,              // Enable simple coloring/chains
+      requireHiddenSubsets: true,     // MUST require hidden subsets
+      minHiddenSubsets: 2,            // Require at least 2 hidden subset moves
+      maxHiddenLevel: 4,              // Allow hidden quads for maximum difficulty
+      requireNakedSubsets: true,      // Also require naked pairs/triples/quads
+      minNakedSubsets: 2,             // At least 2 naked subset moves
+      requireMultipleAdvanced: true,  // Must use multiple different advanced techniques
+      minTechniqueVariety: 3          // Must use at least 3 different advanced technique types
     }
   };
 
@@ -278,9 +291,9 @@ function generatePuzzle(solution, difficulty) {
 function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
   const targetClues = {
-    easy: 42,   // Increased for truly easy solving (no candidates needed)
-    medium: 29, // Slightly more challenging
-    hard: 25    // Reasonable challenge that can be consistently generated
+    easy: 38,   // Updated to match new easy range
+    medium: 25, // Updated to match new medium range (old hard)
+    hard: 20    // Significantly harder - minimum viable for logical solving
   };
 
   const positions = [];
@@ -340,6 +353,11 @@ function isPuzzleSolvableLogically(puzzle, settings) {
   let advancedTechniquesUsed = 0;  // Track usage of advanced techniques
   let hiddenSubsetsUsed = 0;       // Track usage of hidden subsets
   let nakedSubsetsUsed = 0;        // Track usage of naked subsets
+  let techniquesUsed = new Set();  // Track variety of techniques used
+  let xWingUsed = 0;
+  let yWingUsed = 0;
+  let swordfishUsed = 0;
+  let chainsUsed = 0;
 
   while (changed && iterations < maxSolverIterations) {
     changed = false;
@@ -364,6 +382,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
     if (settings.allowComplexTechniques && applyNakedSubsets(testGrid, candidates)) {
       changed = true;
       nakedSubsetsUsed++;
+      techniquesUsed.add('naked_subsets');
       continue;
     }
 
@@ -371,6 +390,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
     if (settings.allowComplexTechniques && applyHiddenSubsets(testGrid, candidates)) {
       changed = true;
       hiddenSubsetsUsed++;
+      techniquesUsed.add('hidden_subsets');
       continue;
     }
 
@@ -392,6 +412,8 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       if (settings.allowXWing && applyXWing(testGrid, candidates)) {
         changed = true;
         advancedTechniquesUsed++;
+        xWingUsed++;
+        techniquesUsed.add('xwing');
         continue;
       }
 
@@ -399,6 +421,8 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       if (settings.allowYWing && applyYWing(testGrid, candidates)) {
         changed = true;
         advancedTechniquesUsed++;
+        yWingUsed++;
+        techniquesUsed.add('ywing');
         continue;
       }
 
@@ -406,6 +430,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       if (settings.allowXYZWing && applyXYZWing(testGrid, candidates)) {
         changed = true;
         advancedTechniquesUsed++;
+        techniquesUsed.add('xyzwing');
         continue;
       }
 
@@ -413,6 +438,8 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       if (settings.allowSwordfish && applySwordfish(testGrid, candidates)) {
         changed = true;
         advancedTechniquesUsed++;
+        swordfishUsed++;
+        techniquesUsed.add('swordfish');
         continue;
       }
 
@@ -420,6 +447,8 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       if (settings.allowChains && applySimpleColoring(testGrid, candidates)) {
         changed = true;
         advancedTechniquesUsed++;
+        chainsUsed++;
+        techniquesUsed.add('chains');
         continue;
       }
     }
@@ -451,6 +480,15 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       if (settings.requireNakedSubsets && settings.minNakedSubsets) {
         if (nakedSubsetsUsed < settings.minNakedSubsets) {
           return false; // Hard puzzle should require naked subset techniques
+        }
+      }
+
+      // Check if hard puzzles require multiple advanced techniques
+      if (settings.requireMultipleAdvanced && settings.minTechniqueVariety) {
+        const advancedTechniques = ['xwing', 'ywing', 'xyzwing', 'swordfish', 'chains'];
+        const usedAdvanced = advancedTechniques.filter(tech => techniquesUsed.has(tech));
+        if (usedAdvanced.length < settings.minTechniqueVariety) {
+          return false; // Hard puzzle should require variety of advanced techniques
         }
       }
 
