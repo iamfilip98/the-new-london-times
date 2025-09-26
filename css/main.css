@@ -6347,50 +6347,173 @@ select:focus-visible,
 
 .play-button {
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    border: 2px solid rgba(255, 255, 255, 0.25);
+    border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 50px;
-    padding: 1rem 2rem;
+    padding: 1.2rem 2.5rem;
     color: white;
-    font-weight: 600;
-    font-size: 1rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: 'Orbitron', monospace;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     width: 100%;
     position: relative;
     z-index: 2;
-    min-height: 48px;
-    box-shadow: var(--shadow-md);
+    min-height: 56px;
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        0 0 0 0 rgba(79, 172, 254, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: buttonBreathe 3s ease-in-out infinite;
+}
+
+/* Difficulty-specific button colors */
+.difficulty-option.easy .play-button {
+    background: linear-gradient(135deg, #4CAF50, #8BC34A, #66BB6A);
+    animation: buttonBreatheGreen 3s ease-in-out infinite;
+}
+
+.difficulty-option.medium .play-button {
+    background: linear-gradient(135deg, #FF9800, #FFC107, #FFB74D);
+    animation: buttonBreatheOrange 3s ease-in-out infinite 1s;
+}
+
+.difficulty-option.hard .play-button {
+    background: linear-gradient(135deg, #F44336, #E91E63, #EF5350);
+    animation: buttonBreatheRed 3s ease-in-out infinite 2s;
+}
+
+.play-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent);
+    transition: left 0.6s ease;
+}
+
+.play-button:hover::before {
+    left: 100%;
 }
 
 .play-button:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: var(--shadow-hover), 0 0 40px rgba(79, 172, 254, 0.6);
-    border-color: rgba(255, 255, 255, 0.5);
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
-    background-size: 200% 100%;
-    animation: buttonShimmer 1.5s ease-in-out infinite;
+    transform: translateY(-8px) scale(1.08);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25),
+        0 0 50px rgba(79, 172, 254, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.8);
+    animation: none;
 }
 
-@keyframes buttonShimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
+.difficulty-option.easy .play-button:hover {
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25),
+        0 0 50px rgba(76, 175, 80, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #66BB6A, #9CCC65, #81C784);
+}
+
+.difficulty-option.medium .play-button:hover {
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25),
+        0 0 50px rgba(255, 152, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #FFB74D, #FFD54F, #FFCC02);
+}
+
+.difficulty-option.hard .play-button:hover {
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25),
+        0 0 50px rgba(244, 67, 54, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #EF5350, #EC407A, #FF5722);
 }
 
 .play-button:focus {
     outline: none;
-    box-shadow: var(--shadow-focus), var(--shadow-lg);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25),
+        0 0 0 4px rgba(79, 172, 254, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .play-button:active {
-    transform: translateY(-2px) scale(0.98);
+    transform: translateY(-4px) scale(1.02);
+    transition: all 0.1s ease;
+}
+
+/* Breathing animation for buttons */
+@keyframes buttonBreathe {
+    0%, 100% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 0 0 rgba(79, 172, 254, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 25px rgba(79, 172, 254, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+@keyframes buttonBreatheGreen {
+    0%, 100% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 0 0 rgba(76, 175, 80, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 25px rgba(76, 175, 80, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+@keyframes buttonBreatheOrange {
+    0%, 100% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 0 0 rgba(255, 152, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 25px rgba(255, 152, 0, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+@keyframes buttonBreatheRed {
+    0%, 100% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 0 0 rgba(244, 67, 54, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 25px rgba(244, 67, 54, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
 }
 
 /* Enhanced button ripple effects */
