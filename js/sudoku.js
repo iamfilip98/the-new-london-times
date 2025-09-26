@@ -1711,11 +1711,25 @@ class SudokuEngine {
         // Use progressive hint penalty system
         const adjustedTime = this.timer + (this.errors * 30) + this.hintTimePenalty;
         const adjustedMinutes = adjustedTime / 60;
-        const multipliers = { easy: 1, medium: 1.5, hard: 2 };
+        const multipliers = { easy: 1.2, medium: 2.0, hard: 3.5 };
 
         if (adjustedMinutes === 0) return 0;
 
-        let score = (1000 / adjustedMinutes) * multipliers[this.currentDifficulty];
+        // Time-bracket scoring system instead of linear 1000/minutes
+        let baseScore;
+        if (adjustedMinutes <= 5) {
+            baseScore = 1000; // Full base score for 0-5 minutes
+        } else if (adjustedMinutes <= 10) {
+            baseScore = 950; // 95% for 5-10 minutes
+        } else if (adjustedMinutes <= 20) {
+            baseScore = 850; // 85% for 10-20 minutes
+        } else if (adjustedMinutes <= 30) {
+            baseScore = 700; // 70% for 20-30 minutes
+        } else {
+            baseScore = 500; // 50% for 30+ minutes
+        }
+
+        let score = baseScore * multipliers[this.currentDifficulty];
 
         // Apply theme multiplier if theme manager is available
         if (window.themeManager) {

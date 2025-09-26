@@ -35,7 +35,7 @@ class ThemeManager {
                     accent: '#ff9500',
                     background: 'linear-gradient(135deg, #2d1b69 0%, #ff6b35 100%)'
                 },
-                multiplier: 1.25,
+                multiplier: 1.1,
                 icon: 'fas fa-ghost',
                 active: this.isHalloweenSeason(),
                 sudokuStyle: {
@@ -52,7 +52,7 @@ class ThemeManager {
                     accent: '#ffd700',
                     background: 'linear-gradient(135deg, #0f7b0f 0%, #c41e3a 100%)'
                 },
-                multiplier: 1.3,
+                multiplier: 1.2,
                 icon: 'fas fa-gift',
                 active: this.isChristmasSeason(),
                 sudokuStyle: {
@@ -69,7 +69,7 @@ class ThemeManager {
                     accent: '#ff69b4',
                     background: 'linear-gradient(135deg, #4b0082 0%, #ffd700 100%)'
                 },
-                multiplier: 1.4,
+                multiplier: 1.2,
                 icon: 'fas fa-champagne-glasses',
                 active: this.isNewYearSeason(),
                 sudokuStyle: {
@@ -86,7 +86,7 @@ class ThemeManager {
                     accent: '#ffb6c1',
                     background: 'linear-gradient(135deg, #e91e63 0%, #ff69b4 100%)'
                 },
-                multiplier: 1.2,
+                multiplier: 1.1,
                 icon: 'fas fa-heart',
                 active: this.isValentinesSeason(),
                 sudokuStyle: {
@@ -103,7 +103,7 @@ class ThemeManager {
                     accent: '#98fb98',
                     background: 'linear-gradient(135deg, #32cd32 0%, #ffb347 100%)'
                 },
-                multiplier: 1.15,
+                multiplier: 1.1,
                 icon: 'fas fa-seedling',
                 active: this.isSpringSeason(),
                 sudokuStyle: {
@@ -120,7 +120,7 @@ class ThemeManager {
                     accent: '#ff6347',
                     background: 'linear-gradient(135deg, #ff4500 0%, #ffd700 100%)'
                 },
-                multiplier: 1.1,
+                multiplier: 1.0,
                 icon: 'fas fa-sun',
                 active: this.isSummerSeason(),
                 sudokuStyle: {
