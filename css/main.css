@@ -5929,8 +5929,9 @@ select:focus-visible,
     min-height: 2.5rem;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
+    gap: 0.75rem;
     flex: 1;
     min-width: 0;
 }
@@ -5939,7 +5940,6 @@ select:focus-visible,
     color: var(--accent-green);
     font-weight: 700;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
-    width: 70px;
     text-align: left;
     flex-shrink: 0;
 }
@@ -5949,7 +5949,6 @@ select:focus-visible,
     font-size: 0.8rem;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     font-weight: 600;
-    width: 50px;
     text-align: right;
     flex-shrink: 0;
 }
@@ -6002,8 +6001,9 @@ select:focus-visible,
 
     /* Keep progress status inline for completed items on mobile */
     .progress-item.completed .progress-status {
-        justify-content: space-between;
+        justify-content: flex-end;
         text-align: right;
+        gap: 0.5rem;
     }
 
     .today-progress,
