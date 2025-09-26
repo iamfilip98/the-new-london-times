@@ -4283,7 +4283,7 @@ select:focus-visible,
     box-shadow: var(--box-shadow);
     max-width: 500px;
     width: 90%;
-    max-height: 80vh;
+    max-height: 85vh;
     overflow-y: auto;
 }
 
@@ -4451,6 +4451,92 @@ select:focus-visible,
 
 .settings-modal .restart-btn {
     margin-left: 0 !important;
+}
+
+/* Mobile optimizations for settings modal */
+@media (max-width: 768px) {
+    .settings-content, .stats-content {
+        width: 95%;
+        max-height: 90vh;
+        max-width: none;
+        margin: 1rem;
+    }
+
+    .settings-header, .stats-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .settings-body, .stats-body {
+        padding: 1rem 1.25rem;
+    }
+
+    .settings-footer {
+        padding: 1rem 1.25rem;
+    }
+
+    .setting-item {
+        margin-bottom: 1.25rem;
+        padding: 0.25rem 0;
+    }
+
+    .settings-modal .btn-secondary {
+        padding: 0.875rem 1.5rem !important;
+        margin-top: 1.25rem !important;
+        margin-bottom: 0.875rem !important;
+        font-size: 0.95rem !important;
+        min-height: 52px !important;
+    }
+
+    .settings-modal .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        min-height: 48px;
+    }
+
+    .settings-modal hr {
+        margin: 1.5rem 0 1rem 0 !important;
+    }
+
+    .settings-modal small {
+        font-size: 0.8rem;
+        margin-top: 0.875rem !important;
+        line-height: 1.4;
+    }
+}
+
+/* Extra small mobile screens */
+@media (max-width: 480px) {
+    .settings-content, .stats-content {
+        width: 98%;
+        margin: 0.5rem;
+        max-height: 95vh;
+    }
+
+    .settings-header, .stats-header {
+        padding: 0.875rem 1rem;
+    }
+
+    .settings-body, .stats-body {
+        padding: 0.875rem 1rem;
+    }
+
+    .settings-footer {
+        padding: 0.875rem 1rem;
+    }
+
+    .setting-item {
+        margin-bottom: 1rem;
+    }
+
+    .settings-modal .btn-secondary {
+        padding: 0.75rem 1.25rem !important;
+        font-size: 0.9rem !important;
+        min-height: 48px !important;
+    }
+
+    .settings-modal .btn-primary {
+        font-size: 0.9rem;
+    }
 }
 
 .btn-primary, .btn-secondary {

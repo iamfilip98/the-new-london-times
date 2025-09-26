@@ -2432,12 +2432,6 @@ class SudokuEngine {
                         </label>
                     </div>
                     <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="autoSave" ${this.autoSave !== false ? 'checked' : ''}>
-                            Auto-save progress
-                        </label>
-                    </div>
-                    <div class="setting-item">
                         <label>Sound Effects</label>
                         <select id="soundLevel">
                             <option value="off" ${this.soundLevel === 'off' ? 'selected' : ''}>Off</option>
@@ -2482,14 +2476,12 @@ class SudokuEngine {
     saveSettings() {
         this.autoCheckErrors = document.getElementById('autoCheckErrors').checked;
         this.showTimer = document.getElementById('showTimer').checked;
-        this.autoSave = document.getElementById('autoSave').checked;
         this.soundLevel = document.getElementById('soundLevel').value;
 
         // Save to localStorage
         const settings = {
             autoCheckErrors: this.autoCheckErrors,
             showTimer: this.showTimer,
-            autoSave: this.autoSave,
             soundLevel: this.soundLevel
         };
         localStorage.setItem('sudoku_settings', JSON.stringify(settings));
@@ -2507,9 +2499,10 @@ class SudokuEngine {
             const parsed = JSON.parse(settings);
             this.autoCheckErrors = parsed.autoCheckErrors !== false;
             this.showTimer = parsed.showTimer !== false;
-            this.autoSave = parsed.autoSave !== false;
             this.soundLevel = parsed.soundLevel || 'medium';
         }
+        // Auto-save is always enabled
+        this.autoSave = true;
     }
 
 
