@@ -2363,6 +2363,235 @@ body {
     font-style: italic;
 }
 
+/* Achievement Filters */
+.achievement-filters {
+    margin-bottom: 2rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--box-shadow);
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.filter-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: fit-content;
+}
+
+.filter-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.filter-tab.active {
+    background: var(--accent-orange);
+    color: var(--dark-bg);
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 20px rgba(254, 225, 64, 0.3);
+}
+
+.filter-tab .count {
+    background: rgba(0, 0, 0, 0.2);
+    color: inherit;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.filter-tab.active .count {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.category-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.category-select,
+.rarity-select {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.category-select:hover,
+.rarity-select:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-orange);
+}
+
+.category-select:focus,
+.rarity-select:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 2px rgba(254, 225, 64, 0.2);
+}
+
+.category-select option,
+.rarity-select option {
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+.search-container {
+    position: relative;
+}
+
+.achievement-search {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 3rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.achievement-search:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 2px rgba(254, 225, 64, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.achievement-search::placeholder {
+    color: var(--text-secondary);
+}
+
+.search-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+    transition: var(--transition);
+}
+
+.achievement-search:focus + .search-icon {
+    color: var(--accent-orange);
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-secondary);
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-results i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+.no-results h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* Mobile optimizations for achievement filters */
+@media (max-width: 768px) {
+    .achievement-filters {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-tabs {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-tab {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .filter-tab span:not(.count) {
+        display: none;
+    }
+
+    .filter-tab i {
+        font-size: 1rem;
+    }
+
+    .category-filters {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .category-select,
+    .rarity-select {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .achievement-search {
+        padding: 0.6rem 0.8rem;
+        padding-right: 2.5rem;
+        font-size: 0.85rem;
+    }
+
+    .search-icon {
+        right: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .achievements-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .achievement-badge {
+        min-height: 250px;
+        padding: 1.5rem;
+    }
+
+    .no-results {
+        padding: 2rem 1rem;
+    }
+}
+
 /* Challenges */
 .current-challenge {
     background: var(--card-bg);

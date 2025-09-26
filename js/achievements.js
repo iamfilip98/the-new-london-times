@@ -394,7 +394,7 @@ class AchievementsManager {
                 rarity: 'epic'
             },
 
-            // QUIRKY & FUN ACHIEVEMENTS (8)
+            // QUIRKY & FUN ACHIEVEMENTS (25)
             {
                 id: 'comeback_kid',
                 title: 'Comeback Kid',
@@ -412,6 +412,15 @@ class AchievementsManager {
                 type: 'comeback',
                 requirement: { type: 'comeback_win', value: 5 },
                 rarity: 'epic'
+            },
+            {
+                id: 'phoenix_rising',
+                title: 'Phoenix Rising',
+                description: 'Win after losing 7 days in a row (legendary comeback)',
+                icon: 'fas fa-feather',
+                type: 'comeback',
+                requirement: { type: 'comeback_win', value: 7 },
+                rarity: 'legendary'
             },
             {
                 id: 'dnf_survivor',
@@ -432,6 +441,15 @@ class AchievementsManager {
                 rarity: 'common'
             },
             {
+                id: 'chaos_generator',
+                title: 'Chaos Generator',
+                description: 'Make 30+ errors in a single day',
+                icon: 'fas fa-tornado',
+                type: 'errors',
+                requirement: { type: 'total_errors_over', value: 30 },
+                rarity: 'rare'
+            },
+            {
                 id: 'error_explosion',
                 title: 'Error Explosion',
                 description: 'Make 50+ errors in a single day (how is this possible?)',
@@ -445,7 +463,7 @@ class AchievementsManager {
                 title: 'Methodical Solver',
                 description: 'Take over 15 minutes on Hard (thinking it through)',
                 icon: 'fas fa-brain',
-                type: 'speed',
+                type: 'patience',
                 requirement: { type: 'time_over', difficulty: 'hard', value: 900 },
                 rarity: 'common'
             },
@@ -454,9 +472,18 @@ class AchievementsManager {
                 title: 'Perfectionist Patience',
                 description: 'Take over 20 minutes on Hard (maximum dedication)',
                 icon: 'fas fa-clock',
-                type: 'speed',
+                type: 'patience',
                 requirement: { type: 'time_over', difficulty: 'hard', value: 1200 },
                 rarity: 'rare'
+            },
+            {
+                id: 'zen_master',
+                title: 'Zen Master',
+                description: 'Take over 30 minutes on Hard (ultimate patience)',
+                icon: 'fas fa-meditation',
+                type: 'patience',
+                requirement: { type: 'time_over', difficulty: 'hard', value: 1800 },
+                rarity: 'epic'
             },
             {
                 id: 'error_recovery',
@@ -466,10 +493,596 @@ class AchievementsManager {
                 type: 'errors',
                 requirement: { type: 'win_with_errors', value: 10 },
                 rarity: 'epic'
+            },
+            {
+                id: 'night_owl',
+                title: 'Night Owl',
+                description: 'Complete a puzzle after 10 PM',
+                icon: 'fas fa-moon',
+                type: 'timing',
+                requirement: { type: 'late_submission', value: 22 },
+                rarity: 'common'
+            },
+            {
+                id: 'early_bird',
+                title: 'Early Bird',
+                description: 'Complete a puzzle before 7 AM',
+                icon: 'fas fa-sun',
+                type: 'timing',
+                requirement: { type: 'early_submission', value: 7 },
+                rarity: 'common'
+            },
+            {
+                id: 'midnight_warrior',
+                title: 'Midnight Warrior',
+                description: 'Complete a puzzle after midnight',
+                icon: 'fas fa-star',
+                type: 'timing',
+                requirement: { type: 'late_submission', value: 24 },
+                rarity: 'rare'
+            },
+            {
+                id: 'weekend_specialist',
+                title: 'Weekend Specialist',
+                description: 'Win 10 weekend battles',
+                icon: 'fas fa-calendar-weekend',
+                type: 'timing',
+                requirement: { type: 'weekend_wins', value: 10 },
+                rarity: 'epic'
+            },
+            {
+                id: 'monday_blues',
+                title: 'Monday Blues Fighter',
+                description: 'Win 5 Monday battles',
+                icon: 'fas fa-coffee',
+                type: 'timing',
+                requirement: { type: 'monday_wins', value: 5 },
+                rarity: 'rare'
+            },
+            {
+                id: 'friday_finisher',
+                title: 'Friday Finisher',
+                description: 'Win 5 Friday battles',
+                icon: 'fas fa-glass-cheers',
+                type: 'timing',
+                requirement: { type: 'friday_wins', value: 5 },
+                rarity: 'rare'
+            },
+            {
+                id: 'lucky_thirteen',
+                title: 'Lucky Thirteen',
+                description: 'Win on Friday the 13th',
+                icon: 'fas fa-cat',
+                type: 'timing',
+                requirement: { type: 'friday_13th_win', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'new_year_champion',
+                title: 'New Year Champion',
+                description: 'Win on January 1st',
+                icon: 'fas fa-fireworks',
+                type: 'timing',
+                requirement: { type: 'new_year_win', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'birthday_bash',
+                title: 'Birthday Bash',
+                description: 'Win on your birthday (custom date)',
+                icon: 'fas fa-birthday-cake',
+                type: 'timing',
+                requirement: { type: 'birthday_win', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'data_analyst',
+                title: 'Data Analyst',
+                description: 'Check analytics page 10 times',
+                icon: 'fas fa-chart-bar',
+                type: 'meta',
+                requirement: { type: 'analytics_visits', value: 10 },
+                rarity: 'common'
+            },
+            {
+                id: 'achievement_hunter',
+                title: 'Achievement Hunter',
+                description: 'Check achievements page 25 times',
+                icon: 'fas fa-trophy',
+                type: 'meta',
+                requirement: { type: 'achievements_visits', value: 25 },
+                rarity: 'rare'
+            },
+            {
+                id: 'social_butterfly',
+                title: 'Social Butterfly',
+                description: 'Switch between players 50 times',
+                icon: 'fas fa-exchange-alt',
+                type: 'meta',
+                requirement: { type: 'player_switches', value: 50 },
+                rarity: 'epic'
+            },
+            {
+                id: 'procrastinator',
+                title: 'Master Procrastinator',
+                description: 'Take exactly 42 minutes on any puzzle',
+                icon: 'fas fa-hourglass-half',
+                type: 'quirky',
+                requirement: { type: 'exact_time', value: 2520 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'mirror_match',
+                title: 'Mirror Match',
+                description: 'Have identical scores with opponent',
+                icon: 'fas fa-mirror',
+                type: 'quirky',
+                requirement: { type: 'identical_scores', value: 1 },
+                rarity: 'epic'
+            }
+            ,
+
+            // SEASONAL & HOLIDAY ACHIEVEMENTS (15)
+            {
+                id: 'valentines_winner',
+                title: 'Love Wins',
+                description: 'Win on Valentine\'s Day',
+                icon: 'fas fa-heart',
+                type: 'seasonal',
+                requirement: { type: 'valentines_win', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'halloween_master',
+                title: 'Spooky Solver',
+                description: 'Win on Halloween',
+                icon: 'fas fa-ghost',
+                type: 'seasonal',
+                requirement: { type: 'halloween_win', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'christmas_champion',
+                title: 'Christmas Champion',
+                description: 'Win on Christmas Day',
+                icon: 'fas fa-tree',
+                type: 'seasonal',
+                requirement: { type: 'christmas_win', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'thanksgiving_gratitude',
+                title: 'Thankful Solver',
+                description: 'Win on Thanksgiving',
+                icon: 'fas fa-turkey',
+                type: 'seasonal',
+                requirement: { type: 'thanksgiving_win', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'spring_awakening',
+                title: 'Spring Awakening',
+                description: 'Win on first day of spring',
+                icon: 'fas fa-seedling',
+                type: 'seasonal',
+                requirement: { type: 'spring_equinox_win', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'summer_solstice',
+                title: 'Summer Solstice',
+                description: 'Win on longest day of the year',
+                icon: 'fas fa-sun',
+                type: 'seasonal',
+                requirement: { type: 'summer_solstice_win', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'winter_warrior',
+                title: 'Winter Warrior',
+                description: 'Win on winter solstice',
+                icon: 'fas fa-snowflake',
+                type: 'seasonal',
+                requirement: { type: 'winter_solstice_win', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'april_fools',
+                title: 'No Joke',
+                description: 'Win on April Fool\'s Day',
+                icon: 'fas fa-laugh',
+                type: 'seasonal',
+                requirement: { type: 'april_fools_win', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'pi_day_precision',
+                title: 'Pi Day Precision',
+                description: 'Win on Pi Day (March 14)',
+                icon: 'fas fa-pi',
+                type: 'seasonal',
+                requirement: { type: 'pi_day_win', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'leap_year_legend',
+                title: 'Leap Year Legend',
+                description: 'Win on February 29th',
+                icon: 'fas fa-calendar-plus',
+                type: 'seasonal',
+                requirement: { type: 'leap_day_win', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'independence_solver',
+                title: 'Independence Solver',
+                description: 'Win on July 4th',
+                icon: 'fas fa-flag-usa',
+                type: 'seasonal',
+                requirement: { type: 'july_4th_win', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'eclipse_master',
+                title: 'Eclipse Master',
+                description: 'Win during a solar eclipse',
+                icon: 'fas fa-circle',
+                type: 'seasonal',
+                requirement: { type: 'eclipse_win', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'meteor_shower',
+                title: 'Shooting Star',
+                description: 'Win during a meteor shower',
+                icon: 'fas fa-meteor',
+                type: 'seasonal',
+                requirement: { type: 'meteor_shower_win', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'full_moon_mystic',
+                title: 'Full Moon Mystic',
+                description: 'Win on a full moon',
+                icon: 'fas fa-moon',
+                type: 'seasonal',
+                requirement: { type: 'full_moon_win', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'black_friday_bargain',
+                title: 'Black Friday Bargain',
+                description: 'Win on Black Friday',
+                icon: 'fas fa-shopping-cart',
+                type: 'seasonal',
+                requirement: { type: 'black_friday_win', value: 1 },
+                rarity: 'epic'
+            },
+
+            // NUMERICAL & MATHEMATICAL ACHIEVEMENTS (20)
+            {
+                id: 'fibonacci_master',
+                title: 'Fibonacci Master',
+                description: 'Win with a Fibonacci number score (1, 1, 2, 3, 5, 8, 13...)',
+                icon: 'fas fa-calculator',
+                type: 'mathematical',
+                requirement: { type: 'fibonacci_score', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'prime_time',
+                title: 'Prime Time',
+                description: 'Win with a prime number score',
+                icon: 'fas fa-divide',
+                type: 'mathematical',
+                requirement: { type: 'prime_score', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'perfect_square',
+                title: 'Perfect Square',
+                description: 'Win with a perfect square score (4, 9, 16, 25...)',
+                icon: 'fas fa-square',
+                type: 'mathematical',
+                requirement: { type: 'perfect_square_score', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'lucky_seven',
+                title: 'Lucky Seven Variant',
+                description: 'Win with a score containing only 7s (77, 777, etc.)',
+                icon: 'fas fa-dice-seven',
+                type: 'mathematical',
+                requirement: { type: 'all_sevens_score', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'palindrome_perfection',
+                title: 'Palindrome Perfection',
+                description: 'Win with a palindromic score (121, 1331, etc.)',
+                icon: 'fas fa-sync-alt',
+                type: 'mathematical',
+                requirement: { type: 'palindrome_score', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'century_maker',
+                title: 'Century Maker',
+                description: 'Score exactly 100 points',
+                icon: 'fas fa-bullseye',
+                type: 'mathematical',
+                requirement: { type: 'exact_score', value: 100 },
+                rarity: 'rare'
+            },
+            {
+                id: 'half_century',
+                title: 'Half Century',
+                description: 'Score exactly 50 points',
+                icon: 'fas fa-medal',
+                type: 'mathematical',
+                requirement: { type: 'exact_score', value: 50 },
+                rarity: 'common'
+            },
+            {
+                id: 'double_century',
+                title: 'Double Century',
+                description: 'Score exactly 200 points',
+                icon: 'fas fa-crown',
+                type: 'mathematical',
+                requirement: { type: 'exact_score', value: 200 },
+                rarity: 'epic'
+            },
+            {
+                id: 'triple_digits',
+                title: 'Triple Digits',
+                description: 'Win with all three difficulties having same-digit times (11:11, 22:22)',
+                icon: 'fas fa-align-center',
+                type: 'mathematical',
+                requirement: { type: 'triple_digit_times', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'golden_ratio',
+                title: 'Golden Ratio',
+                description: 'Win with a score near the golden ratio × 100 (161 or 162)',
+                icon: 'fas fa-percentage',
+                type: 'mathematical',
+                requirement: { type: 'golden_ratio_score', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'binary_master',
+                title: 'Binary Master',
+                description: 'Win with a score that\'s a power of 2 (2, 4, 8, 16, 32...)',
+                icon: 'fas fa-microchip',
+                type: 'mathematical',
+                requirement: { type: 'power_of_two_score', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'triangular_triumph',
+                title: 'Triangular Triumph',
+                description: 'Win with a triangular number score (1, 3, 6, 10, 15...)',
+                icon: 'fas fa-play',
+                type: 'mathematical',
+                requirement: { type: 'triangular_score', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'catalan_champion',
+                title: 'Catalan Champion',
+                description: 'Win with a Catalan number score (1, 2, 5, 14, 42...)',
+                icon: 'fas fa-cat',
+                type: 'mathematical',
+                requirement: { type: 'catalan_score', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'factorial_fantastic',
+                title: 'Factorial Fantastic',
+                description: 'Win with a factorial score (1, 2, 6, 24, 120...)',
+                icon: 'fas fa-exclamation',
+                type: 'mathematical',
+                requirement: { type: 'factorial_score', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'even_steven',
+                title: 'Even Steven',
+                description: 'Win 10 times with only even-numbered scores',
+                icon: 'fas fa-balance-scale',
+                type: 'mathematical',
+                requirement: { type: 'even_score_streak', value: 10 },
+                rarity: 'rare'
+            },
+            {
+                id: 'odd_one_out',
+                title: 'Odd One Out',
+                description: 'Win 10 times with only odd-numbered scores',
+                icon: 'fas fa-balance-scale-right',
+                type: 'mathematical',
+                requirement: { type: 'odd_score_streak', value: 10 },
+                rarity: 'rare'
+            },
+            {
+                id: 'zero_hero',
+                title: 'Zero Hero',
+                description: 'Win with a score ending in zero',
+                icon: 'fas fa-circle-notch',
+                type: 'mathematical',
+                requirement: { type: 'score_ends_in_zero', value: 1 },
+                rarity: 'common'
+            },
+            {
+                id: 'triple_zero',
+                title: 'Triple Zero',
+                description: 'Win with a score ending in 000',
+                icon: 'fas fa-bullseye',
+                type: 'mathematical',
+                requirement: { type: 'score_ends_in_000', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'digital_root_one',
+                title: 'Digital Root One',
+                description: 'Win with a score whose digits sum to 1',
+                icon: 'fas fa-calculator',
+                type: 'mathematical',
+                requirement: { type: 'digital_root_one', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'ascending_order',
+                title: 'Ascending Order',
+                description: 'Win with a score with digits in ascending order (123, 1234, etc.)',
+                icon: 'fas fa-sort-numeric-up',
+                type: 'mathematical',
+                requirement: { type: 'ascending_digits', value: 1 },
+                rarity: 'epic'
+            },
+
+            // COMPETITIVE & PSYCHOLOGICAL ACHIEVEMENTS (15)
+            {
+                id: 'mind_reader',
+                title: 'Mind Reader',
+                description: 'Win with exactly 1 point more than opponent 5 times',
+                icon: 'fas fa-brain',
+                type: 'competitive',
+                requirement: { type: 'one_point_wins', value: 5 },
+                rarity: 'epic'
+            },
+            {
+                id: 'psychological_warfare',
+                title: 'Psychological Warfare',
+                description: 'Win after opponent leads for most of the day',
+                icon: 'fas fa-chess',
+                type: 'competitive',
+                requirement: { type: 'late_comeback', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'copycat',
+                title: 'Copycat',
+                description: 'Complete puzzles in same order as opponent 3 days in a row',
+                icon: 'fas fa-copy',
+                type: 'competitive',
+                requirement: { type: 'mirror_completion_order', value: 3 },
+                rarity: 'epic'
+            },
+            {
+                id: 'trendsetter',
+                title: 'Trendsetter',
+                description: 'Have opponent copy your completion order 3 times',
+                icon: 'fas fa-crown',
+                type: 'competitive',
+                requirement: { type: 'influence_opponent_order', value: 3 },
+                rarity: 'epic'
+            },
+            {
+                id: 'speedster_intimidation',
+                title: 'Speedster Intimidation',
+                description: 'Complete all 3 puzzles before opponent finishes 1',
+                icon: 'fas fa-rocket',
+                type: 'competitive',
+                requirement: { type: 'complete_all_before_opponent_one', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'pressure_cooker',
+                title: 'Pressure Cooker',
+                description: 'Win while opponent is ahead until final puzzle',
+                icon: 'fas fa-fire',
+                type: 'competitive',
+                requirement: { type: 'final_puzzle_comeback', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'chess_master',
+                title: 'Chess Master',
+                description: 'Win 5 games with strategic patience (slowest completion)',
+                icon: 'fas fa-chess-king',
+                type: 'competitive',
+                requirement: { type: 'strategic_slow_wins', value: 5 },
+                rarity: 'rare'
+            },
+            {
+                id: 'blitz_master',
+                title: 'Blitz Master',
+                description: 'Win 5 games with speed dominance (fastest completion)',
+                icon: 'fas fa-lightning-bolt',
+                type: 'competitive',
+                requirement: { type: 'speed_dominance_wins', value: 5 },
+                rarity: 'rare'
+            },
+            {
+                id: 'equalizer',
+                title: 'The Equalizer',
+                description: 'Force 5 tie games',
+                icon: 'fas fa-balance-scale',
+                type: 'competitive',
+                requirement: { type: 'force_ties', value: 5 },
+                rarity: 'epic'
+            },
+            {
+                id: 'clutch_performer_v2',
+                title: 'Clutch Performer Pro',
+                description: 'Win 3 games decided by 1 point',
+                icon: 'fas fa-bullseye',
+                type: 'competitive',
+                requirement: { type: 'clutch_wins', value: 3 },
+                rarity: 'epic'
+            },
+            {
+                id: 'momentum_shifter',
+                title: 'Momentum Shifter',
+                description: 'Come back from 100+ point deficit to win',
+                icon: 'fas fa-exchange-alt',
+                type: 'competitive',
+                requirement: { type: 'large_comeback', value: 100 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'the_wall',
+                title: 'The Wall',
+                description: 'Prevent opponent comebacks 10 times while leading',
+                icon: 'fas fa-shield',
+                type: 'competitive',
+                requirement: { type: 'prevent_comebacks', value: 10 },
+                rarity: 'epic'
+            },
+            {
+                id: 'tempo_control',
+                title: 'Tempo Control',
+                description: 'Win by completing puzzles in perfect difficulty order 5 times',
+                icon: 'fas fa-sort',
+                type: 'competitive',
+                requirement: { type: 'perfect_order_wins', value: 5 },
+                rarity: 'rare'
+            },
+            {
+                id: 'reverse_psychology',
+                title: 'Reverse Psychology',
+                description: 'Win by completing hardest puzzle first 5 times',
+                icon: 'fas fa-backward',
+                type: 'competitive',
+                requirement: { type: 'hard_first_wins', value: 5 },
+                rarity: 'rare'
+            },
+            {
+                id: 'mind_games',
+                title: 'Mind Games',
+                description: 'Win with identical time patterns as opponent (psychological mirror)',
+                icon: 'fas fa-brain',
+                type: 'competitive',
+                requirement: { type: 'time_pattern_mirror', value: 1 },
+                rarity: 'legendary'
             }
         ];
 
         this.unlockedAchievements = [];
+        this.filteringInitialized = false;
+        this.currentFilters = null;
+        this.allAchievementHTML = null;
         this.initializeAsync();
     }
 
@@ -1097,11 +1710,76 @@ class AchievementsManager {
         // Update the achievements summary
         this.updateAchievementsSummary();
 
-        const achievementsGrid = document.getElementById('achievementsGrid');
+        // Initialize filtering if not already done
+        this.initializeFiltering();
 
+        // Render all achievements
+        this.renderAchievements();
+    }
+
+    initializeFiltering() {
+        if (this.filteringInitialized) return;
+        this.filteringInitialized = true;
+
+        // Get filter elements
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const categorySelect = document.getElementById('categorySelect');
+        const raritySelect = document.getElementById('raritySelect');
+        const searchInput = document.getElementById('achievementSearch');
+
+        // Initialize filter state
+        this.currentFilters = {
+            status: 'all', // all, unlocked, locked
+            category: 'all',
+            rarity: 'all',
+            search: ''
+        };
+
+        // Add event listeners
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update filter
+                this.currentFilters.status = tab.dataset.filter;
+                this.applyFilters();
+            });
+        });
+
+        if (categorySelect) {
+            categorySelect.addEventListener('change', () => {
+                this.currentFilters.category = categorySelect.value;
+                this.applyFilters();
+            });
+        }
+
+        if (raritySelect) {
+            raritySelect.addEventListener('change', () => {
+                this.currentFilters.rarity = raritySelect.value;
+                this.applyFilters();
+            });
+        }
+
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.currentFilters.search = searchInput.value.toLowerCase();
+                    this.applyFilters();
+                }, 300); // Debounce search
+            });
+        }
+    }
+
+    renderAchievements() {
+        const achievementsGrid = document.getElementById('achievementsGrid');
         if (!achievementsGrid) return;
 
-        achievementsGrid.innerHTML = this.achievementDefinitions.map(achievement => {
+        // Create achievement HTML for all achievements
+        this.allAchievementHTML = this.achievementDefinitions.map(achievement => {
             const achievementInstances = this.unlockedAchievements.filter(a => a.id === achievement.id);
             const isUnlocked = achievementInstances.length > 0;
 
@@ -1129,7 +1807,6 @@ class AchievementsManager {
             if (isUnlocked) {
                 const playerEntries = Object.entries(playerStats);
                 if (playerEntries.length === 1) {
-                    // Only one player has this achievement
                     borderClass = `${playerEntries[0][0]}-border`;
                 } else if (playerEntries.length === 2) {
                     const [player1, stats1] = playerEntries[0];
@@ -1139,7 +1816,7 @@ class AchievementsManager {
                     } else if (stats2.count > stats1.count) {
                         borderClass = `${player2}-border`;
                     } else {
-                        borderClass = 'tie-border'; // Yellow for tie
+                        borderClass = 'tie-border';
                     }
                 }
             }
@@ -1158,23 +1835,92 @@ class AchievementsManager {
                 </div>
             ` : '';
 
-            return `
-                <div class="achievement-badge ${isUnlocked ? 'unlocked' : 'locked'} ${borderClass}">
-                    <div class="badge-icon">
-                        <i class="${achievement.icon}"></i>
-                    </div>
-                    <h3 class="badge-title">${achievement.title}</h3>
-                    <p class="badge-description">${achievement.description}</p>
-                    <div class="badge-rarity ${achievement.rarity}">${achievement.rarity.toUpperCase()}</div>
-                    ${isUnlocked ? `
-                        <div class="badge-unlocked-info">
-                            <div class="total-unlocks">Unlocked ${achievementInstances.length} time${achievementInstances.length !== 1 ? 's' : ''}</div>
-                            ${playerStatsHTML}
+            const element = {
+                html: `
+                    <div class="achievement-badge ${isUnlocked ? 'unlocked' : 'locked'} ${borderClass}"
+                         data-status="${isUnlocked ? 'unlocked' : 'locked'}"
+                         data-category="${achievement.type}"
+                         data-rarity="${achievement.rarity}"
+                         data-search="${achievement.title.toLowerCase()} ${achievement.description.toLowerCase()}">
+                        <div class="badge-icon">
+                            <i class="${achievement.icon}"></i>
                         </div>
-                    ` : ''}
-                </div>
-            `;
-        }).join('');
+                        <h3 class="badge-title">${achievement.title}</h3>
+                        <p class="badge-description">${achievement.description}</p>
+                        <div class="badge-rarity ${achievement.rarity}">${achievement.rarity.toUpperCase()}</div>
+                        ${isUnlocked ? `
+                            <div class="badge-unlocked-info">
+                                <div class="total-unlocks">Unlocked ${achievementInstances.length} time${achievementInstances.length !== 1 ? 's' : ''}</div>
+                                ${playerStatsHTML}
+                            </div>
+                        ` : ''}
+                    </div>
+                `,
+                isUnlocked,
+                category: achievement.type,
+                rarity: achievement.rarity,
+                searchText: `${achievement.title.toLowerCase()} ${achievement.description.toLowerCase()}`
+            };
+            return element;
+        });
+
+        // Apply current filters
+        this.applyFilters();
+    }
+
+    applyFilters() {
+        if (!this.allAchievementHTML) return;
+
+        const achievementsGrid = document.getElementById('achievementsGrid');
+        const noResults = document.getElementById('noResults');
+
+        // Filter achievements based on current filters
+        const filteredAchievements = this.allAchievementHTML.filter(achievement => {
+            // Status filter
+            if (this.currentFilters.status === 'unlocked' && !achievement.isUnlocked) return false;
+            if (this.currentFilters.status === 'locked' && achievement.isUnlocked) return false;
+
+            // Category filter
+            if (this.currentFilters.category !== 'all' && achievement.category !== this.currentFilters.category) return false;
+
+            // Rarity filter
+            if (this.currentFilters.rarity !== 'all' && achievement.rarity !== this.currentFilters.rarity) return false;
+
+            // Search filter
+            if (this.currentFilters.search && !achievement.searchText.includes(this.currentFilters.search)) return false;
+
+            return true;
+        });
+
+        // Update display
+        if (filteredAchievements.length === 0) {
+            achievementsGrid.style.display = 'none';
+            noResults.style.display = 'block';
+        } else {
+            achievementsGrid.style.display = 'grid';
+            noResults.style.display = 'none';
+            achievementsGrid.innerHTML = filteredAchievements.map(a => a.html).join('');
+        }
+
+        // Update filter counts
+        this.updateFilterCounts();
+    }
+
+    updateFilterCounts() {
+        if (!this.allAchievementHTML) return;
+
+        const totalCount = this.allAchievementHTML.length;
+        const unlockedCount = this.allAchievementHTML.filter(a => a.isUnlocked).length;
+        const lockedCount = totalCount - unlockedCount;
+
+        // Update count badges
+        const allCountEl = document.getElementById('allCount');
+        const unlockedCountEl = document.getElementById('unlockedCount');
+        const lockedCountEl = document.getElementById('lockedCount');
+
+        if (allCountEl) allCountEl.textContent = totalCount;
+        if (unlockedCountEl) unlockedCountEl.textContent = unlockedCount;
+        if (lockedCountEl) lockedCountEl.textContent = lockedCount;
     }
 
     async getAchievementStats() {

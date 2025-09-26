@@ -412,8 +412,68 @@
                     </div>
                 </div>
 
+                <!-- Achievement Filters -->
+                <div class="achievement-filters" id="achievementFilters">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all">
+                            <i class="fas fa-list"></i>
+                            <span>All</span>
+                            <span class="count" id="allCount">0</span>
+                        </button>
+                        <button class="filter-tab" data-filter="unlocked">
+                            <i class="fas fa-unlock"></i>
+                            <span>Unlocked</span>
+                            <span class="count" id="unlockedCount">0</span>
+                        </button>
+                        <button class="filter-tab" data-filter="locked">
+                            <i class="fas fa-lock"></i>
+                            <span>Locked</span>
+                            <span class="count" id="lockedCount">0</span>
+                        </button>
+                    </div>
+
+                    <div class="category-filters">
+                        <select class="category-select" id="categorySelect">
+                            <option value="all">All Categories</option>
+                            <option value="streak">Streaks & Consistency</option>
+                            <option value="speed">Speed Demons</option>
+                            <option value="perfect">Perfection</option>
+                            <option value="score">High Scores</option>
+                            <option value="mathematical">Math Masters</option>
+                            <option value="competitive">Competitive</option>
+                            <option value="seasonal">Seasonal</option>
+                            <option value="timing">Time-Based</option>
+                            <option value="comeback">Comebacks</option>
+                            <option value="errors">Error Masters</option>
+                            <option value="patience">Patience</option>
+                            <option value="meta">Meta</option>
+                            <option value="quirky">Quirky & Fun</option>
+                        </select>
+
+                        <select class="rarity-select" id="raritySelect">
+                            <option value="all">All Rarities</option>
+                            <option value="common">Common</option>
+                            <option value="rare">Rare</option>
+                            <option value="epic">Epic</option>
+                            <option value="legendary">Legendary</option>
+                        </select>
+                    </div>
+
+                    <div class="search-container">
+                        <input type="text" class="achievement-search" id="achievementSearch" placeholder="Search achievements...">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                </div>
+
                 <div class="achievements-grid" id="achievementsGrid">
                     <!-- Achievement badges will be populated by JavaScript -->
+                </div>
+
+                <!-- No Results Message -->
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>No achievements found</h3>
+                    <p>Try adjusting your filters or search terms</p>
                 </div>
             </div>
 
