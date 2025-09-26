@@ -1505,6 +1505,38 @@ class SudokuChampionship {
                this.puzzleCache.loadTime !== null &&
                (Date.now() - this.puzzleCache.loadTime) < 300000; // 5 minutes fresh
     }
+
+    // Switch to a specific page (for navigation from completion notifications)
+    async switchPage(targetPage) {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        // Update active nav link
+        navLinks.forEach(l => l.classList.remove('active'));
+        const targetNavLink = document.querySelector(`.nav-link[data-page="${targetPage}"]`);
+        if (targetNavLink) {
+            targetNavLink.classList.add('active');
+        }
+
+        // Update active page
+        pages.forEach(page => page.classList.remove('active'));
+        const targetPageElement = document.getElementById(targetPage);
+        if (targetPageElement) {
+            targetPageElement.classList.add('active');
+
+            // Scroll to top of page when switching
+            targetPageElement.scrollTop = 0;
+            window.scrollTo(0, 0);
+
+            // Update page content
+            await this.updatePageContent(targetPage);
+
+            // If navigating to dashboard, refresh today's progress
+            if (targetPage === 'dashboard') {
+                await this.updateTodayProgress();
+            }
+        }
+    }
 }
 
 // Initialize the application

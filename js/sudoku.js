@@ -1786,11 +1786,22 @@ class SudokuEngine {
         notification.style.pointerEvents = 'none';
         notification.style.opacity = '0';
 
+        // Determine next difficulty navigation
+        let navigationButton = '';
+        if (this.currentDifficulty === 'easy') {
+            navigationButton = '<button class="completion-nav-btn" onclick="window.sudokuEngine.navigateToMedium()">Go to Medium</button>';
+        } else if (this.currentDifficulty === 'medium') {
+            navigationButton = '<button class="completion-nav-btn" onclick="window.sudokuEngine.navigateToHard()">Go to Hard</button>';
+        } else if (this.currentDifficulty === 'hard') {
+            navigationButton = '<button class="completion-nav-btn" onclick="window.sudokuEngine.navigateToDashboard()">Go to Dashboard</button>';
+        }
+
         notification.innerHTML = `
             <div class="completion-notification">
                 <div class="completion-icon">🎉</div>
                 <div class="completion-text">Puzzle Complete!</div>
                 <div class="completion-time">${this.formatTime(this.timer)}</div>
+                ${navigationButton}
                 ${isPersistent ? '<div class="completion-hint">Click anywhere to dismiss</div>' : ''}
             </div>
         `;
@@ -3260,6 +3271,46 @@ class SudokuEngine {
 
         // Close any open modals
         document.querySelectorAll('.settings-modal').forEach(modal => modal.remove());
+    }
+
+    // Navigation methods for completion notifications
+    navigateToMedium() {
+        this.changeDifficulty('medium');
+        this.startNewGame();
+        // Remove completion notification
+        const notification = document.querySelector('.completion-notification-overlay');
+        if (notification) {
+            notification.remove();
+        }
+    }
+
+    navigateToHard() {
+        this.changeDifficulty('hard');
+        this.startNewGame();
+        // Remove completion notification
+        const notification = document.querySelector('.completion-notification-overlay');
+        if (notification) {
+            notification.remove();
+        }
+    }
+
+    navigateToDashboard() {
+        // Navigate to dashboard section in the main app
+        if (window.sudokuApp && window.sudokuApp.switchPage) {
+            window.sudokuApp.switchPage('dashboard');
+        } else {
+            // Fallback: trigger navigation event
+            const navEvent = new CustomEvent('navigate', {
+                detail: { page: 'dashboard' }
+            });
+            document.dispatchEvent(navEvent);
+        }
+
+        // Remove completion notification
+        const notification = document.querySelector('.completion-notification-overlay');
+        if (notification) {
+            notification.remove();
+        }
     }
 }
 

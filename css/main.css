@@ -4343,6 +4343,41 @@ select:focus-visible,
     }
 }
 
+/* Completion navigation button */
+.completion-nav-btn {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1.5rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.completion-nav-btn:hover {
+    background: linear-gradient(135deg, #5fa8f0 0%, #8a63d2 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+}
+
+.completion-nav-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+}
+
+@media (max-width: 480px) {
+    .completion-nav-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.8rem;
+        margin-top: 0.75rem;
+    }
+}
+
 /* Paused state */
 .sudoku-grid.paused {
     filter: grayscale(100%) blur(8px);
