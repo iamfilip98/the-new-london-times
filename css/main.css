@@ -372,7 +372,7 @@ body {
 
 @keyframes slideInRight {
     from {
-        opacity: 0;
+        opacity: 1;
         transform: translateX(30px);
     }
     to {
@@ -6201,7 +6201,7 @@ select:focus-visible,
     overflow: hidden;
     cursor: pointer;
     animation: slideInRight 0.8s ease-out;
-    opacity: 0;
+    opacity: 1; /* Ensure visible by default */
     animation-fill-mode: forwards;
 }
 
