@@ -366,6 +366,12 @@ class SudokuEngine {
 
     async loadDailyPuzzles() {
         try {
+            // Ensure fallback puzzles are always available for instant loading
+            if (!this.dailyPuzzles) {
+                console.log('🚀 Preloading fallback puzzles for instant access...');
+                this.generateFallbackPuzzles();
+            }
+
             // First, check if puzzles are already preloaded
             if (window.preloadedPuzzles) {
                 this.dailyPuzzles = window.preloadedPuzzles;
@@ -380,21 +386,21 @@ class SudokuEngine {
                 return;
             }
 
-            // Fallback: Load daily puzzles from server API
+            // Fallback: Load daily puzzles from server API (non-blocking)
             console.log('🔄 Preloaded puzzles not available, fetching from server...');
             const today = this.getTodayDateString();
             const response = await fetch(`/api/puzzles?date=${today}&t=${Date.now()}`);
 
             if (response.ok) {
-                this.dailyPuzzles = await response.json();
-                console.log('Loaded daily puzzles from server:', this.dailyPuzzles);
+                const apiPuzzles = await response.json();
+                this.dailyPuzzles = apiPuzzles;
+                console.log('✅ Daily puzzles loaded from server, replacing fallback');
             } else {
                 throw new Error('Failed to fetch daily puzzles');
             }
         } catch (error) {
-            console.error('Failed to load daily puzzles:', error);
-            // Generate fallback puzzles
-            this.generateFallbackPuzzles();
+            console.log('ℹ️ API puzzles unavailable, using fallback puzzles (already loaded)');
+            // Fallback puzzles are already loaded, so no delay here
         }
     }
 
@@ -448,12 +454,49 @@ class SudokuEngine {
     }
 
     generatePuzzle(difficulty) {
-        // Simplified puzzle generation - in production would use advanced algorithm
+        console.log(`⚡ Fast puzzle generation for ${difficulty}`);
+
+        // Use pre-generated solutions for speed - avoid expensive computation
+        if (this.dailyPuzzles && this.dailyPuzzles[difficulty]) {
+            console.log(`✅ Using cached ${difficulty} puzzle`);
+            return {
+                puzzle: this.dailyPuzzles[difficulty].puzzle.map(row => [...row]),
+                solution: this.dailyPuzzles[difficulty].solution.map(row => [...row])
+            };
+        }
+
+        // If no cached puzzles, generate fallback immediately
+        this.generateFallbackPuzzles();
+        console.log(`✅ Generated fallback puzzles, using ${difficulty}`);
+
+        return {
+            puzzle: this.dailyPuzzles[difficulty].puzzle.map(row => [...row]),
+            solution: this.dailyPuzzles[difficulty].solution.map(row => [...row])
+        };
+    }
+
+    // Keep the slow generation as a separate method for special use cases
+    generatePuzzleFromScratch(difficulty) {
+        console.warn('🐌 Using slow puzzle generation - this may take several seconds');
+
         const puzzle = Array(9).fill().map(() => Array(9).fill(0));
         const solution = Array(9).fill().map(() => Array(9).fill(0));
 
         // Generate a complete solution first
-        this.generateCompleteSolution(solution);
+        const startTime = Date.now();
+        const success = this.generateCompleteSolution(solution);
+        const endTime = Date.now();
+
+        console.log(`Puzzle generation took ${endTime - startTime}ms`);
+
+        if (!success) {
+            console.warn('Failed to generate solution, using fallback');
+            this.generateFallbackPuzzles();
+            return {
+                puzzle: this.dailyPuzzles[difficulty].puzzle.map(row => [...row]),
+                solution: this.dailyPuzzles[difficulty].solution.map(row => [...row])
+            };
+        }
 
         // Remove numbers based on difficulty
         const cellsToRemove = {
@@ -521,30 +564,82 @@ class SudokuEngine {
         return count;
     }
 
-    generateCompleteSolution(grid) {
-        // Simple backtracking solver to generate a complete solution
+    generateCompleteSolution(grid, iterations = 0) {
+        // Add iteration limit to prevent infinite loops
+        if (iterations > 10000) {
+            console.warn('Puzzle generation taking too long, using fallback');
+            return false;
+        }
+
+        // Optimized backtracking with Most Constrained Variable (MCV) heuristic
+        let bestCell = null;
+        let minPossibilities = 10;
+
+        // Find the empty cell with the fewest possible values
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (grid[row][col] === 0) {
-                    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-                    this.shuffle(numbers);
-
-                    for (let num of numbers) {
-                        if (this.isValidMove(grid, row, col, num)) {
-                            grid[row][col] = num;
-
-                            if (this.generateCompleteSolution(grid)) {
-                                return true;
-                            }
-
-                            grid[row][col] = 0;
-                        }
+                    const possibilities = this.getPossibleValues(grid, row, col);
+                    if (possibilities.length === 0) {
+                        return false; // No solution possible
                     }
-                    return false;
+                    if (possibilities.length < minPossibilities) {
+                        minPossibilities = possibilities.length;
+                        bestCell = { row, col, possibilities };
+                    }
                 }
             }
         }
-        return true;
+
+        // If no empty cells, puzzle is complete
+        if (!bestCell) return true;
+
+        const { row, col, possibilities } = bestCell;
+        this.shuffle(possibilities);
+
+        for (let num of possibilities) {
+            grid[row][col] = num;
+
+            if (this.generateCompleteSolution(grid, iterations + 1)) {
+                return true;
+            }
+
+            grid[row][col] = 0;
+        }
+
+        return false;
+    }
+
+    getPossibleValues(grid, row, col) {
+        const used = new Set();
+
+        // Check row
+        for (let c = 0; c < 9; c++) {
+            if (grid[row][c] !== 0) used.add(grid[row][c]);
+        }
+
+        // Check column
+        for (let r = 0; r < 9; r++) {
+            if (grid[r][col] !== 0) used.add(grid[r][col]);
+        }
+
+        // Check 3x3 box
+        const boxRow = Math.floor(row / 3) * 3;
+        const boxCol = Math.floor(col / 3) * 3;
+        for (let r = boxRow; r < boxRow + 3; r++) {
+            for (let c = boxCol; c < boxCol + 3; c++) {
+                if (grid[r][c] !== 0) used.add(grid[r][c]);
+            }
+        }
+
+        const possibilities = [];
+        for (let num = 1; num <= 9; num++) {
+            if (!used.has(num)) {
+                possibilities.push(num);
+            }
+        }
+
+        return possibilities;
     }
 
     shuffle(array) {
