@@ -5891,6 +5891,17 @@ select:focus-visible,
     font-weight: 600;
 }
 
+.progress-status .loading {
+    color: var(--accent-blue);
+    font-style: italic;
+    animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
 /* Mobile Responsiveness for Progress */
 @media (max-width: 768px) {
     .progress-grid {

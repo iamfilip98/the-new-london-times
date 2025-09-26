@@ -14,6 +14,14 @@ class SudokuChampionship {
             data: null
         };
 
+        // Today's progress cache
+        this.todayProgressCache = {
+            lastUpdate: null,
+            duration: 10000, // 10 seconds cache
+            data: null,
+            date: null
+        };
+
         // Puzzle preloading cache
         this.puzzleCache = {
             puzzles: null,
@@ -178,6 +186,11 @@ class SudokuChampionship {
             // Clear general cache to force data refresh
             this.cache.data = null;
             this.cache.lastUpdate = null;
+
+            // Clear today's progress cache
+            this.todayProgressCache.data = null;
+            this.todayProgressCache.lastUpdate = null;
+            this.todayProgressCache.date = null;
 
             // Update the stored date
             localStorage.setItem('lastCheckedDate', today);
@@ -1090,17 +1103,54 @@ class SudokuChampionship {
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
 
+        // Check cache first
+        const now = Date.now();
+        if (this.todayProgressCache.data &&
+            this.todayProgressCache.lastUpdate &&
+            this.todayProgressCache.date === today &&
+            (now - this.todayProgressCache.lastUpdate) < this.todayProgressCache.duration) {
+            // Use cached data
+            const dbProgress = this.todayProgressCache.data;
+            this.renderTodayProgress(dbProgress, players, difficulties, today);
+            return;
+        }
+
+        // Show loading state
+        this.showTodayProgressLoading(players, difficulties);
+
         // Try to load progress from database first
         let dbProgress = null;
         try {
             const response = await fetch(`/api/games?date=${today}`);
             if (response.ok) {
                 dbProgress = await response.json();
+
+                // Update cache
+                this.todayProgressCache.data = dbProgress;
+                this.todayProgressCache.lastUpdate = now;
+                this.todayProgressCache.date = today;
             }
         } catch (error) {
             console.warn('Failed to load progress from database, falling back to localStorage:', error);
         }
 
+        this.renderTodayProgress(dbProgress, players, difficulties, today);
+    }
+
+    showTodayProgressLoading(players, difficulties) {
+        players.forEach(player => {
+            difficulties.forEach(difficulty => {
+                const progressElement = document.getElementById(`${player}-${difficulty}-progress`);
+                if (!progressElement) return;
+
+                const statusElement = progressElement.querySelector('.progress-status');
+                statusElement.innerHTML = '<span class="loading">Loading...</span>';
+                progressElement.classList.remove('completed');
+            });
+        });
+    }
+
+    renderTodayProgress(dbProgress, players, difficulties, today) {
         players.forEach(player => {
             difficulties.forEach(difficulty => {
                 const progressElement = document.getElementById(`${player}-${difficulty}-progress`);
@@ -1322,6 +1372,9 @@ class SudokuChampionship {
         this.puzzleCache.loadTime = null;
         this.cache.data = null;
         this.cache.lastUpdate = null;
+        this.todayProgressCache.data = null;
+        this.todayProgressCache.lastUpdate = null;
+        this.todayProgressCache.date = null;
 
         // Reset date detection
         this.lastCheckedDate = null;
