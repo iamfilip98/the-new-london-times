@@ -44,7 +44,7 @@ class SudokuEngine {
 
         // INSTANT LOADING: Generate fallback puzzles immediately before any async operations
         if (!this.dailyPuzzles) {
-            //console.log('⚡ Generating instant fallback puzzles...');
+            debugLog('⚡ Generating instant fallback puzzles...');
             this.generateFallbackPuzzles();
         }
 
@@ -59,28 +59,28 @@ class SudokuEngine {
         const selectedDifficulty = sessionStorage.getItem('selectedDifficulty');
         if (selectedDifficulty) {
             sessionStorage.removeItem('selectedDifficulty'); // Clear it once used
-            //console.log('Selected difficulty from dashboard:', selectedDifficulty);
+            debugLog('Selected difficulty from dashboard:', selectedDifficulty);
 
             // Set the selected difficulty
             this.currentDifficulty = selectedDifficulty;
 
             // Always try to load saved state first, regardless of how we got here
-            //console.log('Attempting to load saved game state for difficulty:', this.currentDifficulty);
+            debugLog('Attempting to load saved game state for difficulty:', this.currentDifficulty);
             await this.loadGameState();
 
             // If no saved game state was found, start a new game
             if (!this.gameStarted) {
-                //console.log('No saved state found, loading fresh puzzle:', this.currentDifficulty);
+                debugLog('No saved state found, loading fresh puzzle:', this.currentDifficulty);
                 this.loadPuzzle(this.currentDifficulty);
             }
         } else {
             // No difficulty was explicitly selected - try to load saved game state
-            //console.log('No explicit difficulty selection, loading saved game state');
+            debugLog('No explicit difficulty selection, loading saved game state');
             await this.loadGameState();
 
             // If no saved game state and we have a current difficulty, start new game
             if (!this.gameStarted && this.currentDifficulty) {
-                //console.log('No saved state found, loading fresh puzzle for default difficulty:', this.currentDifficulty);
+                debugLog('No saved state found, loading fresh puzzle for default difficulty:', this.currentDifficulty);
                 this.loadPuzzle(this.currentDifficulty);
             }
         }
@@ -329,7 +329,7 @@ class SudokuEngine {
     changeDifficulty(difficulty) {
         // Don't switch if user already explicitly selected this difficulty
         if (this.explicitlySelectedDifficulty && this.currentDifficulty === difficulty) {
-            //console.log('Ignoring changeDifficulty call - already loaded explicitly selected difficulty:', difficulty);
+            debugLog('Ignoring changeDifficulty call - already loaded explicitly selected difficulty:', difficulty);
             return;
         }
 
@@ -375,27 +375,27 @@ class SudokuEngine {
         try {
             // INSTANT LOADING: Always ensure fallback puzzles are available immediately
             if (!this.dailyPuzzles) {
-                //console.log('⚡ Loading fallback puzzles instantly...');
+                debugLog('⚡ Loading fallback puzzles instantly...');
                 this.generateFallbackPuzzles();
             }
 
             // First, check if puzzles are already preloaded
             if (window.preloadedPuzzles) {
                 this.dailyPuzzles = window.preloadedPuzzles;
-                //console.log('✅ Using preloaded puzzles - instant load!');
+                debugLog('✅ Using preloaded puzzles - instant load!');
                 return;
             }
 
             // Check if sudokuApp is available and has preloaded puzzles
             if (window.sudokuApp && window.sudokuApp.arePuzzlesPreloaded()) {
                 this.dailyPuzzles = window.sudokuApp.getPreloadedPuzzles();
-                //console.log('✅ Using cached preloaded puzzles');
+                debugLog('✅ Using cached preloaded puzzles');
                 return;
             }
 
             // Background: Try to load daily puzzles from server API (non-blocking)
             // This runs in background while user can play with fallback puzzles
-            //console.log('🔄 Attempting background API update...');
+            debugLog('🔄 Attempting background API update...');
             setTimeout(async () => {
                 try {
                     const today = this.getTodayDateString();
@@ -406,30 +406,30 @@ class SudokuEngine {
                         const validation = this.validatePuzzleData(apiPuzzles);
                         if (validation.isValid) {
                             this.dailyPuzzles = apiPuzzles;
-                            //console.log('✅ Daily puzzles updated in background');
+                            debugLog('✅ Daily puzzles updated in background');
                         }
                     }
                 } catch (error) {
-                    //console.log('ℹ️ Background API update failed, using fallback puzzles');
+                    debugLog('ℹ️ Background API update failed, using fallback puzzles');
                 }
             }, 100); // Minimal delay to not block UI
 
         } catch (error) {
-            //console.log('ℹ️ Using fallback puzzles for instant loading');
+            debugLog('ℹ️ Using fallback puzzles for instant loading');
             // Fallback puzzles are already loaded, so no delay here
         }
     }
 
     async forceRefreshPuzzles() {
         try {
-            //console.log('🔄 Force refreshing puzzles from server...');
+            debugLog('🔄 Force refreshing puzzles from server...');
 
             // Clear ALL cached puzzle data
             window.preloadedPuzzles = null;
 
             // Clear main app cache if available
             if (window.sudokuApp) {
-                //console.log('🧹 Clearing main app puzzle cache...');
+                debugLog('🧹 Clearing main app puzzle cache...');
                 window.sudokuApp.puzzleCache.puzzles = null;
                 window.sudokuApp.puzzleCache.loadTime = null;
                 window.sudokuApp.cache.data = null;
@@ -442,7 +442,7 @@ class SudokuEngine {
 
             if (response.ok) {
                 this.dailyPuzzles = await response.json();
-                //console.log('✅ Successfully refreshed puzzles from server');
+                debugLog('✅ Successfully refreshed puzzles from server');
 
                 // Update global cache
                 window.preloadedPuzzles = this.dailyPuzzles;
@@ -455,7 +455,7 @@ class SudokuEngine {
 
                 // If currently playing, reload the current puzzle
                 if (this.currentDifficulty && this.gameStarted) {
-                    //console.log(`🔄 Reloading current ${this.currentDifficulty} puzzle with fresh data`);
+                    debugLog(`🔄 Reloading current ${this.currentDifficulty} puzzle with fresh data`);
                     this.loadPuzzle(this.currentDifficulty);
                 }
 
@@ -470,11 +470,11 @@ class SudokuEngine {
     }
 
     generatePuzzle(difficulty) {
-        //console.log(`⚡ Fast puzzle generation for ${difficulty}`);
+        debugLog(`⚡ Fast puzzle generation for ${difficulty}`);
 
         // Use pre-generated solutions for speed - avoid expensive computation
         if (this.dailyPuzzles && this.dailyPuzzles[difficulty]) {
-            //console.log(`✅ Using cached ${difficulty} puzzle`);
+            debugLog(`✅ Using cached ${difficulty} puzzle`);
             return {
                 puzzle: this.dailyPuzzles[difficulty].puzzle.map(row => [...row]),
                 solution: this.dailyPuzzles[difficulty].solution.map(row => [...row])
@@ -483,7 +483,7 @@ class SudokuEngine {
 
         // If no cached puzzles, generate fallback immediately
         this.generateFallbackPuzzles();
-        //console.log(`✅ Generated fallback puzzles, using ${difficulty}`);
+        debugLog(`✅ Generated fallback puzzles, using ${difficulty}`);
 
         return {
             puzzle: this.dailyPuzzles[difficulty].puzzle.map(row => [...row]),
@@ -503,7 +503,7 @@ class SudokuEngine {
         const success = this.generateCompleteSolution(solution);
         const endTime = Date.now();
 
-        //console.log(`Puzzle generation took ${endTime - startTime}ms`);
+        debugLog(`Puzzle generation took ${endTime - startTime}ms`);
 
         if (!success) {
             console.warn('Failed to generate solution, using fallback');
@@ -705,12 +705,12 @@ class SudokuEngine {
         this.lockedGrid = Array(9).fill().map(() => Array(9).fill(false));
 
         // Validate that the solution is actually valid
-        //console.log(`🔍 Loading ${difficulty} solution. R6C5 should be:`, this.solution[5][4]);
+        debugLog(`🔍 Loading ${difficulty} solution. R6C5 should be:`, this.solution[5][4]);
         if (!this.isValidSudokuSolution(this.solution)) {
             console.error(`❌ Invalid solution loaded for ${difficulty} difficulty!`);
-            //console.log('Solution:', this.solution.map(r => r.join('')).join('\n'));
+            debugLog('Solution:', this.solution.map(r => r.join('')).join('\n'));
         } else {
-            //console.log(`✅ Valid ${difficulty} solution loaded`);
+            debugLog(`✅ Valid ${difficulty} solution loaded`);
         }
 
         // Reset game state
@@ -1761,7 +1761,7 @@ class SudokuEngine {
     }
 
     showCompletionNotification(isPersistent = false) {
-        //console.log('showCompletionNotification called, isPersistent:', isPersistent);
+        debugLog('showCompletionNotification called, isPersistent:', isPersistent);
 
         // Remove any existing notification
         const existingNotification = document.querySelector('.completion-notification-overlay');
@@ -1797,12 +1797,12 @@ class SudokuEngine {
 
         // Find the sudoku grid container and add the notification
         let gridContainer = document.querySelector('.sudoku-grid-container');
-        //console.log('Grid container found:', !!gridContainer);
+        debugLog('Grid container found:', !!gridContainer);
 
         // Fallback: try to find by ID or other selector
         if (!gridContainer) {
             gridContainer = document.querySelector('.sudoku-game-container');
-            //console.log('Fallback: using sudoku-game-container:', !!gridContainer);
+            debugLog('Fallback: using sudoku-game-container:', !!gridContainer);
         }
 
         if (gridContainer) {
@@ -1812,7 +1812,7 @@ class SudokuEngine {
             }
 
             gridContainer.appendChild(notification);
-            //console.log('Notification added to grid container');
+            debugLog('Notification added to grid container');
 
             // Trigger smooth fade-in and scale animation
             setTimeout(() => {
@@ -1866,11 +1866,11 @@ class SudokuEngine {
 
         // Only start timer if game is active and not completed
         if (!this.gameStarted || this.gameCompleted || this.gamePaused) {
-            //console.log('Not starting timer - game not active or completed/paused');
+            debugLog('Not starting timer - game not active or completed/paused');
             return;
         }
 
-        //console.log('Starting timer');
+        debugLog('Starting timer');
         this.timerInterval = setInterval(() => {
             this.timer++;
             const timerDisplay = document.getElementById('timerDisplay');
@@ -1882,7 +1882,7 @@ class SudokuEngine {
 
     stopTimer() {
         if (this.timerInterval) {
-            //console.log('Stopping timer');
+            debugLog('Stopping timer');
             clearInterval(this.timerInterval);
             this.timerInterval = null;
         }
@@ -2032,7 +2032,7 @@ class SudokuEngine {
                 const serverState = await response.json();
                 if (serverState) {
                     gameState = serverState;
-                    //console.log('Loaded game state from server');
+                    debugLog('Loaded game state from server');
                 }
             }
 
@@ -2042,7 +2042,7 @@ class SudokuEngine {
                 const savedState = localStorage.getItem(key);
                 if (savedState) {
                     gameState = JSON.parse(savedState);
-                    //console.log('Loaded game state from localStorage');
+                    debugLog('Loaded game state from localStorage');
                 }
             }
 
@@ -2084,7 +2084,7 @@ class SudokuEngine {
 
                     // Show completion notification overlay for previously completed games
                     setTimeout(() => {
-                        //console.log('Showing completion notification for completed game');
+                        debugLog('Showing completion notification for completed game');
                         this.showCompletionNotification(true); // Make it persistent
                     }, 800); // Increased delay to ensure interface is fully loaded
                 } else if (this.gameStarted) {
@@ -2147,7 +2147,7 @@ class SudokuEngine {
             // Integrate with existing analytics system
             await this.integrateWithAnalytics(completedGame);
 
-            //console.log('Game completed and integrated with analytics:', completedGame);
+            debugLog('Game completed and integrated with analytics:', completedGame);
 
         } catch (error) {
             console.error('Failed to save completed game:', error);
@@ -2298,7 +2298,7 @@ class SudokuEngine {
             });
 
             if (response.ok) {
-                //console.log('Successfully integrated with existing analytics system');
+                debugLog('Successfully integrated with existing analytics system');
 
                 // Trigger dashboard update if we're on main app
                 if (window.sudokuApp) {
@@ -2310,12 +2310,12 @@ class SudokuEngine {
                     const latestEntry = entries.find(entry => entry.date === date);
                     if (latestEntry) {
                         await window.sudokuApp.checkAchievements(latestEntry);
-                        //console.log('✅ Achievements checked for completed puzzle');
+                        debugLog('✅ Achievements checked for completed puzzle');
                     }
 
                     // Ensure Today's Battle results are updated immediately
                     window.sudokuApp.updateTodaysBattleResults();
-                    //console.log('✅ Today\'s Battle results updated');
+                    debugLog('✅ Today\'s Battle results updated');
                 }
             }
 
@@ -2357,7 +2357,7 @@ class SudokuEngine {
                 throw new Error('Failed to save game to database');
             }
 
-            //console.log('Game saved to database for cross-browser sync');
+            debugLog('Game saved to database for cross-browser sync');
         } catch (error) {
             console.error('Failed to save game to database:', error);
             // Don't throw error - localStorage fallback is still available
@@ -2386,7 +2386,7 @@ class SudokuEngine {
         notifications.push(notification);
         localStorage.setItem(key, JSON.stringify(notifications));
 
-        //console.log('Notified opponent of progress:', notification);
+        debugLog('Notified opponent of progress:', notification);
     }
 
     getTodayDateString() {
@@ -2441,7 +2441,7 @@ class SudokuEngine {
                         </select>
                     </div>
                     ${(() => {
-                        //console.log('Settings modal debug:', {
+                        debugLog('Settings modal debug:', {
                             gameStarted: this.gameStarted,
                             gameCompleted: this.gameCompleted,
                             currentDifficulty: this.currentDifficulty,
@@ -2508,7 +2508,7 @@ class SudokuEngine {
 
     // Automatic daily puzzle refresh system
     setupAutomaticRefresh() {
-        //console.log('🔄 Setting up automatic daily puzzle refresh...');
+        debugLog('🔄 Setting up automatic daily puzzle refresh...');
 
         // Clear any existing interval
         if (this.dailyRefreshInterval) {
@@ -2523,7 +2523,7 @@ class SudokuEngine {
         // Also check immediately on visibility change (tab focus)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
-                //console.log('🔄 Tab focused, checking for new daily puzzles...');
+                debugLog('🔄 Tab focused, checking for new daily puzzles...');
                 this.checkAndRefreshDailyPuzzles();
             }
         });
@@ -2537,13 +2537,13 @@ class SudokuEngine {
 
         // If we don't have puzzles or they're for a different date, refresh
         if (!this.dailyPuzzles || this.lastPuzzleDate !== today) {
-            //console.log(`📅 Date changed or no puzzles loaded. Current: ${today}, Last: ${this.lastPuzzleDate}`);
+            debugLog(`📅 Date changed or no puzzles loaded. Current: ${today}, Last: ${this.lastPuzzleDate}`);
             await this.loadDailyPuzzles(true); // Force refresh
             this.lastPuzzleDate = today;
 
             // If user has a game in progress for old date, handle it
             if (this.gameStarted && this.lastPuzzleDate !== today) {
-                //console.log('🔄 New day detected, clearing old game state');
+                debugLog('🔄 New day detected, clearing old game state');
                 this.clearOldGameState();
                 // Auto-load easy difficulty for new day
                 this.loadPuzzle('easy');
@@ -2591,7 +2591,7 @@ class SudokuEngine {
             const dateParam = `date=${today}`;
             const url = `/api/puzzles?${dateParam}&${cacheBuster}`;
 
-            //console.log('🔄 Loading daily puzzles:', url);
+            debugLog('🔄 Loading daily puzzles:', url);
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -2617,14 +2617,14 @@ class SudokuEngine {
             this.dailyPuzzles = puzzleData;
             this.lastPuzzleDate = today;
 
-            //console.log('✅ Daily puzzles loaded and validated successfully');
+            debugLog('✅ Daily puzzles loaded and validated successfully');
 
             // Log puzzle info for verification
             Object.keys(this.dailyPuzzles).forEach(difficulty => {
                 const puzzle = this.dailyPuzzles[difficulty];
                 if (puzzle && puzzle.puzzle) {
                     const clueCount = this.countClues(puzzle.puzzle);
-                    //console.log(`  ${difficulty}: ${clueCount} clues`);
+                    debugLog(`  ${difficulty}: ${clueCount} clues`);
                 }
             });
 
@@ -2634,10 +2634,10 @@ class SudokuEngine {
             console.error('❌ Failed to load daily puzzles:', error);
 
             if (!forceRefresh) {
-                //console.log('🔄 Trying force refresh...');
+                debugLog('🔄 Trying force refresh...');
                 return await this.loadDailyPuzzles(true);
             } else {
-                //console.log('🔄 Using fallback puzzles...');
+                debugLog('🔄 Using fallback puzzles...');
                 this.generateFallbackPuzzles();
                 this.lastPuzzleDate = new Date().toISOString().split('T')[0];
                 return false;
@@ -3154,7 +3154,7 @@ class SudokuEngine {
             return;
         }
 
-        //console.log('Restarting current puzzle');
+        debugLog('Restarting current puzzle');
 
         // Remember if the game was paused before restarting
         const wasPaused = this.gamePaused;
@@ -3237,11 +3237,11 @@ class SudokuEngine {
     }
 
     destroy() {
-        //console.log('Destroying SudokuEngine instance');
+        debugLog('Destroying SudokuEngine instance');
 
         // Auto-pause if game is in progress and not completed
         if (this.gameStarted && !this.gameCompleted && !this.gamePaused) {
-            //console.log('Auto-pausing game before leaving puzzle page');
+            debugLog('Auto-pausing game before leaving puzzle page');
             this.gamePaused = true;
             this.saveGameState(); // Save the paused state
         }
@@ -3271,9 +3271,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if we're on the sudoku page
     if (document.getElementById('sudoku')) {
         const initSudoku = async () => {
-            //console.log('Initializing Sudoku');
+            debugLog('Initializing Sudoku');
             if (window.sudokuEngine) {
-                //console.log('Destroying existing SudokuEngine');
+                debugLog('Destroying existing SudokuEngine');
                 window.sudokuEngine.destroy();
                 // Add small delay to ensure cleanup is complete
                 await new Promise(resolve => setTimeout(resolve, 50));
@@ -3295,7 +3295,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (sudokuPage && sudokuPage.classList.contains('active')) {
                         // Prevent rapid re-initialization
                         if (window.sudokuInitializing) {
-                            //console.log('Sudoku already initializing, skipping');
+                            debugLog('Sudoku already initializing, skipping');
                             return;
                         }
                         window.sudokuInitializing = true;
@@ -3304,7 +3304,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             window.sudokuInitializing = false;
                         }, 100); // Small delay to ensure DOM is ready
                     } else if (window.sudokuEngine) {
-                        //console.log('Sudoku page no longer active, destroying engine');
+                        debugLog('Sudoku page no longer active, destroying engine');
                         window.sudokuEngine.destroy();
                         window.sudokuEngine = null;
                     }
@@ -3323,16 +3323,16 @@ document.addEventListener('DOMContentLoaded', function() {
 window.refreshPuzzles = function(clearSavedGames = false) {
     if (window.sudokuEngine) {
         if (clearSavedGames) {
-            //console.log('🗑️ Clearing saved game states...');
+            debugLog('🗑️ Clearing saved game states...');
             const player = sessionStorage.getItem('currentPlayer');
             const today = new Date().toISOString().split('T')[0];
             if (player) {
                 ['easy', 'medium', 'hard'].forEach(diff => {
                     const key = `sudoku_${player}_${today}_${diff}`;
                     localStorage.removeItem(key);
-                    //console.log('Cleared saved game:', key);
+                    debugLog('Cleared saved game:', key);
                 });
-                //console.log('✅ All saved games cleared for today');
+                debugLog('✅ All saved games cleared for today');
             }
         }
         return window.sudokuEngine.forceRefreshPuzzles();
@@ -3347,34 +3347,52 @@ window.refreshPuzzlesCompletely = function() {
     return window.refreshPuzzles(true);
 };
 
+// Debug flag - set to true to enable console output for debug functions
+window.sudokuDebug = false;
+
+// Helper function for conditional debug logging
+function debugLog(...args) {
+    if (window.sudokuDebug) {
+        console.log(...args);
+    }
+}
+
+// Convenience functions to enable/disable debug output
+window.enableDebug = () => { window.sudokuDebug = true; console.log('🔧 Debug output enabled'); };
+window.disableDebug = () => { window.sudokuDebug = false; console.log('🔇 Debug output disabled'); };
+
 // Master refresh function for development - clears EVERYTHING and forces new puzzles
-window.masterRefresh = async function() {
-    //console.log('🚀 MASTER REFRESH - Nuclear option for development');
-    //console.log('=' .repeat(60));
+window.masterRefresh = async function(verbose = true) {
+    // Temporarily enable debug output for this function
+    const originalDebug = window.sudokuDebug;
+    if (verbose) window.sudokuDebug = true;
+
+    debugLog('🚀 MASTER REFRESH - Nuclear option for development');
+    debugLog('=' .repeat(60));
 
     const today = new Date().toISOString().split('T')[0];
     const player = sessionStorage.getItem('currentPlayer');
 
     try {
         // Step 1: Clear all browser storage
-        //console.log('🧹 Step 1: Clearing all browser storage...');
+        debugLog('🧹 Step 1: Clearing all browser storage...');
         localStorage.clear();
         sessionStorage.setItem('currentPlayer', player); // Restore player
         window.preloadedPuzzles = null;
-        //console.log('✅ Browser storage cleared');
+        debugLog('✅ Browser storage cleared');
 
         // Step 2: Clear all app caches
-        //console.log('🧹 Step 2: Clearing all app caches...');
+        debugLog('🧹 Step 2: Clearing all app caches...');
         if (window.sudokuApp) {
             window.sudokuApp.puzzleCache.puzzles = null;
             window.sudokuApp.puzzleCache.loadTime = null;
             window.sudokuApp.cache.data = null;
             window.sudokuApp.cache.lastUpdate = null;
-            //console.log('✅ App caches cleared');
+            debugLog('✅ App caches cleared');
         }
 
         // Step 3: Reset database puzzles via API
-        //console.log('🗃️ Step 3: Resetting database puzzles...');
+        debugLog('🗃️ Step 3: Resetting database puzzles...');
         try {
             const resetResponse = await fetch('/api/puzzles', {
                 method: 'POST',
@@ -3382,7 +3400,7 @@ window.masterRefresh = async function() {
                 body: JSON.stringify({ action: 'reset', date: today })
             });
             if (resetResponse.ok) {
-                //console.log('✅ Database puzzles reset');
+                debugLog('✅ Database puzzles reset');
             } else {
                 console.warn('⚠️ Database reset failed, continuing...');
             }
@@ -3391,7 +3409,7 @@ window.masterRefresh = async function() {
         }
 
         // Step 4: Force generate new puzzles
-        //console.log('🎲 Step 4: Force generating new puzzles...');
+        debugLog('🎲 Step 4: Force generating new puzzles...');
         try {
             const generateResponse = await fetch('/api/puzzles', {
                 method: 'POST',
@@ -3400,20 +3418,20 @@ window.masterRefresh = async function() {
             });
             if (generateResponse.ok) {
                 const newPuzzles = await generateResponse.json();
-                //console.log('✅ New puzzles generated');
+                debugLog('✅ New puzzles generated');
 
                 // Show puzzle stats
                 if (newPuzzles.easy?.puzzle) {
                     const easyClues = newPuzzles.easy.puzzle.flat().filter(n => n !== 0).length;
-                    //console.log('🟢 Easy puzzle:', easyClues, 'clues');
+                    debugLog('🟢 Easy puzzle:', easyClues, 'clues');
                 }
                 if (newPuzzles.medium?.puzzle) {
                     const mediumClues = newPuzzles.medium.puzzle.flat().filter(n => n !== 0).length;
-                    //console.log('🟡 Medium puzzle:', mediumClues, 'clues');
+                    debugLog('🟡 Medium puzzle:', mediumClues, 'clues');
                 }
                 if (newPuzzles.hard?.puzzle) {
                     const hardClues = newPuzzles.hard.puzzle.flat().filter(n => n !== 0).length;
-                    //console.log('🔴 Hard puzzle:', hardClues, 'clues');
+                    debugLog('🔴 Hard puzzle:', hardClues, 'clues');
                 }
             }
         } catch (error) {
@@ -3421,7 +3439,7 @@ window.masterRefresh = async function() {
         }
 
         // Step 5: Force reload current page data
-        //console.log('🔄 Step 5: Reloading puzzle engine...');
+        debugLog('🔄 Step 5: Reloading puzzle engine...');
         if (window.sudokuEngine) {
             // Clear current game state
             window.sudokuEngine.gameStarted = false;
@@ -3430,127 +3448,139 @@ window.masterRefresh = async function() {
 
             // Force reload puzzles
             await window.sudokuEngine.loadDailyPuzzles(true);
-            //console.log('✅ Puzzle engine reloaded');
+            debugLog('✅ Puzzle engine reloaded');
 
             // Show what's loaded in memory
             if (window.sudokuEngine.dailyPuzzles) {
-                //console.log('📊 Puzzles now in memory:');
+                debugLog('📊 Puzzles now in memory:');
                 Object.keys(window.sudokuEngine.dailyPuzzles).forEach(diff => {
                     const puzzle = window.sudokuEngine.dailyPuzzles[diff];
                     if (puzzle?.puzzle) {
                         const clues = puzzle.puzzle.flat().filter(n => n !== 0).length;
-                        //console.log(`  ${diff}: ${clues} clues`);
+                        debugLog(`  ${diff}: ${clues} clues`);
                     }
                 });
             }
         }
 
         // Step 6: Force UI refresh
-        //console.log('🖼️ Step 6: Force refreshing UI...');
+        debugLog('🖼️ Step 6: Force refreshing UI...');
         if (window.location.pathname.includes('sudoku') || window.location.pathname.includes('puzzle')) {
-            //console.log('On puzzle page - you may need to select a difficulty to see new puzzles');
+            debugLog('On puzzle page - you may need to select a difficulty to see new puzzles');
         } else {
-            //console.log('Navigate to puzzle page to test new puzzles');
+            debugLog('Navigate to puzzle page to test new puzzles');
         }
 
-        //console.log('=' .repeat(60));
-        //console.log('🎯 MASTER REFRESH COMPLETE!');
-        //console.log('💡 Try selecting a difficulty level to see the new puzzles');
-        //console.log('📝 New algorithm: Easy=32-38, Medium=22-30, Hard=17-25 clues');
+        debugLog('=' .repeat(60));
+        debugLog('🎯 MASTER REFRESH COMPLETE!');
+        debugLog('💡 Try selecting a difficulty level to see the new puzzles');
+        debugLog('📝 New algorithm: Easy=32-38, Medium=22-30, Hard=17-25 clues');
 
+        // Restore original debug state
+        window.sudokuDebug = originalDebug;
         return true;
 
     } catch (error) {
         console.error('❌ Master refresh failed:', error);
+        // Restore original debug state
+        window.sudokuDebug = originalDebug;
         return false;
     }
 };
 
 // Debug function to inspect current puzzle state
-window.debugPuzzleState = function() {
-    //console.log('🔍 PUZZLE STATE DIAGNOSTIC');
-    //console.log('=' .repeat(50));
+window.debugPuzzleState = function(verbose = true) {
+    // Temporarily enable debug output for this function
+    const originalDebug = window.sudokuDebug;
+    if (verbose) window.sudokuDebug = true;
+
+    debugLog('🔍 PUZZLE STATE DIAGNOSTIC');
+    debugLog('=' .repeat(50));
 
     // Check if sudokuEngine exists
     if (!window.sudokuEngine) {
-        //console.log('❌ window.sudokuEngine not found');
-        //console.log('💡 Make sure you\'re on the Sudoku game page');
+        debugLog('❌ window.sudokuEngine not found');
+        debugLog('💡 Make sure you\'re on the Sudoku game page');
+        window.sudokuDebug = originalDebug;
         return;
     }
 
     const engine = window.sudokuEngine;
 
     // Basic engine state
-    //console.log('📋 Basic Engine State:');
-    //console.log('  Current difficulty:', engine.currentDifficulty);
-    //console.log('  Game started:', engine.gameStarted);
-    //console.log('  Last puzzle date:', engine.lastPuzzleDate);
+    debugLog('📋 Basic Engine State:');
+    debugLog('  Current difficulty:', engine.currentDifficulty);
+    debugLog('  Game started:', engine.gameStarted);
+    debugLog('  Last puzzle date:', engine.lastPuzzleDate);
 
     // Check daily puzzles in memory
-    //console.log('\n📊 Daily Puzzles in Memory:');
+    debugLog('\n📊 Daily Puzzles in Memory:');
     if (engine.dailyPuzzles) {
         Object.keys(engine.dailyPuzzles).forEach(diff => {
             const puzzle = engine.dailyPuzzles[diff];
             if (puzzle?.puzzle) {
                 const clues = puzzle.puzzle.flat().filter(n => n !== 0).length;
-                //console.log(`  ${diff}: ${clues} clues`);
+                debugLog(`  ${diff}: ${clues} clues`);
             } else {
-                //console.log(`  ${diff}: Invalid puzzle data`);
+                debugLog(`  ${diff}: Invalid puzzle data`);
             }
         });
     } else {
-        //console.log('  ❌ No dailyPuzzles loaded');
+        debugLog('  ❌ No dailyPuzzles loaded');
     }
 
     // Check what's displayed on screen
-    //console.log('\n🖼️ Current Display State:');
+    debugLog('\n🖼️ Current Display State:');
     if (engine.initialGrid) {
         const displayedClues = engine.initialGrid.flat().filter(n => n !== 0).length;
-        //console.log('  Displayed puzzle clues:', displayedClues);
+        debugLog('  Displayed puzzle clues:', displayedClues);
     } else {
-        //console.log('  ❌ No initialGrid (nothing displayed)');
+        debugLog('  ❌ No initialGrid (nothing displayed)');
     }
 
     if (engine.playerGrid) {
         const playerClues = engine.playerGrid.flat().filter(n => n !== 0).length;
-        //console.log('  Player grid filled cells:', playerClues);
+        debugLog('  Player grid filled cells:', playerClues);
     }
 
     // Check caches
-    //console.log('\n💾 Cache Status:');
-    //console.log('  window.preloadedPuzzles:', !!window.preloadedPuzzles);
+    debugLog('\n💾 Cache Status:');
+    debugLog('  window.preloadedPuzzles:', !!window.preloadedPuzzles);
     if (window.sudokuApp) {
-        //console.log('  sudokuApp.puzzleCache:', !!window.sudokuApp.puzzleCache.puzzles);
-        //console.log('  sudokuApp cache time:', window.sudokuApp.puzzleCache.loadTime);
+        debugLog('  sudokuApp.puzzleCache:', !!window.sudokuApp.puzzleCache.puzzles);
+        debugLog('  sudokuApp cache time:', window.sudokuApp.puzzleCache.loadTime);
     }
 
     // Check localStorage
     const player = sessionStorage.getItem('currentPlayer');
     const today = new Date().toISOString().split('T')[0];
-    //console.log('\n💾 LocalStorage Saved Games:');
+    debugLog('\n💾 LocalStorage Saved Games:');
     if (player) {
         ['easy', 'medium', 'hard'].forEach(diff => {
             const key = `sudoku_${player}_${today}_${diff}`;
             const saved = localStorage.getItem(key);
-            //console.log(`  ${diff}: ${saved ? 'SAVED GAME EXISTS' : 'No saved game'}`);
+            debugLog(`  ${diff}: ${saved ? 'SAVED GAME EXISTS' : 'No saved game'}`);
         });
     } else {
-        //console.log('  No player found');
+        debugLog('  No player found');
     }
 
-    //console.log('\n🔧 Recommendations:');
+    debugLog('\n🔧 Recommendations:');
     if (!engine.dailyPuzzles) {
-        //console.log('  • Run masterRefresh() to reload puzzles');
+        debugLog('  • Run masterRefresh() to reload puzzles');
     } else if (engine.dailyPuzzles && engine.initialGrid) {
         const memoryClues = engine.dailyPuzzles[engine.currentDifficulty]?.puzzle?.flat().filter(n => n !== 0).length;
         const displayClues = engine.initialGrid.flat().filter(n => n !== 0).length;
         if (memoryClues !== displayClues) {
-            //console.log(`  • MISMATCH: Memory has ${memoryClues} clues but display shows ${displayClues}`);
-            //console.log('  • Try masterRefresh() or switch difficulty levels');
+            debugLog(`  • MISMATCH: Memory has ${memoryClues} clues but display shows ${displayClues}`);
+            debugLog('  • Try masterRefresh() or switch difficulty levels');
         } else {
-            //console.log('  • Memory and display match - puzzle should be correct');
+            debugLog('  • Memory and display match - puzzle should be correct');
         }
     }
 
-    //console.log('=' .repeat(50));
+    debugLog('=' .repeat(50));
+
+    // Restore original debug state
+    window.sudokuDebug = originalDebug;
 };
