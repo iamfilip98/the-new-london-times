@@ -6770,70 +6770,113 @@ select:focus-visible,
     }
 
     .mobile-play-button {
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 1rem 2rem;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        font-family: 'Orbitron', monospace;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.75rem;
-        padding: 1rem 1.5rem;
-        border: none;
-        border-radius: 10px;
-        font-family: 'Orbitron', monospace;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: var(--transition);
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: 2px solid transparent;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        min-height: 60px;
+        gap: 0.5rem;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+        min-height: 48px;
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.15),
+            0 0 0 0 rgba(79, 172, 254, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        animation: buttonBreathe 3s ease-in-out infinite;
     }
 
-    .mobile-play-button i {
-        font-size: 1.2rem;
-    }
-
+    /* Difficulty-specific mobile button colors */
     .mobile-play-button.easy {
-        background: linear-gradient(135deg, #4CAF50, #8BC34A);
-        border-color: #4CAF50;
-        animation: pulseGreen 3s ease-in-out infinite;
-    }
-
-    .mobile-play-button.easy:hover {
-        background: linear-gradient(135deg, #66BB6A, #9CCC65);
-        border-color: #4CAF50;
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4), 0 0 30px rgba(76, 175, 80, 0.3);
-        animation: none;
+        background: linear-gradient(135deg, #4CAF50, #8BC34A, #66BB6A);
+        animation: buttonBreatheGreen 3s ease-in-out infinite;
     }
 
     .mobile-play-button.medium {
-        background: linear-gradient(135deg, #FF9800, #FFC107);
-        border-color: #FF9800;
-        animation: pulseOrange 3s ease-in-out infinite 1s;
-    }
-
-    .mobile-play-button.medium:hover {
-        background: linear-gradient(135deg, #FFB74D, #FFD54F);
-        border-color: #FF9800;
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4), 0 0 30px rgba(255, 193, 7, 0.3);
-        animation: none;
+        background: linear-gradient(135deg, #FF9800, #FFC107, #FFB74D);
+        animation: buttonBreatheOrange 3s ease-in-out infinite 1s;
     }
 
     .mobile-play-button.hard {
-        background: linear-gradient(135deg, #F44336, #E91E63);
-        border-color: #F44336;
-        animation: pulseRed 3s ease-in-out infinite 2s;
+        background: linear-gradient(135deg, #F44336, #E91E63, #EF5350);
+        animation: buttonBreatheRed 3s ease-in-out infinite 2s;
+    }
+
+    .mobile-play-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+        transition: left 0.6s ease;
+    }
+
+    .mobile-play-button:hover::before {
+        left: 100%;
+    }
+
+    .mobile-play-button:hover {
+        transform: translateY(-8px) scale(1.08);
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.25),
+            0 0 50px rgba(79, 172, 254, 0.8),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.8);
+        animation: none;
+    }
+
+    .mobile-play-button.easy:hover {
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.25),
+            0 0 50px rgba(76, 175, 80, 0.8),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        background: linear-gradient(135deg, #66BB6A, #9CCC65, #81C784);
+    }
+
+    .mobile-play-button.medium:hover {
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.25),
+            0 0 50px rgba(255, 152, 0, 0.8),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        background: linear-gradient(135deg, #FFB74D, #FFD54F, #FFCC02);
     }
 
     .mobile-play-button.hard:hover {
-        background: linear-gradient(135deg, #EF5350, #EC407A);
-        border-color: #F44336;
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.25),
+            0 0 50px rgba(244, 67, 54, 0.8),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        background: linear-gradient(135deg, #EF5350, #EC407A, #FF5722);
+    }
+
+    .mobile-play-button:focus {
+        outline: none;
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.25),
+            0 0 0 4px rgba(79, 172, 254, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .mobile-play-button:active {
         transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4), 0 0 30px rgba(233, 30, 99, 0.3);
-        animation: none;
+        transition: all 0.1s ease;
     }
 
     @keyframes pulseGreen {
