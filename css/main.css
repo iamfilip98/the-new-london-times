@@ -6866,8 +6866,17 @@ select:focus-visible,
 
 /* Mobile responsiveness for Recent Battles */
 @media (max-width: 768px) {
+    .recent-history {
+        padding: 1.25rem; /* Reduced padding on mobile */
+    }
+
+    .recent-history h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem; /* Reduced margin */
+    }
+
     .history-cards {
-        max-height: 240px; /* Height to show exactly 2 rows cleanly */
+        max-height: 280px; /* Increased height to show more compact cards */
         overflow-y: auto;
         -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
         scrollbar-width: thin;
@@ -6889,35 +6898,42 @@ select:focus-visible,
     }
 
     .history-card {
-        grid-template-columns: 1fr; /* Single column on mobile */
-        grid-template-rows: auto auto auto auto; /* 4 rows instead of 4 columns */
-        gap: 0.75rem;
-        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.75rem;
         text-align: center;
-        min-height: 110px; /* Consistent height for mobile cards */
-        margin-bottom: 0.5rem; /* Small gap between cards */
+        min-height: 75px; /* Reduced height for more compact layout */
+        margin-bottom: 0.25rem; /* Smaller gap between cards */
     }
 
     .history-date {
-        order: 1;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        opacity: 0.8;
+        margin-bottom: 0.25rem;
     }
 
     .history-scores {
-        order: 2;
+        display: flex;
         justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
     }
 
     .history-winner {
-        order: 3;
-        min-width: auto;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        border-radius: 12px;
         align-self: center;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
+        min-width: auto;
     }
 
     .score-vs {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        opacity: 0.7;
     }
 }
 
