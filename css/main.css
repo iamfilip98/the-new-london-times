@@ -1279,8 +1279,9 @@ body {
 .history-cards {
     display: grid;
     gap: 1rem;
-    max-height: 400px;
+    max-height: 350px; /* Slightly reduced to fit exactly 3 full rows */
     overflow-y: auto;
+    padding-right: 8px; /* Add space for scrollbar */
 }
 
 .history-card {
@@ -1293,6 +1294,7 @@ body {
     grid-template-columns: 120px 1fr 100px 80px;
     gap: 1rem;
     align-items: center;
+    min-height: 80px; /* Ensure consistent height for each row */
     box-shadow:
         0 4px 15px rgba(0, 0, 0, 0.08),
         0 1px 4px rgba(0, 0, 0, 0.06);
@@ -6375,6 +6377,43 @@ select:focus-visible,
 .btn-base:active::after {
     width: 300px;
     height: 300px;
+}
+
+/* Mobile responsiveness for Recent Battles */
+@media (max-width: 768px) {
+    .history-cards {
+        max-height: 300px; /* Reduced height for mobile */
+    }
+
+    .history-card {
+        grid-template-columns: 1fr; /* Single column on mobile */
+        grid-template-rows: auto auto auto auto; /* 4 rows instead of 4 columns */
+        gap: 0.75rem;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .history-date {
+        order: 1;
+        font-size: 0.9rem;
+    }
+
+    .history-scores {
+        order: 2;
+        justify-content: center;
+    }
+
+    .history-winner {
+        order: 3;
+        min-width: auto;
+        align-self: center;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .score-vs {
+        font-size: 0.8rem;
+    }
 }
 
 /* Mobile responsiveness for Sudoku selection */
