@@ -144,14 +144,14 @@ function generatePuzzle(solution, difficulty) {
   // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
     easy: {
-      minClues: 32,
-      maxClues: 38,
+      minClues: 40,      // Increased for true beginner-friendly puzzles
+      maxClues: 45,      // More clues = only naked/hidden singles needed
       requireNakedSingles: true,
       allowHiddenSingles: true,
-      allowComplexTechniques: false,
-      maxIterations: 75,  // More iterations for better placement
+      allowComplexTechniques: false,  // Absolutely no advanced techniques
+      maxIterations: 100,  // More iterations for better placement
       requireEvenDistribution: true,  // Ensure clues are spread across regions
-      maxEmptyRegions: 2  // Max 2 empty 3x3 regions for better initial placement
+      maxEmptyRegions: 1   // Max 1 empty 3x3 region for easier solving
     },
     medium: {
       minClues: 22,
@@ -274,7 +274,7 @@ function generatePuzzle(solution, difficulty) {
 function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
   const targetClues = {
-    easy: 35,
+    easy: 42,   // Increased for truly easy solving (no candidates needed)
     medium: 28, // Increased for better uniqueness
     hard: 25    // Increased for better uniqueness
   };
