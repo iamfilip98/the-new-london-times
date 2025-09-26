@@ -6504,8 +6504,9 @@ select:focus-visible,
     }
 }
 
-/* Hide mobile head-to-head section on desktop */
-.mobile-head-to-head {
+/* Hide mobile-only elements on desktop */
+.mobile-head-to-head,
+.mobile-difficulty-selector {
     display: none;
 }
 
@@ -6596,7 +6597,90 @@ select:focus-visible,
         color: var(--text-secondary);
         font-family: 'Orbitron', monospace;
     }
-    /* Move game selection to top and make vertical */
+
+    /* Hide desktop difficulty grid on mobile */
+    .desktop-only {
+        display: none;
+    }
+
+    /* Show and style mobile difficulty selector */
+    .mobile-difficulty-selector {
+        display: block;
+        margin-top: 1rem;
+    }
+
+    .mobile-difficulty-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mobile-play-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-family: 'Orbitron', monospace;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid transparent;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        min-height: 60px;
+    }
+
+    .mobile-play-button i {
+        font-size: 1.2rem;
+    }
+
+    .mobile-play-button.easy {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(139, 195, 74, 0.2));
+        border-color: rgba(76, 175, 80, 0.3);
+    }
+
+    .mobile-play-button.easy:hover {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(139, 195, 74, 0.3));
+        border-color: rgba(76, 175, 80, 0.6);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.2);
+    }
+
+    .mobile-play-button.medium {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+        border-color: rgba(255, 193, 7, 0.3);
+    }
+
+    .mobile-play-button.medium:hover {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.3), rgba(255, 152, 0, 0.3));
+        border-color: rgba(255, 193, 7, 0.6);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.2);
+    }
+
+    .mobile-play-button.hard {
+        background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(233, 30, 99, 0.2));
+        border-color: rgba(244, 67, 54, 0.3);
+    }
+
+    .mobile-play-button.hard:hover {
+        background: linear-gradient(135deg, rgba(244, 67, 54, 0.3), rgba(233, 30, 99, 0.3));
+        border-color: rgba(244, 67, 54, 0.6);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 67, 54, 0.2);
+    }
+
+    /* Move game selection to top */
     .sudoku-game-selection {
         order: -1;
         margin: 1rem 0 1.5rem 0;
@@ -6611,34 +6695,6 @@ select:focus-visible,
     .game-selection-header p {
         font-size: 0.9rem;
         margin-bottom: 0;
-    }
-
-    .difficulty-selection-grid {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-        margin-top: 1rem;
-    }
-
-    .difficulty-option {
-        padding: 1rem;
-        border-radius: 10px;
-    }
-
-    .difficulty-icon {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .difficulty-option h3 {
-        font-size: 1rem;
-        margin: 0.5rem 0;
-    }
-
-    .play-button {
-        padding: 0.75rem 1.5rem;
-        font-size: 0.9rem;
-        border-radius: 8px;
-        margin-top: 0.5rem;
     }
 
     /* Hide win streaks section on mobile since we have the VS section */

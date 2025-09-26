@@ -148,7 +148,8 @@
                         <p>Select a difficulty level to start playing today's Sudoku puzzle</p>
                     </div>
 
-                    <div class="difficulty-selection-grid">
+                    <!-- Desktop difficulty grid -->
+                    <div class="difficulty-selection-grid desktop-only">
                         <div class="difficulty-option easy" data-difficulty="easy">
                             <div class="difficulty-icon">
                                 <i class="fas fa-seedling"></i>
@@ -179,6 +180,24 @@
                             <button class="play-button" onclick="startSudokuGame('hard')">
                                 <i class="fas fa-play"></i>
                                 Play Hard
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mobile unified difficulty selector -->
+                    <div class="mobile-difficulty-selector">
+                        <div class="mobile-difficulty-buttons">
+                            <button class="mobile-play-button easy" onclick="startSudokuGame('easy')">
+                                <i class="fas fa-seedling"></i>
+                                <span>Easy</span>
+                            </button>
+                            <button class="mobile-play-button medium" onclick="startSudokuGame('medium')">
+                                <i class="fas fa-bolt"></i>
+                                <span>Medium</span>
+                            </button>
+                            <button class="mobile-play-button hard" onclick="startSudokuGame('hard')">
+                                <i class="fas fa-fire"></i>
+                                <span>Hard</span>
                             </button>
                         </div>
                     </div>
