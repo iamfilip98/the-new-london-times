@@ -164,15 +164,22 @@ function generatePuzzle(solution, difficulty) {
       maxEmptyRegions: 4
     },
     hard: {
-      minClues: 17,
-      maxClues: 25,  // Much harder - fewer clues
+      minClues: 15,
+      maxClues: 22,  // Extremely challenging - very few clues
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 300,  // More iterations for challenging puzzles
+      maxIterations: 500,  // Much more iterations for ultra-challenging puzzles
       requireEvenDistribution: false,
-      maxEmptyRegions: 6,  // Allow more empty regions for difficulty
-      allowAdvancedTechniques: true  // Enable most complex solving techniques
+      maxEmptyRegions: 7,  // Allow even more empty regions for difficulty
+      allowAdvancedTechniques: true,  // Enable most complex solving techniques
+      requireAdvancedSolving: true,   // Puzzle must require advanced techniques to solve
+      minAdvancedMoves: 3,           // Require at least 3 advanced technique applications
+      allowXWing: true,              // Enable X-Wing technique
+      allowSwordfish: true,          // Enable Swordfish technique
+      allowYWing: true,              // Enable Y-Wing technique
+      allowXYZWing: true,            // Enable XYZ-Wing technique
+      allowChains: true              // Enable simple coloring/chains
     }
   };
 
@@ -266,7 +273,7 @@ function createFallbackPuzzle(solution, difficulty) {
   const cellsToKeep = {
     easy: 35,   // Updated for better solving experience
     medium: 26, // Former hard difficulty (now medium)
-    hard: 21    // Much more challenging
+    hard: 18    // Extremely challenging - minimal clues for fallback
   };
 
   const positions = [];
@@ -300,6 +307,7 @@ function isPuzzleSolvableLogically(puzzle, settings) {
   let changed = true;
   let iterations = 0;
   const maxSolverIterations = 200;
+  let advancedTechniquesUsed = 0;  // Track usage of advanced techniques
 
   while (changed && iterations < maxSolverIterations) {
     changed = false;
@@ -344,6 +352,44 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       continue;
     }
 
+    // Advanced Techniques (only for hard difficulty)
+    if (settings.allowAdvancedTechniques) {
+      // Technique 7: X-Wing
+      if (settings.allowXWing && applyXWing(testGrid, candidates)) {
+        changed = true;
+        advancedTechniquesUsed++;
+        continue;
+      }
+
+      // Technique 8: Y-Wing
+      if (settings.allowYWing && applyYWing(testGrid, candidates)) {
+        changed = true;
+        advancedTechniquesUsed++;
+        continue;
+      }
+
+      // Technique 9: XYZ-Wing
+      if (settings.allowXYZWing && applyXYZWing(testGrid, candidates)) {
+        changed = true;
+        advancedTechniquesUsed++;
+        continue;
+      }
+
+      // Technique 10: Swordfish (3x3 version of X-Wing)
+      if (settings.allowSwordfish && applySwordfish(testGrid, candidates)) {
+        changed = true;
+        advancedTechniquesUsed++;
+        continue;
+      }
+
+      // Technique 11: Simple Coloring/Chains
+      if (settings.allowChains && applySimpleColoring(testGrid, candidates)) {
+        changed = true;
+        advancedTechniquesUsed++;
+        continue;
+      }
+    }
+
     // Check if puzzle is completely solved
     let emptyCells = 0;
     for (let row = 0; row < 9; row++) {
@@ -353,6 +399,12 @@ function isPuzzleSolvableLogically(puzzle, settings) {
     }
 
     if (emptyCells === 0) {
+      // Check if hard puzzles require advanced techniques
+      if (settings.requireAdvancedSolving && settings.minAdvancedMoves) {
+        if (advancedTechniquesUsed < settings.minAdvancedMoves) {
+          return false; // Hard puzzle should require more advanced techniques
+        }
+      }
       return true; // Puzzle is solvable!
     }
 
@@ -1156,6 +1208,366 @@ async function getGameState(player, date, difficulty) {
     console.error('Failed to get game state:', error);
     return null;
   }
+}
+
+// ========= ADVANCED SOLVING TECHNIQUES =========
+
+// X-Wing technique: When a number appears in only two rows/columns in exactly two positions,
+// and those positions form a rectangle, eliminate that number from other positions in those columns/rows
+function applyXWing(grid, candidates) {
+  let changed = false;
+
+  // Check rows for X-Wing patterns
+  for (let num = 1; num <= 9; num++) {
+    const rowsWithNum = [];
+
+    // Find rows where this number has exactly 2 possible positions
+    for (let row = 0; row < 9; row++) {
+      if (!isNumberInRow(grid, row, num)) {
+        const positions = [];
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            positions.push(col);
+          }
+        }
+        if (positions.length === 2) {
+          rowsWithNum.push({ row, cols: positions });
+        }
+      }
+    }
+
+    // Look for X-Wing patterns
+    for (let i = 0; i < rowsWithNum.length - 1; i++) {
+      for (let j = i + 1; j < rowsWithNum.length; j++) {
+        const row1 = rowsWithNum[i];
+        const row2 = rowsWithNum[j];
+
+        // Check if they form an X-Wing (same column positions)
+        if (row1.cols[0] === row2.cols[0] && row1.cols[1] === row2.cols[1]) {
+          // Eliminate num from these columns in all other rows
+          for (let row = 0; row < 9; row++) {
+            if (row !== row1.row && row !== row2.row) {
+              for (let col of row1.cols) {
+                if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+                  candidates[row][col] = candidates[row][col].filter(n => n !== num);
+                  changed = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Check columns for X-Wing patterns (similar logic)
+  for (let num = 1; num <= 9; num++) {
+    const colsWithNum = [];
+
+    for (let col = 0; col < 9; col++) {
+      if (!isNumberInColumn(grid, col, num)) {
+        const positions = [];
+        for (let row = 0; row < 9; row++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            positions.push(row);
+          }
+        }
+        if (positions.length === 2) {
+          colsWithNum.push({ col, rows: positions });
+        }
+      }
+    }
+
+    for (let i = 0; i < colsWithNum.length - 1; i++) {
+      for (let j = i + 1; j < colsWithNum.length; j++) {
+        const col1 = colsWithNum[i];
+        const col2 = colsWithNum[j];
+
+        if (col1.rows[0] === col2.rows[0] && col1.rows[1] === col2.rows[1]) {
+          for (let col = 0; col < 9; col++) {
+            if (col !== col1.col && col !== col2.col) {
+              for (let row of col1.rows) {
+                if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+                  candidates[row][col] = candidates[row][col].filter(n => n !== num);
+                  changed = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Y-Wing technique: A chain of three cells forming a Y pattern
+function applyYWing(grid, candidates) {
+  let changed = false;
+
+  // Find cells with exactly 2 candidates (potential pivots and pincers)
+  const biValueCells = [];
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (grid[row][col] === 0 && candidates[row][col].length === 2) {
+        biValueCells.push({ row, col, candidates: [...candidates[row][col]] });
+      }
+    }
+  }
+
+  // Look for Y-Wing patterns
+  for (let pivot of biValueCells) {
+    for (let pincer1 of biValueCells) {
+      for (let pincer2 of biValueCells) {
+        if (pivot === pincer1 || pivot === pincer2 || pincer1 === pincer2) continue;
+
+        // Check if they form a Y-Wing pattern
+        const [pivotA, pivotB] = pivot.candidates;
+        const [p1A, p1B] = pincer1.candidates;
+        const [p2A, p2B] = pincer2.candidates;
+
+        // Pivot should share one candidate with each pincer, and pincers should share the remaining candidate
+        let sharedWithP1, sharedWithP2, targetNum;
+
+        if (pivotA === p1A || pivotA === p1B) {
+          sharedWithP1 = pivotA;
+          sharedWithP2 = pivotB;
+        } else if (pivotB === p1A || pivotB === p1B) {
+          sharedWithP1 = pivotB;
+          sharedWithP2 = pivotA;
+        } else {
+          continue;
+        }
+
+        if (!(sharedWithP2 === p2A || sharedWithP2 === p2B)) continue;
+
+        // Find the common candidate between the two pincers
+        if ((p1A === p2A || p1A === p2B) && p1A !== sharedWithP1) {
+          targetNum = p1A;
+        } else if ((p1B === p2A || p1B === p2B) && p1B !== sharedWithP1) {
+          targetNum = p1B;
+        } else {
+          continue;
+        }
+
+        // Check if pivot sees both pincers
+        const pivotSeesPincer1 = seesCell(pivot, pincer1);
+        const pivotSeesPincer2 = seesCell(pivot, pincer2);
+
+        if (pivotSeesPincer1 && pivotSeesPincer2) {
+          // Find cells that see both pincers and eliminate targetNum
+          for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+              if (grid[row][col] === 0 && candidates[row][col].includes(targetNum)) {
+                const cell = { row, col };
+                if (seesCell(cell, pincer1) && seesCell(cell, pincer2) &&
+                    !(cell.row === pincer1.row && cell.col === pincer1.col) &&
+                    !(cell.row === pincer2.row && cell.col === pincer2.col)) {
+                  candidates[row][col] = candidates[row][col].filter(n => n !== targetNum);
+                  changed = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// XYZ-Wing technique: Extension of Y-Wing with three candidates
+function applyXYZWing(grid, candidates) {
+  let changed = false;
+
+  // Find cells with exactly 2 or 3 candidates
+  const candidateCells = [];
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (grid[row][col] === 0 && (candidates[row][col].length === 2 || candidates[row][col].length === 3)) {
+        candidateCells.push({ row, col, candidates: [...candidates[row][col]] });
+      }
+    }
+  }
+
+  // Look for XYZ-Wing patterns (simplified implementation)
+  for (let pivot of candidateCells.filter(c => c.candidates.length === 3)) {
+    for (let wing1 of candidateCells.filter(c => c.candidates.length === 2)) {
+      for (let wing2 of candidateCells.filter(c => c.candidates.length === 2)) {
+        if (pivot === wing1 || pivot === wing2 || wing1 === wing2) continue;
+
+        // Check if wings share exactly one candidate with pivot and have one common candidate
+        const commonCands = pivot.candidates.filter(c =>
+          wing1.candidates.includes(c) || wing2.candidates.includes(c)
+        );
+
+        if (commonCands.length === 2) {
+          const sharedBetweenWings = wing1.candidates.find(c => wing2.candidates.includes(c));
+          if (sharedBetweenWings && pivot.candidates.includes(sharedBetweenWings)) {
+            // Apply elimination
+            if (seesCell(pivot, wing1) && seesCell(pivot, wing2)) {
+              for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                  if (grid[row][col] === 0 && candidates[row][col].includes(sharedBetweenWings)) {
+                    const cell = { row, col };
+                    if (seesCell(cell, pivot) && seesCell(cell, wing1) && seesCell(cell, wing2) &&
+                        !(cell.row === pivot.row && cell.col === pivot.col) &&
+                        !(cell.row === wing1.row && cell.col === wing1.col) &&
+                        !(cell.row === wing2.row && cell.col === wing2.col)) {
+                      candidates[row][col] = candidates[row][col].filter(n => n !== sharedBetweenWings);
+                      changed = true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Swordfish technique: 3x3 version of X-Wing
+function applySwordfish(grid, candidates) {
+  let changed = false;
+
+  // Simplified Swordfish implementation - look for 3x3 patterns
+  for (let num = 1; num <= 9; num++) {
+    // Check rows for Swordfish
+    const rowsWithNum = [];
+
+    for (let row = 0; row < 9; row++) {
+      if (!isNumberInRow(grid, row, num)) {
+        const positions = [];
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            positions.push(col);
+          }
+        }
+        if (positions.length >= 2 && positions.length <= 3) {
+          rowsWithNum.push({ row, cols: positions });
+        }
+      }
+    }
+
+    // Look for 3-row Swordfish patterns
+    if (rowsWithNum.length >= 3) {
+      for (let i = 0; i < rowsWithNum.length - 2; i++) {
+        for (let j = i + 1; j < rowsWithNum.length - 1; j++) {
+          for (let k = j + 1; k < rowsWithNum.length; k++) {
+            const allCols = [...new Set([
+              ...rowsWithNum[i].cols,
+              ...rowsWithNum[j].cols,
+              ...rowsWithNum[k].cols
+            ])];
+
+            // If exactly 3 columns are involved, it's a Swordfish
+            if (allCols.length === 3) {
+              // Eliminate from these columns in other rows
+              for (let row = 0; row < 9; row++) {
+                if (row !== rowsWithNum[i].row &&
+                    row !== rowsWithNum[j].row &&
+                    row !== rowsWithNum[k].row) {
+                  for (let col of allCols) {
+                    if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+                      candidates[row][col] = candidates[row][col].filter(n => n !== num);
+                      changed = true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Simple Coloring/Chains technique (basic implementation)
+function applySimpleColoring(grid, candidates) {
+  let changed = false;
+
+  // Look for strong links (cells where a number can only go in 2 places in a unit)
+  for (let num = 1; num <= 9; num++) {
+    const strongLinks = [];
+
+    // Find strong links in rows
+    for (let row = 0; row < 9; row++) {
+      if (!isNumberInRow(grid, row, num)) {
+        const positions = [];
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            positions.push({ row, col });
+          }
+        }
+        if (positions.length === 2) {
+          strongLinks.push({ type: 'row', positions, unit: row });
+        }
+      }
+    }
+
+    // Find strong links in columns
+    for (let col = 0; col < 9; col++) {
+      if (!isNumberInColumn(grid, col, num)) {
+        const positions = [];
+        for (let row = 0; row < 9; row++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            positions.push({ row, col });
+          }
+        }
+        if (positions.length === 2) {
+          strongLinks.push({ type: 'col', positions, unit: col });
+        }
+      }
+    }
+
+    // Basic coloring elimination (simplified)
+    for (let link of strongLinks) {
+      const [pos1, pos2] = link.positions;
+
+      // If both positions in the link can see the same cell, eliminate from that cell
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0 && candidates[row][col].includes(num)) {
+            const cell = { row, col };
+            if (seesCell(cell, pos1) && seesCell(cell, pos2) &&
+                !(cell.row === pos1.row && cell.col === pos1.col) &&
+                !(cell.row === pos2.row && cell.col === pos2.col)) {
+              candidates[row][col] = candidates[row][col].filter(n => n !== num);
+              changed = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+// Helper function to check if two cells can "see" each other (same row, column, or box)
+function seesCell(cell1, cell2) {
+  // Same row
+  if (cell1.row === cell2.row) return true;
+
+  // Same column
+  if (cell1.col === cell2.col) return true;
+
+  // Same box
+  const box1Row = Math.floor(cell1.row / 3);
+  const box1Col = Math.floor(cell1.col / 3);
+  const box2Row = Math.floor(cell2.row / 3);
+  const box2Col = Math.floor(cell2.col / 3);
+
+  return box1Row === box2Row && box1Col === box2Col;
 }
 
 module.exports = async function handler(req, res) {
