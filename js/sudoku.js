@@ -122,7 +122,7 @@ class SudokuEngine {
                     </div>
                     <div class="stats-section">
                         <div class="stat-item">
-                            <div class="stat-label">Mistakes</div>
+                            <div class="stat-label">Errors</div>
                             <span class="errors-count" id="errorsCount">0</span>
                         </div>
                         <div class="stat-item">
@@ -1681,7 +1681,7 @@ class SudokuEngine {
                                 <span class="stat-value">${score}</span>
                             </div>
                             <div class="stat-row">
-                                <span class="stat-label">Mistakes:</span>
+                                <span class="stat-label">Errors:</span>
                                 <span class="stat-value">${this.errors}</span>
                             </div>
                             <div class="stat-row">
@@ -2421,7 +2421,7 @@ class SudokuEngine {
                     <div class="setting-item">
                         <label>
                             <input type="checkbox" id="autoCheckErrors" ${this.autoCheckErrors ? 'checked' : ''}>
-                            Highlight mistakes automatically
+                            Highlight errors automatically
                         </label>
                     </div>
                     <div class="setting-item">

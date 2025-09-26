@@ -4,7 +4,7 @@ class ChallengesManager {
             {
                 id: 'error_free_week',
                 title: '💎 Precision Week',
-                description: 'Keep your mistakes under 5 errors per day for 7 straight days. Quality over speed!',
+                description: 'Keep your errors under 5 per day for 7 straight days. Quality over speed!',
                 tip: 'Take your time and double-check before placing numbers',
                 icon: 'fas fa-gem',
                 duration: 7,
