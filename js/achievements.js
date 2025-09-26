@@ -2370,18 +2370,20 @@ class AchievementPopup {
             return;
         }
 
-        // Create popup content
+        // Create full achievement badge content for popup
         const content = `
             <button class="achievement-popup-close" id="achievementPopupClose">&times;</button>
-            <div class="badge-icon">
-                <i class="${achievementData.icon}"></i>
+            <div class="popup-achievement-badge">
+                <div class="badge-icon">
+                    <i class="${achievementData.icon}"></i>
+                </div>
+                <h3 class="badge-title">${achievementData.title}</h3>
+                <p class="badge-description">${achievementData.description}</p>
+                <div class="badge-rarity ${achievementData.rarity}">${achievementData.rarity.toUpperCase()}</div>
+                ${achievementData.progressHTML || ''}
+                ${achievementData.unlockedByHTML || ''}
+                ${achievementData.dateHTML || ''}
             </div>
-            <h3 class="badge-title">${achievementData.title}</h3>
-            <p class="badge-description">${achievementData.description}</p>
-            <div class="badge-rarity ${achievementData.rarity}">${achievementData.rarity.toUpperCase()}</div>
-            ${achievementData.progressHTML || ''}
-            ${achievementData.unlockedByHTML || ''}
-            ${achievementData.dateHTML || ''}
         `;
 
         this.popupContent.innerHTML = content;

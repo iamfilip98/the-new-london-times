@@ -2745,9 +2745,24 @@ body {
         background: rgba(255, 255, 255, 0.1);
     }
 
+    /* Full achievement badge styling in popup */
+    .popup-achievement-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .achievement-popup .badge-icon {
         font-size: 3rem;
         margin-bottom: 1rem;
+        position: static;
+        transform: none;
+        width: auto;
+        height: auto;
     }
 
     .achievement-popup .badge-title {
@@ -2767,11 +2782,29 @@ body {
         margin-bottom: 0.5rem;
     }
 
+    /* Override mobile hiding rules for popup */
+    .popup-achievement-badge > * {
+        display: block !important;
+    }
+
+    .popup-achievement-badge .badge-icon {
+        display: flex !important;
+    }
+
     .achievement-popup .badge-progress,
     .achievement-popup .badge-unlocked-by,
     .achievement-popup .badge-date {
-        display: block;
+        display: block !important;
         margin-bottom: 0.5rem;
+    }
+
+    .achievement-popup .badge-rarity {
+        display: inline-block !important;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
     }
 
     .no-results {
