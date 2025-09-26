@@ -573,6 +573,15 @@ class SudokuChampionship {
         });
 
         document.getElementById('overallRecord').textContent = `${faidaoWins} - ${filipWins}`;
+
+        // Update mobile head-to-head section
+        const mobileScoreFaidao = document.getElementById('mobileScoreFaidao');
+        const mobileScoreFilip = document.getElementById('mobileScoreFilip');
+        const mobileOverallRecord = document.getElementById('mobileOverallRecord');
+
+        if (mobileScoreFaidao) mobileScoreFaidao.textContent = faidaoWins;
+        if (mobileScoreFilip) mobileScoreFilip.textContent = filipWins;
+        if (mobileOverallRecord) mobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}`;
     }
 
     updateRecentHistory() {

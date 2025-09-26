@@ -6504,136 +6504,152 @@ select:focus-visible,
     }
 }
 
-/* Ultra-simplified mobile dashboard - only essential elements */
+/* Hide mobile head-to-head section on desktop */
+.mobile-head-to-head {
+    display: none;
+}
+
+/* Mobile dashboard improvements - keep all content but prioritize key sections */
 @media (max-width: 768px) {
-    /* Hide all non-essential dashboard sections on mobile */
-    .dashboard-header,
-    .win-streaks-section,
-    .progress-notifications,
-    .today-progress,
-    .recent-history {
-        display: none;
-    }
-
-    /* Create ultra-simple head-to-head score display */
-    .battle-results {
-        order: 1;
-        padding: 1rem;
-        margin: 0 0 1rem 0;
+    /* Show and style mobile head-to-head section */
+    .mobile-head-to-head {
+        display: flex;
+        order: -2;
         background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
         border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
     }
 
-    .results-header {
-        margin-bottom: 0.75rem;
+    .mobile-player-score {
+        flex: 1;
+        text-align: center;
+    }
+
+    .mobile-player-name {
+        font-family: 'Orbitron', monospace;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--accent-orange);
+    }
+
+    .mobile-player-score-value {
+        font-size: 2rem;
+        font-weight: 900;
+        font-family: 'Orbitron', monospace;
+        color: white;
+    }
+
+    .mobile-vs-divider {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .mobile-vs-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Orbitron', monospace;
+        font-weight: 900;
+        font-size: 1rem;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 15px rgba(254, 225, 64, 0.3);
+    }
+
+    .mobile-overall-record {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-family: 'Orbitron', monospace;
+    }
+    /* Move game selection to top and make vertical */
+    .sudoku-game-selection {
+        order: -1;
+        margin: 1rem 0 1.5rem 0;
+        padding: 1.5rem;
+    }
+
+    .game-selection-header h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-selection-header p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    .difficulty-selection-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .difficulty-option {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .difficulty-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .difficulty-option h3 {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    .play-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+    }
+
+    /* Compact other sections but keep them visible */
+    .dashboard-header {
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .win-streaks-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .streak-cards {
+        gap: 1rem;
+    }
+
+    .streak-card {
+        padding: 1rem;
+    }
+
+    .battle-results {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .results-header h3 {
         font-size: 1rem;
-        margin: 0 0 0.5rem 0;
-        text-align: center;
-    }
-
-    .winner-announcement {
-        font-size: 0.85rem;
-        margin: 0;
-        text-align: center;
-    }
-
-    .score-comparison {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
     }
 
     .score-bar {
         height: 40px;
         border-radius: 20px;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
-
-    .score-text {
-        font-size: 1rem;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-
-    /* Ultra-compact game selection */
-    .sudoku-game-selection {
-        order: 2;
-        margin: 0;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-    }
-
-    .game-selection-header {
-        margin-bottom: 0.75rem;
-        text-align: center;
-    }
-
-    .game-selection-header h2 {
-        font-size: 1rem;
-        margin: 0 0 0.25rem 0;
-    }
-
-    .game-selection-header p {
-        font-size: 0.75rem;
-        margin: 0;
-        opacity: 0.8;
-    }
-
-    .difficulty-selection-grid {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-    }
-
-    .difficulty-option {
-        flex: 1;
-        padding: 0.75rem 0.25rem;
-        border-radius: 8px;
-        text-align: center;
-        min-height: auto;
-    }
-
-    .difficulty-icon {
-        font-size: 1.25rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .difficulty-option h3 {
-        font-size: 0.8rem;
-        margin: 0.25rem 0;
-        font-weight: 600;
-    }
-
-    .play-button {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.75rem;
-        border-radius: 6px;
-        margin-top: 0.25rem;
-        width: 100%;
-    }
-
-    /* Ensure mobile container fits on screen */
-    .main-content {
-        padding: 0.75rem;
-        height: calc(100vh - 70px);
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-    }
-
-    #dashboard {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        height: 100%;
-        max-height: calc(100vh - 140px);
     }
 }
