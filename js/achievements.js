@@ -1965,6 +1965,7 @@ class AchievementsManager {
                         ` : ''}
                     </div>
                 `,
+                id: achievement.id, // Add missing ID for mobile click handlers
                 isUnlocked,
                 category: achievement.type,
                 rarity: achievement.rarity,
@@ -2028,9 +2029,14 @@ class AchievementsManager {
             if (!achievement) return;
 
             badge.addEventListener('click', () => {
+                console.log('Badge clicked!', achievement.id);
+
                 // Find the achievement definition
                 const achievementDef = this.achievementDefinitions.find(def => def.id === achievement.id);
-                if (!achievementDef) return;
+                if (!achievementDef) {
+                    console.log('Achievement definition not found for:', achievement.id);
+                    return;
+                }
 
                 // Get additional data from the badge element
                 const progressElement = badge.querySelector('.badge-progress');
@@ -2050,7 +2056,10 @@ class AchievementsManager {
 
                 // Show popup if available
                 if (window.achievementPopup) {
+                    console.log('Showing popup for:', achievementData);
                     window.achievementPopup.showPopup(achievementData);
+                } else {
+                    console.log('Achievement popup not available');
                 }
             });
         });
@@ -2414,7 +2423,9 @@ class AchievementPopup {
 
 // Initialize popup manager after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing achievement popup...');
     window.achievementPopup = new AchievementPopup();
+    console.log('Achievement popup initialized:', !!window.achievementPopup);
 });
 
 // Add global refresh function for easy access
