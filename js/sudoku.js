@@ -401,8 +401,17 @@ class SudokuEngine {
         try {
             console.log('🔄 Force refreshing puzzles from server...');
 
-            // Clear cached preloaded puzzles
+            // Clear ALL cached puzzle data
             window.preloadedPuzzles = null;
+
+            // Clear main app cache if available
+            if (window.sudokuApp) {
+                console.log('🧹 Clearing main app puzzle cache...');
+                window.sudokuApp.puzzleCache.puzzles = null;
+                window.sudokuApp.puzzleCache.loadTime = null;
+                window.sudokuApp.cache.data = null;
+                window.sudokuApp.cache.lastUpdate = null;
+            }
 
             // Force reload from API with cache busting
             const today = this.getTodayDateString();
@@ -414,6 +423,12 @@ class SudokuEngine {
 
                 // Update global cache
                 window.preloadedPuzzles = this.dailyPuzzles;
+
+                // Update main app cache if available
+                if (window.sudokuApp) {
+                    window.sudokuApp.puzzleCache.puzzles = this.dailyPuzzles;
+                    window.sudokuApp.puzzleCache.loadTime = Date.now();
+                }
 
                 // If currently playing, reload the current puzzle
                 if (this.currentDifficulty && this.gameStarted) {
