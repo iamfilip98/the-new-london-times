@@ -2333,7 +2333,13 @@ class AchievementPopup {
     }
 
     initializePopup() {
-        if (!this.popup || !this.closeBtn) return;
+        if (!this.popup || !this.closeBtn) {
+            console.log('Popup elements not found:', {
+                popup: !!this.popup,
+                closeBtn: !!this.closeBtn
+            });
+            return;
+        }
 
         // Close popup when clicking close button
         this.closeBtn.addEventListener('click', () => {
@@ -2404,8 +2410,10 @@ class AchievementPopup {
     }
 }
 
-// Initialize popup manager
-window.achievementPopup = new AchievementPopup();
+// Initialize popup manager after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    window.achievementPopup = new AchievementPopup();
+});
 
 // Add global refresh function for easy access
 window.refreshAchievements = async function() {
