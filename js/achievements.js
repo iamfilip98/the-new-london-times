@@ -25,7 +25,7 @@ class AchievementsManager {
                 id: 'streak_7',
                 title: 'Lucky Seven',
                 description: 'Win 7 consecutive days',
-                icon: 'fas fa-dice-seven',
+                icon: 'fas fa-dice',
                 type: 'streak',
                 requirement: { type: 'win_streak', value: 7 },
                 rarity: 'epic'
@@ -88,7 +88,7 @@ class AchievementsManager {
                 id: 'weekend_warrior',
                 title: 'Weekend Warrior',
                 description: 'Win both Saturday and Sunday',
-                icon: 'fas fa-calendar-weekend',
+                icon: 'fas fa-calendar',
                 type: 'weekend',
                 requirement: { type: 'weekend_sweep', value: 1 },
                 rarity: 'common'
@@ -245,7 +245,7 @@ class AchievementsManager {
                 id: 'perfectionist_week',
                 title: 'Perfectionist Week',
                 description: 'Complete 7 consecutive days with 0 total errors',
-                icon: 'fas fa-diamond',
+                icon: 'fas fa-gem',
                 type: 'perfect',
                 requirement: { type: 'perfect_week', value: 7 },
                 rarity: 'legendary'
@@ -408,7 +408,7 @@ class AchievementsManager {
                 id: 'comeback_legend',
                 title: 'Comeback Legend',
                 description: 'Win after losing 5 days in a row',
-                icon: 'fas fa-phoenix-squadron',
+                icon: 'fas fa-feather',
                 type: 'comeback',
                 requirement: { type: 'comeback_win', value: 5 },
                 rarity: 'epic'
@@ -525,7 +525,7 @@ class AchievementsManager {
                 id: 'weekend_specialist',
                 title: 'Weekend Specialist',
                 description: 'Win 10 weekend battles',
-                icon: 'fas fa-calendar-weekend',
+                icon: 'fas fa-calendar',
                 type: 'timing',
                 requirement: { type: 'weekend_wins', value: 10 },
                 rarity: 'epic'
@@ -561,7 +561,7 @@ class AchievementsManager {
                 id: 'new_year_champion',
                 title: 'New Year Champion',
                 description: 'Win on January 1st',
-                icon: 'fas fa-fireworks',
+                icon: 'fas fa-star',
                 type: 'timing',
                 requirement: { type: 'new_year_win', value: 1 },
                 rarity: 'legendary'
@@ -654,7 +654,7 @@ class AchievementsManager {
                 id: 'thanksgiving_gratitude',
                 title: 'Thankful Solver',
                 description: 'Win on Thanksgiving',
-                icon: 'fas fa-turkey',
+                icon: 'fas fa-heart',
                 type: 'seasonal',
                 requirement: { type: 'thanksgiving_win', value: 1 },
                 rarity: 'epic'
@@ -699,7 +699,7 @@ class AchievementsManager {
                 id: 'pi_day_precision',
                 title: 'Pi Day Precision',
                 description: 'Win on Pi Day (March 14)',
-                icon: 'fas fa-pi',
+                icon: 'fas fa-calculator',
                 type: 'seasonal',
                 requirement: { type: 'pi_day_win', value: 1 },
                 rarity: 'epic'
@@ -753,7 +753,7 @@ class AchievementsManager {
                 id: 'black_friday_bargain',
                 title: 'Black Friday Bargain',
                 description: 'Win on Black Friday',
-                icon: 'fas fa-shopping-cart',
+                icon: 'fas fa-clipboard-list',
                 type: 'seasonal',
                 requirement: { type: 'black_friday_win', value: 1 },
                 rarity: 'epic'
@@ -791,7 +791,7 @@ class AchievementsManager {
                 id: 'lucky_seven',
                 title: 'Lucky Seven Variant',
                 description: 'Win with a score containing only 7s (77, 777, etc.)',
-                icon: 'fas fa-dice-seven',
+                icon: 'fas fa-dice',
                 type: 'mathematical',
                 requirement: { type: 'all_sevens_score', value: 1 },
                 rarity: 'epic'
@@ -899,7 +899,7 @@ class AchievementsManager {
                 id: 'odd_one_out',
                 title: 'Odd One Out',
                 description: 'Win 10 times with only odd-numbered scores',
-                icon: 'fas fa-balance-scale-right',
+                icon: 'fas fa-balance-scale',
                 type: 'mathematical',
                 requirement: { type: 'odd_score_streak', value: 10 },
                 rarity: 'rare'
@@ -1009,7 +1009,7 @@ class AchievementsManager {
                 id: 'blitz_master',
                 title: 'Blitz Master',
                 description: 'Win 5 games with speed dominance (fastest completion)',
-                icon: 'fas fa-lightning-bolt',
+                icon: 'fas fa-bolt',
                 type: 'competitive',
                 requirement: { type: 'speed_dominance_wins', value: 5 },
                 rarity: 'rare'
