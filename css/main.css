@@ -4021,11 +4021,12 @@ select:focus-visible,
     color: var(--accent-pink);
 }
 
-/* Desktop: Show logout button horizontally next to player button */
+/* Desktop: Show logout button horizontally to the left of player button */
 @media (min-width: 769px) {
     .nav-user {
         display: flex;
         align-items: center;
+        flex-direction: row-reverse;
     }
 
     .player-dropdown.active .dropdown-content {
@@ -4040,8 +4041,9 @@ select:focus-visible,
         min-width: auto;
         max-width: none;
         width: auto;
-        margin-left: 0.5rem;
+        margin-right: 0.5rem;
         padding: 0;
+        order: -1;
     }
 
     .player-dropdown.active .dropdown-content a {
