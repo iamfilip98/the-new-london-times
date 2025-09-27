@@ -178,8 +178,30 @@ module.exports = async function handler(req, res) {
           message: 'Game saved successfully'
         });
 
+      case 'DELETE':
+        // Delete all games for a specific date or all games
+        const { date: deleteDate, all } = req.query;
+
+        if (all === 'true') {
+          // Delete ALL games
+          await sql`DELETE FROM individual_games`;
+          return res.status(200).json({
+            success: true,
+            message: 'All games deleted successfully'
+          });
+        } else if (deleteDate) {
+          // Delete games for specific date
+          await sql`DELETE FROM individual_games WHERE date = ${deleteDate}`;
+          return res.status(200).json({
+            success: true,
+            message: `Games for ${deleteDate} deleted successfully`
+          });
+        } else {
+          return res.status(400).json({ error: 'Date parameter or all=true is required for deletion' });
+        }
+
       default:
-        res.setHeader('Allow', ['GET', 'POST']);
+        res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
         return res.status(405).json({ error: `Method ${req.method} not allowed` });
     }
   } catch (error) {
