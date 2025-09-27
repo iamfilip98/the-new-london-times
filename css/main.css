@@ -4879,7 +4879,7 @@ select:focus-visible,
 
 .sudoku-grid.paused::after {
     content: "GAME PAUSED";
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -4887,11 +4887,13 @@ select:focus-visible,
     font-weight: bold;
     color: var(--text-color);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    z-index: 100;
-    background: rgba(255, 255, 255, 0.9);
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
     padding: 1rem 2rem;
     border-radius: var(--border-radius);
     backdrop-filter: blur(4px);
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .sudoku-grid.paused .sudoku-cell {
