@@ -3967,16 +3967,18 @@ select:focus-visible,
 .dropdown-content {
     display: none;
     position: absolute;
-    top: 100%;
-    right: 0;
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    min-width: 120px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
+    top: calc(100% + 0.25rem);
+    left: 0;
+    width: 100%;
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     z-index: 1001;
-    margin-top: 0.25rem;
 }
 
 .player-dropdown.active .dropdown-content {
