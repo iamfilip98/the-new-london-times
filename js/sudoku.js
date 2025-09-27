@@ -186,6 +186,11 @@ class SudokuEngine {
                     </div>
                 </div>
             </div>
+
+            <!-- Paused Overlay -->
+            <div class="sudoku-paused-overlay" id="pausedOverlay">
+                <div class="paused-label">GAME PAUSED</div>
+            </div>
         `;
     }
 
@@ -1184,6 +1189,11 @@ class SudokuEngine {
                 hintBtn.classList.add('disabled');
             }
             sudokuGrid.classList.add('paused');
+            // Show overlay
+            const pausedOverlay = document.getElementById('pausedOverlay');
+            if (pausedOverlay) {
+                pausedOverlay.classList.add('active');
+            }
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game paused. Click Resume to continue.</div>';
         } else {
@@ -1195,6 +1205,11 @@ class SudokuEngine {
                 hintBtn.classList.remove('disabled');
             }
             sudokuGrid.classList.remove('paused');
+            // Hide overlay
+            const pausedOverlay = document.getElementById('pausedOverlay');
+            if (pausedOverlay) {
+                pausedOverlay.classList.remove('active');
+            }
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game resumed!</div>';
         }
@@ -1214,6 +1229,11 @@ class SudokuEngine {
                     hintBtn.classList.add('disabled');
                 }
                 sudokuGrid.classList.add('paused');
+                // Show overlay
+                const pausedOverlay = document.getElementById('pausedOverlay');
+                if (pausedOverlay) {
+                    pausedOverlay.classList.add('active');
+                }
             } else {
                 pauseBtn.querySelector('i').className = 'fas fa-pause';
                 pauseBtn.title = 'Pause game';
@@ -1222,6 +1242,11 @@ class SudokuEngine {
                     hintBtn.classList.remove('disabled');
                 }
                 sudokuGrid.classList.remove('paused');
+                // Hide overlay
+                const pausedOverlay = document.getElementById('pausedOverlay');
+                if (pausedOverlay) {
+                    pausedOverlay.classList.remove('active');
+                }
             }
         }
     }
@@ -2062,6 +2087,11 @@ class SudokuEngine {
                     if (this.gamePaused) {
                         // Game was paused - update UI but don't start timer
                         this.updatePauseUI();
+                        // Show overlay
+                        const pausedOverlay = document.getElementById('pausedOverlay');
+                        if (pausedOverlay) {
+                            pausedOverlay.classList.add('active');
+                        }
                         document.getElementById('gameStatus').innerHTML =
                             '<div class="status-message">Game paused. Click Resume to continue playing.</div>';
                     } else {
@@ -3363,6 +3393,11 @@ class SudokuEngine {
                 hintBtn.disabled = true;
             }
 
+            // Show overlay
+            const pausedOverlay = document.getElementById('pausedOverlay');
+            if (pausedOverlay) {
+                pausedOverlay.classList.add('active');
+            }
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game paused. Click Resume to continue.</div>';
         } else {

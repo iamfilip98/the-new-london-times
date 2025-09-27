@@ -4877,23 +4877,42 @@ select:focus-visible,
     position: relative;
 }
 
-.sudoku-grid.paused::after {
-    content: "GAME PAUSED";
+/* Paused overlay - separate element */
+.sudoku-paused-overlay {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+.sudoku-paused-overlay.active {
+    display: flex;
+}
+
+.paused-label {
     font-size: 2rem;
     font-weight: bold;
     color: var(--text-color);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
     background: rgba(255, 255, 255, 0.95);
     padding: 1rem 2rem;
     border-radius: var(--border-radius);
     backdrop-filter: blur(4px);
     border: 2px solid var(--accent-color);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: pausedPulse 2s ease-in-out infinite;
+}
+
+@keyframes pausedPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
 .sudoku-grid.paused .sudoku-cell {
