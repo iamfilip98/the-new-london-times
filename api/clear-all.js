@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+const { sql } = require('@vercel/postgres');
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -15,22 +15,28 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Clear all tables completely
+    // Clear core tables
     await sql`DELETE FROM achievements`;
     await sql`DELETE FROM entries`;
-    await sql`DELETE FROM streaks`;
+
+    // Try to clear streaks table
+    try {
+      await sql`DELETE FROM streaks`;
+    } catch (e) {
+      console.log('Streaks table not found or already empty');
+    }
 
     // Also clear any other potential tables
     try {
       await sql`DELETE FROM daily_puzzles`;
     } catch (e) {
-      // Table might not exist
+      console.log('Daily puzzles table not found or already empty');
     }
 
     try {
       await sql`DELETE FROM game_states`;
     } catch (e) {
-      // Table might not exist
+      console.log('Game states table not found or already empty');
     }
 
     return res.status(200).json({
