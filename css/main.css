@@ -5828,6 +5828,7 @@ select:focus-visible,
         padding: 6px;
         text-align: center;
         min-height: 48px;
+        margin-top: 1rem;
     }
 
     .timer-section {
