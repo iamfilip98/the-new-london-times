@@ -3352,9 +3352,8 @@ body {
         text-align: left;
         border-radius: 15px;
         margin: 0.25rem 0.5rem;
-        background: rgba(255, 255, 255, 0.35);
-        backdrop-filter: blur(60px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.5);
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
@@ -4198,21 +4197,21 @@ select:focus-visible,
     /* Override desktop styles for mobile */
     .mobile-logout {
         display: flex !important;
-        background: rgba(255, 107, 107, 0.4);
-        backdrop-filter: blur(60px) saturate(180%);
+        background: rgba(255, 107, 107, 0.9);
         border-radius: 15px;
         margin: 0.5rem 0.5rem;
-        color: var(--text-primary);
-        border: 1px solid rgba(255, 107, 107, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 107, 107, 0.8);
         transition: all 0.3s ease;
         box-shadow: 0 2px 6px rgba(255, 107, 107, 0.1);
     }
 
     .mobile-logout:hover {
-        background: rgba(255, 107, 107, 0.2);
-        border-color: rgba(255, 107, 107, 0.4);
+        background: rgba(255, 87, 87, 1);
+        border-color: rgba(255, 87, 87, 1);
         transform: translateX(3px);
-        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.15);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        color: white;
     }
 
     /* No additional rules needed - dropdown-content handles visibility */
