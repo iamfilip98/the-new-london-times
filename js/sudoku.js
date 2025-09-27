@@ -2358,6 +2358,17 @@ class SudokuEngine {
             }
 
             debugLog('Game saved to database for cross-browser sync');
+
+            // Immediately invalidate the today's progress cache to ensure live updates
+            if (window.sudokuApp && window.sudokuApp.todayProgressCache) {
+                window.sudokuApp.todayProgressCache.data = null;
+                window.sudokuApp.todayProgressCache.lastUpdate = null;
+                window.sudokuApp.todayProgressCache.date = null;
+                debugLog('Today progress cache invalidated for live updates');
+
+                // Trigger immediate refresh of today's progress
+                await window.sudokuApp.updateTodayProgress();
+            }
         } catch (error) {
             console.error('Failed to save game to database:', error);
             // Don't throw error - localStorage fallback is still available

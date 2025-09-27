@@ -73,6 +73,9 @@ class SudokuChampionship {
         // Set up automatic date checking every minute
         this.startDateChangeMonitoring();
 
+        // Set up live progress polling for real-time battle updates
+        this.startLiveProgressPolling();
+
         // Mark initialization as complete
         this.initializationComplete = true;
     }
@@ -260,6 +263,39 @@ class SudokuChampionship {
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 this.checkDateChange();
+            }
+        });
+    }
+
+    startLiveProgressPolling() {
+        // Poll for live progress updates every 15 seconds for real-time battle updates
+        setInterval(async () => {
+            if (this.initializationComplete) {
+                // Only poll if we're on the dashboard page or if initialization is complete
+                const dashboardPage = document.getElementById('dashboard');
+                if (dashboardPage && dashboardPage.classList.contains('active')) {
+                    // Invalidate cache and update progress for live updates
+                    this.todayProgressCache.data = null;
+                    this.todayProgressCache.lastUpdate = null;
+                    this.todayProgressCache.date = null;
+
+                    await this.updateTodayProgress();
+                }
+            }
+        }, 15000); // 15 seconds for live battle updates
+
+        // Also check immediately when page becomes visible (user returns to tab)
+        document.addEventListener('visibilitychange', async () => {
+            if (!document.hidden && this.initializationComplete) {
+                const dashboardPage = document.getElementById('dashboard');
+                if (dashboardPage && dashboardPage.classList.contains('active')) {
+                    // Force refresh when user returns to tab
+                    this.todayProgressCache.data = null;
+                    this.todayProgressCache.lastUpdate = null;
+                    this.todayProgressCache.date = null;
+
+                    await this.updateTodayProgress();
+                }
             }
         });
     }
