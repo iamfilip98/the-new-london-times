@@ -3346,7 +3346,9 @@ body {
     }
 
     .nav-link {
-        width: 100%;
+        width: calc(100% - 2rem);
+        min-width: 120px;
+        max-width: 250px;
         padding: 0.75rem 1rem;
         text-align: left;
         border-radius: 20px;
@@ -3360,6 +3362,8 @@ body {
         color: var(--text-secondary);
         font-family: 'Orbitron', monospace;
         font-weight: 600;
+        white-space: nowrap;
+        box-sizing: border-box;
     }
 
     .nav-link::before {
@@ -3974,7 +3978,9 @@ select:focus-visible,
     position: absolute;
     top: calc(100% + 0.25rem);
     left: 0;
-    width: 100%;
+    min-width: 120px;
+    max-width: 200px;
+    width: max-content;
     background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
     backdrop-filter: blur(10px);
     border: 1px solid rgba(78, 205, 196, 0.3);
@@ -4002,6 +4008,9 @@ select:focus-visible,
     transition: var(--transition);
     border-radius: 20px;
     margin: 0.1rem 0;
+    white-space: nowrap;
+    min-width: 100px;
+    justify-content: flex-start;
 }
 
 .dropdown-content a:hover {
