@@ -645,6 +645,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: content-box;
+    aspect-ratio: 1;
     font-family: 'Orbitron', monospace;
     font-weight: 600;
     font-size: 1.5rem;
@@ -653,7 +655,6 @@ body {
     box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.15);
     transition: var(--transition);
-    animation: gentleFloat 3s ease-in-out infinite;
 }
 
 .player-avatar:hover {
