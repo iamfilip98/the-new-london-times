@@ -3855,7 +3855,8 @@ select:focus-visible,
     display: none;
     position: absolute;
     right: 0;
-    background: var(--bg-primary);
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
     min-width: 120px;
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius);
