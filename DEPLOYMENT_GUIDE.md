@@ -41,8 +41,10 @@ Your competitive analytics dashboard has been transformed into a full Sudoku gam
 Final Score = (1000 ÷ (adjusted_time_in_minutes)) × difficulty_multiplier × theme_multiplier
 
 Where:
-- adjusted_time = actual_time + (errors × 30 seconds) + (hints × 15 seconds)
-- difficulty_multiplier = Easy: 1x, Medium: 1.5x, Hard: 2x
+- adjusted_time = actual_time + (errors × 30 seconds) + hint_penalties
+- hint_penalties = (hint_pointings × 5 seconds) + (hint_reveals × 10 seconds)
+- Each full hint use = 15 seconds total (5s pointing + 10s revealing)
+- difficulty_multiplier = Easy: 1x, Medium: 1.8x, Hard: 3.2x
 - theme_multiplier = 1.0x to 1.4x based on seasonal theme
 ```
 
