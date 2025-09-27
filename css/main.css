@@ -213,7 +213,12 @@ body {
     display: none !important;
 }
 
+/* Desktop dropdown should be hidden by default, only show when active */
 .desktop-only {
+    display: none;
+}
+
+.player-dropdown.active .desktop-only {
     display: block;
 }
 
