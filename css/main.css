@@ -2823,7 +2823,7 @@ body {
 
     /* Set precise achievements-grid height for desktop */
     .achievements-grid {
-        max-height: 600px !important; /* Conservative height to ensure no row 3 visibility */
+        max-height: calc(2 * (300px + 4rem) + 2rem) !important; /* 760px - exactly 2 rows */
     }
 }
 
