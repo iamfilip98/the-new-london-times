@@ -6190,11 +6190,30 @@ select:focus-visible,
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition);
+    cursor: pointer;
+}
+
+.progress-item:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(79, 172, 254, 0.1);
 }
 
 .progress-item.completed {
     background: rgba(0, 242, 254, 0.1);
     border-color: var(--accent-green);
+}
+
+.progress-item.completed:hover {
+    transform: translateY(-2px);
+    background: rgba(0, 242, 254, 0.15);
+    border-color: var(--accent-green);
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(0, 242, 254, 0.3);
 }
 
 .difficulty-label {
