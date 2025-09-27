@@ -3352,8 +3352,8 @@ body {
         text-align: left;
         border-radius: 15px;
         margin: 0.25rem 0.5rem;
-        background: rgba(40, 40, 60, 0.9);
-        border: 1px solid rgba(80, 80, 100, 0.8);
+        background: rgba(102, 126, 234, 0.9);
+        border: 1px solid rgba(102, 126, 234, 0.8);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         transition: all 0.3s ease;
         position: relative;
@@ -4148,9 +4148,8 @@ select:focus-visible,
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(78, 205, 196, 0.3);
+        background: rgba(102, 126, 234, 0.9);
+        border: 1px solid rgba(102, 126, 234, 0.8);
         border-radius: 25px;
         padding: 0.4rem 0.8rem;
         box-shadow:
@@ -4168,7 +4167,7 @@ select:focus-visible,
     .current-player-mobile .player-name {
         font-size: 0.9rem;
         font-weight: 600;
-        color: var(--text-primary);
+        color: white;
     }
 
     /* Hide desktop player dropdown on mobile */
