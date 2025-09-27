@@ -178,6 +178,13 @@ class SudokuEngine {
                     <div class="sudoku-grid" id="sudokuGrid">
                         ${this.generateGridHTML()}
                     </div>
+                    <!-- Paused Overlay - moved inside grid container -->
+                    <div class="sudoku-paused-overlay" id="pausedOverlay">
+                        <div class="paused-label" id="pausedLabel">
+                            <span class="main-text">GAME PAUSED</span>
+                            <span class="sub-text">Click to Continue</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Number Input Rows -->
@@ -204,14 +211,6 @@ class SudokuEngine {
                     <div class="status-message">
                         Ready to play! Select a difficulty to start.
                     </div>
-                </div>
-            </div>
-
-            <!-- Paused Overlay -->
-            <div class="sudoku-paused-overlay" id="pausedOverlay">
-                <div class="paused-label" id="pausedLabel">
-                    <span class="main-text">GAME PAUSED</span>
-                    <span class="sub-text">Click to Continue</span>
                 </div>
             </div>
         `;

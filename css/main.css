@@ -4589,6 +4589,7 @@ select:focus-visible,
 
 /* Accurate NYT Sudoku Grid */
 .sudoku-grid-container {
+    position: relative;
     display: flex;
     justify-content: center;
     padding: 0;
@@ -4596,7 +4597,6 @@ select:focus-visible,
     margin: 0;
     width: 100%;
     aspect-ratio: 1;
-    position: relative;
     max-width: 700px;
     max-height: 700px;
 }
@@ -5039,7 +5039,7 @@ select:focus-visible,
 
 /* Paused overlay - separate element */
 .sudoku-paused-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -5057,11 +5057,6 @@ select:focus-visible,
     pointer-events: auto;
 }
 
-/* Ensure game control buttons remain accessible when paused */
-.game-controls .icon-btn {
-    position: relative;
-    z-index: 1001;
-}
 
 .paused-label {
     font-size: 2rem;
