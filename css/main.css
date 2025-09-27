@@ -2746,15 +2746,6 @@ body {
         background: rgba(255, 255, 255, 0.1);
     }
 
-    /* Hide entire achievement popup on desktop */
-    @media (min-width: 769px) {
-        .achievement-popup {
-            display: none !important;
-        }
-        .achievement-popup-close {
-            display: none;
-        }
-    }
 
     /* Full achievement badge styling in popup */
     .popup-achievement-badge {
@@ -2820,6 +2811,19 @@ body {
 
     .no-results {
         padding: 2rem 1rem;
+    }
+}
+
+/* Desktop optimizations for achievements */
+@media (min-width: 769px) {
+    /* Hide achievement popup completely on desktop */
+    .achievement-popup {
+        display: none !important;
+    }
+
+    /* Set precise achievements-grid height for desktop */
+    .achievements-grid {
+        max-height: calc(2 * (300px + 4rem) + 2rem) !important; /* 760px - exactly 2 rows */
     }
 }
 
