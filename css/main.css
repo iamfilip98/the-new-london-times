@@ -5403,6 +5403,53 @@ select:focus-visible,
     margin-left: 0 !important;
 }
 
+/* Sound controls styling */
+.sound-controls-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.sound-controls-section > label {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.sound-toggles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.sound-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.sound-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.sound-toggle label:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sound-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-purple);
+    cursor: pointer;
+}
+
 /* Mobile optimizations for settings modal */
 @media (max-width: 768px) {
     .settings-content, .stats-content {
@@ -5451,6 +5498,17 @@ select:focus-visible,
         font-size: 0.8rem;
         margin-top: 0.875rem !important;
         line-height: 1.4;
+    }
+
+    /* Mobile sound controls */
+    .sound-toggles {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .sound-toggle label {
+        font-size: 0.85rem;
+        padding: 0.75rem 0.5rem;
     }
 }
 

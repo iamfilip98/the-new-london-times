@@ -34,6 +34,14 @@ class SudokuEngine {
         this.autoSave = true;
         this.soundLevel = 'medium';
         this.inputSoundType = 'classic';
+        // Individual sound controls
+        this.soundSettings = {
+            inputSound: true,
+            errorSound: true,
+            completionSound: true,
+            hintSound: true,
+            allNineCompleteSound: true
+        };
         this.streakCount = 0;
         this.bestTime = { easy: null, medium: null, hard: null };
     }
@@ -1004,6 +1012,10 @@ class SudokuEngine {
 
         this.updateDisplay();
         this.playSound('place');
+
+        // Check if all 9 instances of a number have been placed
+        this.checkAllNineComplete(number);
+
         await this.checkCompletion();
     }
 
@@ -2419,6 +2431,41 @@ class SudokuEngine {
                             <option value="soft" ${this.inputSoundType === 'soft' ? 'selected' : ''}>Soft</option>
                         </select>
                     </div>
+                    <div class="setting-item sound-controls-section">
+                        <label>Individual Sound Controls</label>
+                        <div class="sound-toggles">
+                            <div class="sound-toggle">
+                                <label>
+                                    <input type="checkbox" id="inputSoundEnabled" ${this.soundSettings.inputSound ? 'checked' : ''}>
+                                    Number Placement
+                                </label>
+                            </div>
+                            <div class="sound-toggle">
+                                <label>
+                                    <input type="checkbox" id="errorSoundEnabled" ${this.soundSettings.errorSound ? 'checked' : ''}>
+                                    Error Feedback
+                                </label>
+                            </div>
+                            <div class="sound-toggle">
+                                <label>
+                                    <input type="checkbox" id="completionSoundEnabled" ${this.soundSettings.completionSound ? 'checked' : ''}>
+                                    Puzzle Completion
+                                </label>
+                            </div>
+                            <div class="sound-toggle">
+                                <label>
+                                    <input type="checkbox" id="hintSoundEnabled" ${this.soundSettings.hintSound ? 'checked' : ''}>
+                                    Hint Sounds
+                                </label>
+                            </div>
+                            <div class="sound-toggle">
+                                <label>
+                                    <input type="checkbox" id="allNineCompleteSoundEnabled" ${this.soundSettings.allNineCompleteSound ? 'checked' : ''}>
+                                    Number Completion Ding
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     ${(() => {
                         debugLog('Settings modal debug:', {
                             gameStarted: this.gameStarted,
@@ -2458,12 +2505,20 @@ class SudokuEngine {
         this.soundLevel = document.getElementById('soundLevel').value;
         this.inputSoundType = document.getElementById('inputSoundType').value;
 
+        // Update individual sound settings
+        this.soundSettings.inputSound = document.getElementById('inputSoundEnabled').checked;
+        this.soundSettings.errorSound = document.getElementById('errorSoundEnabled').checked;
+        this.soundSettings.completionSound = document.getElementById('completionSoundEnabled').checked;
+        this.soundSettings.hintSound = document.getElementById('hintSoundEnabled').checked;
+        this.soundSettings.allNineCompleteSound = document.getElementById('allNineCompleteSoundEnabled').checked;
+
         // Save to localStorage
         const settings = {
             autoCheckErrors: this.autoCheckErrors,
             showTimer: this.showTimer,
             soundLevel: this.soundLevel,
-            inputSoundType: this.inputSoundType
+            inputSoundType: this.inputSoundType,
+            soundSettings: this.soundSettings
         };
         localStorage.setItem('sudoku_settings', JSON.stringify(settings));
 
@@ -2482,6 +2537,17 @@ class SudokuEngine {
             this.showTimer = parsed.showTimer !== false;
             this.soundLevel = parsed.soundLevel || 'medium';
             this.inputSoundType = parsed.inputSoundType || 'classic';
+
+            // Load individual sound settings with defaults
+            if (parsed.soundSettings) {
+                this.soundSettings = {
+                    inputSound: parsed.soundSettings.inputSound !== false,
+                    errorSound: parsed.soundSettings.errorSound !== false,
+                    completionSound: parsed.soundSettings.completionSound !== false,
+                    hintSound: parsed.soundSettings.hintSound !== false,
+                    allNineCompleteSound: parsed.soundSettings.allNineCompleteSound !== false
+                };
+            }
         }
         // Auto-save is always enabled
         this.autoSave = true;
@@ -2930,6 +2996,19 @@ class SudokuEngine {
     playSound(type) {
         if (this.soundLevel === 'off') return;
 
+        // Check individual sound settings
+        const soundMap = {
+            'place': 'inputSound',
+            'error': 'errorSound',
+            'complete': 'completionSound',
+            'hint': 'hintSound',
+            'allNineComplete': 'allNineCompleteSound'
+        };
+
+        if (soundMap[type] && !this.soundSettings[soundMap[type]]) {
+            return; // This specific sound is disabled
+        }
+
         const volume = {
             'low': 0.3,
             'medium': 0.6,
@@ -2966,12 +3045,22 @@ class SudokuEngine {
                 playTone(300, 0.2);
                 break;
             case 'complete':
-                playTone(523, 0.2); // C
-                setTimeout(() => playTone(659, 0.2), 100); // E
-                setTimeout(() => playTone(784, 0.4), 200); // G
+                // More grand completion sound - ascending musical phrase
+                playTone(523, 0.15); // C
+                setTimeout(() => playTone(659, 0.15), 150); // E
+                setTimeout(() => playTone(784, 0.15), 300); // G
+                setTimeout(() => playTone(1047, 0.2), 450); // C (octave)
+                setTimeout(() => playTone(1319, 0.25), 600); // E (octave)
+                setTimeout(() => playTone(1568, 0.3), 750); // G (octave)
                 break;
             case 'hint':
                 playTone(1000, 0.15);
+                break;
+            case 'allNineComplete':
+                // Pleasant ding sound when all 9 of a number are placed
+                playTone(800, 0.1);
+                setTimeout(() => playTone(1000, 0.1), 50);
+                setTimeout(() => playTone(1200, 0.15), 100);
                 break;
         }
     }
@@ -3024,6 +3113,26 @@ class SudokuEngine {
                 // Gentle, mellow sound
                 playTone(500, 0.15, 'triangle');
                 break;
+        }
+    }
+
+    checkAllNineComplete(number) {
+        // Only check if a valid number was placed (not 0/deletion)
+        if (number === 0 || !number) return;
+
+        // Count how many times this number appears in the player grid
+        let count = 0;
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.playerGrid[row][col] === number) {
+                    count++;
+                }
+            }
+        }
+
+        // If all 9 instances are placed, play special sound
+        if (count === 9) {
+            this.playSound('allNineComplete');
         }
     }
 
