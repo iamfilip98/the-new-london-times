@@ -3702,7 +3702,6 @@ select:focus-visible,
 .nav-user {
     display: flex;
     align-items: center;
-    gap: 1rem;
 }
 
 .current-player {
@@ -3811,7 +3810,7 @@ select:focus-visible,
     transition: var(--transition);
 }
 
-.player-dropdown:hover .current-player {
+.player-dropdown.active .current-player {
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -3828,7 +3827,7 @@ select:focus-visible,
     margin-top: 0.25rem;
 }
 
-.player-dropdown:hover .dropdown-content {
+.player-dropdown.active .dropdown-content {
     display: block;
 }
 

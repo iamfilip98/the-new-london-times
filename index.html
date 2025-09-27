@@ -643,8 +643,31 @@
             }
         }
 
+        // Player dropdown functionality
+        function initializeDropdown() {
+            const dropdown = document.querySelector('.player-dropdown');
+            const currentPlayerElement = dropdown?.querySelector('.current-player');
+
+            if (dropdown && currentPlayerElement) {
+                currentPlayerElement.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdown.contains(e.target)) {
+                        dropdown.classList.remove('active');
+                    }
+                });
+            }
+        }
+
         // Initialize player session when DOM is ready
-        document.addEventListener('DOMContentLoaded', initializePlayerSession);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePlayerSession();
+            initializeDropdown();
+        });
 
         // Function to start Sudoku game with selected difficulty
         function startSudokuGame(difficulty) {
