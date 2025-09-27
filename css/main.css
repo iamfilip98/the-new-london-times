@@ -4139,6 +4139,8 @@ select:focus-visible,
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        z-index: 1100;
+        position: relative;
     }
 
     /* Style mobile player display same as desktop */
