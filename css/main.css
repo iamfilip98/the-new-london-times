@@ -2764,9 +2764,15 @@ body {
         max-height: none; /* Remove height limit on mobile for scrolling */
         padding: 0.75rem;
         width: 100%;
+        max-width: 100%;
         box-sizing: border-box;
+        margin: 0 auto !important; /* Center the grid horizontally and override desktop negative margin */
         justify-items: center; /* Center grid items horizontally */
         align-items: center; /* Center grid items vertically */
+        overflow-x: hidden; /* Prevent horizontal scroll */
+        left: auto; /* Reset any absolute positioning */
+        right: auto; /* Reset any absolute positioning */
+        transform: none; /* Reset any transforms */
     }
 
     .achievement-badge {
