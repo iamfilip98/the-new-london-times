@@ -4023,10 +4023,27 @@ select:focus-visible,
 
 /* Desktop: Show logout button within nav bar to the left of player button */
 @media (min-width: 769px) {
+    /* Ensure nav links stay centered regardless of right side content */
+    .main-nav {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .nav-brand {
+        justify-self: start;
+    }
+
+    .nav-links {
+        justify-self: center;
+    }
+
     .nav-user {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        justify-self: end;
     }
 
     .player-dropdown.active .dropdown-content {
