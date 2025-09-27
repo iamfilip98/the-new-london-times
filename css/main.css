@@ -263,55 +263,6 @@ body {
     }
 }
 
-.crown-gems {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.gem {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    animation: gemSparkle 2s ease-in-out infinite;
-}
-
-.gem-1 {
-    top: 8px;
-    left: 12px;
-    background: radial-gradient(circle, #ff6b6b, #ff4757);
-    animation-delay: 0s;
-}
-
-.gem-2 {
-    top: 6px;
-    left: 20px;
-    background: radial-gradient(circle, #4ecdc4, #45b7aa);
-    animation-delay: 0.7s;
-}
-
-.gem-3 {
-    top: 8px;
-    left: 28px;
-    background: radial-gradient(circle, #a55eea, #8b2ccc);
-    animation-delay: 1.4s;
-}
-
-@keyframes gemSparkle {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.8;
-    }
-    50% {
-        transform: scale(1.5);
-        opacity: 1;
-        box-shadow: 0 0 10px currentColor;
-    }
-}
 
 .brand-text {
     display: flex;
@@ -329,7 +280,6 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     animation: titleShimmer 4s ease-in-out infinite;
 }
 
@@ -6023,22 +5973,6 @@ select:focus-visible,
     }
     .logo-container {
         gap: 0.5rem;
-    }
-    .gem {
-        width: 4px;
-        height: 4px;
-    }
-    .gem-1 {
-        top: 6px;
-        left: 8px;
-    }
-    .gem-2 {
-        top: 4px;
-        left: 14px;
-    }
-    .gem-3 {
-        top: 6px;
-        left: 20px;
     }
 
     .difficulty-option {
