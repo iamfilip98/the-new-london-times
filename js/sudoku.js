@@ -189,7 +189,10 @@ class SudokuEngine {
 
             <!-- Paused Overlay -->
             <div class="sudoku-paused-overlay" id="pausedOverlay">
-                <div class="paused-label">GAME PAUSED</div>
+                <div class="paused-label" id="pausedLabel">
+                    <span class="main-text">GAME PAUSED</span>
+                    <span class="sub-text">Click to Continue</span>
+                </div>
             </div>
         `;
     }
@@ -295,6 +298,7 @@ class SudokuEngine {
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
+        document.getElementById('pausedLabel')?.addEventListener('click', () => this.togglePause());
 
         // Keyboard controls
         document.addEventListener('keydown', async (e) => await this.handleKeyInput(e));
