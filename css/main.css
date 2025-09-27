@@ -213,14 +213,7 @@ body {
     display: none !important;
 }
 
-/* Desktop dropdown should be hidden by default, only show when active */
-.desktop-only {
-    display: none;
-}
-
-.player-dropdown.active .desktop-only {
-    display: block;
-}
+/* Desktop dropdown controlled by .dropdown-content rules */
 
 /* Hide mobile toggle on desktop */
 .nav-mobile-toggle {
@@ -4019,8 +4012,6 @@ select:focus-visible,
     font-family: 'Orbitron', monospace;
     font-weight: 600;
     transition: var(--transition);
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(20px);
     border-radius: 20px;
     margin: 0.1rem 0;
 }
@@ -4220,10 +4211,7 @@ select:focus-visible,
         border-color: rgba(245, 87, 108, 0.5);
     }
 
-    /* Hide desktop dropdown on mobile */
-    .desktop-only {
-        display: none !important;
-    }
+    /* No additional rules needed - dropdown-content handles visibility */
 
     .sudoku-player-indicator {
         margin-bottom: 1rem;
