@@ -3977,15 +3977,15 @@ select:focus-visible,
     display: none;
     position: absolute;
     top: calc(100% + 0.25rem);
-    left: 0;
-    min-width: 120px;
-    max-width: 200px;
+    right: 0;
+    min-width: 100px;
+    max-width: 140px;
     width: max-content;
     background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
     backdrop-filter: blur(10px);
     border: 1px solid rgba(78, 205, 196, 0.3);
-    border-radius: 25px;
-    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    padding: 0.25rem 0.5rem;
     box-shadow:
         0 4px 15px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -3998,18 +3998,18 @@ select:focus-visible,
 
 .dropdown-content a {
     color: var(--text-secondary);
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     font-family: 'Orbitron', monospace;
     font-weight: 600;
+    font-size: 0.9rem;
     transition: var(--transition);
-    border-radius: 20px;
+    border-radius: 15px;
     margin: 0.1rem 0;
     white-space: nowrap;
-    min-width: 100px;
     justify-content: flex-start;
 }
 
