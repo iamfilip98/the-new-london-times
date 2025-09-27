@@ -520,7 +520,7 @@ class SudokuEngine {
         const cellsToRemove = {
             easy: 35,    // ~46 given numbers - more approachable
             medium: 50,  // ~31 given numbers - more challenging
-            hard: 60     // ~21 given numbers - very difficult
+            hard: 67     // ~14 given numbers - extremely difficult
         };
 
         // Copy solution to puzzle
