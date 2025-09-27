@@ -1195,8 +1195,7 @@ class SudokuChampionship {
             return;
         }
 
-        // Show loading state
-        this.showTodayProgressLoading(players, difficulties);
+        // Skip loading state - update directly when data is ready
 
         // Try to load progress from database first
         let dbProgress = null;
@@ -1217,18 +1216,6 @@ class SudokuChampionship {
         this.renderTodayProgress(dbProgress, players, difficulties, today);
     }
 
-    showTodayProgressLoading(players, difficulties) {
-        players.forEach(player => {
-            difficulties.forEach(difficulty => {
-                const progressElement = document.getElementById(`${player}-${difficulty}-progress`);
-                if (!progressElement) return;
-
-                const statusElement = progressElement.querySelector('.progress-status');
-                statusElement.innerHTML = '<span class="loading">Loading...</span>';
-                progressElement.classList.remove('completed');
-            });
-        });
-    }
 
     renderTodayProgress(dbProgress, players, difficulties, today) {
         players.forEach(player => {

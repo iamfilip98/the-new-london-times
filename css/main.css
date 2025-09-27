@@ -6276,16 +6276,6 @@ select:focus-visible,
     flex-shrink: 0;
 }
 
-.progress-status .loading {
-    color: var(--accent-blue);
-    font-style: italic;
-    animation: none;
-    display: inline;
-    width: auto;
-    height: auto;
-    border: none;
-    border-radius: 0;
-}
 
 /* Mobile Responsiveness for Progress */
 @media (max-width: 768px) {
