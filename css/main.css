@@ -4894,6 +4894,7 @@ select:focus-visible,
 
 .sudoku-paused-overlay.active {
     display: flex;
+    pointer-events: auto;
 }
 
 .paused-label {
