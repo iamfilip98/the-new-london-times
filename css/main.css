@@ -3757,6 +3757,7 @@ select:focus-visible,
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    isolation: isolate;
 }
 
 .current-player .player-info::before {
@@ -3768,6 +3769,8 @@ select:focus-visible,
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     transition: left 0.5s ease;
+    border-radius: inherit;
+    z-index: 0;
 }
 
 .current-player .player-info:hover {
