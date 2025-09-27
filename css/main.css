@@ -4122,7 +4122,7 @@ select:focus-visible,
 }
 
 .stat-label {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -4130,7 +4130,7 @@ select:focus-visible,
 }
 
 .timer-display, .errors-count, .hints-count, .current-score {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
@@ -5739,12 +5739,12 @@ select:focus-visible,
     }
 
     .timer-section .stat-label {
-        font-size: max(0.65rem, 2.5vw);
+        font-size: max(0.75rem, 3vw);
         margin-bottom: 0.15rem;
     }
 
     .timer-display {
-        font-size: max(1.3rem, 4.5vw);
+        font-size: max(1.1rem, 4vw);
         line-height: 1;
     }
 
@@ -5772,12 +5772,12 @@ select:focus-visible,
     }
 
     .stat-item .stat-label {
-        font-size: max(0.65rem, 2.5vw);
+        font-size: max(0.75rem, 3vw);
         margin: 0;
     }
 
     .errors-count, .hints-count {
-        font-size: max(1.2rem, 4vw);
+        font-size: max(1rem, 3.5vw);
         line-height: 1;
     }
 
