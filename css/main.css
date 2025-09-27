@@ -4021,19 +4021,17 @@ select:focus-visible,
     color: var(--accent-pink);
 }
 
-/* Desktop: Show logout button horizontally to the left of player button */
+/* Desktop: Show logout button within nav bar to the left of player button */
 @media (min-width: 769px) {
     .nav-user {
         display: flex;
         align-items: center;
-        flex-direction: row-reverse;
+        gap: 0.5rem;
     }
 
     .player-dropdown.active .dropdown-content {
         display: flex;
-        position: relative;
-        top: auto;
-        right: auto;
+        position: static;
         background: transparent;
         backdrop-filter: none;
         border: none;
@@ -4041,9 +4039,8 @@ select:focus-visible,
         min-width: auto;
         max-width: none;
         width: auto;
-        margin-right: 0.5rem;
         padding: 0;
-        order: -1;
+        margin: 0;
     }
 
     .player-dropdown.active .dropdown-content a {
@@ -4058,6 +4055,8 @@ select:focus-visible,
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
         transition: var(--transition);
         white-space: nowrap;
+        height: fit-content;
+        align-self: center;
     }
 
     .player-dropdown.active .dropdown-content a:hover {
@@ -4067,6 +4066,13 @@ select:focus-visible,
         box-shadow:
             0 6px 20px rgba(0, 0, 0, 0.15),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Reorder elements: logout first, then player button */
+    .player-dropdown {
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
     }
 }
 
