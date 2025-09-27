@@ -3690,11 +3690,79 @@ select:focus-visible,
     gap: 1rem;
 }
 
+.current-player {
+    position: relative;
+}
+
 .current-player .player-info {
     display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.current-player .player-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.current-player .player-info:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(78, 205, 196, 0.5);
+}
+
+.current-player .player-info:hover::before {
+    left: 100%;
+}
+
+.current-player .player-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.current-player .player-avatar.filip-avatar {
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+}
+
+.current-player .player-avatar.faidao-avatar {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+}
+
+.current-player .player-details {
+    display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .current-player .player-name {
@@ -3702,12 +3770,18 @@ select:focus-visible,
     font-weight: 700;
     font-size: 1rem;
     color: var(--text-primary);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin: 0;
+    line-height: 1.2;
 }
 
 .current-player .player-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     font-style: italic;
+    margin: 0;
+    line-height: 1;
+    opacity: 0.8;
 }
 
 .logout-btn {
@@ -3826,7 +3900,22 @@ select:focus-visible,
     }
 
     .current-player .player-info {
-        display: none; /* Keep hidden to save space */
+        padding: 0.4rem 0.8rem;
+        gap: 0.5rem;
+    }
+
+    .current-player .player-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+
+    .current-player .player-name {
+        font-size: 0.9rem;
+    }
+
+    .current-player .player-subtitle {
+        font-size: 0.7rem;
     }
 
     /* Make mobile nav toggle more accessible */
