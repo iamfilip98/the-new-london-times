@@ -2761,7 +2761,8 @@ body {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 0.5rem;
-        max-height: none; /* Remove height limit on mobile for scrolling */
+        /* Limit to 3 rows on mobile: Each badge takes roughly 25% width (4 columns), so height ≈ 25vw per row */
+        max-height: calc(3 * 25vw + 2 * 0.5rem + 1.5rem); /* 3 rows + 2 gaps + padding */
         padding: 0.75rem;
         width: 100%;
         max-width: 100%;
@@ -2770,6 +2771,7 @@ body {
         justify-items: center; /* Center grid items horizontally */
         align-items: center; /* Center grid items vertically */
         overflow-x: hidden; /* Prevent horizontal scroll */
+        overflow-y: auto; /* Allow vertical scrolling */
         left: auto; /* Reset any absolute positioning */
         right: auto; /* Reset any absolute positioning */
         transform: none; /* Reset any transforms */
@@ -2794,13 +2796,22 @@ body {
         height: unset;
     }
 
-    .achievement-badge:hover {
-        transform: scale(1.05);
+    .achievement-badge:hover,
+    .achievement-badge:active,
+    .achievement-badge:focus {
+        transform: none; /* Remove all transforms on mobile to prevent icon movement */
     }
 
     /* Hide ALL content except icon on mobile */
     .achievement-badge > *:not(.badge-icon) {
         display: none !important;
+    }
+
+    /* Prevent icon transforms on mobile */
+    .achievement-badge:hover .badge-icon,
+    .achievement-badge:active .badge-icon,
+    .achievement-badge:focus .badge-icon {
+        transform: none !important; /* Prevent icon movement on mobile */
     }
 
     /* Show only the icon, properly sized for mobile squares */
