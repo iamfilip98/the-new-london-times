@@ -5601,13 +5601,19 @@ select:focus-visible,
 /* Restart section specific styling */
 .settings-modal .restart-section {
     flex-direction: column;
-    align-items: stretch;
-    padding: 0;
+    align-items: center;
+    padding: 0 1rem;
     margin-bottom: 0;
 }
 
-.settings-modal .restart-btn {
+.settings-modal .restart-section .restart-btn {
     margin-left: 0 !important;
+    width: fit-content;
+}
+
+.settings-modal .restart-section small {
+    text-align: center;
+    padding: 0;
 }
 
 /* Sound controls styling */
