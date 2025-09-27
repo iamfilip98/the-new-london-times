@@ -3310,8 +3310,8 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '';
 
-        // Change difficulty (this will load the new puzzle)
-        this.changeDifficulty('medium');
+        // Navigate to medium difficulty while preserving completed state if it exists
+        this.navigateToDifficulty('medium');
     }
 
     navigateToHard() {
@@ -3328,8 +3328,49 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '';
 
-        // Change difficulty (this will load the new puzzle)
-        this.changeDifficulty('hard');
+        // Navigate to hard difficulty while preserving completed state if it exists
+        this.navigateToDifficulty('hard');
+    }
+
+    // New method to handle navigation that preserves completed state
+    async navigateToDifficulty(difficulty) {
+        // Save current game if in progress
+        if (this.gameStarted && !this.gameCompleted) {
+            this.saveGameState();
+            this.stopTimer();
+        }
+
+        // Update current difficulty
+        this.currentDifficulty = difficulty;
+
+        // Update UI
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-difficulty="${difficulty}"]`).classList.add('active');
+
+        // Try to load saved game state for the target difficulty first
+        debugLog(`Attempting to load saved state for ${difficulty} difficulty`);
+        await this.loadGameState();
+
+        // If no saved state was found, start a new game
+        if (!this.gameStarted) {
+            debugLog(`No saved state found for ${difficulty}, loading fresh puzzle`);
+            this.loadPuzzle(difficulty);
+        } else {
+            debugLog(`Loaded saved state for ${difficulty}. Completed: ${this.gameCompleted}`);
+        }
+
+        // Update candidate mode based on difficulty
+        if (difficulty === 'easy') {
+            this.candidateMode = false;
+            this.showAllCandidates = false;
+        } else {
+            this.candidateMode = false;
+            this.showAllCandidates = true;
+        }
+        this.updateCandidateModeUI();
+        this.updateShowAllCandidatesUI();
     }
 
     // Helper method to ensure we're on the sudoku page
