@@ -2765,6 +2765,8 @@ body {
         padding: 0.75rem;
         width: 100%;
         box-sizing: border-box;
+        justify-items: center; /* Center grid items horizontally */
+        align-items: center; /* Center grid items vertically */
     }
 
     .achievement-badge {
@@ -6512,6 +6514,14 @@ select:focus-visible,
     color: var(--text-muted);
     font-style: italic;
     padding: 2rem;
+}
+
+.no-history {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 2rem;
+    margin: 0 auto;
 }
 
 /* Today's Progress */

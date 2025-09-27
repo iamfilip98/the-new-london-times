@@ -688,20 +688,29 @@
 
         // Function to start Sudoku game with selected difficulty
         function startSudokuGame(difficulty) {
-            // Store the selected difficulty for when the sudoku engine initializes
-            sessionStorage.setItem('selectedDifficulty', difficulty);
+            try {
+                console.log('Starting Sudoku game with difficulty:', difficulty);
 
-            // Switch to sudoku page
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = document.querySelectorAll('.page');
+                // Store the selected difficulty for when the sudoku engine initializes
+                sessionStorage.setItem('selectedDifficulty', difficulty);
 
-            // Update active nav link
-            navLinks.forEach(l => l.classList.remove('active'));
-            document.querySelector('[data-page="sudoku"]').classList.add('active');
+                // Switch to sudoku page
+                const navLinks = document.querySelectorAll('.nav-link');
+                const pages = document.querySelectorAll('.page');
 
-            // Update active page
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById('sudoku').classList.add('active');
+                // Update active nav link
+                navLinks.forEach(l => l.classList.remove('active'));
+                const sudokuNavLink = document.querySelector('[data-page="sudoku"]');
+                if (sudokuNavLink) {
+                    sudokuNavLink.classList.add('active');
+                }
+
+                // Update active page
+                pages.forEach(page => page.classList.remove('active'));
+                const sudokuPage = document.getElementById('sudoku');
+                if (sudokuPage) {
+                    sudokuPage.classList.add('active');
+                }
 
             // Reset navigation visibility when entering sudoku page
             const navBar = document.querySelector('.main-nav');
@@ -720,31 +729,46 @@
                 }
             }, 200); // Delay to ensure content is rendered
 
-            // The sudoku engine will pick up the stored difficulty when it initializes
-            // No need to call changeDifficulty since we stored it in sessionStorage
-            //console.log('Difficulty stored for initialization:', difficulty);
+                // The sudoku engine will pick up the stored difficulty when it initializes
+                // No need to call changeDifficulty since we stored it in sessionStorage
+                console.log('Difficulty stored for initialization:', difficulty);
+            } catch (error) {
+                console.error('Error starting Sudoku game:', error);
+            }
         }
 
         // Function to navigate to dashboard when clicking on brand
         async function navigateToDashboard() {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = document.querySelectorAll('.page');
+            try {
+                console.log('Navigating to dashboard');
 
-            // Update active nav link to dashboard
-            navLinks.forEach(l => l.classList.remove('active'));
-            document.querySelector('[data-page="dashboard"]').classList.add('active');
+                const navLinks = document.querySelectorAll('.nav-link');
+                const pages = document.querySelectorAll('.page');
 
-            // Update active page to dashboard
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById('dashboard').classList.add('active');
+                // Update active nav link to dashboard
+                navLinks.forEach(l => l.classList.remove('active'));
+                const dashboardNavLink = document.querySelector('[data-page="dashboard"]');
+                if (dashboardNavLink) {
+                    dashboardNavLink.classList.add('active');
+                }
+
+                // Update active page to dashboard
+                pages.forEach(page => page.classList.remove('active'));
+                const dashboardPage = document.getElementById('dashboard');
+                if (dashboardPage) {
+                    dashboardPage.classList.add('active');
+                }
 
             // Scroll to top
             window.scrollTo(0, 0);
 
-            // Refresh today's progress data
-            if (window.sudokuApp) {
-                await window.sudokuApp.updateTodayProgress();
-                await window.sudokuApp.updateDashboard();
+                // Refresh today's progress data
+                if (window.sudokuApp) {
+                    await window.sudokuApp.updateTodayProgress();
+                    await window.sudokuApp.updateDashboard();
+                }
+            } catch (error) {
+                console.error('Error navigating to dashboard:', error);
             }
         }
     </script>

@@ -49,6 +49,7 @@ class SudokuEngine {
     // Initialize Sudoku UI and game
     async init() {
         this.loadSettings();
+        this.initializeAudioContext();
         this.createSudokuInterface();
 
         // INSTANT LOADING: Generate fallback puzzles immediately before any async operations
@@ -94,6 +95,25 @@ class SudokuEngine {
                 this.loadPuzzle(this.currentDifficulty);
             }
         }
+    }
+
+    initializeAudioContext() {
+        // Initialize audio context on first user interaction
+        const enableAudio = () => {
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+            // Remove the event listeners after first interaction
+            document.removeEventListener('touchstart', enableAudio);
+            document.removeEventListener('click', enableAudio);
+        };
+
+        // Add event listeners for user interaction
+        document.addEventListener('touchstart', enableAudio);
+        document.addEventListener('click', enableAudio);
     }
 
     createSudokuInterface() {
@@ -3046,6 +3066,11 @@ class SudokuEngine {
         // Create audio context for sound effects
         if (!this.audioContext) {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        // Try to resume audio context if it's suspended (required for mobile)
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume().catch(console.warn);
         }
 
         const playTone = (frequency, duration) => {
