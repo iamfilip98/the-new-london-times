@@ -62,8 +62,9 @@ class SudokuEngine {
             sessionStorage.removeItem('selectedDifficulty'); // Clear it once used
             debugLog('Selected difficulty from dashboard:', selectedDifficulty);
 
-            // Set the selected difficulty
+            // Set the selected difficulty and mark as explicitly selected
             this.currentDifficulty = selectedDifficulty;
+            this.explicitlySelectedDifficulty = true;
 
             // Always try to load saved state first, regardless of how we got here
             debugLog('Attempting to load saved game state for difficulty:', this.currentDifficulty);
@@ -1994,12 +1995,23 @@ class SudokuEngine {
             }
 
             if (gameState) {
-                // First load the puzzle to ensure we have the correct solution
+                // CRITICAL FIX: Ensure puzzles are loaded before restoring game state
                 const savedDifficulty = gameState.difficulty || this.currentDifficulty;
+
+                // If puzzles aren't loaded yet, load them now
+                if (!this.dailyPuzzles) {
+                    debugLog('⚠️ Puzzles not loaded during game state restore - loading fallback puzzles');
+                    this.generateFallbackPuzzles();
+                }
+
+                // Now ensure we have the correct solution loaded
                 if (savedDifficulty && this.dailyPuzzles && this.dailyPuzzles[savedDifficulty]) {
                     const puzzleData = this.dailyPuzzles[savedDifficulty];
                     this.solution = puzzleData.solution.map(row => [...row]);
                     this.currentDifficulty = savedDifficulty;
+                    debugLog('✅ Solution loaded for saved game state');
+                } else {
+                    debugLog('❌ Could not load solution for difficulty:', savedDifficulty);
                 }
 
                 this.playerGrid = gameState.playerGrid || this.playerGrid;
