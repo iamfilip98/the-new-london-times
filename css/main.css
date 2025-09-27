@@ -5057,6 +5057,12 @@ select:focus-visible,
     pointer-events: auto;
 }
 
+/* Ensure game control buttons remain accessible when paused */
+.game-controls .icon-btn {
+    position: relative;
+    z-index: 1001;
+}
+
 .paused-label {
     font-size: 2rem;
     font-weight: bold;
