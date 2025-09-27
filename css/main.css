@@ -221,6 +221,7 @@ body {
     z-index: 1000;
     box-shadow: var(--shadow-glass);
     transition: var(--transition);
+    overflow: visible;
 }
 
 .nav-brand {
@@ -3736,6 +3737,7 @@ select:focus-visible,
 .nav-user {
     display: flex;
     align-items: center;
+    overflow: visible;
 }
 
 .current-player {
@@ -3838,6 +3840,7 @@ select:focus-visible,
 .player-dropdown {
     position: relative;
     display: inline-block;
+    overflow: visible;
 }
 
 .player-dropdown .current-player {
@@ -3854,6 +3857,7 @@ select:focus-visible,
 .dropdown-content {
     display: none;
     position: absolute;
+    top: 100%;
     right: 0;
     background: var(--card-bg);
     backdrop-filter: blur(20px);
@@ -3861,7 +3865,7 @@ select:focus-visible,
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
+    z-index: 1001;
     margin-top: 0.25rem;
 }
 
