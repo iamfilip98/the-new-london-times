@@ -5702,7 +5702,7 @@ select:focus-visible,
 
 /* Game Status */
 .game-status {
-    display: block;
+    display: none;
     position: relative;
     z-index: 1000;
 }
