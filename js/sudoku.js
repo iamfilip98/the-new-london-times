@@ -2477,6 +2477,12 @@ class SudokuEngine {
                             <option value="bubble" ${this.inputSoundType === 'bubble' ? 'selected' : ''}>Bubble</option>
                             <option value="click" ${this.inputSoundType === 'click' ? 'selected' : ''}>Click</option>
                             <option value="soft" ${this.inputSoundType === 'soft' ? 'selected' : ''}>Soft</option>
+                            <option value="piano" ${this.inputSoundType === 'piano' ? 'selected' : ''}>Piano</option>
+                            <option value="chime" ${this.inputSoundType === 'chime' ? 'selected' : ''}>Chime</option>
+                            <option value="beep" ${this.inputSoundType === 'beep' ? 'selected' : ''}>Beep</option>
+                            <option value="pop" ${this.inputSoundType === 'pop' ? 'selected' : ''}>Pop</option>
+                            <option value="wood" ${this.inputSoundType === 'wood' ? 'selected' : ''}>Wood</option>
+                            <option value="digital" ${this.inputSoundType === 'digital' ? 'selected' : ''}>Digital</option>
                         </select>
                     </div>
                     <div class="setting-item sound-controls-section">
@@ -3165,6 +3171,37 @@ class SudokuEngine {
             case 'soft':
                 // Gentle, mellow sound
                 playTone(500, 0.15, 'triangle');
+                break;
+            case 'piano':
+                // Piano-like sound with harmonics
+                playTone(523, 0.2, 'sine'); // C note
+                setTimeout(() => playTone(523 * 2, 0.1, 'sine'), 10); // Harmonic
+                break;
+            case 'chime':
+                // Bell-like chime sound
+                playTone(1000, 0.3, 'sine');
+                setTimeout(() => playTone(1500, 0.2, 'sine'), 50);
+                setTimeout(() => playTone(2000, 0.1, 'sine'), 100);
+                break;
+            case 'beep':
+                // Electronic beep sound
+                playTone(880, 0.08, 'square');
+                break;
+            case 'pop':
+                // Short pop sound
+                playTone(200, 0.05, 'triangle');
+                setTimeout(() => playTone(400, 0.03, 'triangle'), 25);
+                break;
+            case 'wood':
+                // Wooden percussion sound
+                playTone(150, 0.06, 'sawtooth');
+                setTimeout(() => playTone(300, 0.04, 'sawtooth'), 20);
+                break;
+            case 'digital':
+                // Retro digital sound
+                playTone(440, 0.05, 'square');
+                setTimeout(() => playTone(880, 0.05, 'square'), 50);
+                setTimeout(() => playTone(1760, 0.05, 'square'), 100);
                 break;
         }
     }
