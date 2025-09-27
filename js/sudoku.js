@@ -2272,22 +2272,16 @@ class SudokuEngine {
             const currentPlayer = sessionStorage.getItem('currentPlayer');
             const opponent = currentPlayer === 'faidao' ? 'filip' : 'faidao';
 
-            // Create entry in existing system format
+            // Create entry in existing system format - only include current player data
             const entryData = {
                 [currentPlayer]: playerData
             };
 
-            if (opponentData) {
+            // Only include opponent data if it exists and has meaningful scores
+            if (opponentData && opponentData.scores && opponentData.scores.total > 0) {
                 entryData[opponent] = opponentData;
-            } else {
-                // Create empty opponent data
-                entryData[opponent] = {
-                    times: { easy: null, medium: null, hard: null },
-                    errors: { easy: 0, medium: 0, hard: 0 },
-                    dnf: { easy: false, medium: false, hard: false },
-                    scores: { easy: 0, medium: 0, hard: 0, total: 0 }
-                };
             }
+            // Don't create empty opponent data - let the API merge handle this
 
             // Save to database using existing API
             const response = await fetch('/api/entries', {

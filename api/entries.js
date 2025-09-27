@@ -201,12 +201,45 @@ async function getAllEntries() {
 
 async function saveEntryToDb(date, entryData) {
   try {
+    // First, try to get existing entry data
+    const existingResult = await sql`
+      SELECT data FROM entries WHERE date = ${date}
+    `;
+
+    let finalData = entryData;
+
+    if (existingResult.rows.length > 0) {
+      // Merge new data with existing data to preserve both players' scores
+      const existingData = existingResult.rows[0].data;
+      finalData = { ...existingData, ...entryData };
+
+      // Special handling: only update player data if it has meaningful scores
+      for (const player of ['faidao', 'filip']) {
+        if (entryData[player] && existingData[player]) {
+          // If the new data has scores but existing data also has scores, preserve higher total
+          const newTotal = entryData[player].scores?.total || 0;
+          const existingTotal = existingData[player].scores?.total || 0;
+
+          // Only update if new data has higher scores or existing data is incomplete
+          if (newTotal > existingTotal || existingTotal === 0) {
+            finalData[player] = entryData[player];
+          } else {
+            finalData[player] = existingData[player];
+          }
+        } else if (entryData[player]) {
+          // New player data where none existed
+          finalData[player] = entryData[player];
+        }
+        // If entryData[player] is missing, keep existing data
+      }
+    }
+
     await sql`
       INSERT INTO entries (date, data)
-      VALUES (${date}, ${JSON.stringify(entryData)})
+      VALUES (${date}, ${JSON.stringify(finalData)})
       ON CONFLICT (date)
       DO UPDATE SET
-        data = ${JSON.stringify(entryData)},
+        data = ${JSON.stringify(finalData)},
         updated_at = NOW()
     `;
 
@@ -269,11 +302,15 @@ module.exports = async function handler(req, res) {
         }
 
         // Validate required fields for regular entry
-        if (!date || !faidao || !filip) {
-          return res.status(400).json({ error: 'Date and player data are required' });
+        if (!date || (!faidao && !filip)) {
+          return res.status(400).json({ error: 'Date and at least one player data are required' });
         }
 
-        const entryData = { faidao, filip };
+        // Only include provided player data
+        const entryData = {};
+        if (faidao) entryData.faidao = faidao;
+        if (filip) entryData.filip = filip;
+
         await saveEntryToDb(date, entryData);
 
         return res.status(200).json({
