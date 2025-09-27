@@ -113,9 +113,24 @@ class SudokuChampionship {
                 const targetPageElement = document.getElementById(targetPage);
                 targetPageElement.classList.add('active');
 
-                // Scroll to top of page when switching
+                // Scroll to appropriate position when switching
                 targetPageElement.scrollTop = 0;
-                window.scrollTo(0, 0);
+
+                if (targetPage === 'sudoku') {
+                    // For Sudoku page, scroll to center the puzzle
+                    setTimeout(() => {
+                        const sudokuGrid = document.querySelector('.sudoku-grid');
+                        if (sudokuGrid) {
+                            sudokuGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else {
+                            // Fallback if grid not found yet
+                            window.scrollTo(0, 0);
+                        }
+                    }, 100); // Small delay to ensure content is rendered
+                } else {
+                    // For all other pages, scroll to top
+                    window.scrollTo(0, 0);
+                }
 
                 // Update page content
                 await this.updatePageContent(targetPage);
@@ -581,7 +596,18 @@ class SudokuChampionship {
 
         if (mobileScoreFaidao) mobileScoreFaidao.textContent = faidaoWins;
         if (mobileScoreFilip) mobileScoreFilip.textContent = filipWins;
-        if (mobileOverallRecord) mobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}`;
+        // Determine current streak leader and format display text
+        const faidaoStreak = this.streaks.faidao?.current || 0;
+        const filipStreak = this.streaks.filip?.current || 0;
+        let streakText = '';
+
+        if (faidaoStreak > 0) {
+            streakText = ` • Faidao streak: ${faidaoStreak}`;
+        } else if (filipStreak > 0) {
+            streakText = ` • Filip streak: ${filipStreak}`;
+        }
+
+        if (mobileOverallRecord) mobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}${streakText}`;
 
         // Update mobile head-to-head section on achievements page
         const achievementsMobileScoreFaidao = document.getElementById('achievementsMobileScoreFaidao');
@@ -590,7 +616,7 @@ class SudokuChampionship {
 
         if (achievementsMobileScoreFaidao) achievementsMobileScoreFaidao.textContent = faidaoWins;
         if (achievementsMobileScoreFilip) achievementsMobileScoreFilip.textContent = filipWins;
-        if (achievementsMobileOverallRecord) achievementsMobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}`;
+        if (achievementsMobileOverallRecord) achievementsMobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}${streakText}`;
     }
 
     updateRecentHistory() {
@@ -1524,9 +1550,24 @@ class SudokuChampionship {
         if (targetPageElement) {
             targetPageElement.classList.add('active');
 
-            // Scroll to top of page when switching
+            // Scroll to appropriate position when switching
             targetPageElement.scrollTop = 0;
-            window.scrollTo(0, 0);
+
+            if (targetPage === 'sudoku') {
+                // For Sudoku page, scroll to center the puzzle
+                setTimeout(() => {
+                    const sudokuGrid = document.querySelector('.sudoku-grid');
+                    if (sudokuGrid) {
+                        sudokuGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        // Fallback if grid not found yet
+                        window.scrollTo(0, 0);
+                    }
+                }, 100); // Small delay to ensure content is rendered
+            } else {
+                // For all other pages, scroll to top
+                window.scrollTo(0, 0);
+            }
 
             // Update page content
             await this.updatePageContent(targetPage);

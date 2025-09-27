@@ -664,8 +664,16 @@
                 navBar.classList.remove('nav-hidden');
             }
 
-            // Scroll to top when entering sudoku page
-            window.scrollTo(0, 0);
+            // Scroll to center the Sudoku puzzle when entering sudoku page
+            setTimeout(() => {
+                const sudokuGrid = document.querySelector('.sudoku-grid');
+                if (sudokuGrid) {
+                    sudokuGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    // Fallback if grid not found yet
+                    window.scrollTo(0, 0);
+                }
+            }, 200); // Delay to ensure content is rendered
 
             // The sudoku engine will pick up the stored difficulty when it initializes
             // No need to call changeDifficulty since we stored it in sessionStorage
