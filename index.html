@@ -44,10 +44,15 @@
                 </a>
             </div>
             <div class="nav-user">
-                <span class="current-player" id="currentPlayerDisplay"></span>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+                <div class="player-dropdown">
+                    <span class="current-player" id="currentPlayerDisplay"></span>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="nav-mobile-toggle">
                 <i class="fas fa-bars"></i>
