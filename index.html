@@ -819,14 +819,17 @@
                     return;
                 }
 
-                // Check scroll direction and distance
+                // More aggressive hiding during gameplay - hide nav immediately when scrolling down
+                // and require a more deliberate scroll up to show it again
                 if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
                     if (scrollTop > lastScrollTop) {
-                        // Scrolling down - hide nav
+                        // Scrolling down - hide nav immediately to prevent interference
                         navBar.classList.add('nav-hidden');
                     } else {
-                        // Scrolling up - show nav
-                        navBar.classList.remove('nav-hidden');
+                        // Scrolling up - only show nav if scrolling up significantly (30px threshold)
+                        if (lastScrollTop - scrollTop > 30) {
+                            navBar.classList.remove('nav-hidden');
+                        }
                     }
                 }
 
@@ -840,6 +843,32 @@
                     clearTimeout(scrollTimeout);
                 }
                 scrollTimeout = setTimeout(handleScroll, 10);
+            });
+
+            // Hide nav when touching the Sudoku grid to prevent interference
+            let touchStarted = false;
+            document.addEventListener('touchstart', function(e) {
+                if (!isMobile() || !isOnSudokuPage()) return;
+
+                // Check if touch is on or near the Sudoku grid
+                const sudokuGrid = document.querySelector('.sudoku-grid, .sudoku-game-container');
+                if (sudokuGrid && (sudokuGrid.contains(e.target) || e.target.closest('.sudoku-grid, .sudoku-game-container'))) {
+                    touchStarted = true;
+                    navBar.classList.add('nav-hidden');
+                }
+            });
+
+            // Only show nav again after touch ends and a delay
+            document.addEventListener('touchend', function(e) {
+                if (!isMobile() || !isOnSudokuPage() || !touchStarted) return;
+
+                touchStarted = false;
+                // Small delay before allowing nav to show again
+                setTimeout(() => {
+                    if (!touchStarted && window.pageYOffset <= 10) {
+                        navBar.classList.remove('nav-hidden');
+                    }
+                }, 500);
             });
 
             // Handle window resize to reset nav state

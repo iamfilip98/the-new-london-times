@@ -5937,6 +5937,7 @@ select:focus-visible,
 
     .main-nav.nav-hidden {
         transform: translateY(-100%);
+        pointer-events: none; /* Ensure hidden nav doesn't interfere with touch events */
     }
 
     .nav-brand .brand-title {
