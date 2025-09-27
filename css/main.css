@@ -6582,6 +6582,15 @@ select:focus-visible,
     min-height: 250px;
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+}
+
+.player-progress:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.2),
+        0 0 25px rgba(255, 255, 255, 0.1);
 }
 
 .player-progress h4 {
@@ -6641,6 +6650,40 @@ select:focus-visible,
     box-shadow:
         0 8px 25px rgba(0, 0, 0, 0.2),
         0 0 15px rgba(0, 242, 254, 0.3);
+}
+
+/* Difficulty-specific progress item colors */
+.progress-item[id*="easy"] {
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.progress-item[id*="easy"]:hover {
+    border-color: #4CAF50;
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(76, 175, 80, 0.3);
+}
+
+.progress-item[id*="medium"] {
+    border-color: rgba(255, 152, 0, 0.3);
+}
+
+.progress-item[id*="medium"]:hover {
+    border-color: #FF9800;
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(255, 152, 0, 0.3);
+}
+
+.progress-item[id*="hard"] {
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.progress-item[id*="hard"]:hover {
+    border-color: #F44336;
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(244, 67, 54, 0.3);
 }
 
 .difficulty-label {
