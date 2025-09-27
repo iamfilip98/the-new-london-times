@@ -4021,6 +4021,53 @@ select:focus-visible,
     color: var(--accent-pink);
 }
 
+/* Desktop: Show logout button horizontally next to player button */
+@media (min-width: 769px) {
+    .nav-user {
+        display: flex;
+        align-items: center;
+    }
+
+    .player-dropdown.active .dropdown-content {
+        display: flex;
+        position: relative;
+        top: auto;
+        right: auto;
+        background: transparent;
+        backdrop-filter: none;
+        border: none;
+        box-shadow: none;
+        min-width: auto;
+        max-width: none;
+        width: auto;
+        margin-left: 0.5rem;
+        padding: 0;
+    }
+
+    .player-dropdown.active .dropdown-content a {
+        background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(78, 205, 196, 0.3);
+        border-radius: 20px;
+        padding: 0.5rem 0.75rem;
+        margin: 0;
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+
+    .player-dropdown.active .dropdown-content a:hover {
+        background: rgba(245, 87, 108, 0.2);
+        color: var(--accent-pink);
+        transform: translateY(-2px);
+        box-shadow:
+            0 6px 20px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
 /* Sudoku Page Styles */
 .sudoku-player-indicator {
     display: flex;
