@@ -400,7 +400,7 @@ body {
     color: var(--text-primary);
     transform: translateY(-8px) scale(1.03);
     box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.2),
+        var(--shadow-xl),
         0 0 30px rgba(79, 172, 254, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border-color: rgba(79, 172, 254, 0.5);
@@ -800,7 +800,7 @@ body {
     }
     to {
         transform: scale(1.05);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        box-shadow: var(--shadow-xl);
     }
 }
 
@@ -1139,8 +1139,7 @@ body {
     margin-bottom: 3rem;
     text-align: center;
     box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.15),
-        0 3px 10px rgba(0, 0, 0, 0.1),
+        var(--shadow-md),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -1390,8 +1389,7 @@ body {
     border-radius: var(--border-radius);
     padding: 2rem;
     box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.15),
-        0 3px 10px rgba(0, 0, 0, 0.1),
+        var(--shadow-md),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -1493,7 +1491,7 @@ body {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-sm);
 }
 
 .history-winner::before {
@@ -1512,7 +1510,7 @@ body {
 .history-winner:hover {
     transform: translateY(-2px) scale(1.05);
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md);
 }
 
 .history-winner:hover::before {
@@ -2345,7 +2343,7 @@ body {
 
 .achievement-badge:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-xl);
 }
 
 .achievement-badge.unlocked:hover {
@@ -2566,7 +2564,7 @@ body {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
     color: var(--text-primary);
     box-shadow:
-        0 15px 30px rgba(0, 0, 0, 0.2),
+        var(--shadow-lg),
         0 0 25px rgba(79, 172, 254, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border-color: rgba(79, 172, 254, 0.3);
@@ -3914,7 +3912,7 @@ select:focus-visible,
     font-size: 0.9rem;
     color: white;
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -3976,7 +3974,7 @@ select:focus-visible,
     min-width: 120px;
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md);
     z-index: 1001;
     margin-top: 0.25rem;
 }
@@ -4454,7 +4452,7 @@ select:focus-visible,
     width: 100%;
     height: 100%;
     aspect-ratio: 1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-md);
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
@@ -4704,7 +4702,7 @@ select:focus-visible,
     padding: 1.5rem 2rem;
     text-align: center;
     border: 1px solid var(--accent-green);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+    box-shadow: var(--shadow-lg),
                 0 2px 8px rgba(0, 242, 254, 0.1);
     transform: scale(0.8);
     transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -4751,7 +4749,7 @@ select:focus-visible,
 
 .completion-notification-overlay.persistent .completion-notification {
     border-color: var(--accent-blue);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+    box-shadow: var(--shadow-lg),
                 0 2px 8px rgba(79, 172, 254, 0.1);
 }
 
@@ -4908,7 +4906,7 @@ select:focus-visible,
     border-radius: var(--border-radius);
     backdrop-filter: blur(4px);
     border: 3px solid var(--accent-color);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-2xl);
     animation: pausedPulse 2s ease-in-out infinite;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -4918,7 +4916,7 @@ select:focus-visible,
 
 .paused-label:hover {
     transform: scale(1.02);
-    box-shadow: 0 16px 56px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-2xl);
     border-color: #2ecc71;
 }
 
@@ -5229,7 +5227,7 @@ select:focus-visible,
         rgba(255, 255, 255, 0.1) 100%) 1;
     box-shadow:
         0 20px 40px rgba(0, 0, 0, 0.3),
-        0 8px 16px rgba(0, 0, 0, 0.2),
+        var(--shadow-md),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     max-width: 500px;
     width: 90%;
@@ -5309,7 +5307,7 @@ select:focus-visible,
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(102, 126, 234, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
 }
 
 .setting-item label {
@@ -5623,7 +5621,7 @@ select:focus-visible,
 
 .btn-primary:hover, .btn-secondary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
 }
 
 
@@ -5917,7 +5915,7 @@ select:focus-visible,
         height: min(360px, calc(100vw - 50px));
         border: 4px solid #000000;
         aspect-ratio: 1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: var(--shadow-md);
     }
 
     .sudoku-cell {
@@ -6106,7 +6104,7 @@ select:focus-visible,
         height: min(calc(100vh - 180px), calc(100vw - 40px));
         border: 4px solid #000000;
         aspect-ratio: 1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: var(--shadow-md);
     }
 
     .main-content {
@@ -6226,7 +6224,7 @@ select:focus-visible,
         height: min(320px, calc(100vw - 50px));
         border: 4px solid #000000;
         aspect-ratio: 1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: var(--shadow-md);
     }
 
     .cell-value {
@@ -6850,7 +6848,7 @@ select:focus-visible,
 .difficulty-option:hover {
     transform: translateY(-5px);
     box-shadow:
-        0 15px 40px rgba(0, 0, 0, 0.2),
+        var(--shadow-lg),
         0 5px 20px rgba(255, 255, 255, 0.1);
 }
 
@@ -7072,13 +7070,13 @@ select:focus-visible,
 @keyframes buttonBreathe {
     0%, 100% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 0 0 rgba(79, 172, 254, 0.5),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     50% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 25px rgba(79, 172, 254, 0.7),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
@@ -7087,13 +7085,13 @@ select:focus-visible,
 @keyframes buttonBreatheGreen {
     0%, 100% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 0 0 rgba(76, 175, 80, 0.5),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     50% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 25px rgba(76, 175, 80, 0.7),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
@@ -7102,13 +7100,13 @@ select:focus-visible,
 @keyframes buttonBreatheOrange {
     0%, 100% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 0 0 rgba(255, 152, 0, 0.5),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     50% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 25px rgba(255, 152, 0, 0.7),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
@@ -7117,13 +7115,13 @@ select:focus-visible,
 @keyframes buttonBreatheRed {
     0%, 100% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 0 0 rgba(244, 67, 54, 0.5),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     50% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 25px rgba(244, 67, 54, 0.7),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
@@ -7173,12 +7171,12 @@ select:focus-visible,
 @keyframes streakCardBreathe {
     0%, 100% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 0 0 rgba(79, 172, 254, 0.2);
     }
     50% {
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 30px rgba(79, 172, 254, 0.3);
     }
 }
@@ -7496,7 +7494,7 @@ select:focus-visible,
         z-index: 2;
         min-height: 48px;
         box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.15),
+            var(--shadow-md),
             0 0 0 0 rgba(79, 172, 254, 0.5),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
         overflow: hidden;
@@ -7617,28 +7615,28 @@ select:focus-visible,
 /* Desktop difficulty button animations */
 @keyframes pulseGreenDesktop {
     0%, 100% {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 0 rgba(76, 175, 80, 0.3);
+        box-shadow: var(--shadow-lg), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 0 rgba(76, 175, 80, 0.3);
     }
     50% {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 25px rgba(76, 175, 80, 0.5);
+        box-shadow: var(--shadow-lg), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 25px rgba(76, 175, 80, 0.5);
     }
 }
 
 @keyframes pulseOrangeDesktop {
     0%, 100% {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 0 rgba(255, 152, 0, 0.3);
+        box-shadow: var(--shadow-lg), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 0 rgba(255, 152, 0, 0.3);
     }
     50% {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 25px rgba(255, 152, 0, 0.5);
+        box-shadow: var(--shadow-lg), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 25px rgba(255, 152, 0, 0.5);
     }
 }
 
 @keyframes pulseRedDesktop {
     0%, 100% {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 0 rgba(244, 67, 54, 0.3);
+        box-shadow: var(--shadow-lg), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 0 rgba(244, 67, 54, 0.3);
     }
     50% {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 25px rgba(244, 67, 54, 0.5);
+        box-shadow: var(--shadow-lg), 0 5px 20px rgba(255, 255, 255, 0.1), 0 0 25px rgba(244, 67, 54, 0.5);
     }
 }
 
