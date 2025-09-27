@@ -6300,27 +6300,14 @@ select:focus-visible,
     }
 
     .progress-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    /* Keep completed progress items inline on mobile */
-    .progress-item.completed {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
     }
 
     .progress-status {
-        text-align: left;
-    }
-
-    /* Keep progress status inline for completed items on mobile */
-    .progress-item.completed .progress-status {
-        justify-content: flex-end;
         text-align: right;
-        gap: 0.5rem;
     }
 
     .today-progress,
