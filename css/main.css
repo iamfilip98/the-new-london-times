@@ -7094,6 +7094,12 @@ select:focus-visible,
         font-family: 'Orbitron', monospace;
     }
 
+    /* Hide mobile-overall-record and achievements-summary on mobile for achievements page only */
+    #achievements .mobile-overall-record,
+    #achievements .achievements-summary {
+        display: none;
+    }
+
     /* Hide desktop difficulty grid on mobile */
     .desktop-only {
         display: none;
