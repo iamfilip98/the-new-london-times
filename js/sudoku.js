@@ -1665,60 +1665,7 @@ class SudokuEngine {
             // Check for theme-specific achievements
             const themeAchievements = this.checkThemeAchievements();
 
-            let statusMessage = `
-                <div class="completion-modal">
-                    <div class="completion-content">
-                        <div class="completion-header">
-                            <h2>🎉 Puzzle Complete!</h2>
-                            ${isPersonalBest ? '<div class="personal-best">🏆 New Personal Best!</div>' : ''}
-                        </div>
-                        <div class="completion-stats">
-                            <div class="stat-row">
-                                <span class="stat-label">Time:</span>
-                                <span class="stat-value">${this.formatTime(this.timer)}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-label">Score:</span>
-                                <span class="stat-value">${score}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-label">Errors:</span>
-                                <span class="stat-value">${this.errors}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-label">Streak:</span>
-                                <span class="stat-value">${this.streakCount} days</span>
-                            </div>
-                        </div>
-            `;
-
-            // Add theme multiplier info if active
-            if (window.themeManager) {
-                const themeInfo = window.themeManager.getThemeInfo();
-                if (themeInfo && themeInfo.multiplier > 1) {
-                    statusMessage += `<div class="theme-bonus">🎨 ${themeInfo.name} Bonus: ×${themeInfo.multiplier}</div>`;
-                }
-            }
-
-            // Add achievement notifications
-            if (themeAchievements.length > 0) {
-                statusMessage += `<div class="achievements-unlocked">`;
-                themeAchievements.forEach(achievement => {
-                    statusMessage += `<div class="achievement-unlock">🏆 ${achievement.name}</div>`;
-                });
-                statusMessage += `</div>`;
-            }
-
-            statusMessage += `
-                        <div class="completion-actions">
-                            <button class="btn-primary" onclick="window.sudokuEngine.showStats()">View Stats</button>
-                            <button class="btn-secondary" onclick="window.sudokuEngine.startNewGame()">New Game</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('gameStatus').innerHTML = statusMessage;
+            document.getElementById('gameStatus').innerHTML = '';
             this.saveCompletedGame(score);
         }
     }
@@ -3209,7 +3156,7 @@ class SudokuEngine {
 
     startNewGame() {
         // Close any modals
-        document.querySelectorAll('.stats-modal, .completion-modal').forEach(modal => modal.remove());
+        document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '';
 
         // Navigate back to dashboard
@@ -3348,7 +3295,7 @@ class SudokuEngine {
         }
 
         // Close any modals and clear game status
-        document.querySelectorAll('.stats-modal, .completion-modal').forEach(modal => modal.remove());
+        document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '';
 
         // Change difficulty (this will load the new puzzle)
@@ -3366,7 +3313,7 @@ class SudokuEngine {
         }
 
         // Close any modals and clear game status
-        document.querySelectorAll('.stats-modal, .completion-modal').forEach(modal => modal.remove());
+        document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '';
 
         // Change difficulty (this will load the new puzzle)
