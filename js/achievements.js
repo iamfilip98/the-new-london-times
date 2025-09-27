@@ -67,12 +67,12 @@ class AchievementsManager {
                 rarity: 'legendary'
             },
             {
-                id: 'streak_50',
-                title: 'Dimension Breaker',
-                description: 'Win 50 consecutive days (breaks the laws of probability)',
+                id: 'streak_25',
+                title: 'Legendary Streak',
+                description: 'Win 25 consecutive days',
                 icon: 'fas fa-infinity',
                 type: 'streak',
-                requirement: { type: 'win_streak', value: 50 },
+                requirement: { type: 'win_streak', value: 25 },
                 rarity: 'legendary'
             },
             {
@@ -124,11 +124,11 @@ class AchievementsManager {
             },
             {
                 id: 'teleporter_easy',
-                title: 'Teleporter (Easy)',
-                description: 'Complete Easy under 30 seconds (almost impossible)',
+                title: 'Lightning Fast (Easy)',
+                description: 'Complete Easy under 45 seconds',
                 icon: 'fas fa-magic',
                 type: 'speed',
-                requirement: { type: 'time_under', difficulty: 'easy', value: 30 },
+                requirement: { type: 'time_under', difficulty: 'easy', value: 45 },
                 rarity: 'legendary'
             },
             {
@@ -151,11 +151,11 @@ class AchievementsManager {
             },
             {
                 id: 'teleporter_medium',
-                title: 'Teleporter (Medium)',
-                description: 'Complete Medium under 2 minutes (superhuman)',
+                title: 'Lightning Fast (Medium)',
+                description: 'Complete Medium under 2.5 minutes',
                 icon: 'fas fa-magic',
                 type: 'speed',
-                requirement: { type: 'time_under', difficulty: 'medium', value: 120 },
+                requirement: { type: 'time_under', difficulty: 'medium', value: 150 },
                 rarity: 'legendary'
             },
             {
@@ -178,11 +178,11 @@ class AchievementsManager {
             },
             {
                 id: 'time_lord',
-                title: 'Time Lord',
-                description: 'Complete Hard under 3 minutes (defies physics)',
+                title: 'Speed Master',
+                description: 'Complete Hard under 8 minutes',
                 icon: 'fas fa-clock',
                 type: 'speed',
-                requirement: { type: 'time_under', difficulty: 'hard', value: 180 },
+                requirement: { type: 'time_under', difficulty: 'hard', value: 480 },
                 rarity: 'legendary'
             },
             {
@@ -452,11 +452,11 @@ class AchievementsManager {
             {
                 id: 'error_explosion',
                 title: 'Error Explosion',
-                description: 'Make 50+ errors in a single day (how is this possible?)',
+                description: 'Make 15+ errors in a single day',
                 icon: 'fas fa-bomb',
                 type: 'errors',
-                requirement: { type: 'total_errors_over', value: 50 },
-                rarity: 'legendary'
+                requirement: { type: 'total_errors_over', value: 15 },
+                rarity: 'rare'
             },
             {
                 id: 'methodical_solver',
