@@ -50,20 +50,21 @@
                     <i class="fas fa-puzzle-piece"></i>
                     <span>Play Sudoku</span>
                 </a>
+                <a href="#" class="nav-link mobile-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
             </div>
             <div class="nav-user">
                 <div class="player-dropdown">
-                    <span class="current-player" id="currentPlayerDisplay"></span>
-                    <div class="dropdown-content">
+                    <span class="current-player nav-mobile-toggle" id="currentPlayerDisplay"></span>
+                    <div class="dropdown-content desktop-only">
                         <a href="#" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i>
                             Logout
                         </a>
                     </div>
                 </div>
-            </div>
-            <div class="nav-mobile-toggle">
-                <i class="fas fa-bars"></i>
             </div>
         </nav>
 
@@ -755,11 +756,9 @@
 
             if (mobileToggle && navLinks) {
                 mobileToggle.addEventListener('click', function() {
-                    navLinks.classList.toggle('mobile-active');
-                    const icon = mobileToggle.querySelector('i');
-                    if (icon) {
-                        icon.classList.toggle('fa-bars');
-                        icon.classList.toggle('fa-times');
+                    // Only toggle mobile menu on mobile devices
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.toggle('mobile-active');
                     }
                 });
 

@@ -208,6 +208,15 @@ body {
 }
 
 /* Navigation */
+/* Desktop/Mobile logout visibility */
+.mobile-logout {
+    display: none !important;
+}
+
+.desktop-only {
+    display: block;
+}
+
 .main-nav {
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(24px);
@@ -3335,15 +3344,19 @@ body {
 
     .nav-link {
         width: 100%;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.75rem 1rem;
         text-align: left;
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        margin: 0.1rem 1rem;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(78, 205, 196, 0.3);
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        color: var(--text-secondary);
+        font-family: 'Orbitron', monospace;
+        font-weight: 600;
     }
 
     .nav-link::before {
@@ -3360,14 +3373,15 @@ body {
     }
 
     .nav-link:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-bottom-color: rgba(255, 255, 255, 0.2);
-        transform: translateX(5px);
+        background: rgba(245, 87, 108, 0.2);
+        color: var(--accent-pink);
+        border-color: rgba(245, 87, 108, 0.5);
     }
 
-    .nav-link:hover::before {
-        left: 0;
-        opacity: 0.1;
+    .nav-link.active {
+        background: rgba(245, 87, 108, 0.3);
+        color: var(--accent-pink);
+        border-color: rgba(245, 87, 108, 0.8);
     }
 
     .nav-link:last-child {
@@ -3995,6 +4009,10 @@ select:focus-visible,
     font-family: 'Orbitron', monospace;
     font-weight: 600;
     transition: var(--transition);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    margin: 0.1rem 0;
 }
 
 .dropdown-content a:hover {
@@ -4150,6 +4168,29 @@ select:focus-visible,
 
     .dropdown-content a:active {
         transform: scale(0.98); /* Better mobile feedback */
+    }
+
+    /* Override desktop styles for mobile */
+    .mobile-logout {
+        display: flex !important;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        margin: 0.5rem 1rem;
+        color: var(--text-secondary);
+        border: 1px solid rgba(78, 205, 196, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .mobile-logout:hover {
+        background: rgba(245, 87, 108, 0.2);
+        color: var(--accent-pink);
+        border-color: rgba(245, 87, 108, 0.5);
+    }
+
+    /* Hide desktop dropdown on mobile */
+    .desktop-only {
+        display: none !important;
     }
 
     .sudoku-player-indicator {
