@@ -3850,9 +3850,6 @@ select:focus-visible,
     transition: var(--transition);
 }
 
-.player-dropdown.active .current-player {
-    background: rgba(255, 255, 255, 0.1);
-}
 
 .dropdown-content {
     display: none;
