@@ -2145,12 +2145,15 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    /* Exact height to show precisely 2 rows without cutting off content or showing row 3 */
-    max-height: calc(2 * (300px + 4rem) + 2rem); /* 2 * (min-height + padding) + gap = 760px */
+    /* Limit height to show 2 full rows, allowing scroll for more */
+    max-height: 500px;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: var(--accent-orange) rgba(255, 255, 255, 0.1);
+    /* Add padding to prevent shadow clipping on outer achievements */
+    padding: 1rem;
+    margin: -1rem; /* Negative margin to maintain overall spacing */
 }
 
 .achievements-grid::-webkit-scrollbar {
