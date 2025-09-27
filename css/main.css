@@ -2145,7 +2145,8 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    max-height: calc(2 * 300px + 2rem); /* Limit to 2 rows: 2 badges + 1 gap */
+    /* Reactive height to accommodate 2 rows of achievement cards elegantly */
+    max-height: calc(2 * 380px + 2rem); /* 2 * estimated card height + gap */
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
@@ -2743,6 +2744,13 @@ body {
 
     .achievement-popup-close:hover {
         background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Hide close button on desktop */
+    @media (min-width: 769px) {
+        .achievement-popup-close {
+            display: none;
+        }
     }
 
     /* Full achievement badge styling in popup */
