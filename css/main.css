@@ -2145,8 +2145,8 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    /* Reactive height to accommodate 2 rows of achievement cards elegantly */
-    max-height: calc(2 * 380px + 2rem); /* 2 * estimated card height + gap */
+    /* Exact height to show precisely 2 rows without cutting off content or showing row 3 */
+    max-height: calc(2 * (300px + 4rem) + 2rem); /* 2 * (min-height + padding) + gap = 760px */
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
@@ -2746,8 +2746,11 @@ body {
         background: rgba(255, 255, 255, 0.1);
     }
 
-    /* Hide close button on desktop */
+    /* Hide entire achievement popup on desktop */
     @media (min-width: 769px) {
+        .achievement-popup {
+            display: none !important;
+        }
         .achievement-popup-close {
             display: none;
         }
