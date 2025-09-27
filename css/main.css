@@ -5520,7 +5520,9 @@ select:focus-visible,
 
 /* Game Status */
 .game-status {
-    display: none;
+    display: block;
+    position: relative;
+    z-index: 1000;
 }
 
 .status-message {
@@ -5531,6 +5533,8 @@ select:focus-visible,
     border: 2px solid rgba(255, 255, 255, 0.1);
     font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
+    position: relative;
+    z-index: 1001;
 }
 
 .status-message.error {
