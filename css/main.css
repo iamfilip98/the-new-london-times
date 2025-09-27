@@ -3328,9 +3328,9 @@ body {
         height: 100vh;
         width: 80%;
         max-width: 300px;
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(24px);
-        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(40px) saturate(180%);
+        border-left: 1px solid rgba(255, 255, 255, 0.3);
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
@@ -3352,9 +3352,9 @@ body {
         text-align: left;
         border-radius: 15px;
         margin: 0.25rem 0.5rem;
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(20px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.3);
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
@@ -4198,8 +4198,8 @@ select:focus-visible,
     /* Override desktop styles for mobile */
     .mobile-logout {
         display: flex !important;
-        background: rgba(255, 107, 107, 0.12);
-        backdrop-filter: blur(10px);
+        background: rgba(255, 107, 107, 0.25);
+        backdrop-filter: blur(20px) saturate(150%);
         border-radius: 15px;
         margin: 0.5rem 0.5rem;
         color: var(--text-primary);
