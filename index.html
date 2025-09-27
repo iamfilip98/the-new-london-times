@@ -57,13 +57,16 @@
             </div>
             <div class="nav-user">
                 <div class="player-dropdown">
-                    <span class="current-player nav-mobile-toggle" id="currentPlayerDisplay"></span>
+                    <span class="current-player" id="currentPlayerDisplay"></span>
                     <div class="dropdown-content desktop-only">
                         <a href="#" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i>
                             Logout
                         </a>
                     </div>
+                </div>
+                <div class="nav-mobile-toggle">
+                    <span class="current-player-mobile" id="currentPlayerDisplayMobile"></span>
                 </div>
             </div>
         </nav>
@@ -610,12 +613,13 @@
         function initializePlayerSession() {
             const currentPlayer = sessionStorage.getItem('currentPlayer');
             const playerDisplay = document.getElementById('currentPlayerDisplay');
+            const playerDisplayMobile = document.getElementById('currentPlayerDisplayMobile');
             const sudokuPlayerIndicator = document.getElementById('sudokuPlayerIndicator');
 
             if (currentPlayer && playerDisplay) {
                 const playerName = currentPlayer === 'faidao' ? 'Faidao' : 'Filip';
                 const playerSubtitle = currentPlayer === 'faidao' ? 'The Queen' : 'The Champion';
-                playerDisplay.innerHTML = `
+                const playerContent = `
                     <div class="player-info">
                         <div class="player-avatar ${currentPlayer}-avatar">
                             ${playerName.charAt(0)}
@@ -626,6 +630,13 @@
                         </div>
                     </div>
                 `;
+
+                playerDisplay.innerHTML = playerContent;
+
+                // Also update mobile player display
+                if (playerDisplayMobile) {
+                    playerDisplayMobile.innerHTML = playerContent;
+                }
 
                 if (sudokuPlayerIndicator) {
                     sudokuPlayerIndicator.innerHTML = `

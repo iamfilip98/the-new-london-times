@@ -217,6 +217,11 @@ body {
     display: block;
 }
 
+/* Hide mobile toggle on desktop */
+.nav-mobile-toggle {
+    display: none;
+}
+
 .main-nav {
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(24px);
@@ -4134,17 +4139,39 @@ select:focus-visible,
         font-size: 0.7rem;
     }
 
-    /* Make mobile nav toggle more accessible */
+    /* Show mobile toggle on mobile, hide desktop player dropdown */
     .nav-mobile-toggle {
+        display: flex !important;
         padding: 0.5rem;
         min-width: 44px;
         min-height: 44px;
-        display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.1);
         transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    /* Style mobile player display same as desktop */
+    .current-player-mobile .player-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(78, 205, 196, 0.3);
+        border-radius: 25px;
+        padding: 0.4rem 0.8rem;
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    /* Hide desktop player dropdown on mobile */
+    .player-dropdown {
+        display: none;
     }
 
     .nav-mobile-toggle:hover,
