@@ -780,6 +780,7 @@ class SudokuEngine {
         }
 
         this.updateDisplay();
+        this.updateGrid();  // Reset timer display to --:-- for new games
         this.updateCandidateModeUI();
         this.updateShowAllCandidatesUI();
         this.startTimer();
@@ -849,8 +850,12 @@ class SudokuEngine {
             }
         }
 
-        // Update stats display
-        document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
+        // Update stats display - only show final time when completed
+        if (this.gameCompleted) {
+            document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
+        } else {
+            document.getElementById('timerDisplay').textContent = '--:--';
+        }
         document.getElementById('errorsCount').textContent = this.errors;
         document.getElementById('hintsCount').textContent = this.hints;
 
@@ -1219,6 +1224,7 @@ class SudokuEngine {
             }
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game paused. Click Resume to continue.</div>';
+            this.updateGrid();  // Ensure timer shows --:-- when paused
         } else {
             this.startTimer();
             pauseBtn.querySelector('i').className = 'fas fa-pause';
@@ -1235,6 +1241,7 @@ class SudokuEngine {
             }
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game resumed!</div>';
+            this.updateGrid();  // Ensure timer shows --:-- when resumed
         }
     }
 
@@ -1881,10 +1888,8 @@ class SudokuEngine {
         debugLog('Starting timer');
         this.timerInterval = setInterval(() => {
             this.timer++;
-            const timerDisplay = document.getElementById('timerDisplay');
-            if (timerDisplay) {
-                timerDisplay.textContent = this.formatTime(this.timer);
-            }
+            // Don't update display during gameplay - only when completed
+            // The display will be updated through updateGrid() only on completion
         }, 1000);
     }
 
@@ -2101,6 +2106,9 @@ class SudokuEngine {
                     document.getElementById('gameStatus').innerHTML =
                         '<div class="status-message success">Puzzle completed! Well done!</div>';
 
+                    // Update grid to show final time for completed puzzles
+                    this.updateGrid();
+
                     // Show completion notification overlay for previously completed games
                     setTimeout(() => {
                         debugLog('Showing completion notification for completed game');
@@ -2110,6 +2118,7 @@ class SudokuEngine {
                     if (this.gamePaused) {
                         // Game was paused - update UI but don't start timer
                         this.updatePauseUI();
+                        this.updateGrid();  // Ensure timer shows --:-- for paused games
                         // Show overlay
                         const pausedOverlay = document.getElementById('pausedOverlay');
                         if (pausedOverlay) {
@@ -2122,6 +2131,7 @@ class SudokuEngine {
                         if (!this.timerInterval) {
                             this.startTimer();
                         }
+                        this.updateGrid();  // Ensure timer shows --:-- for active games
                     }
                 }
 
