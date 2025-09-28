@@ -77,8 +77,15 @@ async function initPuzzleDatabase() {
 }
 
 // Generate a complete valid Sudoku solution
-function generateCompleteSolution() {
+function generateCompleteSolution(seed) {
   const grid = Array(9).fill().map(() => Array(9).fill(0));
+
+  // Seeded random number generator for deterministic puzzle generation
+  let seedValue = seed || Date.now();
+  function seededRandom() {
+    seedValue = (seedValue * 9301 + 49297) % 233280;
+    return seedValue / 233280;
+  }
 
   function isValid(grid, row, col, num) {
     // Check row
@@ -109,9 +116,9 @@ function generateCompleteSolution() {
         if (grid[row][col] === 0) {
           const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-          // Shuffle for randomness
+          // Shuffle using seeded random for deterministic results
           for (let i = numbers.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            const j = Math.floor(seededRandom() * (i + 1));
             [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
           }
 
@@ -138,8 +145,15 @@ function generateCompleteSolution() {
 }
 
 // Generate puzzle from solution by removing numbers with solvability validation
-function generatePuzzle(solution, difficulty) {
+function generatePuzzle(solution, difficulty, seed) {
   const puzzle = solution.map(row => [...row]);
+
+  // Seeded random number generator for deterministic puzzle generation
+  let seedValue = seed || Date.now();
+  function seededRandom() {
+    seedValue = (seedValue * 9301 + 49297) % 233280;
+    return seedValue / 233280;
+  }
 
   // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
@@ -215,7 +229,7 @@ function generatePuzzle(solution, difficulty) {
 
   // Shuffle positions for randomness
   for (let i = positions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(seededRandom() * (i + 1));
     [positions[i], positions[j]] = [positions[j], positions[i]];
   }
 
@@ -231,7 +245,7 @@ function generatePuzzle(solution, difficulty) {
 
     // Shuffle again for this iteration
     for (let i = shuffledPositions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(seededRandom() * (i + 1));
       [shuffledPositions[i], shuffledPositions[j]] = [shuffledPositions[j], shuffledPositions[i]];
     }
 
@@ -284,12 +298,19 @@ function generatePuzzle(solution, difficulty) {
   }
 
   // Return best puzzle found, or fallback to a simpler approach if needed
-  return bestPuzzle || createFallbackPuzzle(solution, difficulty);
+  return bestPuzzle || createFallbackPuzzle(solution, difficulty, seed);
 }
 
 // Improved fallback puzzle creation that ensures unique solutions
-function createFallbackPuzzle(solution, difficulty) {
+function createFallbackPuzzle(solution, difficulty, seed) {
   const puzzle = solution.map(row => [...row]);
+
+  // Seeded random number generator for deterministic puzzle generation
+  let seedValue = seed || Date.now();
+  function seededRandom() {
+    seedValue = (seedValue * 9301 + 49297) % 233280;
+    return seedValue / 233280;
+  }
   const targetClues = {
     easy: 38,   // Updated to match new easy range
     medium: 22, // Updated to match new medium range (reduced for more difficulty)
@@ -305,7 +326,7 @@ function createFallbackPuzzle(solution, difficulty) {
 
   // Shuffle positions for randomness
   for (let i = positions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(seededRandom() * (i + 1));
     [positions[i], positions[j]] = [positions[j], positions[i]];
   }
 
@@ -1266,17 +1287,20 @@ async function generateDailyPuzzles(date) {
     let validPuzzles = null;
     let finalSolution = null;
 
+    // Create deterministic seed from date to ensure same puzzles for all users
+    const dateSeed = new Date(date).getTime();
+
     // Try multiple times to generate valid puzzles
     while (attempts < maxAttempts && !validPuzzles) {
       attempts++;
       console.log(`🎲 Generating puzzle attempt ${attempts} for ${date}`);
 
-      const solution = generateCompleteSolution();
+      const solution = generateCompleteSolution(dateSeed + attempts);
 
       const puzzles = {
-        easy: generatePuzzle(solution, 'easy'),
-        medium: generatePuzzle(solution, 'medium'),
-        hard: generatePuzzle(solution, 'hard')
+        easy: generatePuzzle(solution, 'easy', dateSeed + attempts * 3 + 1),
+        medium: generatePuzzle(solution, 'medium', dateSeed + attempts * 3 + 2),
+        hard: generatePuzzle(solution, 'hard', dateSeed + attempts * 3 + 3)
       };
 
       // Simplified validation - just check basic requirements
@@ -1305,11 +1329,11 @@ async function generateDailyPuzzles(date) {
     // If we couldn't generate valid puzzles, use fallback
     if (!validPuzzles) {
       console.log(`⚠️ Using fallback puzzles for ${date} after ${maxAttempts} attempts`);
-      finalSolution = generateCompleteSolution();
+      finalSolution = generateCompleteSolution(dateSeed + 999);
       validPuzzles = {
-        easy: createFallbackPuzzle(finalSolution, 'easy'),
-        medium: createFallbackPuzzle(finalSolution, 'medium'),
-        hard: createFallbackPuzzle(finalSolution, 'hard')
+        easy: createFallbackPuzzle(finalSolution, 'easy', dateSeed + 1001),
+        medium: createFallbackPuzzle(finalSolution, 'medium', dateSeed + 1002),
+        hard: createFallbackPuzzle(finalSolution, 'hard', dateSeed + 1003)
       };
     }
 

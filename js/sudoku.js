@@ -491,11 +491,20 @@ class SudokuEngine {
                     window.sudokuApp.puzzleCache.loadTime = Date.now();
                 }
 
+                // Reload all difficulty buttons to ensure they show fresh puzzles
+                this.updateDifficultyButtons();
+
                 // If currently playing, reload the current puzzle
                 if (this.currentDifficulty && this.gameStarted) {
                     debugLog(`🔄 Reloading current ${this.currentDifficulty} puzzle with fresh data`);
                     this.loadPuzzle(this.currentDifficulty);
                 }
+
+                // Clear any cached puzzle data for all difficulties to force fresh loads
+                ['easy', 'medium', 'hard'].forEach(difficulty => {
+                    debugLog(`🧹 Clearing cached data for ${difficulty} difficulty`);
+                    this.puzzleStates[difficulty] = null;
+                });
 
                 return true;
             } else {
