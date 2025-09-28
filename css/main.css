@@ -1829,9 +1829,9 @@ body {
     font-weight: 700;
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
-    background: linear-gradient(135deg, var(--faidao-color), #ff8a8a, #ff6b6b);
+    background: linear-gradient(135deg, var(--faidao-color), #EF5350, #F44336);
     backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 107, 107, 0.4);
+    border: 2px solid rgba(244, 67, 54, 0.4);
     color: white;
     font-size: 0.9rem;
     text-align: center;
@@ -1862,7 +1862,7 @@ body {
     text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9);
     box-shadow: var(--shadow-hover);
     border-color: rgba(255, 255, 255, 0.2);
-    background: linear-gradient(135deg, #ff8a8a, #ff9999, #ff8a8a);
+    background: linear-gradient(135deg, #EF5350, #E57373, #EF5350);
 }
 
 .history-winner:hover::before {
@@ -1870,12 +1870,12 @@ body {
 }
 
 .history-winner.filip-winner {
-    border-color: rgba(78, 205, 196, 0.4);
-    background: linear-gradient(135deg, var(--filip-color), #5ed6cc, #4ecdc4);
+    border-color: rgba(255, 152, 0, 0.4);
+    background: linear-gradient(135deg, var(--filip-color), #FFB74D, #FF9800);
 }
 
 .history-winner.filip-winner:hover {
-    background: linear-gradient(135deg, #5ed6cc, #6fe0d7, #5ed6cc);
+    background: linear-gradient(135deg, #FFB74D, #FFCC80, #FFB74D);
 }
 
 .history-winner:focus-visible {
@@ -4388,11 +4388,11 @@ select:focus-visible,
 }
 
 .current-player .player-avatar.filip-avatar {
-    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    background: linear-gradient(135deg, #FF9800, #FFB74D);
 }
 
 .current-player .player-avatar.faidao-avatar {
-    background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+    background: linear-gradient(135deg, #F44336, #EF5350);
 }
 
 /* Removed player-details wrapper for simplified layout */
