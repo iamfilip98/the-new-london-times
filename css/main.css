@@ -254,13 +254,33 @@ body {
 .nav-brand:hover .puzzle-piece.active {
     animation-duration: 1.5s;
     transform: scale(1.15);
-    box-shadow: 0 0 25px rgba(103, 126, 234, 0.8);
+}
+
+.nav-brand:hover .puzzle-piece.active:nth-child(1) {
+    box-shadow: 0 0 30px rgba(76, 175, 80, 1);
+}
+
+.nav-brand:hover .puzzle-piece.active:nth-child(3) {
+    box-shadow: 0 0 30px rgba(255, 152, 0, 1);
+}
+
+.nav-brand:hover .puzzle-piece.active:nth-child(5) {
+    box-shadow: 0 0 30px rgba(79, 172, 254, 1);
+}
+
+.nav-brand:hover .puzzle-piece.active:nth-child(7) {
+    box-shadow: 0 0 30px rgba(244, 67, 54, 1);
+}
+
+.nav-brand:hover .puzzle-piece.active:nth-child(9) {
+    box-shadow: 0 0 30px rgba(245, 87, 108, 1);
 }
 
 .nav-brand:hover .puzzle-piece:not(.active) {
-    background: linear-gradient(135deg, rgba(103, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
-    border-color: rgba(103, 126, 234, 0.4);
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.4) 0%, rgba(255, 152, 0, 0.4) 50%, rgba(244, 67, 54, 0.4) 100%);
+    border-color: rgba(76, 175, 80, 0.6);
     transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
 }
 
 .nav-brand:hover .logo-glow {
@@ -334,24 +354,116 @@ body {
 }
 
 .puzzle-piece.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%);
-    border-color: rgba(103, 126, 234, 0.5);
-    box-shadow: 0 0 12px rgba(103, 126, 234, 0.4);
+    background: linear-gradient(135deg, #4CAF50 0%, #FF9800 50%, #F44336 100%);
+    border-color: rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
     animation: puzzlePulse 3s ease-in-out infinite;
 }
 
 .puzzle-piece.active::before {
     left: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+
+/* Individual color variations for different pieces */
+.puzzle-piece.active:nth-child(1) {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    border-color: rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    animation: puzzlePulseGreen 3s ease-in-out infinite;
+}
+
+.puzzle-piece.active:nth-child(3) {
+    background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+    border-color: rgba(255, 152, 0, 0.8);
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.7);
+    animation: puzzlePulseOrange 3s ease-in-out infinite 1s;
+}
+
+.puzzle-piece.active:nth-child(5) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-color: rgba(79, 172, 254, 0.8);
+    box-shadow: 0 0 15px rgba(79, 172, 254, 0.7);
+    animation: puzzlePulseBlue 3s ease-in-out infinite 0.5s;
+}
+
+.puzzle-piece.active:nth-child(7) {
+    background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+    border-color: rgba(244, 67, 54, 0.8);
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.7);
+    animation: puzzlePulseRed 3s ease-in-out infinite 1.5s;
+}
+
+.puzzle-piece.active:nth-child(9) {
+    background: linear-gradient(135deg, #f5576c 0%, #E91E63 100%);
+    border-color: rgba(245, 87, 108, 0.8);
+    box-shadow: 0 0 15px rgba(245, 87, 108, 0.7);
+    animation: puzzlePulsePink 3s ease-in-out infinite 2s;
 }
 
 @keyframes puzzlePulse {
     0%, 100% {
         transform: scale(1);
-        box-shadow: 0 0 12px rgba(103, 126, 234, 0.4);
+        box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
     }
     50% {
         transform: scale(1.1);
-        box-shadow: 0 0 20px rgba(103, 126, 234, 0.6);
+        box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+    }
+}
+
+@keyframes puzzlePulseGreen {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(76, 175, 80, 0.9);
+    }
+}
+
+@keyframes puzzlePulseOrange {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(255, 152, 0, 0.7);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(255, 152, 0, 0.9);
+    }
+}
+
+@keyframes puzzlePulseBlue {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(79, 172, 254, 0.7);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(79, 172, 254, 0.9);
+    }
+}
+
+@keyframes puzzlePulseRed {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(244, 67, 54, 0.7);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(244, 67, 54, 0.9);
+    }
+}
+
+@keyframes puzzlePulsePink {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(245, 87, 108, 0.7);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(245, 87, 108, 0.9);
     }
 }
 
@@ -362,7 +474,11 @@ body {
     transform: translate(-50%, -50%);
     width: 60px;
     height: 60px;
-    background: radial-gradient(circle, rgba(103, 126, 234, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle,
+        rgba(76, 175, 80, 0.4) 0%,
+        rgba(255, 152, 0, 0.3) 30%,
+        rgba(244, 67, 54, 0.2) 60%,
+        transparent 80%);
     border-radius: 50%;
     animation: logoGlow 4s ease-in-out infinite;
     z-index: 1;
@@ -371,11 +487,30 @@ body {
 @keyframes logoGlow {
     0%, 100% {
         transform: translate(-50%, -50%) scale(1);
-        opacity: 0.6;
+        opacity: 0.7;
+        background: radial-gradient(circle,
+            rgba(76, 175, 80, 0.4) 0%,
+            rgba(255, 152, 0, 0.3) 30%,
+            rgba(244, 67, 54, 0.2) 60%,
+            transparent 80%);
     }
-    50% {
+    33% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.9;
+        background: radial-gradient(circle,
+            rgba(255, 152, 0, 0.5) 0%,
+            rgba(79, 172, 254, 0.4) 30%,
+            rgba(76, 175, 80, 0.3) 60%,
+            transparent 80%);
+    }
+    66% {
         transform: translate(-50%, -50%) scale(1.2);
         opacity: 0.8;
+        background: radial-gradient(circle,
+            rgba(244, 67, 54, 0.5) 0%,
+            rgba(245, 87, 108, 0.4) 30%,
+            rgba(79, 172, 254, 0.3) 60%,
+            transparent 80%);
     }
 }
 
@@ -397,7 +532,7 @@ body {
     font-size: 1.9rem;
     font-weight: 900;
     letter-spacing: 0.12em;
-    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 25%, #667eea 50%, #764ba2 75%, #ffffff 100%);
+    background: linear-gradient(135deg, #4CAF50 0%, #FF9800 25%, #4facfe 50%, #F44336 75%, #f5576c 100%);
     background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -405,6 +540,7 @@ body {
     animation: modernShimmer 6s ease-in-out infinite;
     position: relative;
     z-index: 2;
+    filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.3));
 }
 
 @keyframes modernShimmer {
@@ -424,12 +560,14 @@ body {
     height: 3px;
     background: linear-gradient(90deg,
         transparent 0%,
-        rgba(103, 126, 234, 0.8) 20%,
-        rgba(118, 75, 162, 0.8) 50%,
-        rgba(79, 172, 254, 0.8) 80%,
+        #4CAF50 20%,
+        #FF9800 40%,
+        #4facfe 60%,
+        #F44336 80%,
         transparent 100%);
     border-radius: 2px;
     animation: accentFlow 3s ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
 }
 
 @keyframes accentFlow {
@@ -473,29 +611,38 @@ body {
 
 .particle {
     position: absolute;
-    width: 3px;
-    height: 3px;
-    background: rgba(103, 126, 234, 0.6);
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     animation: particleFloat 8s linear infinite;
+    box-shadow: 0 0 10px currentColor;
 }
 
 .particle:nth-child(1) {
     left: 20%;
+    background: #4CAF50;
+    color: #4CAF50;
     animation-delay: 0s;
     animation-duration: 6s;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.8);
 }
 
 .particle:nth-child(2) {
     left: 60%;
+    background: #FF9800;
+    color: #FF9800;
     animation-delay: 2s;
     animation-duration: 8s;
+    box-shadow: 0 0 12px rgba(255, 152, 0, 0.8);
 }
 
 .particle:nth-child(3) {
     left: 80%;
+    background: #F44336;
+    color: #F44336;
     animation-delay: 4s;
     animation-duration: 7s;
+    box-shadow: 0 0 12px rgba(244, 67, 54, 0.8);
 }
 
 @keyframes particleFloat {
