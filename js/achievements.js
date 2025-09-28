@@ -278,7 +278,7 @@ class AchievementsManager {
                 rarity: 'legendary'
             },
 
-            // SCORE ACHIEVEMENTS (6)
+            // SCORE ACHIEVEMENTS (9)
             {
                 id: 'point_collector',
                 title: 'Point Collector',
@@ -313,6 +313,33 @@ class AchievementsManager {
                 icon: 'fas fa-crown',
                 type: 'score',
                 requirement: { type: 'daily_score', value: 2000 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'point_titan',
+                title: 'Point Titan',
+                description: 'Score over 3000 points in a single day',
+                icon: 'fas fa-mountain',
+                type: 'score',
+                requirement: { type: 'daily_score', value: 3000 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'point_legend',
+                title: 'Point Legend',
+                description: 'Score over 4000 points in a single day',
+                icon: 'fas fa-star',
+                type: 'score',
+                requirement: { type: 'daily_score', value: 4000 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'point_god',
+                title: 'Point God',
+                description: 'Score over 5000 points in a single day',
+                icon: 'fas fa-infinity',
+                type: 'score',
+                requirement: { type: 'daily_score', value: 5000 },
                 rarity: 'legendary'
             },
             {
