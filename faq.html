@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ & Guide - Sudoku Championship Arena</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .faq-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            padding: 2rem 1rem;
+        }
+
+        .faq-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .faq-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(79, 172, 254, 0.5);
+        }
+
+        .faq-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .faq-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-pink));
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1rem 2rem;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .faq-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            gap: 2rem;
+        }
+
+        .faq-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .faq-item {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1.5rem;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-left: 1.5rem;
+        }
+
+        .faq-answer ul, .faq-answer ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .faq-answer li {
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-green);
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .algorithm-section {
+            background: rgba(79, 172, 254, 0.1);
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .algorithm-title {
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .algorithm-steps {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .algorithm-steps li {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-blue);
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .algorithm-steps li::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            background: var(--accent-blue);
+            color: white;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .algorithm-steps {
+            counter-reset: step-counter;
+        }
+
+        .scoring-formula {
+            background: rgba(255, 168, 0, 0.1);
+            border: 2px solid rgba(255, 168, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--accent-orange);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .achievement-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .achievement-sample {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .achievement-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .rarity-common { color: #ffffff; }
+        .rarity-rare { color: #4ecdc4; }
+        .rarity-epic { color: #ff6b6b; }
+        .rarity-legendary { color: #ffa726; }
+
+        @media (max-width: 768px) {
+            .faq-title {
+                font-size: 2rem;
+            }
+
+            .faq-section {
+                padding: 1.5rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievement-showcase {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="faq-container">
+        <div class="faq-header">
+            <h1 class="faq-title">
+                <i class="fas fa-question-circle"></i>
+                FAQ & User Guide
+            </h1>
+            <p class="faq-subtitle">
+                Everything you need to know about the Sudoku Championship Arena - from basic gameplay to advanced features and the incredible technology powering your battles!
+            </p>
+        </div>
+
+        <div class="faq-nav">
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Back to Arena
+            </a>
+        </div>
+
+        <div class="faq-content">
+            <!-- Getting Started Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-rocket"></i>
+                    Getting Started
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-play-circle"></i>
+                        How do I start playing?
+                    </div>
+                    <div class="faq-answer">
+                        <ol>
+                            <li><strong>Choose Your Champion:</strong> Select either Faidao "The Queen" or Filip "The Champion" on the login page</li>
+                            <li><strong>Enter the Arena:</strong> Use the password "sudoku2024" to access the championship</li>
+                            <li><strong>Select Difficulty:</strong> Choose Easy, Medium, or Hard from the dashboard</li>
+                            <li><strong>Play Sudoku:</strong> Complete the puzzle using our advanced game interface</li>
+                            <li><strong>Track Progress:</strong> Monitor your performance and compete with your opponent</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-gamepad"></i>
+                        How do I play Sudoku in the game?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Select Cells:</strong> Click any cell to select it</li>
+                            <li><strong>Enter Numbers:</strong> Type 1-9 to place numbers in selected cells</li>
+                            <li><strong>Candidate Notes:</strong> Use small numbers to track possibilities (automatic or manual)</li>
+                            <li><strong>Get Hints:</strong> Click the hint button for help (5s penalty for pointing, 10s for revealing)</li>
+                            <li><strong>Pause/Resume:</strong> Use the pause button to take breaks</li>
+                            <li><strong>Auto-Save:</strong> Your progress is automatically saved every 30 seconds</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-trophy"></i>
+                        How does the competition work?
+                    </div>
+                    <div class="faq-answer">
+                        Each day, both players compete by completing the same three Sudoku puzzles (Easy, Medium, Hard).
+                        The player with the highest total score wins the day. Scores are calculated based on completion time,
+                        errors made, hints used, and difficulty multipliers. Win streaks, achievements, and overall records
+                        are tracked automatically.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gameplay Features Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-puzzle-piece"></i>
+                    Game Features
+                </h2>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                        <div class="feature-title">Smart Hints</div>
+                        <div class="feature-description">Two-stage hint system: first click highlights empty cells in the same region, second click reveals the correct number. Each hint adds time penalties.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-eye"></i></div>
+                        <div class="feature-title">Candidate Notes</div>
+                        <div class="feature-description">Track possible numbers for each cell with small notation. Can be automatic (computed by game) or manual (entered by you).</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="feature-title">Error Detection</div>
+                        <div class="feature-description">Real-time validation highlights incorrect numbers immediately. Errors add 10 seconds to your final time for scoring.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-save"></i></div>
+                        <div class="feature-title">Auto-Save</div>
+                        <div class="feature-description">Game automatically saves your progress every 30 seconds. Resume any unfinished puzzle exactly where you left off.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-stopwatch"></i></div>
+                        <div class="feature-title">Precise Timer</div>
+                        <div class="feature-description">Accurate timing with pause/resume functionality. Timer stops when you pause and resumes when you continue playing.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div class="feature-title">Mobile Optimized</div>
+                        <div class="feature-description">Perfect touch interface for mobile devices with gesture support and optimized layouts for small screens.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scoring System Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-calculator"></i>
+                    Scoring System
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-formula"></i>
+                        How are scores calculated?
+                    </div>
+                    <div class="faq-answer">
+                        The scoring system rewards both speed and accuracy:
+                        <div class="scoring-formula">
+                            <div class="formula">
+                                Score = (10,000 ÷ Adjusted Time in Minutes) × Difficulty Multiplier
+                            </div>
+                            <div>
+                                <strong>Adjusted Time</strong> = Base Time + (Errors × 10 seconds) + Hint Penalties<br>
+                                <strong>Difficulty Multipliers:</strong> Easy ×1, Medium ×1.5, Hard ×2
+                            </div>
+                        </div>
+                        <ul>
+                            <li><strong>Base Time:</strong> Your actual completion time</li>
+                            <li><strong>Error Penalty:</strong> +10 seconds per mistake</li>
+                            <li><strong>Hint Penalties:</strong> +5 seconds for first hint (pointing), +10 seconds for second hint (revealing)</li>
+                            <li><strong>Daily Winner:</strong> Highest total score across all three difficulties</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-target"></i>
+                        What's a good score?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Easy:</strong> 200+ (excellent), 150+ (good), 100+ (decent)</li>
+                            <li><strong>Medium:</strong> 150+ (excellent), 100+ (good), 75+ (decent)</li>
+                            <li><strong>Hard:</strong> 100+ (excellent), 75+ (good), 50+ (decent)</li>
+                            <li><strong>Daily Total:</strong> 400+ (champion level), 300+ (very competitive), 200+ (solid performance)</li>
+                        </ul>
+                        Remember: consistency matters more than single high scores!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Puzzle Generation Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i>
+                    The Amazing Puzzle Algorithm
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-magic"></i>
+                        How are the daily puzzles created?
+                    </div>
+                    <div class="faq-answer">
+                        Our advanced puzzle generation system creates unique, high-quality Sudoku puzzles using sophisticated algorithms:
+
+                        <div class="algorithm-section">
+                            <div class="algorithm-title">
+                                <i class="fas fa-cpu"></i>
+                                Puzzle Generation Process
+                            </div>
+                            <ol class="algorithm-steps">
+                                <li><strong>Deterministic Seeding:</strong> Uses the date to create a unique seed, ensuring both players get identical puzzles</li>
+                                <li><strong>Complete Solution Generation:</strong> Creates a valid 9×9 Sudoku solution using backtracking with seeded randomization</li>
+                                <li><strong>Strategic Clue Removal:</strong> Intelligently removes numbers while maintaining puzzle solvability and uniqueness</li>
+                                <li><strong>Difficulty Calibration:</strong> Adjusts clue count ranges (Easy: 35-42, Medium: 19-25, Hard: 18-25 clues)</li>
+                                <li><strong>Advanced Validation:</strong> Ensures puzzles require appropriate solving techniques for their difficulty level</li>
+                                <li><strong>Quality Assurance:</strong> Multiple validation passes guarantee puzzle integrity and unique solutions</li>
+                            </ol>
+                        </div>
+
+                        <p><strong>What makes our algorithm special:</strong></p>
+                        <ul>
+                            <li><strong>Deterministic Generation:</strong> Same seed = same puzzle for fair competition</li>
+                            <li><strong>Unique Solutions:</strong> Every puzzle has exactly one valid solution</li>
+                            <li><strong>Logical Solvability:</strong> Medium/Hard puzzles require advanced techniques like naked pairs, hidden subsets, etc.</li>
+                            <li><strong>Consistent Difficulty:</strong> Rigorous calibration ensures appropriate challenge levels</li>
+                            <li><strong>Database Storage:</strong> Puzzles are stored in PostgreSQL for consistency and performance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-balance-scale"></i>
+                        How is puzzle difficulty determined?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Easy (35-42 clues):</strong> Solvable with basic techniques (naked singles, hidden singles)</li>
+                            <li><strong>Medium (19-25 clues):</strong> Requires intermediate techniques (naked pairs, hidden pairs, basic patterns)</li>
+                            <li><strong>Hard (18-25 clues):</strong> Demands advanced techniques (naked triples, hidden triples, X-Wing patterns, complex deductions)</li>
+                        </ul>
+                        Our algorithm validates that each puzzle can be solved using only the techniques appropriate for its difficulty level.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievement System Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-medal"></i>
+                    Achievement System
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-star"></i>
+                        How many achievements are there?
+                    </div>
+                    <div class="faq-answer">
+                        There are <span class="highlight">50+ achievements</span> across 14 different categories:
+                        <ul>
+                            <li><strong>🔥 Streaks & Consistency (10):</strong> Win consecutive days, maintain performance</li>
+                            <li><strong>⚡ Speed Demons (12):</strong> Complete puzzles under target times</li>
+                            <li><strong>✨ Perfection (8):</strong> Zero-error completions and flawless performances</li>
+                            <li><strong>📊 High Scores (6):</strong> Achieve specific score milestones</li>
+                            <li><strong>🧮 Mathematical (4):</strong> Score exact numbers, special patterns</li>
+                            <li><strong>⚔️ Competitive (4):</strong> Head-to-head accomplishments</li>
+                            <li><strong>🌟 And 8 more categories</strong> including Seasonal, Timing, Patience, Milestone, Meta, and Quirky!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-gem"></i>
+                        What are the achievement rarities?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="achievement-showcase">
+                            <div class="achievement-sample">
+                                <div class="achievement-icon rarity-common"><i class="fas fa-certificate"></i></div>
+                                <div class="achievement-name rarity-common">Common</div>
+                                <div class="achievement-desc">Easy to unlock with regular play</div>
+                            </div>
+                            <div class="achievement-sample">
+                                <div class="achievement-icon rarity-rare"><i class="fas fa-award"></i></div>
+                                <div class="achievement-name rarity-rare">Rare</div>
+                                <div class="achievement-desc">Requires skill and dedication</div>
+                            </div>
+                            <div class="achievement-sample">
+                                <div class="achievement-icon rarity-epic"><i class="fas fa-trophy"></i></div>
+                                <div class="achievement-name rarity-epic">Epic</div>
+                                <div class="achievement-desc">Exceptional accomplishments</div>
+                            </div>
+                            <div class="achievement-sample">
+                                <div class="achievement-icon rarity-legendary"><i class="fas fa-crown"></i></div>
+                                <div class="achievement-name rarity-legendary">Legendary</div>
+                                <div class="achievement-desc">Ultimate mastery achievements</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-trophy"></i>
+                        Can you give examples of cool achievements?
+                    </div>
+                    <div class="faq-answer">
+                        Here are some of our favorite achievements:
+                        <ul>
+                            <li><strong>🔥 "Unstoppable Force" (Legendary):</strong> Win 15 consecutive days</li>
+                            <li><strong>⚡ "Lightning Fast" (Epic):</strong> Complete any puzzle under 2 minutes</li>
+                            <li><strong>🧮 "Mathematical Genius" (Epic):</strong> Score exactly 1000 points</li>
+                            <li><strong>✨ "Flawless Victory" (Rare):</strong> Complete all difficulties with 0 errors</li>
+                            <li><strong>⚔️ "Comeback Kid" (Rare):</strong> Win after losing 3+ consecutive days</li>
+                            <li><strong>🌙 "Night Owl" (Common):</strong> Complete puzzles after 10 PM</li>
+                            <li><strong>🎯 "Perfectionist" (Epic):</strong> Maintain 100% accuracy over 10 games</li>
+                            <li><strong>⏰ "Speed Demon" (Epic):</strong> Complete Hard puzzle under 5 minutes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Features Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-laptop-code"></i>
+                    Technical Features
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-database"></i>
+                        How is my data stored and synchronized?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>PostgreSQL Database:</strong> All game data, achievements, and statistics are stored in a robust database</li>
+                            <li><strong>Real-Time Sync:</strong> Progress updates instantly across all pages and sessions</li>
+                            <li><strong>Auto-Backup:</strong> Data is automatically backed up and protected</li>
+                            <li><strong>Cross-Device:</strong> Access your progress from any device with your login</li>
+                            <li><strong>Performance Optimized:</strong> Intelligent caching reduces loading times</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-mobile-alt"></i>
+                        Does it work on mobile devices?
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely! The application is fully responsive and optimized for mobile:
+                        <ul>
+                            <li><strong>Touch Interface:</strong> Optimized for finger interaction</li>
+                            <li><strong>Mobile Navigation:</strong> Streamlined navigation for small screens</li>
+                            <li><strong>Performance:</strong> Fast loading and smooth animations on mobile</li>
+                            <li><strong>Adaptive Layout:</strong> Interface adjusts perfectly to your screen size</li>
+                            <li><strong>Gesture Support:</strong> Intuitive touch gestures for gameplay</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-rocket"></i>
+                        What makes the app so fast?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Data Preloading:</strong> Critical data loads while you're on the login page</li>
+                            <li><strong>Intelligent Caching:</strong> Frequently used data is cached for instant access</li>
+                            <li><strong>Optimized Database:</strong> Connection pooling and efficient queries</li>
+                            <li><strong>Background Processing:</strong> Non-blocking operations keep the UI responsive</li>
+                            <li><strong>Modular Architecture:</strong> Only loads what you need, when you need it</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation & Pages Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-map"></i>
+                    Navigation & Pages
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-home"></i>
+                        What's on each page?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>🏠 Dashboard:</strong> Today's battle status, win streaks, difficulty selection, live progress updates</li>
+                            <li><strong>📊 Analytics:</strong> Performance charts, win rates, score trends, error analysis</li>
+                            <li><strong>🏆 Leaderboards:</strong> Monthly/weekly rankings, fastest times, perfect games, records</li>
+                            <li><strong>⭐ Achievements:</strong> All 50+ achievements with progress tracking and filtering</li>
+                            <li><strong>🎮 Play Sudoku:</strong> Full Sudoku game interface with all advanced features</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-bell"></i>
+                        What are the live updates?
+                    </div>
+                    <div class="faq-answer">
+                        The dashboard shows real-time progress updates:
+                        <ul>
+                            <li><strong>Opponent Progress:</strong> See when your opponent completes puzzles</li>
+                            <li><strong>Battle Results:</strong> Live score comparisons and current winner</li>
+                            <li><strong>Achievement Notifications:</strong> Instant alerts when you unlock achievements</li>
+                            <li><strong>Streak Updates:</strong> Real-time streak tracking and updates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips & Strategies Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Tips & Strategies
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-chess"></i>
+                        How can I improve my Sudoku skills?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Learn Techniques:</strong> Master naked singles, hidden singles, then progress to pairs and triples</li>
+                            <li><strong>Use Candidate Notes:</strong> Track possible numbers to spot patterns</li>
+                            <li><strong>Start with Easy:</strong> Build confidence and speed on easier puzzles</li>
+                            <li><strong>Practice Regularly:</strong> Consistency is key to improvement</li>
+                            <li><strong>Analyze Your Errors:</strong> Use the analytics page to identify weak areas</li>
+                            <li><strong>Time Management:</strong> Balance speed with accuracy for optimal scores</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-target"></i>
+                        How can I maximize my scores?
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Minimize Errors:</strong> Each error costs 10 seconds - accuracy is crucial</li>
+                            <li><strong>Use Hints Sparingly:</strong> They help but add time penalties</li>
+                            <li><strong>Focus on Medium/Hard:</strong> Higher difficulty multipliers boost total scores</li>
+                            <li><strong>Practice Speed:</strong> The faster you solve, the higher your score</li>
+                            <li><strong>Complete All Three:</strong> Daily victories require finishing all difficulties</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

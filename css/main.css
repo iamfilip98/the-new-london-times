@@ -8335,3 +8335,84 @@ select:focus-visible,
         border-radius: 20px;
     }
 }
+
+/* App Footer */
+.app-footer {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    margin-top: 2rem;
+    padding: 1.5rem 2rem;
+    transition: var(--transition);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.footer-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    transition: var(--transition);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid transparent;
+}
+
+.footer-link:hover {
+    color: var(--accent-blue);
+    background: rgba(79, 172, 254, 0.1);
+    border-color: rgba(79, 172, 254, 0.3);
+    transform: translateY(-1px);
+}
+
+.footer-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Hide footer on Play Sudoku page */
+.page#sudoku.active ~ .app-footer {
+    display: none;
+}
+
+/* Mobile footer adjustments */
+@media (max-width: 768px) {
+    .app-footer {
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .footer-text {
+        font-size: 0.8rem;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .footer-text span:nth-child(2) {
+        display: none; /* Hide bullet on mobile */
+    }
+}

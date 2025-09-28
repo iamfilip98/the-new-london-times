@@ -618,6 +618,23 @@
                 </div>
             </div>
         </main>
+
+        <!-- Footer -->
+        <footer class="app-footer" id="appFooter">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="faq.html" class="footer-link">
+                        <i class="fas fa-question-circle"></i>
+                        FAQ & Guide
+                    </a>
+                </div>
+                <div class="footer-text">
+                    <span>Sudoku Championship Arena</span>
+                    <span>•</span>
+                    <span>Built for Epic Battles</span>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <!-- Authentication Check -->
@@ -932,6 +949,42 @@
                     }, 100);
                 });
             });
+        });
+
+        // Footer visibility management
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateFooterVisibility() {
+                const footer = document.getElementById('appFooter');
+                const sudokuPage = document.getElementById('sudoku');
+
+                if (footer && sudokuPage) {
+                    if (sudokuPage.classList.contains('active')) {
+                        footer.style.display = 'none';
+                    } else {
+                        footer.style.display = 'block';
+                    }
+                }
+            }
+
+            // Initial check
+            updateFooterVisibility();
+
+            // Listen for page changes
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Small delay to ensure page switching is complete
+                    setTimeout(updateFooterVisibility, 150);
+                });
+            });
+
+            // Also listen for when navigation to dashboard happens via brand click
+            const brandElement = document.querySelector('.nav-brand');
+            if (brandElement) {
+                brandElement.addEventListener('click', function() {
+                    setTimeout(updateFooterVisibility, 150);
+                });
+            }
         });
 
         // Test function to validate hint penalties
