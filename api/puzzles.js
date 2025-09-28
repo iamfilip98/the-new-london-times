@@ -154,8 +154,8 @@ function generatePuzzle(solution, difficulty) {
       maxEmptyRegions: 2   // Allow slightly more empty regions
     },
     medium: {
-      minClues: 22,      // Now matches old hard difficulty
-      maxClues: 28,      // Previous hard range becomes new medium
+      minClues: 19,      // Reduced from 22-28 to make it harder (more thinking required)
+      maxClues: 25,      // Reduced range to increase difficulty
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,   // Must use intermediate techniques
@@ -177,8 +177,8 @@ function generatePuzzle(solution, difficulty) {
       minNakedSubsets: 1              // At least 1 naked subset move
     },
     hard: {
-      minClues: 17,       // Significantly fewer clues for true challenge
-      maxClues: 24,       // Maximum still allows logical solving but very challenging
+      minClues: 18,       // Increased from 17 to decrease difficulty by ~5%
+      maxClues: 25,       // Increased from 24 to decrease difficulty by ~5%
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,   // Must use intermediate techniques
@@ -292,8 +292,8 @@ function createFallbackPuzzle(solution, difficulty) {
   const puzzle = solution.map(row => [...row]);
   const targetClues = {
     easy: 38,   // Updated to match new easy range
-    medium: 25, // Updated to match new medium range (old hard)
-    hard: 20    // Significantly harder - minimum viable for logical solving
+    medium: 22, // Updated to match new medium range (reduced for more difficulty)
+    hard: 21    // Increased from 20 to decrease difficulty by ~5%
   };
 
   const positions = [];
