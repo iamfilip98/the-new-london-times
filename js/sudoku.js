@@ -954,6 +954,7 @@ class SudokuEngine {
             row,
             col,
             previousValue,
+            newValue: number, // Track the value that was placed during this move
             previousCandidates: previousCandidates,
             previousManualCandidates: previousManualCandidates,
             previousRemovedCandidates: previousRemovedCandidates,
@@ -2898,7 +2899,7 @@ class SudokuEngine {
         }
 
         const lastMove = this.moveHistory.pop();
-        const { row, col, previousValue, previousCandidates, previousManualCandidates, previousRemovedCandidates, previousLocked, moveType, candidateNumber } = lastMove;
+        const { row, col, previousValue, newValue, previousCandidates, previousManualCandidates, previousRemovedCandidates, previousLocked, moveType, candidateNumber } = lastMove;
 
         // Clear any existing conflict highlights before undoing
         document.querySelectorAll('.sudoku-cell.conflict').forEach(cell => {
@@ -2914,7 +2915,15 @@ class SudokuEngine {
             // For number and erase moves, restore the full previous state
             this.playerGrid[row][col] = previousValue;
             this.candidates[row][col] = new Set(previousCandidates);
-            this.lockedGrid[row][col] = previousLocked || false;
+
+            // Special logic for locked state: once a cell is locked with a valid number,
+            // it should remain locked even after undo (the user has proven they know the answer)
+
+            // Keep cell locked if:
+            // 1. It was previously locked, OR
+            // 2. The move being undone placed a valid number (user knows the answer)
+            const wasValidMove = newValue !== 0 && newValue === this.solution[row][col];
+            this.lockedGrid[row][col] = previousLocked || wasValidMove;
 
             // Restore manual candidates (handle backwards compatibility)
             if (previousManualCandidates) {
