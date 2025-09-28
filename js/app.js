@@ -1269,12 +1269,24 @@ class SudokuChampionship {
 
         players.forEach(player => {
             difficulties.forEach(difficulty => {
-                // Check database progress first, then localStorage
-                const key = `completed_${player}_${today}_${difficulty}`;
-                const gameData = localStorage.getItem(key);
-                if (gameData) {
-                    const data = JSON.parse(gameData);
-                    todayScores[player].total += data.score || 0;
+                let gameData = null;
+
+                // Check database cache first (prioritize database data)
+                if (this.todayProgressCache.data &&
+                    this.todayProgressCache.data[player] &&
+                    this.todayProgressCache.data[player][difficulty]) {
+                    gameData = this.todayProgressCache.data[player][difficulty];
+                } else {
+                    // Fallback to localStorage
+                    const key = `completed_${player}_${today}_${difficulty}`;
+                    const localData = localStorage.getItem(key);
+                    if (localData) {
+                        gameData = JSON.parse(localData);
+                    }
+                }
+
+                if (gameData && gameData.score) {
+                    todayScores[player].total += gameData.score || 0;
                 }
             });
         });

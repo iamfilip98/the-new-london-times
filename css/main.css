@@ -6743,11 +6743,12 @@ select:focus-visible,
     min-height: 2.5rem;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
     flex: 1;
     min-width: 0;
+    flex-wrap: nowrap;
 }
 
 .progress-status .completion-time {
@@ -6756,6 +6757,8 @@ select:focus-visible,
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
     text-align: left;
     flex-shrink: 0;
+    white-space: nowrap;
+    order: 1;
 }
 
 .progress-status .completion-score {
@@ -6765,6 +6768,8 @@ select:focus-visible,
     font-weight: 600;
     text-align: right;
     flex-shrink: 0;
+    white-space: nowrap;
+    order: 2;
 }
 
 
