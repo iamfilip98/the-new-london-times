@@ -24,8 +24,8 @@
     --darker-bg: #16213e;
     --card-bg: rgba(255, 255, 255, 0.1);
     --text-primary: #ffffff;
-    --text-secondary: #e2e8f0; /* Improved contrast */
-    --text-muted: #b0b8c1;
+    --text-secondary: #f8fafc; /* Much higher contrast - nearly white */
+    --text-muted: #cbd5e1; /* Improved contrast from previous #b0b8c1 */
     --focus-color: #87ceeb; /* High contrast focus indicator */
     --accent-blue: #4facfe;
     --accent-purple: #667eea;
@@ -4029,10 +4029,69 @@ select:focus-visible,
     top: 6px;
 }
 
+/* Accessibility improvements for better text contrast */
+.challenge-tip {
+    background: rgba(var(--accent-blue-rgb), 0.1);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-blue);
+    color: var(--text-primary) !important; /* Force white text for better contrast */
+    font-size: 0.9rem;
+}
+
+/* Fix blue text on blue background issues */
+.total-unlocks,
+.section-title,
+.achievement-badge .badge-title,
+.stat-value.blue-accent,
+.puzzle-difficulty,
+.puzzle-date,
+.difficulty-option h3,
+.difficulty-option p {
+    color: var(--text-primary) !important; /* Use white instead of blue for better readability */
+}
+
+/* Improve contrast for elements with blue backgrounds */
+.progress-notifications h3,
+.special-events-header h3,
+.page-title,
+.chart-container h3,
+.leaderboard-header h2,
+.current-challenge h3 {
+    color: var(--text-primary) !important;
+}
+
+/* Fix text in blue-tinted backgrounds */
+.difficulty-card h3,
+.difficulty-card p,
+.stat-card h4,
+.stat-card .stat-label,
+.history-card .history-date,
+.history-card .history-winner,
+.record-item .record-label,
+.record-item .record-value {
+    color: var(--text-primary) !important;
+}
+
+/* Improve readability in navigation and buttons */
+.nav-link,
+.tab-btn,
+.filter-tab,
+.achievement-search::placeholder {
+    color: var(--text-secondary) !important;
+}
+
+/* Ensure footer text is readable */
+.footer-link,
+.footer-text {
+    color: var(--text-secondary) !important;
+}
+
 /* High contrast improvements */
 @media (prefers-contrast: high) {
     :root {
         --text-secondary: #ffffff;
+        --text-muted: #ffffff;
         --card-bg: rgba(255, 255, 255, 0.2);
     }
 }
