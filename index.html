@@ -747,10 +747,10 @@
                     sudokuPage.classList.add('active');
                 }
 
-            // Reset navigation visibility when entering sudoku page
+            // Hide navigation on mobile when entering sudoku page
             const navBar = document.querySelector('.main-nav');
-            if (navBar) {
-                navBar.classList.remove('nav-hidden');
+            if (navBar && window.innerWidth <= 768) {
+                navBar.classList.add('nav-hidden');
             }
 
             // Scroll to center the Sudoku puzzle when entering sudoku page
@@ -848,9 +848,8 @@
     <!-- Auto-hide Navigation Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let lastScrollTop = 0;
             let navBar = document.querySelector('.main-nav');
-            let scrollThreshold = 10; // Minimum scroll distance to trigger hide/show
+            let gameStarted = false;
 
             // Only apply auto-hide on mobile devices and when in Play Sudoku tab
             function isMobile() {
@@ -862,75 +861,40 @@
                 return sudokuPage && sudokuPage.classList.contains('active');
             }
 
-            function handleScroll() {
-                // Only apply auto-hide on mobile and when on sudoku page
-                if (!isMobile() || !isOnSudokuPage()) {
-                    navBar.classList.remove('nav-hidden');
-                    return;
-                }
-
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-                // Don't hide if we're at the very top (show nav when scrolled to top)
-                if (scrollTop <= 10) {
-                    navBar.classList.remove('nav-hidden');
-                    lastScrollTop = scrollTop;
-                    return;
-                }
-
-                // More aggressive hiding during gameplay - hide nav immediately when scrolling down
-                // and require a more deliberate scroll up to show it again
-                if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
-                    if (scrollTop > lastScrollTop) {
-                        // Scrolling down - hide nav immediately to prevent interference
-                        navBar.classList.add('nav-hidden');
-                    } else {
-                        // Scrolling up - only show nav if scrolling up significantly (30px threshold)
-                        if (lastScrollTop - scrollTop > 30) {
-                            navBar.classList.remove('nav-hidden');
-                        }
-                    }
-                }
-
-                lastScrollTop = scrollTop;
+            function isGameActive() {
+                // Check if there's an active sudoku game
+                return window.sudokuEngine && window.sudokuEngine.gameActive;
             }
 
-            // Throttle scroll events for better performance
-            let scrollTimeout;
-            window.addEventListener('scroll', function() {
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
-                }
-                scrollTimeout = setTimeout(handleScroll, 10);
-            });
-
-            // Hide nav when touching the Sudoku grid to prevent interference
-            let touchStarted = false;
-            document.addEventListener('touchstart', function(e) {
-                if (!isMobile() || !isOnSudokuPage()) return;
-
-                // Check if touch is on or near the Sudoku grid
-                const sudokuGrid = document.querySelector('.sudoku-grid, .sudoku-game-container');
-                if (sudokuGrid && (sudokuGrid.contains(e.target) || e.target.closest('.sudoku-grid, .sudoku-game-container'))) {
-                    touchStarted = true;
+            function hideNavDuringGameplay() {
+                // Hide nav immediately when on mobile sudoku page and game is active
+                if (isMobile() && isOnSudokuPage()) {
                     navBar.classList.add('nav-hidden');
                 }
+            }
+
+            function showNavWhenNotPlaying() {
+                // Only show nav when not on sudoku page or not mobile
+                if (!isMobile() || !isOnSudokuPage()) {
+                    navBar.classList.remove('nav-hidden');
+                }
+            }
+
+            // Hide nav immediately when touching anywhere on sudoku page on mobile
+            document.addEventListener('touchstart', function(e) {
+                if (isMobile() && isOnSudokuPage()) {
+                    hideNavDuringGameplay();
+                }
             });
 
-            // Only show nav again after touch ends and a delay
-            document.addEventListener('touchend', function(e) {
-                if (!isMobile() || !isOnSudokuPage() || !touchStarted) return;
-
-                touchStarted = false;
-                // Small delay before allowing nav to show again
-                setTimeout(() => {
-                    if (!touchStarted && window.pageYOffset <= 10) {
-                        navBar.classList.remove('nav-hidden');
-                    }
-                }, 500);
+            // Keep nav hidden during scroll on mobile sudoku page
+            window.addEventListener('scroll', function() {
+                if (isMobile() && isOnSudokuPage()) {
+                    hideNavDuringGameplay();
+                }
             });
 
-            // Handle window resize to reset nav state
+            // Handle window resize
             window.addEventListener('resize', function() {
                 if (!isMobile() || !isOnSudokuPage()) {
                     navBar.classList.remove('nav-hidden');
@@ -941,14 +905,39 @@
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
-                    // Small delay to ensure page switching is complete
                     setTimeout(() => {
-                        if (!isOnSudokuPage()) {
-                            navBar.classList.remove('nav-hidden');
+                        if (isOnSudokuPage() && isMobile()) {
+                            hideNavDuringGameplay();
+                        } else {
+                            showNavWhenNotPlaying();
                         }
                     }, 100);
                 });
             });
+
+            // Also handle brand click to dashboard
+            const brandElement = document.querySelector('.nav-brand');
+            if (brandElement) {
+                brandElement.addEventListener('click', function() {
+                    setTimeout(() => {
+                        showNavWhenNotPlaying();
+                    }, 100);
+                });
+            }
+
+            // Hide nav when starting sudoku games on mobile
+            window.addEventListener('sudokuGameStarted', function() {
+                if (isMobile() && isOnSudokuPage()) {
+                    hideNavDuringGameplay();
+                }
+            });
+
+            // Initial check
+            setTimeout(() => {
+                if (isMobile() && isOnSudokuPage()) {
+                    hideNavDuringGameplay();
+                }
+            }, 100);
         });
 
         // Footer visibility management
