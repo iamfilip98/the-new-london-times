@@ -782,6 +782,8 @@ class SudokuEngine {
 
         // Reset game state
         this.timer = 0;
+        // Update timer display immediately
+        document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
         this.hints = 0;
         this.errors = 0;
         this.hintTimePenalty = 0;
@@ -880,12 +882,8 @@ class SudokuEngine {
             }
         }
 
-        // Update stats display - only show final time when completed
-        if (this.gameCompleted) {
-            document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
-        } else {
-            document.getElementById('timerDisplay').textContent = '--:--';
-        }
+        // Update stats display - always show current time
+        document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
         document.getElementById('errorsCount').textContent = this.errors;
         document.getElementById('hintsCount').textContent = this.hints;
 
@@ -1919,8 +1917,8 @@ class SudokuEngine {
         debugLog('Starting timer');
         this.timerInterval = setInterval(() => {
             this.timer++;
-            // Don't update display during gameplay - only when completed
-            // The display will be updated through updateGrid() only on completion
+            // Update timer display in real-time during gameplay
+            document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
         }, 1000);
     }
 
