@@ -4087,6 +4087,25 @@ select:focus-visible,
     color: var(--text-secondary) !important;
 }
 
+/* Fix additional blue text readability issues */
+.nav-link:hover i,
+.pause-btn:hover,
+.difficulty-btn:hover,
+.action-btn:hover,
+.completion-notification-overlay.persistent .completion-time,
+.total-unlocks,
+.page-title h2 {
+    color: var(--text-primary) !important;
+}
+
+/* Fix footer hover that uses blue on blue background */
+.footer-link:hover {
+    color: var(--text-primary) !important;
+    background: rgba(79, 172, 254, 0.1);
+    border-color: rgba(79, 172, 254, 0.3);
+    transform: translateY(-1px);
+}
+
 /* High contrast improvements */
 @media (prefers-contrast: high) {
     :root {
