@@ -175,42 +175,94 @@
             window.location.href = 'index.html';
         }
 
-        // Preload scores and puzzles in the background while user is on login page
+        // 🚀 PERFORMANCE OPTIMIZATION: Enhanced comprehensive data preloading
+        // This system loads all critical data while user is on login page for instant game access
+        // - Preloads puzzles, scores, achievements, and progress data in parallel
+        // - Stores data in sessionStorage for instant retrieval on main app
+        // - Reduces localStorage dependency and improves loading times
         async function preloadDataInBackground() {
             try {
-                //console.log('🔄 Starting background preload of scores and puzzles...');
+                console.log('🚀 Starting comprehensive background preload...');
+                const preloadStart = performance.now();
 
-                // Preload scores data
-                const scoresPromise = Promise.all([
+                // Get today's date for date-specific data
+                const today = new Date().toISOString().split('T')[0];
+
+                // Preload all critical data in parallel for maximum performance
+                const dataPromises = [
+                    // Core game data
                     fetch('/api/entries').then(response => response.ok ? response.json() : []),
-                    fetch('/api/stats?type=all').then(response => response.ok ? response.json() : {})
-                ]).then(([entries, bulkData]) => {
-                    sessionStorage.setItem('preloadedEntries', JSON.stringify(entries));
-                    sessionStorage.setItem('preloadedBulkData', JSON.stringify(bulkData));
-                    //console.log('✅ Scores data preloaded');
-                }).catch(error => {
-                    console.warn('Scores preload failed:', error);
+                    fetch('/api/stats?type=all').then(response => response.ok ? response.json() : {}),
+
+                    // Today's puzzles with cache busting
+                    fetch(`/api/puzzles?date=${today}&t=${Date.now()}`).then(response => response.ok ? response.json() : null),
+
+                    // Today's game progress
+                    fetch(`/api/games?date=${today}`).then(response => response.ok ? response.json() : {}),
+
+                    // Achievement data for instant page loads
+                    fetch('/api/achievements').then(response => response.ok ? response.json() : []),
+
+                    // Challenge data
+                    fetch('/api/stats?type=challenges').then(response => response.ok ? response.json() : [])
+                ];
+
+                const [entries, bulkData, puzzles, todayGames, achievements, challenges] = await Promise.all(dataPromises);
+
+                // Store all preloaded data efficiently
+                const preloadedData = {
+                    entries: entries || [],
+                    bulkData: bulkData || {},
+                    puzzles: puzzles,
+                    todayGames: todayGames || {},
+                    achievements: achievements || [],
+                    challenges: challenges || [],
+                    loadTime: Date.now(),
+                    date: today
+                };
+
+                // Store as single compressed object to reduce sessionStorage operations
+                sessionStorage.setItem('comprehensivePreload', JSON.stringify(preloadedData));
+
+                // Backwards compatibility with existing code
+                sessionStorage.setItem('preloadedEntries', JSON.stringify(entries || []));
+                sessionStorage.setItem('preloadedBulkData', JSON.stringify(bulkData || {}));
+                if (puzzles) {
+                    sessionStorage.setItem('preloadedPuzzles', JSON.stringify(puzzles));
+                    sessionStorage.setItem('puzzlesLoadTime', Date.now().toString());
+                }
+
+                const preloadEnd = performance.now();
+                console.log(`✅ Comprehensive preload completed in ${(preloadEnd - preloadStart).toFixed(1)}ms`);
+                console.log('📊 Preloaded data:', {
+                    entries: (entries || []).length,
+                    puzzles: puzzles ? Object.keys(puzzles).length : 0,
+                    todayGames: Object.keys(todayGames || {}).length,
+                    achievements: (achievements || []).length,
+                    challenges: (challenges || []).length
                 });
 
-                // Preload today's puzzles
-                const today = new Date().toISOString().split('T')[0];
-                const puzzlesPromise = fetch(`/api/puzzles?date=${today}&t=${Date.now()}`)
-                    .then(response => response.ok ? response.json() : null)
-                    .then(puzzles => {
-                        if (puzzles) {
-                            sessionStorage.setItem('preloadedPuzzles', JSON.stringify(puzzles));
-                            sessionStorage.setItem('puzzlesLoadTime', Date.now().toString());
-                            //console.log('✅ Daily puzzles preloaded');
-                        }
-                    }).catch(error => {
-                        console.warn('Puzzles preload failed:', error);
-                    });
-
-                // Wait for both to complete
-                await Promise.all([scoresPromise, puzzlesPromise]);
-                //console.log('🎯 Background preload completed');
             } catch (error) {
                 console.warn('Background preload error:', error);
+                // Fallback: try to preload at least the essentials
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const essentials = await Promise.allSettled([
+                        fetch('/api/entries').then(r => r.json()),
+                        fetch(`/api/puzzles?date=${today}&t=${Date.now()}`).then(r => r.json())
+                    ]);
+
+                    if (essentials[0].status === 'fulfilled') {
+                        sessionStorage.setItem('preloadedEntries', JSON.stringify(essentials[0].value));
+                    }
+                    if (essentials[1].status === 'fulfilled') {
+                        sessionStorage.setItem('preloadedPuzzles', JSON.stringify(essentials[1].value));
+                        sessionStorage.setItem('puzzlesLoadTime', Date.now().toString());
+                    }
+                    console.log('🔄 Fallback preload completed');
+                } catch (fallbackError) {
+                    console.warn('Fallback preload also failed:', fallbackError);
+                }
             }
         }
 

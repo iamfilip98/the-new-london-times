@@ -7,26 +7,36 @@ class SudokuChampionship {
         this.records = { faidao: {}, filip: {} };
         this.migrationDone = false;
 
-        // Add caching for better performance
+        // 🚀 PERFORMANCE OPTIMIZATION: Enhanced in-memory data management system
+        // Reduces localStorage dependency and provides instant data access
         this.cache = {
             lastUpdate: null,
-            duration: 30000, // 30 seconds cache
+            duration: 60000, // Extended to 60 seconds cache for better performance
             data: null
         };
 
-        // Today's progress cache
+        // Today's progress cache with faster refresh
         this.todayProgressCache = {
             lastUpdate: null,
-            duration: 10000, // 10 seconds cache
+            duration: 5000, // Reduced to 5 seconds for more responsive updates
             data: null,
             date: null
         };
 
-        // Puzzle preloading cache
+        // Enhanced puzzle preloading cache
         this.puzzleCache = {
             puzzles: null,
             loadTime: null,
             loading: false
+        };
+
+        // In-memory data store to minimize localStorage dependency
+        this.inMemoryStore = {
+            todayProgress: new Map(),
+            gameStates: new Map(),
+            settings: new Map(),
+            notifications: new Map(),
+            initialized: false
         };
 
         // Date change detection - use local date
@@ -35,6 +45,87 @@ class SudokuChampionship {
         this.initializationComplete = false;
 
         this.init();
+    }
+
+    // In-memory data management methods to reduce localStorage dependency
+    initializeInMemoryStore() {
+        if (this.inMemoryStore.initialized) return;
+
+        console.log('🧠 Initializing in-memory data store...');
+
+        // Initialize in-memory storage
+        this.inMemoryStore.todayProgress.clear();
+        this.inMemoryStore.gameStates.clear();
+        this.inMemoryStore.settings.clear();
+        this.inMemoryStore.notifications.clear();
+
+        this.inMemoryStore.initialized = true;
+        console.log('✅ In-memory store initialized');
+    }
+
+    // Get data from in-memory store first, fallback to localStorage
+    getStoredData(category, key, fallbackToLocalStorage = true) {
+        const memoryStore = this.inMemoryStore[category];
+        if (memoryStore && memoryStore.has(key)) {
+            return memoryStore.get(key);
+        }
+
+        if (fallbackToLocalStorage) {
+            const localData = localStorage.getItem(key);
+            if (localData) {
+                try {
+                    const parsed = JSON.parse(localData);
+                    // Cache in memory for next time
+                    if (memoryStore) {
+                        memoryStore.set(key, parsed);
+                    }
+                    return parsed;
+                } catch (error) {
+                    console.warn('Failed to parse localStorage data:', error);
+                    return null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // Store data in memory and optionally in localStorage
+    setStoredData(category, key, data, persistToLocalStorage = false) {
+        const memoryStore = this.inMemoryStore[category];
+        if (memoryStore) {
+            memoryStore.set(key, data);
+        }
+
+        if (persistToLocalStorage) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (error) {
+                console.warn('Failed to save to localStorage:', error);
+            }
+        }
+    }
+
+    // Clear data from both memory and localStorage
+    clearStoredData(category, key = null) {
+        const memoryStore = this.inMemoryStore[category];
+        if (key) {
+            if (memoryStore) {
+                memoryStore.delete(key);
+            }
+            localStorage.removeItem(key);
+        } else {
+            if (memoryStore) {
+                memoryStore.clear();
+            }
+            // Clear all localStorage keys for this category
+            const keys = Object.keys(localStorage);
+            keys.forEach(lsKey => {
+                if (lsKey.includes(category)) {
+                    localStorage.removeItem(lsKey);
+                }
+            });
+        }
     }
 
     init() {
@@ -49,8 +140,14 @@ class SudokuChampionship {
     }
 
     async initialize() {
+        console.log('🚀 Initializing Sudoku Championship app...');
+        const initStart = performance.now();
+
         // Scroll to top on page load/refresh
         window.scrollTo(0, 0);
+
+        // Initialize in-memory data store for optimal performance
+        this.initializeInMemoryStore();
 
         // Check if date has changed and handle new day logic
         await this.checkDateChange();
@@ -78,6 +175,9 @@ class SudokuChampionship {
 
         // Mark initialization as complete
         this.initializationComplete = true;
+
+        const initEnd = performance.now();
+        console.log(`✅ App initialization completed in ${(initEnd - initStart).toFixed(1)}ms`);
     }
 
     initializeScoreDisplay() {
@@ -414,25 +514,60 @@ class SudokuChampionship {
 
             }
 
-            // Check for preloaded data first
-            const preloadedEntries = sessionStorage.getItem('preloadedEntries');
-            const preloadedBulkData = sessionStorage.getItem('preloadedBulkData');
+            // Check for comprehensive preloaded data first for optimal performance
+            const comprehensivePreload = sessionStorage.getItem('comprehensivePreload');
+            let entries, bulkData, achievements, challenges, todayGames;
 
-            let entries, bulkData;
+            if (comprehensivePreload) {
+                console.log('🚀 Using comprehensive preloaded data for instant loading');
+                const preloadedData = JSON.parse(comprehensivePreload);
 
-            if (preloadedEntries && preloadedBulkData) {
-                entries = JSON.parse(preloadedEntries);
-                bulkData = JSON.parse(preloadedBulkData);
+                // Extract all preloaded data
+                entries = preloadedData.entries || [];
+                bulkData = preloadedData.bulkData || {};
+                achievements = preloadedData.achievements || [];
+                challenges = preloadedData.challenges || [];
+                todayGames = preloadedData.todayGames || {};
 
-                // Clear the preloaded data to free memory
-                sessionStorage.removeItem('preloadedEntries');
-                sessionStorage.removeItem('preloadedBulkData');
+                // Update today's progress cache with preloaded data
+                if (todayGames && Object.keys(todayGames).length > 0) {
+                    this.todayProgressCache.data = todayGames;
+                    this.todayProgressCache.lastUpdate = preloadedData.loadTime;
+                    this.todayProgressCache.date = preloadedData.date;
+                }
+
+                // Clear comprehensive preload to free memory
+                sessionStorage.removeItem('comprehensivePreload');
+
+                // Also use bulkData for achievements and challenges if available
+                if (!bulkData.achievements && achievements.length > 0) {
+                    bulkData.achievements = achievements;
+                }
+                if (!bulkData.challenges && challenges.length > 0) {
+                    bulkData.challenges = challenges;
+                }
+
             } else {
-                // Load data from database - optimized with parallel loading
-                [entries, bulkData] = await Promise.all([
-                    this.loadFromStorage(),
-                    this.loadBulkData()
-                ]);
+                // Fallback: check for individual preloaded data
+                const preloadedEntries = sessionStorage.getItem('preloadedEntries');
+                const preloadedBulkData = sessionStorage.getItem('preloadedBulkData');
+
+                if (preloadedEntries && preloadedBulkData) {
+                    console.log('📦 Using individual preloaded data');
+                    entries = JSON.parse(preloadedEntries);
+                    bulkData = JSON.parse(preloadedBulkData);
+
+                    // Clear the preloaded data to free memory
+                    sessionStorage.removeItem('preloadedEntries');
+                    sessionStorage.removeItem('preloadedBulkData');
+                } else {
+                    // Load data from database - optimized with parallel loading
+                    console.log('🔄 Loading data from database (no preload available)');
+                    [entries, bulkData] = await Promise.all([
+                        this.loadFromStorage(),
+                        this.loadBulkData()
+                    ]);
+                }
             }
 
             this.entries = entries;
@@ -1229,13 +1364,13 @@ class SudokuChampionship {
                 // Check database first
                 if (dbProgress && dbProgress[player] && dbProgress[player][difficulty]) {
                     gameData = dbProgress[player][difficulty];
+                    // Cache in memory for fast access
+                    const progressKey = `${player}_${today}_${difficulty}`;
+                    this.setStoredData('todayProgress', progressKey, gameData, false);
                 } else {
-                    // Fallback to localStorage
-                    const key = `completed_${player}_${today}_${difficulty}`;
-                    const localData = localStorage.getItem(key);
-                    if (localData) {
-                        gameData = JSON.parse(localData);
-                    }
+                    // Check in-memory store first, then localStorage
+                    const progressKey = `${player}_${today}_${difficulty}`;
+                    gameData = this.getStoredData('todayProgress', `completed_${progressKey}`, true);
                 }
 
                 if (gameData && gameData.time) {

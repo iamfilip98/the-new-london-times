@@ -417,14 +417,34 @@ class SudokuEngine {
                 this.generateFallbackPuzzles();
             }
 
-            // First, check if puzzles are already preloaded
+            // Enhanced priority-based puzzle loading for instant performance
+
+            // 1st Priority: Check comprehensive preloaded data from login page
+            const comprehensivePreload = sessionStorage.getItem('comprehensivePreload');
+            if (comprehensivePreload) {
+                const preloadedData = JSON.parse(comprehensivePreload);
+                if (preloadedData.puzzles) {
+                    this.dailyPuzzles = preloadedData.puzzles;
+                    debugLog('🚀 Using comprehensive preloaded puzzles - INSTANT load!');
+
+                    // Update global cache
+                    window.preloadedPuzzles = this.dailyPuzzles;
+                    if (window.sudokuApp) {
+                        window.sudokuApp.puzzleCache.puzzles = this.dailyPuzzles;
+                        window.sudokuApp.puzzleCache.loadTime = preloadedData.loadTime;
+                    }
+                    return;
+                }
+            }
+
+            // 2nd Priority: Check individual preloaded puzzles
             if (window.preloadedPuzzles) {
                 this.dailyPuzzles = window.preloadedPuzzles;
                 debugLog('✅ Using preloaded puzzles - instant load!');
                 return;
             }
 
-            // Check if sudokuApp is available and has preloaded puzzles
+            // 3rd Priority: Check if sudokuApp is available and has preloaded puzzles
             if (window.sudokuApp && window.sudokuApp.arePuzzlesPreloaded()) {
                 this.dailyPuzzles = window.sudokuApp.getPreloadedPuzzles();
                 debugLog('✅ Using cached preloaded puzzles');
@@ -3669,15 +3689,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if we're on the sudoku page
     if (document.getElementById('sudoku')) {
         const initSudoku = async () => {
-            debugLog('Initializing Sudoku');
+            debugLog('🚀 Fast-initializing Sudoku with preloaded data');
+            const initStart = performance.now();
+
             if (window.sudokuEngine) {
                 debugLog('Destroying existing SudokuEngine');
                 window.sudokuEngine.destroy();
                 // Add small delay to ensure cleanup is complete
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
+
             window.sudokuEngine = new SudokuEngine();
+
+            // Pre-cache essential data before initialization for instant loading
+            const comprehensivePreload = sessionStorage.getItem('comprehensivePreload');
+            if (comprehensivePreload) {
+                const preloadedData = JSON.parse(comprehensivePreload);
+                if (preloadedData.puzzles) {
+                    debugLog('📦 Pre-caching puzzles for instant game loading');
+                    window.preloadedPuzzles = preloadedData.puzzles;
+                    window.sudokuEngine.dailyPuzzles = preloadedData.puzzles;
+                }
+
+                if (preloadedData.todayGames) {
+                    debugLog('📦 Pre-caching today\'s progress for instant status updates');
+                    // Store in sudokuApp if available
+                    if (window.sudokuApp) {
+                        window.sudokuApp.todayProgressCache.data = preloadedData.todayGames;
+                        window.sudokuApp.todayProgressCache.lastUpdate = preloadedData.loadTime;
+                        window.sudokuApp.todayProgressCache.date = preloadedData.date;
+                    }
+                }
+            }
+
             await window.sudokuEngine.init();
+
+            const initEnd = performance.now();
+            debugLog(`✅ Sudoku engine initialized in ${(initEnd - initStart).toFixed(1)}ms`);
         };
 
         // Initialize immediately if sudoku page is active
