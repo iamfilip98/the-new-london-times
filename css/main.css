@@ -1830,19 +1830,20 @@ body {
 .history-winner {
     font-weight: 700;
     padding: 0.5rem 1rem;
-    border-radius: 20px;
-    background: var(--faidao-color);
-    color: white;
+    border-radius: var(--border-radius);
+    background: rgba(255, 107, 107, 0.08);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 107, 107, 0.4);
+    color: var(--text-primary);
     font-size: 0.9rem;
     text-align: center;
     white-space: nowrap;
     min-width: 80px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-    border: 2px solid transparent;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-glass);
 }
 
 .history-winner::before {
@@ -1855,13 +1856,15 @@ body {
     background: rgba(255, 255, 255, 0.1);
     opacity: 0;
     transition: var(--transition);
-    border-radius: 18px;
+    border-radius: var(--border-radius);
 }
 
 .history-winner:hover {
     transform: translateY(-2px) scale(1.05);
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .history-winner:hover::before {
@@ -1869,7 +1872,8 @@ body {
 }
 
 .history-winner.filip-winner {
-    background: var(--filip-color);
+    border-color: rgba(78, 205, 196, 0.4);
+    background: rgba(78, 205, 196, 0.08);
 }
 
 .history-winner:focus-visible {
@@ -7995,7 +7999,6 @@ select:focus-visible,
         grid-area: winner;
         padding: 0.15rem 0.4rem;
         font-size: 0.65rem;
-        border-radius: 6px;
         text-align: center;
         width: fit-content;
         line-height: 1.1;
