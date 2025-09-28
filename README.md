@@ -29,7 +29,7 @@ A sophisticated full-stack web application that transforms daily Sudoku solving 
 - **Background Processing**: Non-blocking puzzle generation and data loading
 - **Real-Time Updates**: Live progress tracking and opponent notifications
 
-### 🏅 **Comprehensive Achievement System (50+ Achievements)**
+### 🏅 **Comprehensive Achievement System (120+ Achievements)**
 - **14 Categories**: Streaks, Speed, Perfection, Score, Mathematical, Competitive, Seasonal, Timing, Comebacks, Errors, Patience, Milestones, Meta, and Quirky
 - **Rarity System**: Common, Rare, Epic, and Legendary achievements
 - **Smart Detection**: Automatic achievement checking with real-time notifications
@@ -72,18 +72,19 @@ function generatePuzzle(solution, difficulty, seed) {
 
 ### 🏆 **Sophisticated Scoring System**
 ```javascript
-// Advanced scoring formula considering time, errors, hints, and difficulty
-const baseScore = 10000;
-const adjustedTime = timeInSeconds + (errors * 10) + hintTimePenalty;
-const difficultyMultiplier = { easy: 1, medium: 1.5, hard: 2 };
-const finalScore = (baseScore / (adjustedTime / 60)) * difficultyMultiplier[difficulty];
+// Advanced scoring formula with square root scaling for better distribution
+const baseScore = 1000;
+const adjustedTime = timeInSeconds + (errors * 30) + hintTimePenalty;
+const adjustedMinutes = adjustedTime / 60;
+const difficultyMultiplier = { easy: 1, medium: 1.8, hard: 3.2 };
+const finalScore = (baseScore / Math.sqrt(adjustedMinutes)) * difficultyMultiplier[difficulty];
 ```
 
 **Scoring Features:**
-- **Time-Based Calculation**: Rewards faster completion
-- **Error Penalties**: +10 seconds per mistake
+- **Square Root Scaling**: Better score distribution and more rewarding for fast times
+- **Error Penalties**: +30 seconds per mistake (significant impact)
 - **Hint Penalties**: Progressive time penalties (5s → 10s)
-- **Difficulty Multipliers**: Easy ×1, Medium ×1.5, Hard ×2
+- **Difficulty Multipliers**: Easy ×1, Medium ×1.8, Hard ×3.2
 - **Real-Time Updates**: Live score calculations and comparisons
 
 ### 🎲 **Intelligent Puzzle Algorithm**
@@ -200,14 +201,16 @@ the-new-london-times/
 - **Dynamic Leaderboards**: Real-time ranking updates
 - **Streak Management**: Automatic streak calculation and updates
 
-### **Achievement Categories** (50+ Total)
-- **🔥 Streaks & Consistency** (10): Hot Start, Five-peat, Dominator, Unstoppable Force
-- **⚡ Speed Demons** (12): Speed Walker, Lightning Fast, Sonic Speed, Flash Mode
+### **Achievement Categories** (120+ Total)
+- **🔥 Streaks & Consistency** (8): Hot Start, Five-peat, Dominator, Unstoppable Force
+- **⚡ Speed Demons** (13): Speed Walker, Lightning Fast, Sonic Speed, Flash Mode
 - **✨ Perfection** (8): Flawless Victory, Perfect Storm, Immaculate Conception
 - **📊 High Scores** (6): High Roller, Score Crusher, Point Machine
-- **🧮 Math Masters** (4): Mathematical Genius, Pattern Master, Logic Lord
-- **⚔️ Competitive** (4): Rivalry Expert, Comeback Kid, Streak Breaker
-- **🌟 And Many More**: Seasonal, Timing, Patience, Milestone, Meta, Quirky
+- **🧮 Mathematical Masters** (20): Mathematical Genius, Fibonacci Master, Pattern Master
+- **⚔️ Competitive** (15): Rivalry Expert, Mind Reader, Psychological Warfare
+- **🎄 Seasonal & Holiday** (15): Valentine's Winner, Halloween Master, Christmas Champion
+- **🕒 Timing & Patience** (9+4): Night Owl, Speed Demon, Marathon Master
+- **🎭 Quirky & Fun** (25): Including comeback, errors, milestone, and meta categories
 
 ### **Analytics Dashboard**
 - **Performance Trends**: 30-day score and time analysis
@@ -273,11 +276,11 @@ The application is deployed on Vercel with:
 - **Mobile Performance**: 60fps animations and smooth scrolling
 
 ### **Feature Coverage**
-- **50+ Achievements**: Comprehensive achievement system
-- **3 Difficulty Levels**: Calibrated puzzle generation
-- **Real-Time Updates**: Live competition tracking
-- **Complete Analytics**: Performance insights and trends
-- **Full Sudoku Engine**: Professional game implementation
+- **120+ Achievements**: Comprehensive achievement system across 14 categories
+- **3 Difficulty Levels**: Calibrated puzzle generation with advanced algorithms
+- **Real-Time Updates**: Live competition tracking and opponent notifications
+- **Complete Analytics**: Performance insights and trends with interactive charts
+- **Full Sudoku Engine**: Professional game implementation with square-root scoring
 
 ## 🌐 Browser Compatibility
 

@@ -442,17 +442,18 @@
                         The scoring system rewards both speed and accuracy:
                         <div class="scoring-formula">
                             <div class="formula">
-                                Score = (10,000 ÷ Adjusted Time in Minutes) × Difficulty Multiplier
+                                Score = (1,000 ÷ √(Adjusted Time in Minutes)) × Difficulty Multiplier
                             </div>
                             <div>
-                                <strong>Adjusted Time</strong> = Base Time + (Errors × 10 seconds) + Hint Penalties<br>
-                                <strong>Difficulty Multipliers:</strong> Easy ×1, Medium ×1.5, Hard ×2
+                                <strong>Adjusted Time</strong> = Base Time + (Errors × 30 seconds) + Hint Penalties<br>
+                                <strong>Difficulty Multipliers:</strong> Easy ×1, Medium ×1.8, Hard ×3.2
                             </div>
                         </div>
                         <ul>
                             <li><strong>Base Time:</strong> Your actual completion time</li>
-                            <li><strong>Error Penalty:</strong> +10 seconds per mistake</li>
+                            <li><strong>Error Penalty:</strong> +30 seconds per mistake (significant impact!)</li>
                             <li><strong>Hint Penalties:</strong> +5 seconds for first hint (pointing), +10 seconds for second hint (revealing)</li>
+                            <li><strong>Square Root Scaling:</strong> Rewards fast times more dramatically</li>
                             <li><strong>Daily Winner:</strong> Highest total score across all three difficulties</li>
                         </ul>
                     </div>
@@ -545,15 +546,17 @@
                         How many achievements are there?
                     </div>
                     <div class="faq-answer">
-                        There are <span class="highlight">50+ achievements</span> across 14 different categories:
+                        There are <span class="highlight">120+ achievements</span> across 14 different categories:
                         <ul>
-                            <li><strong>🔥 Streaks & Consistency (10):</strong> Win consecutive days, maintain performance</li>
-                            <li><strong>⚡ Speed Demons (12):</strong> Complete puzzles under target times</li>
+                            <li><strong>🔥 Streaks & Consistency (8):</strong> Win consecutive days, maintain performance</li>
+                            <li><strong>⚡ Speed Demons (13):</strong> Complete puzzles under target times</li>
                             <li><strong>✨ Perfection (8):</strong> Zero-error completions and flawless performances</li>
                             <li><strong>📊 High Scores (6):</strong> Achieve specific score milestones</li>
-                            <li><strong>🧮 Mathematical (4):</strong> Score exact numbers, special patterns</li>
-                            <li><strong>⚔️ Competitive (4):</strong> Head-to-head accomplishments</li>
-                            <li><strong>🌟 And 8 more categories</strong> including Seasonal, Timing, Patience, Milestone, Meta, and Quirky!</li>
+                            <li><strong>🧮 Mathematical (20):</strong> Fibonacci masters, exact scores, special patterns</li>
+                            <li><strong>⚔️ Competitive (15):</strong> Mind reading, psychological warfare, head-to-head accomplishments</li>
+                            <li><strong>🎄 Seasonal & Holiday (15):</strong> Valentine's, Halloween, Christmas champions</li>
+                            <li><strong>🕒 Timing & Patience (13):</strong> Night owls, speed demons, marathon masters</li>
+                            <li><strong>🎭 Quirky & Fun (25+):</strong> Comeback stories, error tracking, milestones, and meta achievements!</li>
                         </ul>
                     </div>
                 </div>
@@ -738,7 +741,7 @@
                     </div>
                     <div class="faq-answer">
                         <ul>
-                            <li><strong>Minimize Errors:</strong> Each error costs 10 seconds - accuracy is crucial</li>
+                            <li><strong>Minimize Errors:</strong> Each error costs 30 seconds - accuracy is absolutely critical!</li>
                             <li><strong>Use Hints Sparingly:</strong> They help but add time penalties</li>
                             <li><strong>Focus on Medium/Hard:</strong> Higher difficulty multipliers boost total scores</li>
                             <li><strong>Practice Speed:</strong> The faster you solve, the higher your score</li>
