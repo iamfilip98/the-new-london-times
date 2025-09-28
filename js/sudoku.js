@@ -3826,10 +3826,31 @@ window.masterRefresh = async function(verbose = true) {
     try {
         // Step 1: Clear all browser storage
         debugLog('🧹 Step 1: Clearing all browser storage...');
+
+        // More aggressive localStorage clearing for mobile browsers
+        const beforeCount = localStorage.length;
+
+        // First clear everything
         localStorage.clear();
-        sessionStorage.setItem('currentPlayer', player); // Restore player
+
+        // Force clear any remaining localStorage keys (mobile browser fix)
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) {
+                console.warn('Failed to remove key:', key, e);
+            }
+        });
+
+        // Clear sessionStorage but restore player
+        sessionStorage.clear();
+        if (player) {
+            sessionStorage.setItem('currentPlayer', player); // Restore player
+        }
+
         window.preloadedPuzzles = null;
-        debugLog('✅ Browser storage cleared');
+        debugLog(`✅ Browser storage cleared (${beforeCount} items removed)`);
 
         // Step 2: Clear all app caches
         debugLog('🧹 Step 2: Clearing all app caches...');
