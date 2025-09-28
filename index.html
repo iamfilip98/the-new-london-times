@@ -806,6 +806,13 @@
                 console.error('Error navigating to dashboard:', error);
             }
         }
+
+        // Listen for custom navigate events from sudoku engine
+        document.addEventListener('navigate', function(event) {
+            if (event.detail && event.detail.page) {
+                navigateToDashboard();
+            }
+        });
     </script>
 
     <script src="js/app.js"></script>
