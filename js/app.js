@@ -1446,7 +1446,7 @@ class SudokuChampionship {
                 }
 
                 if (gameData && gameData.score) {
-                    todayScores[player].total += gameData.score || 0;
+                    todayScores[player].total += Number(gameData.score) || 0;
                     completedGames++;
                 }
             });
@@ -1471,14 +1471,16 @@ class SudokuChampionship {
             const filipText = document.getElementById('filipScoreText');
 
             if (faidaoBar && filipBar && faidaoText && filipText) {
-                const maxScore = Math.max(todayScores.faidao.total, todayScores.filip.total, 1);
-                const faidaoWidth = (todayScores.faidao.total / maxScore) * 100;
-                const filipWidth = (todayScores.filip.total / maxScore) * 100;
+                const faidaoTotal = Number(todayScores.faidao.total) || 0;
+                const filipTotal = Number(todayScores.filip.total) || 0;
+                const maxScore = Math.max(faidaoTotal, filipTotal, 1);
+                const faidaoWidth = (faidaoTotal / maxScore) * 100;
+                const filipWidth = (filipTotal / maxScore) * 100;
 
                 faidaoBar.style.width = `${faidaoWidth}%`;
                 filipBar.style.width = `${filipWidth}%`;
-                faidaoText.textContent = todayScores.faidao.total.toFixed(0);
-                filipText.textContent = todayScores.filip.total.toFixed(0);
+                faidaoText.textContent = faidaoTotal.toFixed(0);
+                filipText.textContent = filipTotal.toFixed(0);
             }
         }
     }
