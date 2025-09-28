@@ -101,7 +101,7 @@ The puzzle generation system uses advanced techniques:
 - **🏠 Dashboard**: Live battle status, win streaks, today's progress, real-time notifications
 - **📊 Analytics**: Interactive charts, performance trends, comparative statistics
 - **🏆 Leaderboards**: Monthly/weekly rankings, fastest times, perfect games
-- **⭐ Achievements**: 50+ achievements across 14 categories with progress tracking
+- **⭐ Achievements**: 120+ achievements across 14 categories with progress tracking
 - **🔥 Challenges**: Weekly rotating challenges with progress milestones (Future Feature)
 - **🎮 Play Sudoku**: Full Sudoku game with NYT-style interface
 
@@ -165,7 +165,7 @@ stats: (type, data) -- Flexible JSON storage for various statistics
 - **Daily Battles**: Complete all three difficulties to win the day
 - **Real-Time Updates**: See when your opponent completes puzzles
 - **Streak Tracking**: Build win streaks and break your opponent's runs
-- **Achievement Hunting**: Unlock 50+ achievements across multiple categories
+- **Achievement Hunting**: Unlock 120+ achievements across multiple categories
 
 ## 🏗 Project Structure
 
