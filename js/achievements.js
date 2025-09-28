@@ -1189,7 +1189,10 @@ class AchievementsManager {
         await this.refreshAchievements();
         this.ensureUnlockedAchievementsArray();
 
+        // Take snapshot of existing achievements to compare against
+        const existingAchievements = [...this.unlockedAchievements];
         const newlyUnlocked = [];
+        const trulyNewAchievements = []; // Only achievements that weren't in database before
 
         for (const achievement of this.achievementDefinitions) {
             const playersWhoEarned = this.checkAchievementRequirement(achievement, newEntry, allEntries, streaks);
@@ -1229,16 +1232,30 @@ class AchievementsManager {
                     }
 
                     if (shouldUnlock) {
+                        // Check if this achievement instance was already in the database
+                        const wasAlreadyInDatabase = existingAchievements.some(existing =>
+                            existing.id === achievement.id &&
+                            existing.player === player &&
+                            (achievement.oneTime || existing.unlockedAt.startsWith(newEntry.date))
+                        );
+
                         await this.unlockAchievement(achievement, player);
                         newlyUnlocked.push({...achievement, player});
-                        //console.log(`🆕 New achievement: ${achievement.title} for ${player}`);
+
+                        // Only add to truly new if it wasn't already in database
+                        if (!wasAlreadyInDatabase) {
+                            trulyNewAchievements.push({...achievement, player});
+                            console.log(`🆕 Brand new achievement: ${achievement.title} for ${player}`);
+                        } else {
+                            console.log(`♻️ Re-awarded existing achievement: ${achievement.title} for ${player}`);
+                        }
                     }
                 }
             }
         }
 
-        // Show notifications for newly unlocked achievements
-        newlyUnlocked.forEach((achievement, index) => {
+        // Only show notifications for truly new achievements (not ones that were already in database)
+        trulyNewAchievements.forEach((achievement, index) => {
             setTimeout(() => {
                 sudokuApp.showAchievementNotification(achievement);
             }, index * 2000); // Stagger notifications
@@ -2325,10 +2342,56 @@ class AchievementsManager {
             totalAchievementsEl.textContent = this.achievementDefinitions.length;
         }
     }
+
+    // Comprehensive cleanup method to remove erroneously unlocked achievements
+    async cleanupErroneousAchievements() {
+        console.log('🧹 Starting comprehensive achievement cleanup...');
+
+        try {
+            // Step 1: Clear all achievements from database
+            await fetch('/api/achievements', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log('🗑️ Cleared all achievements from database');
+
+            // Step 2: Refresh achievements to get clean data from database
+            await this.refreshAllAchievements();
+            console.log('♻️ Regenerated all achievements based on game data');
+
+            // Step 3: Update UI
+            const allEntries = await sudokuApp.loadFromStorage() || [];
+            const streaks = await sudokuApp.loadStreaks() || {};
+            await this.updateAchievements(allEntries, streaks, {});
+
+            console.log('✅ Achievement cleanup completed successfully');
+
+            return {
+                success: true,
+                message: 'All erroneous achievements have been removed and regenerated from game data'
+            };
+        } catch (error) {
+            console.error('❌ Achievement cleanup failed:', error);
+            return {
+                success: false,
+                message: 'Cleanup failed: ' + error.message
+            };
+        }
+    }
 }
 
 // Initialize achievements manager
 window.achievementsManager = new AchievementsManager();
+
+// Add convenience function to console for easy cleanup
+window.cleanupAchievements = async function() {
+    console.log('🚀 Running achievement cleanup from console...');
+    const result = await window.achievementsManager.cleanupErroneousAchievements();
+    console.log(result.success ? '✅ ' + result.message : '❌ ' + result.message);
+    return result;
+};
 
 // Mobile popup functionality
 class AchievementPopup {
