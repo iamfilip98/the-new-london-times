@@ -7197,9 +7197,9 @@ select:focus-visible,
     min-height: 2.5rem;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     flex: 1;
     min-width: 0;
     flex-wrap: nowrap;
@@ -7224,6 +7224,7 @@ select:focus-visible,
     flex-shrink: 0;
     white-space: nowrap;
     order: 2;
+    margin-left: auto;
 }
 
 
