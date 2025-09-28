@@ -772,6 +772,7 @@ class SudokuEngine {
 
         // Clear any previous candidates
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+        this.manualCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.removedCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
         // Generate candidates if in show all mode (medium/hard)
@@ -3442,6 +3443,7 @@ class SudokuEngine {
         // Explicitly clear the player grid before reloading
         this.playerGrid = Array(9).fill().map(() => Array(9).fill(0));
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+        this.manualCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.removedCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
         // Force a display update to clear the DOM
