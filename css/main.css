@@ -336,10 +336,11 @@ body {
     height: 12px;
     border-radius: 3px;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid #000000;
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .puzzle-piece::before {
@@ -368,36 +369,36 @@ body {
 /* Individual color variations for different pieces */
 .puzzle-piece.active:nth-child(1) {
     background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
-    border-color: rgba(76, 175, 80, 0.8);
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    border: 2px solid #000000;
+    box-shadow: 0 0 0 1px #4CAF50, 0 0 15px rgba(76, 175, 80, 0.7);
     animation: puzzlePulseGreen 3s ease-in-out infinite;
 }
 
 .puzzle-piece.active:nth-child(3) {
     background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
-    border-color: rgba(255, 152, 0, 0.8);
-    box-shadow: 0 0 15px rgba(255, 152, 0, 0.7);
+    border: 2px solid #000000;
+    box-shadow: 0 0 0 1px #FF9800, 0 0 15px rgba(255, 152, 0, 0.7);
     animation: puzzlePulseOrange 3s ease-in-out infinite 1s;
 }
 
 .puzzle-piece.active:nth-child(5) {
     background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    border-color: rgba(79, 172, 254, 0.8);
-    box-shadow: 0 0 15px rgba(79, 172, 254, 0.7);
+    border: 2px solid #000000;
+    box-shadow: 0 0 0 1px #4facfe, 0 0 15px rgba(79, 172, 254, 0.7);
     animation: puzzlePulseBlue 3s ease-in-out infinite 0.5s;
 }
 
 .puzzle-piece.active:nth-child(7) {
     background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
-    border-color: rgba(244, 67, 54, 0.8);
-    box-shadow: 0 0 15px rgba(244, 67, 54, 0.7);
+    border: 2px solid #000000;
+    box-shadow: 0 0 0 1px #F44336, 0 0 15px rgba(244, 67, 54, 0.7);
     animation: puzzlePulseRed 3s ease-in-out infinite 1.5s;
 }
 
 .puzzle-piece.active:nth-child(9) {
     background: linear-gradient(135deg, #f5576c 0%, #E91E63 100%);
-    border-color: rgba(245, 87, 108, 0.8);
-    box-shadow: 0 0 15px rgba(245, 87, 108, 0.7);
+    border: 2px solid #000000;
+    box-shadow: 0 0 0 1px #f5576c, 0 0 15px rgba(245, 87, 108, 0.7);
     animation: puzzlePulsePink 3s ease-in-out infinite 2s;
 }
 
@@ -540,7 +541,9 @@ body {
     animation: modernShimmer 6s ease-in-out infinite;
     position: relative;
     z-index: 2;
-    filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.3));
+    filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.3)) drop-shadow(0 0 0 #000000);
+    -webkit-text-stroke: 1px #000000;
+    text-stroke: 1px #000000;
 }
 
 @keyframes modernShimmer {
@@ -568,6 +571,7 @@ body {
     border-radius: 2px;
     animation: accentFlow 3s ease-in-out infinite;
     box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+    border: 1px solid #000000;
 }
 
 @keyframes accentFlow {
@@ -596,6 +600,9 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-stroke: 0.5px #000000;
+    text-stroke: 0.5px #000000;
+    filter: drop-shadow(0 1px 1px #000000);
 }
 
 /* Floating Particles */
@@ -625,6 +632,7 @@ body {
     animation-delay: 0s;
     animation-duration: 6s;
     box-shadow: 0 0 12px rgba(76, 175, 80, 0.8);
+    border: 1px solid #000000;
 }
 
 .particle:nth-child(2) {
@@ -634,6 +642,7 @@ body {
     animation-delay: 2s;
     animation-duration: 8s;
     box-shadow: 0 0 12px rgba(255, 152, 0, 0.8);
+    border: 1px solid #000000;
 }
 
 .particle:nth-child(3) {
@@ -643,6 +652,7 @@ body {
     animation-delay: 4s;
     animation-duration: 7s;
     box-shadow: 0 0 12px rgba(244, 67, 54, 0.8);
+    border: 1px solid #000000;
 }
 
 @keyframes particleFloat {
