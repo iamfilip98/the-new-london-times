@@ -4076,9 +4076,14 @@ select:focus-visible,
 /* Improve readability in navigation and buttons */
 .nav-link,
 .tab-btn,
-.filter-tab,
+.filter-tab:not(.active),
 .achievement-search::placeholder {
     color: var(--text-secondary) !important;
+}
+
+/* Ensure active filter tab has proper contrast on yellow background */
+.filter-tab.active {
+    color: var(--dark-bg) !important;
 }
 
 /* Ensure footer text is readable */
