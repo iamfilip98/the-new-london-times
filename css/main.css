@@ -1500,9 +1500,9 @@ body {
     font-weight: 700;
     padding: 1rem;
     border-radius: var(--border-radius);
-    background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+    background: linear-gradient(135deg, #FFD700 0%, #FFED4E 25%, #FFA500 50%, #FFED4E 75%, #FFD700 100%);
     border: 2px solid #DAA520;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
     color: #1a1a2e;
     margin-bottom: 2rem;
     animation: winnerPulse 2s ease-in-out infinite;
@@ -1511,10 +1511,12 @@ body {
 
 @keyframes winnerPulse {
     0%, 100% {
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        transform: scale(1);
     }
     50% {
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        transform: scale(1.02);
     }
 }
 
