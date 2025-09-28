@@ -1500,10 +1500,13 @@ body {
     font-weight: 700;
     padding: 1rem;
     border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+    border: 2px solid #DAA520;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    color: #1a1a2e;
     margin-bottom: 2rem;
     animation: winnerPulse 2s ease-in-out infinite;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes winnerPulse {
@@ -1569,7 +1572,7 @@ body {
     left: 0;
     top: 0;
     height: 100%;
-    background: linear-gradient(90deg, var(--faidao-color), rgba(255, 107, 107, 0.8), var(--faidao-color));
+    background: linear-gradient(90deg, var(--faidao-color), rgba(244, 67, 54, 0.8), var(--faidao-color));
     background-size: 200% 100%;
     border-radius: var(--border-radius);
     transition: width 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -1596,7 +1599,7 @@ body {
 }
 
 .filip-bar .score-fill {
-    background: linear-gradient(90deg, var(--filip-color), rgba(78, 205, 196, 0.8), var(--filip-color));
+    background: linear-gradient(90deg, var(--filip-color), rgba(255, 152, 0, 0.8), var(--filip-color));
     background-size: 200% 100%;
 }
 
