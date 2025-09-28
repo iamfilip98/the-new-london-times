@@ -770,15 +770,17 @@ class SudokuChampionship {
         // Determine current streak leader and format display text
         const faidaoStreak = this.streaks.faidao?.current || 0;
         const filipStreak = this.streaks.filip?.current || 0;
-        let streakText = '';
+        let mobileText = '';
 
         if (faidaoStreak > 0) {
-            streakText = ` • Faidao streak: ${faidaoStreak}`;
+            mobileText = `Faidao on a ${faidaoStreak} streak`;
         } else if (filipStreak > 0) {
-            streakText = ` • Filip streak: ${filipStreak}`;
+            mobileText = `Filip on a ${filipStreak} streak`;
+        } else {
+            mobileText = `${faidaoWins} - ${filipWins}`;
         }
 
-        if (mobileOverallRecord) mobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}${streakText}`;
+        if (mobileOverallRecord) mobileOverallRecord.textContent = mobileText;
 
         // Update mobile head-to-head section on achievements page
         const achievementsMobileScoreFaidao = document.getElementById('achievementsMobileScoreFaidao');
@@ -787,7 +789,7 @@ class SudokuChampionship {
 
         if (achievementsMobileScoreFaidao) achievementsMobileScoreFaidao.textContent = faidaoWins;
         if (achievementsMobileScoreFilip) achievementsMobileScoreFilip.textContent = filipWins;
-        if (achievementsMobileOverallRecord) achievementsMobileOverallRecord.textContent = `${faidaoWins} - ${filipWins}${streakText}`;
+        if (achievementsMobileOverallRecord) achievementsMobileOverallRecord.textContent = mobileText;
     }
 
     updateRecentHistory() {
