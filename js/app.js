@@ -767,6 +767,7 @@ class SudokuChampionship {
 
         if (mobileScoreFaidao) mobileScoreFaidao.textContent = faidaoWins;
         if (mobileScoreFilip) mobileScoreFilip.textContent = filipWins;
+
         // Determine current streak leader and format display text
         const faidaoStreak = this.streaks.faidao?.current || 0;
         const filipStreak = this.streaks.filip?.current || 0;
@@ -780,7 +781,16 @@ class SudokuChampionship {
             mobileText = `${faidaoWins} - ${filipWins}`;
         }
 
-        if (mobileOverallRecord) mobileOverallRecord.textContent = mobileText;
+        // Update mobile overall record with animation to prevent jarring changes
+        if (mobileOverallRecord) {
+            if (mobileOverallRecord.textContent !== mobileText) {
+                mobileOverallRecord.style.opacity = '0.6';
+                setTimeout(() => {
+                    mobileOverallRecord.textContent = mobileText;
+                    mobileOverallRecord.style.opacity = '1';
+                }, 50);
+            }
+        }
 
         // Update mobile head-to-head section on achievements page
         const achievementsMobileScoreFaidao = document.getElementById('achievementsMobileScoreFaidao');
@@ -789,7 +799,17 @@ class SudokuChampionship {
 
         if (achievementsMobileScoreFaidao) achievementsMobileScoreFaidao.textContent = faidaoWins;
         if (achievementsMobileScoreFilip) achievementsMobileScoreFilip.textContent = filipWins;
-        if (achievementsMobileOverallRecord) achievementsMobileOverallRecord.textContent = mobileText;
+
+        // Update achievements mobile overall record with same animation
+        if (achievementsMobileOverallRecord) {
+            if (achievementsMobileOverallRecord.textContent !== mobileText) {
+                achievementsMobileOverallRecord.style.opacity = '0.6';
+                setTimeout(() => {
+                    achievementsMobileOverallRecord.textContent = mobileText;
+                    achievementsMobileOverallRecord.style.opacity = '1';
+                }, 50);
+            }
+        }
     }
 
     updateRecentHistory() {

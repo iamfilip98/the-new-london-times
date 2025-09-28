@@ -8074,6 +8074,16 @@ select:focus-visible,
         font-size: 0.9rem;
         color: var(--text-secondary);
         font-family: 'Orbitron', monospace;
+        height: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 120px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: opacity 0.2s ease-in-out;
     }
 
     /* Hide mobile-overall-record and achievements-summary on mobile for achievements page only */
