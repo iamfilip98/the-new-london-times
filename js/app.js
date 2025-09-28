@@ -1418,11 +1418,14 @@ class SudokuChampionship {
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
 
-        // Calculate total scores for today
+        // Calculate total scores for today and count completed games
         const todayScores = {
             faidao: { total: 0 },
             filip: { total: 0 }
         };
+
+        let completedGames = 0;
+        const totalGamesRequired = players.length * difficulties.length; // 6 games total
 
         players.forEach(player => {
             difficulties.forEach(difficulty => {
@@ -1444,12 +1447,40 @@ class SudokuChampionship {
 
                 if (gameData && gameData.score) {
                     todayScores[player].total += gameData.score || 0;
+                    completedGames++;
                 }
             });
         });
 
-        // Update the battle results display
-        this.updateBattleResults(todayScores);
+        // Only show winner if all 6 games are completed
+        if (completedGames === totalGamesRequired) {
+            // Update the battle results display
+            this.updateBattleResults(todayScores);
+        } else {
+            // Show default message when not all games are completed
+            const winnerElement = document.getElementById('winnerAnnouncement');
+            if (winnerElement) {
+                winnerElement.querySelector('.winner-text').textContent = 'Play Sudoku to compete!';
+                winnerElement.style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+
+            // Still update score bars to show progress
+            const faidaoBar = document.getElementById('faidaoScoreBar');
+            const filipBar = document.getElementById('filipScoreBar');
+            const faidaoText = document.getElementById('faidaoScoreText');
+            const filipText = document.getElementById('filipScoreText');
+
+            if (faidaoBar && filipBar && faidaoText && filipText) {
+                const maxScore = Math.max(todayScores.faidao.total, todayScores.filip.total, 1);
+                const faidaoWidth = (todayScores.faidao.total / maxScore) * 100;
+                const filipWidth = (todayScores.filip.total / maxScore) * 100;
+
+                faidaoBar.style.width = `${faidaoWidth}%`;
+                filipBar.style.width = `${filipWidth}%`;
+                faidaoText.textContent = todayScores.faidao.total.toFixed(0);
+                filipText.textContent = todayScores.filip.total.toFixed(0);
+            }
+        }
     }
 
     updateProgressNotifications() {
