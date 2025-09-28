@@ -1525,14 +1525,17 @@ body {
 .score-bar {
     position: relative;
     height: 60px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    box-shadow: var(--shadow-glass);
 }
 
 .score-bar::before {
@@ -1553,8 +1556,9 @@ body {
 
 .score-bar:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: var(--shadow-lg);
-    background: rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow-hover);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .score-bar:hover .score-fill {
@@ -1569,7 +1573,7 @@ body {
     height: 100%;
     background: linear-gradient(90deg, var(--faidao-color), rgba(255, 107, 107, 0.8), var(--faidao-color));
     background-size: 200% 100%;
-    border-radius: 30px;
+    border-radius: var(--border-radius);
     transition: width 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     opacity: 0.9;
     animation: scoreBarShine 3s ease-in-out infinite;
@@ -8421,7 +8425,6 @@ select:focus-visible,
 
     .score-bar {
         height: 40px;
-        border-radius: 20px;
     }
 }
 
