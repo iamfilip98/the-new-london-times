@@ -891,6 +891,12 @@ class SudokuEngine {
         this.updateNumberButtons();
     }
 
+    updateGrid() {
+        // This method was being called but never defined, causing JavaScript errors
+        // Simply call updateDisplay to refresh the grid display
+        this.updateDisplay();
+    }
+
     updateNumberButtons() {
         // Count how many of each number (1-9) are on the grid
         const numberCounts = Array(10).fill(0);
