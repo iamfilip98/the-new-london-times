@@ -5670,6 +5670,12 @@ select:focus-visible,
         max-height: 90vh;
         max-width: none;
         margin: 1rem;
+        /* Improve mobile scrolling */
+        -webkit-overflow-scrolling: touch;
+        /* Ensure modal doesn't get cut off on mobile keyboards */
+        position: relative;
+        top: auto;
+        transform: none;
     }
 
     .settings-header, .stats-header {
@@ -5678,6 +5684,32 @@ select:focus-visible,
 
     .settings-body, .stats-body {
         padding: 1rem 1.25rem;
+        /* Ensure settings content is fully scrollable on mobile */
+        max-height: calc(90vh - 160px); /* Account for header and footer */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        /* Visible scrollbar on mobile for better UX */
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-orange) rgba(255, 255, 255, 0.1);
+    }
+
+    /* Mobile scrollbar styling */
+    .settings-body::-webkit-scrollbar, .stats-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .settings-body::-webkit-scrollbar-track, .stats-body::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+
+    .settings-body::-webkit-scrollbar-thumb, .stats-body::-webkit-scrollbar-thumb {
+        background: var(--accent-orange);
+        border-radius: 3px;
+    }
+
+    .settings-body::-webkit-scrollbar-thumb:hover, .stats-body::-webkit-scrollbar-thumb:hover {
+        background: #f39c12;
     }
 
     .settings-footer {
@@ -5739,6 +5771,10 @@ select:focus-visible,
 
     .settings-body, .stats-body {
         padding: 0.875rem 1rem;
+        /* Enhanced mobile scrolling for very small screens */
+        max-height: calc(95vh - 140px); /* Account for header and footer on small screens */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .settings-footer {

@@ -2577,7 +2577,9 @@ class SudokuEngine {
         this.soundSettings.hintSound = document.getElementById('hintSoundEnabled').checked;
         this.soundSettings.allNineCompleteSound = document.getElementById('allNineCompleteSoundEnabled').checked;
 
-        // Save to localStorage
+        // Save to localStorage with user-specific key
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        const settingsKey = `sudoku_settings_${currentPlayer}`;
         const settings = {
             autoCheckErrors: this.autoCheckErrors,
             showTimer: this.showTimer,
@@ -2585,7 +2587,7 @@ class SudokuEngine {
             inputSoundType: this.inputSoundType,
             soundSettings: this.soundSettings
         };
-        localStorage.setItem('sudoku_settings', JSON.stringify(settings));
+        localStorage.setItem(settingsKey, JSON.stringify(settings));
 
         // Update UI visibility
         const timerSection = document.querySelector('.timer-section');
@@ -2595,7 +2597,15 @@ class SudokuEngine {
     }
 
     loadSettings() {
-        const settings = localStorage.getItem('sudoku_settings');
+        const currentPlayer = sessionStorage.getItem('currentPlayer');
+        const settingsKey = `sudoku_settings_${currentPlayer}`;
+        let settings = localStorage.getItem(settingsKey);
+
+        // Fallback to global settings if user-specific settings don't exist
+        if (!settings) {
+            settings = localStorage.getItem('sudoku_settings');
+        }
+
         if (settings) {
             const parsed = JSON.parse(settings);
             this.autoCheckErrors = parsed.autoCheckErrors !== false;
