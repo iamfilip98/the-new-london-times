@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement Refresh Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        button {
+            background: linear-gradient(135deg, #4facfe, #ff6b6b);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #444;
+        }
+        h1 {
+            color: #4facfe;
+            text-align: center;
+        }
+        .warning {
+            background: #ff6b6b;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Achievement Refresh Tool</h1>
+
+        <div class="warning">
+            <strong>⚠️ Important:</strong> This tool will refresh all achievements to ensure players get retroactive credit for the new 3000+, 4000+, and 5000+ point achievements.
+        </div>
+
+        <button id="refreshBtn" onclick="runRefresh()">🔄 Refresh All Achievements</button>
+
+        <div class="log" id="logArea">Ready to refresh achievements...</div>
+
+        <div id="result"></div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/achievements.js"></script>
+
+    <script>
+        let logArea = document.getElementById('logArea');
+        let resultDiv = document.getElementById('result');
+        let refreshBtn = document.getElementById('refreshBtn');
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.textContent += `[${timestamp}] ${message}\n`;
+            logArea.scrollTop = logArea.scrollHeight;
+            console.log(message);
+        }
+
+        async function runRefresh() {
+            refreshBtn.disabled = true;
+            resultDiv.innerHTML = '';
+            logArea.textContent = '';
+
+            log('🔄 Starting achievement refresh...');
+
+            try {
+                // Wait for achievement manager to be ready
+                if (!window.achievementsManager) {
+                    log('⏳ Waiting for achievement manager to initialize...');
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+
+                if (!window.achievementsManager) {
+                    throw new Error('Achievement manager not found. Make sure the page loaded correctly.');
+                }
+
+                log('✅ Achievement manager found');
+                log('📊 Starting complete refresh...');
+
+                // Run the refresh
+                const result = await window.achievementsManager.refreshAllAchievements();
+
+                if (result.success) {
+                    log('🎉 Achievement refresh completed successfully!');
+                    log(`📈 Processed ${result.processedEntries} game entries`);
+                    log(`🏆 Total achievements awarded: ${result.totalAchievements}`);
+
+                    // Check specifically for the new achievements
+                    await window.achievementsManager.refreshAchievements();
+                    const unlocked = window.achievementsManager.unlockedAchievements;
+
+                    const newAchievements = unlocked.filter(a =>
+                        ['point_titan', 'point_legend', 'point_god'].includes(a.id)
+                    );
+
+                    if (newAchievements.length > 0) {
+                        log(`🎯 Found ${newAchievements.length} of the new high score achievements!`);
+                        newAchievements.forEach(a => {
+                            log(`  🏆 ${a.player}: ${a.id} (${a.title})`);
+                        });
+                    } else {
+                        log('📝 No players have unlocked the new high score achievements yet');
+                    }
+
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Success!</strong><br>
+                            Processed ${result.processedEntries} entries<br>
+                            Total achievements: ${result.totalAchievements}<br>
+                            New high score achievements found: ${newAchievements.length}
+                        </div>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Unknown error occurred');
+                }
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                resultDiv.innerHTML = `
+                    <div class="warning">
+                        <strong>❌ Error:</strong> ${error.message}
+                    </div>
+                `;
+            } finally {
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Auto-initialize when page loads
+        window.addEventListener('load', () => {
+            log('📱 Achievement refresh tool loaded');
+            log('🎯 Click the button above to refresh all achievements');
+        });
+    </script>
+</body>
+</html>
