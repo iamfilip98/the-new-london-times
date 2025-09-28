@@ -2333,12 +2333,14 @@ class SudokuEngine {
                     await window.sudokuApp.loadData();
                     await window.sudokuApp.updateDashboard();
 
-                    // Check for achievements when a new entry is completed
+                    // Check for achievements only when all 6 games are completed
                     const entries = window.sudokuApp.entries;
                     const latestEntry = entries.find(entry => entry.date === date);
-                    if (latestEntry) {
+                    if (latestEntry && window.sudokuApp.isEntryComplete(latestEntry)) {
                         await window.sudokuApp.checkAchievements(latestEntry);
-                        debugLog('✅ Achievements checked for completed puzzle');
+                        debugLog('✅ Achievements checked for completed daily battle (all 6 games)');
+                    } else if (latestEntry) {
+                        debugLog('⏳ Daily battle incomplete, achievements check skipped');
                     }
 
                     // Ensure Today's Battle results are updated immediately
