@@ -869,6 +869,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
+    text-transform: uppercase;
 }
 
 .streak-header .player-avatar {
