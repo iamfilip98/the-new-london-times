@@ -347,26 +347,29 @@ body {
     height: 44px;
     position: relative;
     z-index: 2;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f1425 50%, #0a1f3a 100%);
     border-radius: 8px;
     padding: 3px;
     box-shadow:
-        0 0 20px rgba(79, 172, 254, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        0 0 25px rgba(79, 172, 254, 0.6),
+        0 4px 15px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(10px);
+    border: 1px solid rgba(79, 172, 254, 0.2);
 }
 
 .puzzle-piece {
     width: 12px;
     height: 12px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(5px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .puzzle-piece::before {
@@ -386,14 +389,15 @@ body {
 
 .puzzle-piece.active {
     background: linear-gradient(135deg,
-        rgba(79, 172, 254, 0.9) 0%,
-        rgba(138, 43, 226, 0.8) 50%,
-        rgba(255, 20, 147, 0.9) 100%
+        rgba(79, 172, 254, 1) 0%,
+        rgba(138, 43, 226, 0.95) 50%,
+        rgba(255, 20, 147, 1) 100%
     );
-    border: 1px solid rgba(79, 172, 254, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow:
-        0 0 12px rgba(79, 172, 254, 0.8),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 0 15px rgba(79, 172, 254, 1),
+        0 3px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
     animation: modernPulse 2.5s ease-in-out infinite;
 }
 
@@ -422,45 +426,70 @@ body {
 /* Sophisticated individual piece animations */
 .puzzle-piece.active:nth-child(1) {
     background: linear-gradient(135deg,
-        rgba(79, 172, 254, 0.95) 0%,
-        rgba(41, 121, 255, 0.9) 100%
+        rgba(79, 172, 254, 1) 0%,
+        rgba(41, 121, 255, 1) 100%
     );
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 0 15px rgba(79, 172, 254, 1),
+        0 3px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
     animation: modernPulse1 2.5s ease-in-out infinite;
     animation-delay: 0s;
 }
 
 .puzzle-piece.active:nth-child(3) {
     background: linear-gradient(135deg,
-        rgba(138, 43, 226, 0.95) 0%,
-        rgba(168, 85, 247, 0.9) 100%
+        rgba(138, 43, 226, 1) 0%,
+        rgba(168, 85, 247, 1) 100%
     );
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 0 15px rgba(138, 43, 226, 1),
+        0 3px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
     animation: modernPulse2 2.5s ease-in-out infinite;
     animation-delay: 0.3s;
 }
 
 .puzzle-piece.active:nth-child(5) {
     background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.95) 0%,
-        rgba(255, 105, 180, 0.9) 100%
+        rgba(255, 20, 147, 1) 0%,
+        rgba(255, 105, 180, 1) 100%
     );
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 0 15px rgba(255, 20, 147, 1),
+        0 3px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
     animation: modernPulse3 2.5s ease-in-out infinite;
     animation-delay: 0.6s;
 }
 
 .puzzle-piece.active:nth-child(7) {
     background: linear-gradient(135deg,
-        rgba(0, 255, 255, 0.95) 0%,
-        rgba(72, 219, 251, 0.9) 100%
+        rgba(0, 255, 255, 1) 0%,
+        rgba(72, 219, 251, 1) 100%
     );
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 0 15px rgba(0, 255, 255, 1),
+        0 3px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
     animation: modernPulse4 2.5s ease-in-out infinite;
     animation-delay: 0.9s;
 }
 
 .puzzle-piece.active:nth-child(9) {
     background: linear-gradient(135deg,
-        rgba(124, 58, 237, 0.95) 0%,
-        rgba(147, 51, 234, 0.9) 100%
+        rgba(124, 58, 237, 1) 0%,
+        rgba(147, 51, 234, 1) 100%
     );
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 0 15px rgba(124, 58, 237, 1),
+        0 3px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
     animation: modernPulse5 2.5s ease-in-out infinite;
     animation-delay: 1.2s;
 }
@@ -631,32 +660,30 @@ body {
     animation: professionalShimmer 5s ease-in-out infinite;
     position: relative;
     z-index: 2;
-    filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.4))
-            drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.8));
-    text-shadow:
-        0 0 10px rgba(79, 172, 254, 0.5),
-        0 0 20px rgba(138, 43, 226, 0.3);
+    filter: drop-shadow(0 0 12px rgba(79, 172, 254, 0.8))
+            drop-shadow(2px 2px 8px rgba(0, 0, 0, 1))
+            drop-shadow(0 0 20px rgba(138, 43, 226, 0.6));
 }
 
 .brand-title::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
     background: linear-gradient(135deg,
-        rgba(79, 172, 254, 0.1) 0%,
-        rgba(138, 43, 226, 0.1) 25%,
-        rgba(255, 20, 147, 0.1) 50%,
-        rgba(0, 255, 255, 0.1) 75%,
-        rgba(124, 58, 237, 0.1) 100%
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(10, 10, 26, 0.95) 25%,
+        rgba(15, 20, 37, 0.9) 50%,
+        rgba(10, 31, 58, 0.95) 75%,
+        rgba(0, 0, 0, 0.9) 100%
     );
     background-size: 300% 100%;
-    border-radius: 6px;
+    border-radius: 8px;
     z-index: -1;
     animation: professionalShimmer 5s ease-in-out infinite reverse;
-    filter: blur(4px);
+    filter: blur(3px);
 }
 
 @keyframes professionalShimmer {
@@ -707,9 +734,9 @@ body {
     font-weight: 600;
     letter-spacing: 0.3em;
     background: linear-gradient(90deg,
-        rgba(255, 255, 255, 0.9) 0%,
-        rgba(79, 172, 254, 0.8) 50%,
-        rgba(255, 255, 255, 0.9) 100%
+        rgba(255, 255, 255, 1) 0%,
+        rgba(79, 172, 254, 1) 50%,
+        rgba(255, 255, 255, 1) 100%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
@@ -718,7 +745,9 @@ body {
     text-transform: uppercase;
     position: relative;
     animation: subtitleGlow 4s ease-in-out infinite;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+    filter: drop-shadow(0 0 6px rgba(79, 172, 254, 0.8))
+            drop-shadow(1px 1px 4px rgba(0, 0, 0, 1))
+            drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
 }
 
 @keyframes subtitleGlow {
