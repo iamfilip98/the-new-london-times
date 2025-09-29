@@ -1770,7 +1770,7 @@ body {
     border-radius: var(--border-radius);
     background: linear-gradient(135deg, var(--faidao-color), #EF5350, #F44336);
     backdrop-filter: blur(20px);
-    border: 2px solid rgba(244, 67, 54, 0.4);
+    border: 2px solid rgba(244, 67, 54, 0.8);
     color: white;
     font-size: 0.9rem;
     text-align: center;
