@@ -1425,9 +1425,15 @@ body {
 .score-bar {
     position: relative;
     height: 60px;
-    background: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.06) 25%,
+        rgba(100, 200, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.06) 75%,
+        rgba(255, 255, 255, 0.12) 100%
+    );
     backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--border-radius);
     overflow: hidden;
     display: flex;
@@ -1457,8 +1463,14 @@ body {
 .score-bar:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: var(--shadow-hover);
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.08) 25%,
+        rgba(100, 200, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.08) 75%,
+        rgba(255, 255, 255, 0.18) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .score-bar:hover .score-fill {
@@ -1471,11 +1483,26 @@ body {
     left: 0;
     top: 0;
     height: 100%;
-    background: linear-gradient(90deg, var(--faidao-color), rgba(244, 67, 54, 0.8), var(--faidao-color));
-    background-size: 200% 100%;
+    background: linear-gradient(90deg,
+        var(--faidao-color) 0%,
+        rgba(255, 100, 100, 0.9) 15%,
+        rgba(244, 67, 54, 1) 30%,
+        rgba(255, 150, 150, 0.95) 50%,
+        rgba(244, 67, 54, 1) 70%,
+        rgba(255, 100, 100, 0.9) 85%,
+        var(--faidao-color) 100%
+    ),
+    linear-gradient(45deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        transparent 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 75%,
+        rgba(255, 255, 255, 0.2) 100%
+    );
+    background-size: 200% 100%, 100% 100%;
     border-radius: var(--border-radius);
     transition: width 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    opacity: 0.9;
+    opacity: 0.95;
     animation: scoreBarShine 3s ease-in-out infinite;
 }
 
