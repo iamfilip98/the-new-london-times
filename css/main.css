@@ -290,17 +290,35 @@ body {
 }
 
 .nav-brand:hover .brand-title {
-    animation-duration: 3s;
+    animation-duration: 2.5s;
     background-size: 400% 100%;
+    filter: drop-shadow(0 0 12px rgba(79, 172, 254, 0.6))
+            drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.9));
+    text-shadow:
+        0 0 15px rgba(79, 172, 254, 0.7),
+        0 0 25px rgba(138, 43, 226, 0.5);
+}
+
+.nav-brand:hover .brand-title::before {
+    filter: blur(6px);
 }
 
 .nav-brand:hover .title-accent {
-    animation-duration: 1.5s;
-    height: 4px;
+    animation-duration: 1.2s;
+    height: 3px;
+    box-shadow:
+        0 0 12px rgba(255, 20, 147, 0.8),
+        0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.nav-brand:hover .brand-subtitle {
+    animation-duration: 2s;
+    filter: drop-shadow(0 0 6px rgba(79, 172, 254, 0.8))
+            drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
 }
 
 .nav-brand:hover .particle {
-    animation-duration: 4s;
+    animation-duration: 3.5s;
 }
 
 .logo-container {
@@ -580,67 +598,103 @@ body {
     }
 }
 
-/* Modern Brand Text */
+/* Professional Brand Text */
 .brand-text {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.2rem;
+    gap: 0.3rem;
     position: relative;
 }
 
 .brand-title-container {
     position: relative;
     display: inline-block;
+    padding: 0.2rem 0;
 }
 
 .brand-title {
     font-size: 1.9rem;
     font-weight: 900;
-    letter-spacing: 0.12em;
-    background: linear-gradient(135deg, #4CAF50 0%, #FF9800 25%, #4facfe 50%, #F44336 75%, #f5576c 100%);
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg,
+        rgba(79, 172, 254, 1) 0%,
+        rgba(138, 43, 226, 1) 25%,
+        rgba(255, 20, 147, 1) 50%,
+        rgba(0, 255, 255, 1) 75%,
+        rgba(124, 58, 237, 1) 100%
+    );
     background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: modernShimmer 6s ease-in-out infinite;
+    animation: professionalShimmer 5s ease-in-out infinite;
     position: relative;
     z-index: 2;
-    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 8px rgba(76, 175, 80, 0.3));
+    filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.4))
+            drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.8));
+    text-shadow:
+        0 0 10px rgba(79, 172, 254, 0.5),
+        0 0 20px rgba(138, 43, 226, 0.3);
 }
 
-@keyframes modernShimmer {
+.brand-title::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+        rgba(79, 172, 254, 0.1) 0%,
+        rgba(138, 43, 226, 0.1) 25%,
+        rgba(255, 20, 147, 0.1) 50%,
+        rgba(0, 255, 255, 0.1) 75%,
+        rgba(124, 58, 237, 0.1) 100%
+    );
+    background-size: 300% 100%;
+    border-radius: 6px;
+    z-index: -1;
+    animation: professionalShimmer 5s ease-in-out infinite reverse;
+    filter: blur(4px);
+}
+
+@keyframes professionalShimmer {
     0%, 100% {
         background-position: 0% 50%;
     }
-    50% {
+    33% {
+        background-position: 50% 50%;
+    }
+    66% {
         background-position: 100% 50%;
     }
 }
 
 .title-accent {
     position: absolute;
-    bottom: -2px;
+    bottom: -3px;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 2px;
     background: linear-gradient(90deg,
         transparent 0%,
-        #4CAF50 20%,
-        #FF9800 40%,
-        #4facfe 60%,
-        #F44336 80%,
+        rgba(79, 172, 254, 0.8) 20%,
+        rgba(138, 43, 226, 0.9) 40%,
+        rgba(255, 20, 147, 1) 60%,
+        rgba(0, 255, 255, 0.8) 80%,
         transparent 100%);
     border-radius: 2px;
-    animation: accentFlow 3s ease-in-out infinite;
-    box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
-    border: 1px solid #000000;
+    animation: professionalAccentFlow 2.5s ease-in-out infinite;
+    box-shadow:
+        0 0 8px rgba(255, 20, 147, 0.6),
+        0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes accentFlow {
+@keyframes professionalAccentFlow {
     0%, 100% {
-        transform: scaleX(0);
-        opacity: 0;
+        transform: scaleX(0.3);
+        opacity: 0.6;
     }
     50% {
         transform: scaleX(1);
@@ -650,21 +704,36 @@ body {
 
 .brand-subtitle {
     font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(79, 172, 254, 0.8) 50%,
+        rgba(255, 255, 255, 0.9) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     text-transform: uppercase;
-    opacity: 0.95;
     position: relative;
-    text-shadow:
-        1px 1px 0 #000000,
-        -1px -1px 0 #000000,
-        1px -1px 0 #000000,
-        -1px 1px 0 #000000,
-        0 2px 4px rgba(0, 0, 0, 0.5);
+    animation: subtitleGlow 4s ease-in-out infinite;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
 }
 
-/* Floating Particles */
+@keyframes subtitleGlow {
+    0%, 100% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: drop-shadow(0 0 4px rgba(79, 172, 254, 0.6))
+                drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+    }
+}
+
+/* Professional Floating Particles */
 .brand-particles {
     position: absolute;
     top: 0;
@@ -677,58 +746,61 @@ body {
 
 .particle {
     position: absolute;
-    width: 5px;
-    height: 5px;
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
-    animation: particleFloat 8s linear infinite;
-    box-shadow: 0 0 10px currentColor;
+    animation: professionalParticleFloat 8s linear infinite;
+    backdrop-filter: blur(1px);
 }
 
 .particle:nth-child(1) {
-    left: 20%;
-    background: #4CAF50;
-    color: #4CAF50;
+    left: 25%;
+    background: rgba(79, 172, 254, 0.9);
     animation-delay: 0s;
-    animation-duration: 6s;
-    box-shadow: 0 0 12px rgba(76, 175, 80, 0.8);
-    border: 1px solid #000000;
+    animation-duration: 7s;
+    box-shadow:
+        0 0 8px rgba(79, 172, 254, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(79, 172, 254, 0.4);
 }
 
 .particle:nth-child(2) {
-    left: 60%;
-    background: #FF9800;
-    color: #FF9800;
-    animation-delay: 2s;
-    animation-duration: 8s;
-    box-shadow: 0 0 12px rgba(255, 152, 0, 0.8);
-    border: 1px solid #000000;
+    left: 55%;
+    background: rgba(138, 43, 226, 0.9);
+    animation-delay: 2.5s;
+    animation-duration: 9s;
+    box-shadow:
+        0 0 8px rgba(138, 43, 226, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(138, 43, 226, 0.4);
 }
 
 .particle:nth-child(3) {
-    left: 80%;
-    background: #F44336;
-    color: #F44336;
-    animation-delay: 4s;
-    animation-duration: 7s;
-    box-shadow: 0 0 12px rgba(244, 67, 54, 0.8);
-    border: 1px solid #000000;
+    left: 75%;
+    background: rgba(255, 20, 147, 0.9);
+    animation-delay: 5s;
+    animation-duration: 8s;
+    box-shadow:
+        0 0 8px rgba(255, 20, 147, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 20, 147, 0.4);
 }
 
-@keyframes particleFloat {
+@keyframes professionalParticleFloat {
     0% {
-        transform: translateY(100px) scale(0);
+        transform: translateY(100px) scale(0) rotate(0deg);
         opacity: 0;
     }
-    10% {
-        opacity: 1;
-        transform: translateY(80px) scale(1);
+    15% {
+        opacity: 0.8;
+        transform: translateY(75px) scale(1) rotate(45deg);
     }
-    90% {
-        opacity: 1;
-        transform: translateY(-20px) scale(1);
+    85% {
+        opacity: 0.8;
+        transform: translateY(-15px) scale(1) rotate(315deg);
     }
     100% {
-        transform: translateY(-40px) scale(0);
+        transform: translateY(-35px) scale(0) rotate(360deg);
         opacity: 0;
     }
 }
