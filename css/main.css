@@ -1430,12 +1430,12 @@ body {
     background: linear-gradient(135deg,
         rgba(255, 255, 255, 0.12) 0%,
         rgba(255, 255, 255, 0.06) 25%,
-        rgba(100, 200, 255, 0.08) 50%,
+        rgba(244, 67, 54, 0.08) 50%,
         rgba(255, 255, 255, 0.06) 75%,
         rgba(255, 255, 255, 0.12) 100%
     );
     backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(244, 67, 54, 0.3);
     border-radius: var(--border-radius);
     overflow: hidden;
     display: flex;
@@ -1529,6 +1529,17 @@ body {
 .filip-bar .score-fill {
     background: linear-gradient(90deg, var(--filip-color), rgba(255, 152, 0, 0.8), var(--filip-color));
     background-size: 200% 100%;
+}
+
+.filip-bar {
+    border-color: rgba(255, 152, 0, 0.4);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.06) 25%,
+        rgba(255, 152, 0, 0.08) 50%,
+        rgba(255, 255, 255, 0.06) 75%,
+        rgba(255, 255, 255, 0.12) 100%
+    );
 }
 
 .score-text {
