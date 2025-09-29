@@ -1512,6 +1512,16 @@ body {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
+.winner-text {
+    position: relative;
+    z-index: 2;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
 /* Action Buttons */
 .actions-section {
     display: flex;
