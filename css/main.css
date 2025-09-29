@@ -7172,8 +7172,10 @@ select:focus-visible,
 }
 
 .progress-status .completion-time {
-    color: var(--accent-green);
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
     font-weight: 700;
+    color: var(--accent-blue);
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
     text-align: left;
     flex-shrink: 0;
@@ -7184,10 +7186,11 @@ select:focus-visible,
 }
 
 .progress-status .completion-score {
-    color: var(--accent-orange);
-    font-size: 0.8rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-blue);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-    font-weight: 600;
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
