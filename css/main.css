@@ -336,8 +336,8 @@ body {
     border-radius: 50%;
     pointer-events: none;
     filter: blur(2px);
-    opacity: 0.7;
-    animation: bokehFloat 6s ease-in-out infinite;
+    opacity: 1;
+    animation: bokehFloat 3s ease-in-out infinite;
 }
 
 .bokeh-light:nth-child(1) {
@@ -409,12 +409,12 @@ body {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg,
-        rgba(79, 172, 254, 0.3) 0%,
-        rgba(255, 20, 147, 0.3) 50%,
-        rgba(0, 255, 255, 0.3) 100%);
-    border: 2px solid rgba(79, 172, 254, 0.8);
+        rgba(0, 255, 255, 0.5) 0%,
+        rgba(255, 20, 147, 0.5) 50%,
+        rgba(79, 172, 254, 0.5) 100%);
+    border: 2px solid rgba(0, 255, 255, 1);
     border-radius: 50% 10px 50% 10px;
-    animation: badgeRotate 8s linear infinite;
+    animation: badgeRotate 4s linear infinite;
 }
 
 .badge-middle {
@@ -426,9 +426,9 @@ body {
     background: linear-gradient(45deg,
         rgba(22, 33, 62, 0.9) 0%,
         rgba(26, 26, 46, 0.9) 100%);
-    border: 1px solid rgba(255, 20, 147, 0.6);
+    border: 1px solid rgba(255, 20, 147, 0.9);
     border-radius: 50% 8px 50% 8px;
-    animation: badgeRotate 6s linear infinite reverse;
+    animation: badgeRotate 3s linear infinite reverse;
 }
 
 .badge-inner {
@@ -464,7 +464,7 @@ body {
     background: linear-gradient(45deg, rgba(255, 20, 147, 0.9) 0%, rgba(79, 172, 254, 0.9) 100%);
     border-radius: 2px;
     margin-bottom: 1px;
-    animation: geometricPulse 3s ease-in-out infinite;
+    animation: geometricPulse 1.5s ease-in-out infinite;
 }
 
 .geometric-center {
@@ -473,7 +473,7 @@ body {
     background: linear-gradient(45deg, rgba(0, 255, 255, 0.9) 0%, rgba(255, 20, 147, 0.9) 100%);
     border-radius: 1px;
     margin-bottom: 1px;
-    animation: geometricPulse 3s ease-in-out infinite 0.5s;
+    animation: geometricPulse 1.5s ease-in-out infinite 0.5s;
 }
 
 .geometric-bottom {
@@ -481,7 +481,7 @@ body {
     height: 4px;
     background: linear-gradient(45deg, rgba(79, 172, 254, 0.9) 0%, rgba(138, 43, 226, 0.9) 100%);
     border-radius: 2px;
-    animation: geometricPulse 3s ease-in-out infinite 1s;
+    animation: geometricPulse 1.5s ease-in-out infinite 1s;
 }
 
 @keyframes geometricPulse {
