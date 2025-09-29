@@ -275,12 +275,12 @@ body {
 .nav-brand:hover .main-title {
     animation-duration: 2s;
     background-size: 400% 100%;
-    filter: drop-shadow(0 0 15px rgba(255, 20, 147, 0.8))
-            drop-shadow(0 0 25px rgba(79, 172, 254, 0.6));
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8))
+            drop-shadow(0 0 25px rgba(255, 255, 255, 0.6));
     text-shadow:
-        0 0 15px rgba(255, 20, 147, 1),
-        0 0 30px rgba(79, 172, 254, 0.8),
-        0 0 45px rgba(255, 20, 147, 0.6);
+        0 0 15px rgba(255, 255, 255, 1),
+        0 0 30px rgba(255, 255, 255, 0.8),
+        0 0 45px rgba(255, 255, 255, 0.6);
 }
 
 .nav-brand:hover .sub-title {
@@ -520,10 +520,10 @@ body {
     -webkit-text-stroke: 1px rgba(0, 0, 0, 0.8);
     animation: neonShimmer 4s ease-in-out infinite;
     text-shadow:
-        0 0 10px rgba(79, 172, 254, 0.8),
-        0 0 20px rgba(255, 20, 147, 0.6),
-        0 0 30px rgba(79, 172, 254, 0.4);
-    filter: drop-shadow(0 0 8px rgba(255, 20, 147, 0.8));
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(255, 255, 255, 0.6),
+        0 0 30px rgba(255, 255, 255, 0.4);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
 }
 
 .sub-title {
