@@ -6009,15 +6009,22 @@ select:focus-visible,
     margin-top: 1rem;
 }
 
-.sound-controls-section > label {
+.sound-controls-title {
+    display: block;
     margin-bottom: 1rem;
     font-weight: 600;
     color: var(--text-primary);
 }
 
-.sound-toggles {
+.sound-toggles-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.sound-toggles-column {
+    display: flex;
+    flex-direction: column;
     gap: 0.75rem;
 }
 
@@ -6132,8 +6139,12 @@ select:focus-visible,
     }
 
     /* Mobile sound controls */
-    .sound-toggles {
+    .sound-toggles-grid {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .sound-toggles-column {
         gap: 0.5rem;
     }
 

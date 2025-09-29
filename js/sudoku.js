@@ -2532,37 +2532,41 @@ class SudokuEngine {
                         </select>
                     </div>
                     <div class="setting-item sound-controls-section">
-                        <label>Individual Sound Controls</label>
-                        <div class="sound-toggles">
-                            <div class="sound-toggle">
-                                <label>
-                                    <input type="checkbox" id="inputSoundEnabled" ${this.soundSettings.inputSound ? 'checked' : ''}>
-                                    Number Placement
-                                </label>
+                        <label class="sound-controls-title">Individual Sound Controls</label>
+                        <div class="sound-toggles-grid">
+                            <div class="sound-toggles-column">
+                                <div class="sound-toggle">
+                                    <label>
+                                        <input type="checkbox" id="inputSoundEnabled" ${this.soundSettings.inputSound ? 'checked' : ''}>
+                                        Number Placement
+                                    </label>
+                                </div>
+                                <div class="sound-toggle">
+                                    <label>
+                                        <input type="checkbox" id="errorSoundEnabled" ${this.soundSettings.errorSound ? 'checked' : ''}>
+                                        Error Feedback
+                                    </label>
+                                </div>
+                                <div class="sound-toggle">
+                                    <label>
+                                        <input type="checkbox" id="completionSoundEnabled" ${this.soundSettings.completionSound ? 'checked' : ''}>
+                                        Puzzle Completion
+                                    </label>
+                                </div>
                             </div>
-                            <div class="sound-toggle">
-                                <label>
-                                    <input type="checkbox" id="errorSoundEnabled" ${this.soundSettings.errorSound ? 'checked' : ''}>
-                                    Error Feedback
-                                </label>
-                            </div>
-                            <div class="sound-toggle">
-                                <label>
-                                    <input type="checkbox" id="completionSoundEnabled" ${this.soundSettings.completionSound ? 'checked' : ''}>
-                                    Puzzle Completion
-                                </label>
-                            </div>
-                            <div class="sound-toggle">
-                                <label>
-                                    <input type="checkbox" id="hintSoundEnabled" ${this.soundSettings.hintSound ? 'checked' : ''}>
-                                    Hint Sounds
-                                </label>
-                            </div>
-                            <div class="sound-toggle">
-                                <label>
-                                    <input type="checkbox" id="allNineCompleteSoundEnabled" ${this.soundSettings.allNineCompleteSound ? 'checked' : ''}>
-                                    Number Completion Ding
-                                </label>
+                            <div class="sound-toggles-column">
+                                <div class="sound-toggle">
+                                    <label>
+                                        <input type="checkbox" id="hintSoundEnabled" ${this.soundSettings.hintSound ? 'checked' : ''}>
+                                        Hint Sounds
+                                    </label>
+                                </div>
+                                <div class="sound-toggle">
+                                    <label>
+                                        <input type="checkbox" id="allNineCompleteSoundEnabled" ${this.soundSettings.allNineCompleteSound ? 'checked' : ''}>
+                                        Number Completion Ding
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
