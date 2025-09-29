@@ -257,397 +257,312 @@ body {
 }
 
 
-.nav-brand:hover .puzzle-grid::before {
-    animation-duration: 1.5s;
-    transform: scale(1.2);
-    box-shadow: 0 0 25px rgba(79, 172, 254, 1);
+/* Championship Logo Hover Effects */
+.nav-brand:hover .badge-outer {
+    animation-duration: 4s;
+    border-color: rgba(0, 255, 255, 1);
+    background: linear-gradient(135deg,
+        rgba(0, 255, 255, 0.5) 0%,
+        rgba(255, 20, 147, 0.5) 50%,
+        rgba(79, 172, 254, 0.5) 100%);
 }
 
-.nav-brand:hover .puzzle-grid::after {
-    animation-duration: 1.5s;
-    transform: scale(1.2);
-    box-shadow: 0 0 25px rgba(255, 20, 147, 1);
+.nav-brand:hover .badge-middle {
+    animation-duration: 3s;
+    border-color: rgba(255, 20, 147, 0.9);
 }
 
-.nav-brand:hover .logo-glow {
-    animation-duration: 1.5s;
-    transform: translate(-50%, -50%) scale(1.3);
-    opacity: 0.9;
-}
-
-.nav-brand:hover .brand-title {
-    animation-duration: 2.5s;
-    background-size: 400% 100%;
-    filter: drop-shadow(0 0 12px rgba(79, 172, 254, 0.6))
-            drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.9));
-    text-shadow:
-        0 0 15px rgba(79, 172, 254, 0.7),
-        0 0 25px rgba(138, 43, 226, 0.5);
-}
-
-.nav-brand:hover .brand-title::before {
-    filter: blur(6px);
-}
-
-.nav-brand:hover .title-accent {
-    animation-duration: 1.2s;
-    height: 3px;
-    box-shadow:
-        0 0 12px rgba(255, 20, 147, 0.8),
-        0 3px 6px rgba(0, 0, 0, 0.4);
-}
-
-.nav-brand:hover .brand-subtitle {
+.nav-brand:hover .main-title {
     animation-duration: 2s;
-    filter: drop-shadow(0 0 6px rgba(79, 172, 254, 0.8))
-            drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+    background-size: 400% 100%;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8))
+            drop-shadow(0 0 25px rgba(79, 172, 254, 0.6));
+    text-shadow:
+        0 0 15px rgba(0, 255, 255, 1),
+        0 0 30px rgba(79, 172, 254, 0.8),
+        0 0 45px rgba(0, 255, 255, 0.6);
+}
+
+.nav-brand:hover .sub-title {
+    animation-duration: 2s;
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 1),
+        0 0 20px rgba(79, 172, 254, 0.8),
+        0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.nav-brand:hover .geometric-top,
+.nav-brand:hover .geometric-center,
+.nav-brand:hover .geometric-bottom {
+    animation-duration: 1.5s;
+    transform: scale(1.4);
+    opacity: 1;
+}
+
+.nav-brand:hover .bokeh-light {
+    animation-duration: 3s;
+    opacity: 1;
+    transform: scale(1.5);
 }
 
 .nav-brand:hover .particle {
     animation-duration: 3.5s;
 }
 
-.logo-container {
+/* Championship Arena Logo */
+.championship-logo {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1rem;
     position: relative;
+    padding: 0.5rem;
 }
 
-/* Custom Geometric Logo Icon */
-.logo-icon {
-    position: relative;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.puzzle-grid {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    position: relative;
-    z-index: 2;
-}
-
-/* Create two overlapping geometric shapes */
-.puzzle-grid::before {
-    content: '';
+.logo-background {
     position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: linear-gradient(135deg,
+        rgba(22, 33, 62, 0.95) 0%,
+        rgba(26, 26, 46, 0.95) 50%,
+        rgba(22, 33, 62, 0.95) 100%);
+    border-radius: 20px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Bokeh light effects */
+.bokeh-light {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(2px);
+    opacity: 0.7;
+    animation: bokehFloat 6s ease-in-out infinite;
+}
+
+.bokeh-light:nth-child(1) {
+    width: 15px;
+    height: 15px;
+    background: radial-gradient(circle, rgba(79, 172, 254, 0.8) 0%, transparent 70%);
+    top: 10%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.bokeh-light:nth-child(2) {
     width: 20px;
     height: 20px;
-    left: 8px;
-    top: 12px;
-    background: linear-gradient(135deg,
-        rgba(79, 172, 254, 0.9) 0%,
-        rgba(41, 121, 255, 1) 100%
-    );
-    border-radius: 50%;
-    box-shadow: 0 0 15px rgba(79, 172, 254, 0.8);
-    animation: leftShape 3s ease-in-out infinite;
-    z-index: 1;
+    background: radial-gradient(circle, rgba(255, 20, 147, 0.6) 0%, transparent 70%);
+    top: 70%;
+    right: 20%;
+    animation-delay: 2s;
 }
 
-.puzzle-grid::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    right: 8px;
-    top: 12px;
-    background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.9) 0%,
-        rgba(255, 105, 180, 1) 100%
-    );
-    border-radius: 50%;
-    box-shadow: 0 0 15px rgba(255, 20, 147, 0.8);
-    animation: rightShape 3s ease-in-out infinite 1.5s;
-    z-index: 2;
-    mix-blend-mode: multiply;
+.bokeh-light:nth-child(3) {
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.7) 0%, transparent 70%);
+    bottom: 20%;
+    left: 70%;
+    animation-delay: 4s;
 }
 
-/* Geometric shape animations */
-@keyframes leftShape {
+.bokeh-light:nth-child(4) {
+    width: 18px;
+    height: 18px;
+    background: radial-gradient(circle, rgba(255, 107, 107, 0.5) 0%, transparent 70%);
+    top: 40%;
+    left: 5%;
+    animation-delay: 1s;
+}
+
+.bokeh-light:nth-child(5) {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.6) 0%, transparent 70%);
+    top: 80%;
+    right: 5%;
+    animation-delay: 3s;
+}
+
+@keyframes bokehFloat {
     0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 15px rgba(79, 172, 254, 0.8);
-    }
-    50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 20px rgba(79, 172, 254, 1);
-    }
-}
-
-@keyframes rightShape {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 15px rgba(255, 20, 147, 0.8);
-    }
-    50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 20px rgba(255, 20, 147, 1);
-    }
-}
-
-
-.logo-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70px;
-    height: 70px;
-    background: radial-gradient(circle,
-        rgba(79, 172, 254, 0.3) 0%,
-        rgba(138, 43, 226, 0.2) 30%,
-        rgba(255, 20, 147, 0.15) 50%,
-        rgba(0, 255, 255, 0.1) 70%,
-        transparent 90%);
-    border-radius: 50%;
-    animation: professionalGlow 3s ease-in-out infinite;
-    z-index: 1;
-    filter: blur(1px);
-}
-
-@keyframes professionalGlow {
-    0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.6;
-        background: radial-gradient(circle,
-            rgba(79, 172, 254, 0.3) 0%,
-            rgba(138, 43, 226, 0.2) 30%,
-            rgba(255, 20, 147, 0.15) 50%,
-            rgba(0, 255, 255, 0.1) 70%,
-            transparent 90%);
-    }
-    33% {
-        transform: translate(-50%, -50%) scale(1.15);
-        opacity: 0.8;
-        background: radial-gradient(circle,
-            rgba(138, 43, 226, 0.4) 0%,
-            rgba(255, 20, 147, 0.3) 30%,
-            rgba(0, 255, 255, 0.2) 50%,
-            rgba(79, 172, 254, 0.15) 70%,
-            transparent 90%);
-    }
-    66% {
-        transform: translate(-50%, -50%) scale(1.08);
+        transform: translateY(0px) scale(1);
         opacity: 0.7;
-        background: radial-gradient(circle,
-            rgba(255, 20, 147, 0.35) 0%,
-            rgba(0, 255, 255, 0.25) 30%,
-            rgba(79, 172, 254, 0.2) 50%,
-            rgba(138, 43, 226, 0.15) 70%,
-            transparent 90%);
-    }
-}
-
-/* Professional Brand Text */
-.brand-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.3rem;
-    position: relative;
-}
-
-.brand-title-container {
-    position: relative;
-    display: inline-block;
-    padding: 0.2rem 0;
-}
-
-.brand-title {
-    font-size: 1.9rem;
-    font-weight: 900;
-    letter-spacing: 0.1em;
-    background: linear-gradient(135deg,
-        rgba(79, 172, 254, 1) 0%,
-        rgba(138, 43, 226, 1) 25%,
-        rgba(255, 20, 147, 1) 50%,
-        rgba(0, 255, 255, 1) 75%,
-        rgba(124, 58, 237, 1) 100%
-    );
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: professionalShimmer 5s ease-in-out infinite;
-    position: relative;
-    z-index: 2;
-    filter: drop-shadow(0 0 12px rgba(79, 172, 254, 0.8))
-            drop-shadow(0 0 20px rgba(138, 43, 226, 0.6));
-}
-
-.brand-title::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(135deg,
-        rgba(79, 172, 254, 0.1) 0%,
-        rgba(138, 43, 226, 0.1) 25%,
-        rgba(255, 20, 147, 0.1) 50%,
-        rgba(0, 255, 255, 0.1) 75%,
-        rgba(124, 58, 237, 0.1) 100%
-    );
-    background-size: 300% 100%;
-    border-radius: 8px;
-    z-index: -1;
-    animation: professionalShimmer 5s ease-in-out infinite reverse;
-    filter: blur(3px);
-}
-
-@keyframes professionalShimmer {
-    0%, 100% {
-        background-position: 0% 50%;
-    }
-    33% {
-        background-position: 50% 50%;
-    }
-    66% {
-        background-position: 100% 50%;
-    }
-}
-
-.title-accent {
-    position: absolute;
-    bottom: -3px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(79, 172, 254, 0.8) 20%,
-        rgba(138, 43, 226, 0.9) 40%,
-        rgba(255, 20, 147, 1) 60%,
-        rgba(0, 255, 255, 0.8) 80%,
-        transparent 100%);
-    border-radius: 2px;
-    animation: professionalAccentFlow 2.5s ease-in-out infinite;
-    box-shadow:
-        0 0 8px rgba(255, 20, 147, 0.6),
-        0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-@keyframes professionalAccentFlow {
-    0%, 100% {
-        transform: scaleX(0.3);
-        opacity: 0.6;
     }
     50% {
-        transform: scaleX(1);
+        transform: translateY(-10px) scale(1.2);
         opacity: 1;
     }
 }
 
-.brand-subtitle {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.3em;
-    background: linear-gradient(90deg,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(79, 172, 254, 1) 50%,
-        rgba(255, 255, 255, 1) 100%
-    );
-    background-size: 200% 100%;
+/* Logo Badge */
+.logo-badge {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    z-index: 2;
+}
+
+.badge-outer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        rgba(79, 172, 254, 0.3) 0%,
+        rgba(255, 20, 147, 0.3) 50%,
+        rgba(0, 255, 255, 0.3) 100%);
+    border: 2px solid rgba(79, 172, 254, 0.8);
+    border-radius: 50% 10px 50% 10px;
+    animation: badgeRotate 8s linear infinite;
+}
+
+.badge-middle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    background: linear-gradient(45deg,
+        rgba(22, 33, 62, 0.9) 0%,
+        rgba(26, 26, 46, 0.9) 100%);
+    border: 1px solid rgba(255, 20, 147, 0.6);
+    border-radius: 50% 8px 50% 8px;
+    animation: badgeRotate 6s linear infinite reverse;
+}
+
+.badge-inner {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    background: radial-gradient(circle,
+        rgba(79, 172, 254, 0.2) 0%,
+        rgba(255, 20, 147, 0.1) 70%,
+        transparent 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes badgeRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Geometric elements inside badge */
+.geometric-top {
+    width: 8px;
+    height: 4px;
+    background: linear-gradient(45deg, rgba(255, 20, 147, 0.9) 0%, rgba(79, 172, 254, 0.9) 100%);
+    border-radius: 2px;
+    margin-bottom: 1px;
+    animation: geometricPulse 3s ease-in-out infinite;
+}
+
+.geometric-center {
+    width: 12px;
+    height: 6px;
+    background: linear-gradient(45deg, rgba(0, 255, 255, 0.9) 0%, rgba(255, 20, 147, 0.9) 100%);
+    border-radius: 1px;
+    margin-bottom: 1px;
+    animation: geometricPulse 3s ease-in-out infinite 0.5s;
+}
+
+.geometric-bottom {
+    width: 8px;
+    height: 4px;
+    background: linear-gradient(45deg, rgba(79, 172, 254, 0.9) 0%, rgba(138, 43, 226, 0.9) 100%);
+    border-radius: 2px;
+    animation: geometricPulse 3s ease-in-out infinite 1s;
+}
+
+@keyframes geometricPulse {
+    0%, 100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Logo Text */
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 2;
+    position: relative;
+}
+
+.main-title {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    background: linear-gradient(45deg,
+        rgba(0, 255, 255, 1) 0%,
+        rgba(79, 172, 254, 1) 30%,
+        rgba(138, 43, 226, 1) 70%,
+        rgba(0, 255, 255, 1) 100%);
+    background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: neonShimmer 4s ease-in-out infinite;
+    text-shadow:
+        0 0 10px rgba(0, 255, 255, 0.8),
+        0 0 20px rgba(79, 172, 254, 0.6),
+        0 0 30px rgba(0, 255, 255, 0.4);
+    filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
+}
+
+.sub-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    color: rgba(255, 255, 255, 0.95);
     text-transform: uppercase;
-    position: relative;
-    animation: subtitleGlow 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 6px rgba(79, 172, 254, 0.8))
-            drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+    margin-top: -0.2rem;
+    text-shadow:
+        0 0 5px rgba(255, 255, 255, 0.8),
+        0 1px 2px rgba(0, 0, 0, 0.8);
+    animation: subtitleGlow 3s ease-in-out infinite;
+}
+
+@keyframes neonShimmer {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 @keyframes subtitleGlow {
     0%, 100% {
-        background-position: 0% 50%;
-        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+        opacity: 0.9;
+        text-shadow:
+            0 0 5px rgba(255, 255, 255, 0.6),
+            0 1px 2px rgba(0, 0, 0, 0.8);
     }
     50% {
-        background-position: 100% 50%;
-        filter: drop-shadow(0 0 4px rgba(79, 172, 254, 0.6))
-                drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
-    }
-}
-
-/* Professional Floating Particles */
-.brand-particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-.particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    animation: professionalParticleFloat 8s linear infinite;
-    backdrop-filter: blur(1px);
-}
-
-.particle:nth-child(1) {
-    left: 25%;
-    background: rgba(79, 172, 254, 0.9);
-    animation-delay: 0s;
-    animation-duration: 7s;
-    box-shadow:
-        0 0 8px rgba(79, 172, 254, 0.8),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(79, 172, 254, 0.4);
-}
-
-.particle:nth-child(2) {
-    left: 55%;
-    background: rgba(138, 43, 226, 0.9);
-    animation-delay: 2.5s;
-    animation-duration: 9s;
-    box-shadow:
-        0 0 8px rgba(138, 43, 226, 0.8),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(138, 43, 226, 0.4);
-}
-
-.particle:nth-child(3) {
-    left: 75%;
-    background: rgba(255, 20, 147, 0.9);
-    animation-delay: 5s;
-    animation-duration: 8s;
-    box-shadow:
-        0 0 8px rgba(255, 20, 147, 0.8),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(255, 20, 147, 0.4);
-}
-
-@keyframes professionalParticleFloat {
-    0% {
-        transform: translateY(100px) scale(0) rotate(0deg);
-        opacity: 0;
-    }
-    15% {
-        opacity: 0.8;
-        transform: translateY(75px) scale(1) rotate(45deg);
-    }
-    85% {
-        opacity: 0.8;
-        transform: translateY(-15px) scale(1) rotate(315deg);
-    }
-    100% {
-        transform: translateY(-35px) scale(0) rotate(360deg);
-        opacity: 0;
+        opacity: 1;
+        text-shadow:
+            0 0 8px rgba(255, 255, 255, 0.9),
+            0 0 15px rgba(79, 172, 254, 0.5),
+            0 1px 2px rgba(0, 0, 0, 0.8);
     }
 }
 
@@ -6424,39 +6339,58 @@ select:focus-visible,
         pointer-events: none; /* Ensure hidden nav doesn't interfere with touch events */
     }
 
-    .nav-brand .brand-title {
-        font-size: 1.3rem;
+    /* Mobile Championship Logo */
+    .championship-logo {
+        gap: 0.6rem;
+        padding: 0.3rem;
     }
-    .nav-brand .brand-subtitle {
-        font-size: 0.7rem;
+
+    .logo-background {
+        top: -15px;
+        left: -15px;
+        right: -15px;
+        bottom: -15px;
+        border-radius: 15px;
+    }
+
+    .logo-badge {
+        width: 40px;
+        height: 40px;
+    }
+
+    .main-title {
+        font-size: 1.4rem;
+        letter-spacing: 0.08em;
+    }
+
+    .sub-title {
+        font-size: 0.6rem;
         letter-spacing: 0.2em;
     }
-    .logo-icon {
-        width: 36px;
-        height: 36px;
+
+    .bokeh-light:nth-child(1) {
+        width: 12px;
+        height: 12px;
     }
-    .puzzle-grid {
-        width: 32px;
-        height: 32px;
+
+    .bokeh-light:nth-child(2) {
+        width: 15px;
+        height: 15px;
     }
-    .puzzle-grid::before {
+
+    .bokeh-light:nth-child(3) {
+        width: 10px;
+        height: 10px;
+    }
+
+    .bokeh-light:nth-child(4) {
         width: 14px;
         height: 14px;
-        left: 6px;
-        top: 9px;
     }
-    .puzzle-grid::after {
-        width: 14px;
-        height: 14px;
-        right: 6px;
-        top: 9px;
-    }
-    .logo-glow {
-        width: 50px;
-        height: 50px;
-    }
-    .logo-container {
-        gap: 0.7rem;
+
+    .bokeh-light:nth-child(5) {
+        width: 11px;
+        height: 11px;
     }
 
     /* Sudoku game improvements */
@@ -6715,39 +6649,58 @@ select:focus-visible,
         font-size: 1.5rem;
     }
 
-    .nav-brand .brand-title {
-        font-size: 1.1rem;
+    /* Extra Small Mobile Championship Logo */
+    .championship-logo {
+        gap: 0.5rem;
+        padding: 0.2rem;
     }
-    .nav-brand .brand-subtitle {
-        font-size: 0.6rem;
-        letter-spacing: 0.15em;
+
+    .logo-background {
+        top: -12px;
+        left: -12px;
+        right: -12px;
+        bottom: -12px;
+        border-radius: 12px;
     }
-    .logo-icon {
+
+    .logo-badge {
         width: 32px;
         height: 32px;
     }
-    .puzzle-grid {
-        width: 28px;
-        height: 28px;
+
+    .main-title {
+        font-size: 1.1rem;
+        letter-spacing: 0.06em;
     }
-    .puzzle-grid::before {
+
+    .sub-title {
+        font-size: 0.5rem;
+        letter-spacing: 0.15em;
+    }
+
+    .bokeh-light:nth-child(1) {
+        width: 10px;
+        height: 10px;
+    }
+
+    .bokeh-light:nth-child(2) {
         width: 12px;
         height: 12px;
-        left: 5px;
-        top: 8px;
     }
-    .puzzle-grid::after {
-        width: 12px;
-        height: 12px;
-        right: 5px;
-        top: 8px;
+
+    .bokeh-light:nth-child(3) {
+        width: 8px;
+        height: 8px;
     }
-    .logo-glow {
-        width: 45px;
-        height: 45px;
+
+    .bokeh-light:nth-child(4) {
+        width: 11px;
+        height: 11px;
     }
-    .logo-container {
-        gap: 0.5rem;
+
+    .bokeh-light:nth-child(5) {
+        width: 9px;
+        height: 9px;
     }
 
     .difficulty-option {
