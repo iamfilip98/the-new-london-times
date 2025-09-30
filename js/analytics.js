@@ -77,8 +77,8 @@ class AnalyticsManager {
         const recentEntries = entries.slice(0, 30).reverse();
 
         const labels = recentEntries.map(entry => new Date(entry.date).toLocaleDateString());
-        const faidaoScores = recentEntries.map(entry => entry.faidao.scores.total);
-        const filipScores = recentEntries.map(entry => entry.filip.scores.total);
+        const faidaoScores = recentEntries.map(entry => entry.faidao?.scores?.total || 0);
+        const filipScores = recentEntries.map(entry => entry.filip?.scores?.total || 0);
 
         if (this.charts.scoreChart) {
             this.charts.scoreChart.destroy();
@@ -190,14 +190,14 @@ class AnalyticsManager {
 
         const labels = recentEntries.map(entry => new Date(entry.date).toLocaleDateString());
         const faidaoErrors = recentEntries.map(entry => {
-            return (entry.faidao.errors.easy || 0) +
-                   (entry.faidao.errors.medium || 0) +
-                   (entry.faidao.errors.hard || 0);
+            return (entry.faidao?.errors?.easy || 0) +
+                   (entry.faidao?.errors?.medium || 0) +
+                   (entry.faidao?.errors?.hard || 0);
         });
         const filipErrors = recentEntries.map(entry => {
-            return (entry.filip.errors.easy || 0) +
-                   (entry.filip.errors.medium || 0) +
-                   (entry.filip.errors.hard || 0);
+            return (entry.filip?.errors?.easy || 0) +
+                   (entry.filip?.errors?.medium || 0) +
+                   (entry.filip?.errors?.hard || 0);
         });
 
         if (this.charts.errorChart) {
@@ -271,9 +271,12 @@ class AnalyticsManager {
         let ties = 0;
 
         entries.forEach(entry => {
-            if (entry.faidao.scores.total > entry.filip.scores.total) {
+            const faidaoTotal = entry.faidao?.scores?.total || 0;
+            const filipTotal = entry.filip?.scores?.total || 0;
+
+            if (faidaoTotal > filipTotal) {
                 faidaoWins++;
-            } else if (entry.filip.scores.total > entry.faidao.scores.total) {
+            } else if (filipTotal > faidaoTotal) {
                 filipWins++;
             } else {
                 ties++;
@@ -305,9 +308,9 @@ class AnalyticsManager {
 
         // Calculate average scores
         const faidaoAvg = Math.round(entries.reduce((sum, entry) =>
-            sum + entry.faidao.scores.total, 0) / entries.length);
+            sum + (entry.faidao?.scores?.total || 0), 0) / entries.length);
         const filipAvg = Math.round(entries.reduce((sum, entry) =>
-            sum + entry.filip.scores.total, 0) / entries.length);
+            sum + (entry.filip?.scores?.total || 0), 0) / entries.length);
 
         faidaoScoreEl.textContent = faidaoAvg;
         filipScoreEl.textContent = filipAvg;
@@ -346,9 +349,12 @@ class AnalyticsManager {
         let filipRecentWins = 0;
 
         recentGames.forEach(entry => {
-            if (entry.faidao.scores.total > entry.filip.scores.total) {
+            const faidaoTotal = entry.faidao?.scores?.total || 0;
+            const filipTotal = entry.filip?.scores?.total || 0;
+
+            if (faidaoTotal > filipTotal) {
                 faidaoRecentWins++;
-            } else if (entry.filip.scores.total > entry.faidao.scores.total) {
+            } else if (filipTotal > faidaoTotal) {
                 filipRecentWins++;
             }
         });
@@ -361,8 +367,8 @@ class AnalyticsManager {
     calculateWinStreak(entries, player) {
         let streak = 0;
         for (const entry of entries) {
-            const playerScore = entry[player].scores.total;
-            const opponentScore = entry[player === 'faidao' ? 'filip' : 'faidao'].scores.total;
+            const playerScore = entry[player]?.scores?.total || 0;
+            const opponentScore = entry[player === 'faidao' ? 'filip' : 'faidao']?.scores?.total || 0;
 
             if (playerScore > opponentScore) {
                 streak++;
