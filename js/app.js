@@ -1351,6 +1351,8 @@ class SudokuChampionship {
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
 
+        console.log('🔄 updateTodayProgress called for date:', today);
+
         // Check cache first
         const now = Date.now();
         if (this.todayProgressCache.data &&
@@ -1358,28 +1360,34 @@ class SudokuChampionship {
             this.todayProgressCache.date === today &&
             (now - this.todayProgressCache.lastUpdate) < this.todayProgressCache.duration) {
             // Use cached data
+            console.log('✅ Using cached today progress data');
             const dbProgress = this.todayProgressCache.data;
             this.renderTodayProgress(dbProgress, players, difficulties, today);
             return;
         }
 
+        console.log('🌐 Fetching today progress from API...');
         // Try to load progress from database first
         let dbProgress = null;
         try {
             const response = await fetch(`/api/games?date=${today}`);
             if (response.ok) {
                 dbProgress = await response.json();
+                console.log('✅ Received today progress from API:', dbProgress);
 
                 // Update cache
                 this.todayProgressCache.data = dbProgress;
                 this.todayProgressCache.lastUpdate = now;
                 this.todayProgressCache.date = today;
+            } else {
+                console.warn('⚠️ API response not OK:', response.status);
             }
         } catch (error) {
             console.warn('Failed to load progress from database, falling back to localStorage:', error);
         }
 
         // Always render, even if dbProgress is null (will check localStorage fallback)
+        console.log('🎨 Rendering today progress...');
         this.renderTodayProgress(dbProgress, players, difficulties, today);
     }
 
@@ -1388,9 +1396,17 @@ class SudokuChampionship {
         players.forEach(player => {
             difficulties.forEach(difficulty => {
                 const progressElement = document.getElementById(`${player}-${difficulty}-progress`);
-                if (!progressElement) return;
+                if (!progressElement) {
+                    console.warn(`Progress element not found: ${player}-${difficulty}-progress`);
+                    return;
+                }
 
                 const statusElement = progressElement.querySelector('.progress-status');
+                if (!statusElement) {
+                    console.warn(`Status element not found for: ${player}-${difficulty}-progress`);
+                    return;
+                }
+
                 let gameData = null;
 
                 // Check database first
