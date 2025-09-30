@@ -660,8 +660,16 @@ class SudokuChampionship {
         let filipBest = this.streaks.filip?.best || 0;
 
         sortedEntries.forEach((entry) => {
-            const faidaoWon = entry.faidao.scores.total > entry.filip.scores.total;
-            const filipWon = entry.filip.scores.total > entry.faidao.scores.total;
+            // Safety check for scores
+            if (!entry.faidao?.scores || !entry.filip?.scores) {
+                return;
+            }
+
+            const faidaoTotal = entry.faidao.scores.total || 0;
+            const filipTotal = entry.filip.scores.total || 0;
+
+            const faidaoWon = faidaoTotal > filipTotal;
+            const filipWon = filipTotal > faidaoTotal;
 
             if (faidaoWon) {
                 currentFaidaoStreak++;
@@ -1027,7 +1035,14 @@ class SudokuChampionship {
             const records = [];
             ['faidao', 'filip'].forEach(player => {
                 const playerTimes = this.entries
-                    .filter(entry => !entry[player].dnf[difficulty] && entry[player].times[difficulty])
+                    .filter(entry => {
+                        // Safety check for valid entry structure
+                        return entry[player] &&
+                               entry[player].dnf &&
+                               entry[player].times &&
+                               !entry[player].dnf[difficulty] &&
+                               entry[player].times[difficulty];
+                    })
                     .map(entry => ({
                         time: entry[player].times[difficulty],
                         date: entry.date,
@@ -1048,6 +1063,10 @@ class SudokuChampionship {
         // Perfect games (0 errors)
         const perfectGames = this.entries.filter(entry => {
             return ['faidao', 'filip'].some(player => {
+                // Safety check for valid entry structure
+                if (!entry[player] || !entry[player].errors) {
+                    return false;
+                }
                 const totalErrors = (entry[player].errors.easy || 0) +
                                   (entry[player].errors.medium || 0) +
                                   (entry[player].errors.hard || 0);
@@ -1065,12 +1084,20 @@ class SudokuChampionship {
         };
 
         entries.forEach(entry => {
-            stats.faidao.totalScore += entry.faidao.scores.total;
-            stats.filip.totalScore += entry.filip.scores.total;
+            // Safety check for valid entry structure
+            if (!entry.faidao?.scores || !entry.filip?.scores) {
+                return;
+            }
 
-            if (entry.faidao.scores.total > entry.filip.scores.total) {
+            const faidaoTotal = entry.faidao.scores.total || 0;
+            const filipTotal = entry.filip.scores.total || 0;
+
+            stats.faidao.totalScore += faidaoTotal;
+            stats.filip.totalScore += filipTotal;
+
+            if (faidaoTotal > filipTotal) {
                 stats.faidao.wins++;
-            } else if (entry.filip.scores.total > entry.faidao.scores.total) {
+            } else if (filipTotal > faidaoTotal) {
                 stats.filip.wins++;
             }
         });
@@ -1144,19 +1171,27 @@ class SudokuChampionship {
 
         return perfectGames.map(entry => {
             const perfectPlayers = ['faidao', 'filip'].filter(player => {
+                // Safety check for valid entry structure
+                if (!entry[player] || !entry[player].errors) {
+                    return false;
+                }
                 const totalErrors = (entry[player].errors.easy || 0) +
                                   (entry[player].errors.medium || 0) +
                                   (entry[player].errors.hard || 0);
                 return totalErrors === 0;
             });
 
-            return perfectPlayers.map(player => `
-                <div class="record-item">
-                    <span class="player-name ${player}-color">${player}</span>
-                    <span class="record-score">${Math.round(entry[player].scores.total)} pts</span>
-                    <span class="record-date">${new Date(entry.date).toLocaleDateString()}</span>
-                </div>
-            `).join('');
+            return perfectPlayers.map(player => {
+                // Safety check for scores
+                const score = entry[player]?.scores?.total || 0;
+                return `
+                    <div class="record-item">
+                        <span class="player-name ${player}-color">${player}</span>
+                        <span class="record-score">${Math.round(score)} pts</span>
+                        <span class="record-date">${new Date(entry.date).toLocaleDateString()}</span>
+                    </div>
+                `;
+            }).join('');
         }).join('');
     }
 
