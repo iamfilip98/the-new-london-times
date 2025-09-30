@@ -433,7 +433,10 @@ class SudokuChampionship {
     isEntryComplete(entry) {
         return ['faidao', 'filip'].every(player =>
             ['easy', 'medium', 'hard'].every(difficulty =>
-                entry[player].dnf[difficulty] || entry[player].times[difficulty] !== null
+                entry[player] &&
+                entry[player].dnf &&
+                entry[player].times &&
+                (entry[player].dnf[difficulty] || entry[player].times[difficulty] !== null)
             )
         );
     }
@@ -597,6 +600,11 @@ class SudokuChampionship {
                 if (!records[player]) records[player] = {};
 
                 ['easy', 'medium', 'hard'].forEach(difficulty => {
+                    // Add null/undefined checks to prevent errors
+                    if (!entry[player] || !entry[player].times || !entry[player].errors || !entry[player].dnf) {
+                        return; // Skip this entry if data is incomplete
+                    }
+
                     const time = entry[player].times[difficulty];
                     const errors = entry[player].errors[difficulty];
                     const dnf = entry[player].dnf[difficulty];

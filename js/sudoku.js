@@ -75,6 +75,15 @@ class SudokuEngine {
             this.currentDifficulty = selectedDifficulty;
             this.explicitlySelectedDifficulty = true;
 
+            // Update the difficulty button UI immediately
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const targetBtn = document.querySelector(`[data-difficulty="${selectedDifficulty}"]`);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+
             // Always try to load saved state first, regardless of how we got here
             debugLog('Attempting to load saved game state for difficulty:', this.currentDifficulty);
             await this.loadGameState();
@@ -2104,11 +2113,30 @@ class SudokuEngine {
                     this.generateFallbackPuzzles();
                 }
 
+                // CRITICAL FIX: Only change currentDifficulty if user didn't explicitly select a difficulty
+                // This prevents the medium button bug and puzzle reset bug
+                if (this.explicitlySelectedDifficulty) {
+                    // User explicitly selected a difficulty - use that instead of saved difficulty
+                    debugLog('🎯 User explicitly selected difficulty:', this.currentDifficulty, '- ignoring saved difficulty:', savedDifficulty);
+
+                    // Load the correct puzzle for the explicitly selected difficulty
+                    if (this.currentDifficulty !== savedDifficulty) {
+                        debugLog('⚠️ Saved game is for different difficulty - loading fresh puzzle instead');
+                        // Don't load the saved state - return early to load fresh puzzle
+                        return;
+                    }
+                }
+
                 // Now ensure we have the correct solution loaded
                 if (savedDifficulty && this.dailyPuzzles && this.dailyPuzzles[savedDifficulty]) {
                     const puzzleData = this.dailyPuzzles[savedDifficulty];
                     this.solution = puzzleData.solution.map(row => [...row]);
-                    this.currentDifficulty = savedDifficulty;
+
+                    // Only update currentDifficulty if not explicitly selected
+                    if (!this.explicitlySelectedDifficulty) {
+                        this.currentDifficulty = savedDifficulty;
+                    }
+
                     debugLog('✅ Solution loaded for saved game state');
                 } else {
                     debugLog('❌ Could not load solution for difficulty:', savedDifficulty);
@@ -2581,7 +2609,7 @@ class SudokuEngine {
                     })() ? `
                     <div class="setting-item restart-section">
                         <hr>
-                        <button class="btn-secondary restart-btn" onclick="window.sudokuEngine.restartPuzzle(); this.closest('.settings-modal').remove();">
+                        <button class="btn-secondary restart-btn" onclick="window.sudokuEngine.restartPuzzleWithConfirmation(); this.closest('.settings-modal').remove();">
                             🔄 Restart Current Puzzle
                         </button>
                         <small>This will clear your progress and start the puzzle fresh</small>
@@ -3449,12 +3477,16 @@ class SudokuEngine {
         document.getElementById('dashboard').classList.add('active');
     }
 
-    restartPuzzle() {
-        if (!confirm('Are you sure you want to restart the current puzzle? This will clear all your progress.')) {
-            return;
-        }
+    restartPuzzleWithConfirmation() {
+        // Wrapper function to call from onclick handler
+        this.restartPuzzle();
+    }
 
+    restartPuzzle() {
         debugLog('Restarting current puzzle');
+
+        // Remember the current difficulty to ensure it stays the same
+        const targetDifficulty = this.currentDifficulty;
 
         // Remember if the game was paused before restarting
         const wasPaused = this.gamePaused;
@@ -3462,7 +3494,7 @@ class SudokuEngine {
         // Clear saved game state for this difficulty
         const currentPlayer = sessionStorage.getItem('currentPlayer');
         if (currentPlayer) {
-            const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
+            const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${targetDifficulty}`;
             localStorage.removeItem(key);
         }
 
@@ -3486,6 +3518,10 @@ class SudokuEngine {
         this.selectedCell = null;
         this.moveHistory = [];
 
+        // CRITICAL FIX: Mark as explicitly selected to prevent loadGameState from changing difficulty
+        this.explicitlySelectedDifficulty = true;
+        this.currentDifficulty = targetDifficulty;
+
         // Explicitly clear the player grid before reloading
         this.playerGrid = Array(9).fill().map(() => Array(9).fill(0));
         this.candidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
@@ -3495,8 +3531,8 @@ class SudokuEngine {
         // Force a display update to clear the DOM
         this.updateDisplay();
 
-        // Reload the same puzzle fresh
-        this.loadPuzzle(this.currentDifficulty);
+        // Reload the same puzzle fresh for the target difficulty
+        this.loadPuzzle(targetDifficulty);
 
         // If the game was paused before restarting, pause it again
         if (wasPaused) {
