@@ -762,9 +762,18 @@ class SudokuChampionship {
         const completeEntries = this.entries.filter(entry => this.isEntryComplete(entry));
 
         completeEntries.forEach(entry => {
-            if (entry.faidao.scores.total > entry.filip.scores.total) {
+            // Safety check for scores property
+            if (!entry.faidao?.scores || !entry.filip?.scores) {
+                console.warn('Entry missing scores:', entry);
+                return;
+            }
+
+            const faidaoTotal = entry.faidao.scores.total || 0;
+            const filipTotal = entry.filip.scores.total || 0;
+
+            if (faidaoTotal > filipTotal) {
                 faidaoWins++;
-            } else if (entry.filip.scores.total > entry.faidao.scores.total) {
+            } else if (filipTotal > faidaoTotal) {
                 filipWins++;
             }
         });
@@ -825,6 +834,8 @@ class SudokuChampionship {
 
     updateRecentHistory() {
         const historyContainer = document.getElementById('historyCards');
+        if (!historyContainer) return;
+
         const recentEntries = this.entries.slice(0, 5); // Show last 5 entries
 
         if (recentEntries.length === 0) {
@@ -833,12 +844,21 @@ class SudokuChampionship {
         }
 
         historyContainer.innerHTML = recentEntries.map(entry => {
+            // Check if entry has valid structure
+            if (!entry.faidao || !entry.filip || !entry.faidao.scores || !entry.filip.scores) {
+                console.warn('Invalid entry structure:', entry);
+                return '';
+            }
+
             // Check if entry is complete
             const isComplete = this.isEntryComplete(entry);
 
+            const faidaoTotal = entry.faidao.scores.total || 0;
+            const filipTotal = entry.filip.scores.total || 0;
+
             const winner = isComplete
-                ? (entry.faidao.scores.total > entry.filip.scores.total ? 'Faidao' :
-                   entry.filip.scores.total > entry.faidao.scores.total ? 'Filip' : 'Tie')
+                ? (faidaoTotal > filipTotal ? 'Faidao' :
+                   filipTotal > faidaoTotal ? 'Filip' : 'Tie')
                 : 'Incomplete';
 
             return `
@@ -847,12 +867,12 @@ class SudokuChampionship {
                     <div class="history-scores">
                         <div class="history-score">
                             <div class="player-name">Faidao</div>
-                            <div class="score-value">${entry.faidao.scores.total.toFixed(0)}</div>
+                            <div class="score-value">${faidaoTotal.toFixed(0)}</div>
                         </div>
                         <div class="score-vs">VS</div>
                         <div class="history-score">
                             <div class="player-name">Filip</div>
-                            <div class="score-value">${entry.filip.scores.total.toFixed(0)}</div>
+                            <div class="score-value">${filipTotal.toFixed(0)}</div>
                         </div>
                     </div>
                     <div class="history-winner${winner === 'Filip' ? ' filip-winner' : ''}">${winner}</div>
