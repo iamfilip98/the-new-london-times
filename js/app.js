@@ -1363,8 +1363,6 @@ class SudokuChampionship {
             return;
         }
 
-        // Skip loading state - update directly when data is ready
-
         // Try to load progress from database first
         let dbProgress = null;
         try {
@@ -1381,6 +1379,7 @@ class SudokuChampionship {
             console.warn('Failed to load progress from database, falling back to localStorage:', error);
         }
 
+        // Always render, even if dbProgress is null (will check localStorage fallback)
         this.renderTodayProgress(dbProgress, players, difficulties, today);
     }
 

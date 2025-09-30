@@ -7236,7 +7236,7 @@ select:focus-visible,
     font-family: 'Orbitron', monospace;
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--accent-blue);
+    color: white;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
     text-align: left;
     flex-shrink: 0;
@@ -7250,7 +7250,7 @@ select:focus-visible,
     font-family: 'Orbitron', monospace;
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--accent-blue);
+    color: #ff69b4;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     text-align: right;
     flex-shrink: 0;
