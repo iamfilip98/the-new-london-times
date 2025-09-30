@@ -134,7 +134,7 @@ class AnalyticsManager {
             avgTimes[player] = {};
             difficulties.forEach(difficulty => {
                 const times = entries
-                    .filter(entry => !entry[player].dnf[difficulty] && entry[player].times[difficulty] !== null)
+                    .filter(entry => entry[player]?.dnf?.[difficulty] === false && entry[player]?.times?.[difficulty] !== null)
                     .map(entry => entry[player].times[difficulty]);
 
                 avgTimes[player][difficulty] = times.length > 0 ?
