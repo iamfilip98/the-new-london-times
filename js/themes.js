@@ -18,10 +18,10 @@ class ThemeManager {
             default: {
                 name: 'Classic',
                 colors: {
-                    primary: '#667eea',
-                    secondary: '#764ba2',
-                    accent: '#4facfe',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                    primary: '#ff6b35',
+                    secondary: '#2d1b69',
+                    accent: '#ff9500',
+                    background: 'linear-gradient(135deg, #2d1b69 0%, #ff6b35 100%)'
                 },
                 multiplier: 1.0,
                 icon: 'fas fa-puzzle-piece'
