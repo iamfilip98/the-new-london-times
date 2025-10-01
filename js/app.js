@@ -44,6 +44,9 @@ class SudokuChampionship {
         this.lastCheckedDate = localStorage.getItem('lastCheckedDate');
         this.initializationComplete = false;
 
+        // Track when we've determined today's battle winner to prevent polling from clearing it
+        this.lastCompleteBattleDate = null;
+
         this.init();
     }
 
@@ -1537,13 +1540,17 @@ class SudokuChampionship {
         if (completedGames === totalGamesRequired) {
             // Update the battle results display
             this.updateBattleResults(todayScores);
+            // Mark that we have a complete battle for today
+            this.lastCompleteBattleDate = today;
         } else {
-            // Show default message when not all games are completed
-            const winnerElement = document.getElementById('winnerAnnouncement');
-            if (winnerElement) {
-                winnerElement.querySelector('.winner-text').textContent = 'Play Sudoku to compete!';
-                // For incomplete games, use a subtle background
-                winnerElement.style.background = 'rgba(255, 255, 255, 0.1)';
+            // Only update to incomplete state if we haven't marked today's battle as complete
+            if (this.lastCompleteBattleDate !== today) {
+                const winnerElement = document.getElementById('winnerAnnouncement');
+                if (winnerElement) {
+                    winnerElement.querySelector('.winner-text').textContent = 'Play Sudoku to compete!';
+                    // For incomplete games, use a subtle background
+                    winnerElement.style.background = 'rgba(255, 255, 255, 0.1)';
+                }
             }
 
             // Still update score bars to show progress
