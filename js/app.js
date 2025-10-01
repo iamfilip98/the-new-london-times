@@ -461,16 +461,11 @@ class SudokuChampionship {
         if (faidaoTotal > filipTotal && faidaoTotal > 0) {
             winner = 'faidao';
             winnerText = '🏆 Faidao Wins!';
-            // Remove any inline background style to use CSS gold styling
-            winnerElement.style.background = '';
         } else if (filipTotal > faidaoTotal && filipTotal > 0) {
             winner = 'filip';
             winnerText = '🏆 Filip Wins!';
-            // Remove any inline background style to use CSS gold styling
-            winnerElement.style.background = '';
         } else {
-            // For ties, use a subtle background
-            winnerElement.style.background = 'rgba(255, 255, 255, 0.1)';
+            winnerText = "It's a tie!";
         }
 
         winnerElement.querySelector('.winner-text').textContent = winnerText;
@@ -1548,8 +1543,6 @@ class SudokuChampionship {
                 const winnerElement = document.getElementById('winnerAnnouncement');
                 if (winnerElement) {
                     winnerElement.querySelector('.winner-text').textContent = 'Play Sudoku to compete!';
-                    // For incomplete games, use a subtle background
-                    winnerElement.style.background = 'rgba(255, 255, 255, 0.1)';
                 }
             }
 
