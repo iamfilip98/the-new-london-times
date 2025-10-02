@@ -1849,6 +1849,18 @@ class SudokuEngine {
                 <div class="completion-icon">🎉</div>
                 <div class="completion-text">Puzzle Complete!</div>
                 <div class="completion-time">${this.formatTime(this.timer)}</div>
+
+                <!-- Rating System -->
+                <div class="puzzle-rating-section">
+                    <div class="rating-prompt">How would you rate this puzzle?</div>
+                    <div class="rating-stars" id="puzzleRatingStars">
+                        ${[1,2,3,4,5,6,7,8,9,10].map(rating =>
+                            `<button class="rating-star" data-rating="${rating}" onclick="window.sudokuEngine.ratePuzzle(${rating})">${rating}</button>`
+                        ).join('')}
+                    </div>
+                    <div class="rating-feedback" id="ratingFeedback"></div>
+                </div>
+
                 ${navigationButton}
                 ${isPersistent ? '<div class="completion-hint">Click anywhere to dismiss</div>' : ''}
             </div>
@@ -1914,6 +1926,260 @@ class SudokuEngine {
         } else {
             console.error('Could not find grid container for completion notification');
         }
+    }
+
+    // Rate the completed puzzle
+    ratePuzzle(rating) {
+        debugLog('Rating puzzle:', rating);
+
+        // Visual feedback
+        const ratingStars = document.querySelectorAll('.rating-star');
+        ratingStars.forEach(star => {
+            star.classList.remove('selected');
+            if (parseInt(star.dataset.rating) <= rating) {
+                star.classList.add('selected');
+            }
+        });
+
+        const feedbackEl = document.getElementById('ratingFeedback');
+        if (feedbackEl) {
+            feedbackEl.textContent = `Thanks for rating this puzzle ${rating}/10!`;
+            feedbackEl.style.color = '#4ade80';
+        }
+
+        // Prepare puzzle data to store
+        const puzzleData = {
+            rating: rating,
+            timestamp: new Date().toISOString(),
+            date: new Date().toISOString().split('T')[0],
+            difficulty: this.currentDifficulty,
+            time: this.timer,
+            errors: this.errors,
+            hints: this.hints,
+            score: this.calculateFinalScore(),
+            player: sessionStorage.getItem('currentPlayer'),
+            puzzle: {
+                grid: JSON.stringify(this.initialGrid),
+                solution: JSON.stringify(this.solution)
+            }
+        };
+
+        // Store the rating
+        this.storePuzzleRating(puzzleData);
+
+        // Disable further rating
+        ratingStars.forEach(star => {
+            star.disabled = true;
+            star.style.opacity = '0.6';
+        });
+    }
+
+    // Store puzzle rating data
+    storePuzzleRating(ratingData) {
+        try {
+            // Get existing ratings or initialize empty array
+            let puzzleRatings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+
+            // Add new rating
+            puzzleRatings.push(ratingData);
+
+            // Store back to localStorage
+            localStorage.setItem('puzzleRatings', JSON.stringify(puzzleRatings));
+
+            debugLog('Stored puzzle rating:', ratingData);
+            debugLog('Total ratings stored:', puzzleRatings.length);
+
+            // Check if we should run analysis (after 7 days of data)
+            this.checkAnalysisReadiness(puzzleRatings);
+        } catch (error) {
+            console.error('Error storing puzzle rating:', error);
+        }
+    }
+
+    // Check if we have 7 days of data and trigger analysis
+    checkAnalysisReadiness(ratings) {
+        if (!ratings || ratings.length === 0) return;
+
+        // Get unique dates
+        const uniqueDates = [...new Set(ratings.map(r => r.date))];
+
+        debugLog('Puzzle ratings collected for', uniqueDates.length, 'days');
+
+        // If we have 7 or more days of data, we can analyze
+        if (uniqueDates.length >= 7) {
+            debugLog('🎯 7 days of data collected! Analysis is ready.');
+            // Set a flag that analysis is available
+            localStorage.setItem('puzzleAnalysisReady', 'true');
+        }
+    }
+
+    // Analyze puzzle ratings to find patterns
+    analyzePuzzleRatings() {
+        try {
+            const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+
+            if (ratings.length === 0) {
+                console.log('📊 No puzzle ratings to analyze yet.');
+                return null;
+            }
+
+            console.log('📊 Analyzing', ratings.length, 'puzzle ratings...\n');
+
+            // 1. Overall statistics
+            const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
+            const highRatedPuzzles = ratings.filter(r => r.rating >= 8);
+            const lowRatedPuzzles = ratings.filter(r => r.rating <= 4);
+
+            console.log('=== OVERALL STATISTICS ===');
+            console.log('Average rating:', avgRating.toFixed(2));
+            console.log('Total puzzles rated:', ratings.length);
+            console.log('High-rated puzzles (≥8):', highRatedPuzzles.length);
+            console.log('Low-rated puzzles (≤4):', lowRatedPuzzles.length);
+            console.log('');
+
+            // 2. Difficulty analysis
+            const byDifficulty = {};
+            ['easy', 'medium', 'hard'].forEach(diff => {
+                const diffRatings = ratings.filter(r => r.difficulty === diff);
+                if (diffRatings.length > 0) {
+                    byDifficulty[diff] = {
+                        count: diffRatings.length,
+                        avgRating: diffRatings.reduce((sum, r) => sum + r.rating, 0) / diffRatings.length,
+                        avgTime: diffRatings.reduce((sum, r) => sum + r.time, 0) / diffRatings.length,
+                        avgErrors: diffRatings.reduce((sum, r) => sum + r.errors, 0) / diffRatings.length,
+                        avgHints: diffRatings.reduce((sum, r) => sum + r.hints, 0) / diffRatings.length,
+                        puzzles: diffRatings
+                    };
+                }
+            });
+
+            console.log('=== DIFFICULTY ANALYSIS ===');
+            Object.entries(byDifficulty).forEach(([diff, stats]) => {
+                console.log(`${diff.toUpperCase()}:`);
+                console.log('  Average rating:', stats.avgRating.toFixed(2));
+                console.log('  Average time:', Math.floor(stats.avgTime / 60) + 'm ' + (stats.avgTime % 60) + 's');
+                console.log('  Average errors:', stats.avgErrors.toFixed(1));
+                console.log('  Average hints:', stats.avgHints.toFixed(1));
+                console.log('');
+            });
+
+            // 3. Top patterns in high-rated puzzles
+            console.log('=== HIGH-RATED PUZZLES (Rating ≥ 8) ===');
+            if (highRatedPuzzles.length > 0) {
+                const avgTimeHigh = highRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / highRatedPuzzles.length;
+                const avgErrorsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / highRatedPuzzles.length;
+                const avgHintsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / highRatedPuzzles.length;
+
+                console.log('Common characteristics:');
+                console.log('  Average time:', Math.floor(avgTimeHigh / 60) + 'm ' + (avgTimeHigh % 60) + 's');
+                console.log('  Average errors:', avgErrorsHigh.toFixed(1));
+                console.log('  Average hints:', avgHintsHigh.toFixed(1));
+
+                const diffBreakdown = {};
+                highRatedPuzzles.forEach(p => {
+                    diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
+                });
+                console.log('  Difficulty breakdown:', diffBreakdown);
+                console.log('');
+            }
+
+            // 4. Low-rated puzzle analysis
+            console.log('=== LOW-RATED PUZZLES (Rating ≤ 4) ===');
+            if (lowRatedPuzzles.length > 0) {
+                const avgTimeLow = lowRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / lowRatedPuzzles.length;
+                const avgErrorsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / lowRatedPuzzles.length;
+                const avgHintsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / lowRatedPuzzles.length;
+
+                console.log('Common characteristics:');
+                console.log('  Average time:', Math.floor(avgTimeLow / 60) + 'm ' + (avgTimeLow % 60) + 's');
+                console.log('  Average errors:', avgErrorsLow.toFixed(1));
+                console.log('  Average hints:', avgHintsLow.toFixed(1));
+
+                const diffBreakdown = {};
+                lowRatedPuzzles.forEach(p => {
+                    diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
+                });
+                console.log('  Difficulty breakdown:', diffBreakdown);
+                console.log('');
+            }
+
+            // 5. Key insights and recommendations
+            console.log('=== KEY INSIGHTS & RECOMMENDATIONS ===');
+
+            // Find best difficulty
+            const bestDifficulty = Object.entries(byDifficulty)
+                .sort((a, b) => b[1].avgRating - a[1].avgRating)[0];
+
+            if (bestDifficulty) {
+                console.log('✅ Best-rated difficulty:', bestDifficulty[0].toUpperCase(),
+                    '(avg rating:', bestDifficulty[1].avgRating.toFixed(2) + ')');
+            }
+
+            // Error correlation
+            const errorCorrelation = this.calculateCorrelation(
+                ratings.map(r => r.errors),
+                ratings.map(r => r.rating)
+            );
+
+            if (errorCorrelation < -0.3) {
+                console.log('⚠️  High error count correlates with low ratings');
+                console.log('   → Recommendation: Reduce puzzle difficulty or improve hints');
+            }
+
+            // Time correlation
+            const timeCorrelation = this.calculateCorrelation(
+                ratings.map(r => r.time),
+                ratings.map(r => r.rating)
+            );
+
+            if (timeCorrelation < -0.3) {
+                console.log('⏱️  Longer solve times correlate with low ratings');
+                console.log('   → Recommendation: Add more engaging patterns or reduce complexity');
+            }
+
+            console.log('');
+            console.log('📋 Analysis complete! Use these insights to improve puzzle generation.');
+
+            return {
+                overall: { avgRating, totalCount: ratings.length, highRated: highRatedPuzzles.length, lowRated: lowRatedPuzzles.length },
+                byDifficulty,
+                highRatedPuzzles,
+                lowRatedPuzzles,
+                insights: {
+                    bestDifficulty: bestDifficulty ? bestDifficulty[0] : null,
+                    errorCorrelation,
+                    timeCorrelation
+                }
+            };
+        } catch (error) {
+            console.error('Error analyzing puzzle ratings:', error);
+            return null;
+        }
+    }
+
+    // Calculate correlation coefficient between two arrays
+    calculateCorrelation(x, y) {
+        if (x.length !== y.length || x.length === 0) return 0;
+
+        const n = x.length;
+        const meanX = x.reduce((a, b) => a + b, 0) / n;
+        const meanY = y.reduce((a, b) => a + b, 0) / n;
+
+        let numerator = 0;
+        let denomX = 0;
+        let denomY = 0;
+
+        for (let i = 0; i < n; i++) {
+            const dx = x[i] - meanX;
+            const dy = y[i] - meanY;
+            numerator += dx * dy;
+            denomX += dx * dx;
+            denomY += dy * dy;
+        }
+
+        if (denomX === 0 || denomY === 0) return 0;
+
+        return numerator / Math.sqrt(denomX * denomY);
     }
 
     startTimer() {
@@ -4095,3 +4361,204 @@ window.debugPuzzleState = function(verbose = true) {
     // Restore original debug state
     window.sudokuDebug = originalDebug;
 };
+
+// Global function to analyze puzzle ratings
+window.analyzePuzzleRatings = function() {
+    console.log('🔍 Starting puzzle rating analysis...\n');
+
+    if (!window.sudokuEngine) {
+        console.warn('⚠️  Sudoku engine not found. Analysis will still proceed with stored data.');
+        console.log('Note: You can call this function from anywhere, anytime.\n');
+    }
+
+    // Get ratings from localStorage directly
+    const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+
+    if (ratings.length === 0) {
+        console.log('📊 No puzzle ratings found yet.');
+        console.log('💡 Complete some puzzles and rate them to see analysis!\n');
+        return null;
+    }
+
+    // Calculate statistics
+    const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
+    const highRatedPuzzles = ratings.filter(r => r.rating >= 8);
+    const lowRatedPuzzles = ratings.filter(r => r.rating <= 4);
+
+    console.log('=== OVERALL STATISTICS ===');
+    console.log('Average rating:', avgRating.toFixed(2));
+    console.log('Total puzzles rated:', ratings.length);
+    console.log('High-rated puzzles (≥8):', highRatedPuzzles.length);
+    console.log('Low-rated puzzles (≤4):', lowRatedPuzzles.length);
+    console.log('');
+
+    // Difficulty analysis
+    const byDifficulty = {};
+    ['easy', 'medium', 'hard'].forEach(diff => {
+        const diffRatings = ratings.filter(r => r.difficulty === diff);
+        if (diffRatings.length > 0) {
+            byDifficulty[diff] = {
+                count: diffRatings.length,
+                avgRating: diffRatings.reduce((sum, r) => sum + r.rating, 0) / diffRatings.length,
+                avgTime: diffRatings.reduce((sum, r) => sum + r.time, 0) / diffRatings.length,
+                avgErrors: diffRatings.reduce((sum, r) => sum + r.errors, 0) / diffRatings.length,
+                avgHints: diffRatings.reduce((sum, r) => sum + r.hints, 0) / diffRatings.length,
+                puzzles: diffRatings
+            };
+        }
+    });
+
+    console.log('=== DIFFICULTY ANALYSIS ===');
+    Object.entries(byDifficulty).forEach(([diff, stats]) => {
+        console.log(`${diff.toUpperCase()}:`);
+        console.log('  Average rating:', stats.avgRating.toFixed(2));
+        console.log('  Average time:', Math.floor(stats.avgTime / 60) + 'm ' + (stats.avgTime % 60) + 's');
+        console.log('  Average errors:', stats.avgErrors.toFixed(1));
+        console.log('  Average hints:', stats.avgHints.toFixed(1));
+        console.log('');
+    });
+
+    // High-rated puzzle patterns
+    console.log('=== HIGH-RATED PUZZLES (Rating ≥ 8) ===');
+    if (highRatedPuzzles.length > 0) {
+        const avgTimeHigh = highRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / highRatedPuzzles.length;
+        const avgErrorsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / highRatedPuzzles.length;
+        const avgHintsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / highRatedPuzzles.length;
+
+        console.log('Common characteristics:');
+        console.log('  Average time:', Math.floor(avgTimeHigh / 60) + 'm ' + (avgTimeHigh % 60) + 's');
+        console.log('  Average errors:', avgErrorsHigh.toFixed(1));
+        console.log('  Average hints:', avgHintsHigh.toFixed(1));
+
+        const diffBreakdown = {};
+        highRatedPuzzles.forEach(p => {
+            diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
+        });
+        console.log('  Difficulty breakdown:', diffBreakdown);
+        console.log('');
+    }
+
+    // Low-rated puzzle patterns
+    console.log('=== LOW-RATED PUZZLES (Rating ≤ 4) ===');
+    if (lowRatedPuzzles.length > 0) {
+        const avgTimeLow = lowRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / lowRatedPuzzles.length;
+        const avgErrorsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / lowRatedPuzzles.length;
+        const avgHintsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / lowRatedPuzzles.length;
+
+        console.log('Common characteristics:');
+        console.log('  Average time:', Math.floor(avgTimeLow / 60) + 'm ' + (avgTimeLow % 60) + 's');
+        console.log('  Average errors:', avgErrorsLow.toFixed(1));
+        console.log('  Average hints:', avgHintsLow.toFixed(1));
+
+        const diffBreakdown = {};
+        lowRatedPuzzles.forEach(p => {
+            diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
+        });
+        console.log('  Difficulty breakdown:', diffBreakdown);
+        console.log('');
+    }
+
+    // Calculate correlation
+    const calculateCorrelation = (x, y) => {
+        if (x.length !== y.length || x.length === 0) return 0;
+        const n = x.length;
+        const meanX = x.reduce((a, b) => a + b, 0) / n;
+        const meanY = y.reduce((a, b) => a + b, 0) / n;
+        let numerator = 0, denomX = 0, denomY = 0;
+        for (let i = 0; i < n; i++) {
+            const dx = x[i] - meanX;
+            const dy = y[i] - meanY;
+            numerator += dx * dy;
+            denomX += dx * dx;
+            denomY += dy * dy;
+        }
+        if (denomX === 0 || denomY === 0) return 0;
+        return numerator / Math.sqrt(denomX * denomY);
+    };
+
+    // Insights and recommendations
+    console.log('=== KEY INSIGHTS & RECOMMENDATIONS ===');
+
+    const bestDifficulty = Object.entries(byDifficulty)
+        .sort((a, b) => b[1].avgRating - a[1].avgRating)[0];
+
+    if (bestDifficulty) {
+        console.log('✅ Best-rated difficulty:', bestDifficulty[0].toUpperCase(),
+            '(avg rating:', bestDifficulty[1].avgRating.toFixed(2) + ')');
+    }
+
+    const errorCorrelation = calculateCorrelation(
+        ratings.map(r => r.errors),
+        ratings.map(r => r.rating)
+    );
+
+    if (errorCorrelation < -0.3) {
+        console.log('⚠️  High error count correlates with low ratings');
+        console.log('   → Recommendation: Reduce puzzle difficulty or improve hints');
+    }
+
+    const timeCorrelation = calculateCorrelation(
+        ratings.map(r => r.time),
+        ratings.map(r => r.rating)
+    );
+
+    if (timeCorrelation < -0.3) {
+        console.log('⏱️  Longer solve times correlate with low ratings');
+        console.log('   → Recommendation: Add more engaging patterns or reduce complexity');
+    }
+
+    console.log('');
+    console.log('📋 Analysis complete! Use these insights to improve puzzle generation.');
+
+    // Check data collection progress
+    const uniqueDates = [...new Set(ratings.map(r => r.date))];
+    console.log('');
+    console.log('📅 Data Collection Progress:', uniqueDates.length, 'days of data collected');
+    if (uniqueDates.length < 7) {
+        console.log('💡 Continue collecting data for', 7 - uniqueDates.length, 'more days for best results.');
+    }
+
+    return {
+        overall: { avgRating, totalCount: ratings.length, highRated: highRatedPuzzles.length, lowRated: lowRatedPuzzles.length },
+        byDifficulty,
+        highRatedPuzzles,
+        lowRatedPuzzles,
+        insights: {
+            bestDifficulty: bestDifficulty ? bestDifficulty[0] : null,
+            errorCorrelation,
+            timeCorrelation
+        }
+    };
+};
+
+// Helper function to view all ratings
+window.viewPuzzleRatings = function() {
+    const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+    console.log('📊 All Puzzle Ratings (' + ratings.length + ' total):');
+    console.table(ratings.map(r => ({
+        Date: r.date,
+        Difficulty: r.difficulty,
+        Rating: r.rating,
+        Time: Math.floor(r.time / 60) + 'm ' + (r.time % 60) + 's',
+        Errors: r.errors,
+        Hints: r.hints,
+        Score: r.score,
+        Player: r.player
+    })));
+    return ratings;
+};
+
+// Helper function to clear ratings (for testing)
+window.clearPuzzleRatings = function() {
+    if (confirm('Are you sure you want to clear all puzzle ratings? This cannot be undone.')) {
+        localStorage.removeItem('puzzleRatings');
+        localStorage.removeItem('puzzleAnalysisReady');
+        console.log('✅ All puzzle ratings have been cleared.');
+    }
+};
+
+console.log('📊 Puzzle Rating System Loaded!');
+console.log('Available commands:');
+console.log('  - analyzePuzzleRatings() - Analyze collected ratings and find patterns');
+console.log('  - viewPuzzleRatings() - View all ratings in a table');
+console.log('  - clearPuzzleRatings() - Clear all ratings (with confirmation)');
