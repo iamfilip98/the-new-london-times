@@ -1919,7 +1919,8 @@ class SudokuEngine {
                     document.addEventListener('click', dismissNotification);
                 }, 100); // Small delay to prevent immediate dismissal
             } else {
-                // Auto-remove the notification after 3 seconds for fresh completions
+                // Auto-remove the notification after 15 seconds for fresh completions
+                // Increased timeout to give users time to rate the puzzle
                 setTimeout(() => {
                     notification.style.opacity = '0';
                     setTimeout(() => {
@@ -1927,7 +1928,7 @@ class SudokuEngine {
                             notification.parentNode.removeChild(notification);
                         }
                     }, 500);
-                }, 3000);
+                }, 15000);
             }
         } else {
             console.error('Could not find grid container for completion notification');
