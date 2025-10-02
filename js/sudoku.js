@@ -1900,6 +1900,9 @@ class SudokuEngine {
                 }
             }, 10); // Small delay to ensure DOM is updated
 
+            // Store notification reference for later dismissal
+            this.activeNotification = notification;
+
             if (isPersistent) {
                 // Add click handler to dismiss persistent notification
                 const dismissNotification = () => {
@@ -1918,18 +1921,9 @@ class SudokuEngine {
                 setTimeout(() => {
                     document.addEventListener('click', dismissNotification);
                 }, 100); // Small delay to prevent immediate dismissal
-            } else {
-                // Auto-remove the notification after 15 seconds for fresh completions
-                // Increased timeout to give users time to rate the puzzle
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 500);
-                }, 15000);
             }
+            // For fresh completions, notification stays visible until user rates
+            // No auto-dismiss timeout - will be dismissed when user clicks a rating
         } else {
             console.error('Could not find grid container for completion notification');
         }
@@ -1979,6 +1973,19 @@ class SudokuEngine {
             star.disabled = true;
             star.style.opacity = '0.6';
         });
+
+        // Dismiss notification after rating
+        if (this.activeNotification) {
+            setTimeout(() => {
+                this.activeNotification.style.opacity = '0';
+                setTimeout(() => {
+                    if (this.activeNotification && this.activeNotification.parentNode) {
+                        this.activeNotification.parentNode.removeChild(this.activeNotification);
+                    }
+                    this.activeNotification = null;
+                }, 500);
+            }, 2000); // Give user 2 seconds to see the "thanks" message
+        }
     }
 
     // Store puzzle rating data (both locally and on server)
