@@ -1921,8 +1921,11 @@ class SudokuEngine {
                 setTimeout(() => {
                     document.addEventListener('click', dismissNotification);
                 }, 100); // Small delay to prevent immediate dismissal
+            } else {
+                // For fresh completions, enable pointer events so rating buttons work
+                notification.style.pointerEvents = 'auto';
             }
-            // For fresh completions, notification stays visible until user rates
+            // Notification stays visible until user rates
             // No auto-dismiss timeout - will be dismissed when user clicks a rating
         } else {
             console.error('Could not find grid container for completion notification');
