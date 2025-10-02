@@ -7041,6 +7041,16 @@ select:focus-visible,
     .action-btn span {
         display: none;
     }
+
+    .toggle-candidates-btn span {
+        display: inline !important;
+        font-size: 0;
+    }
+
+    .toggle-candidates-btn span::before {
+        content: "Show";
+        font-size: 0.8rem;
+    }
 }
 
 /* Progress Notifications */
