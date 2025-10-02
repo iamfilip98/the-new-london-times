@@ -7453,7 +7453,7 @@ select:focus-visible,
 
 /* Theme-specific overrides */
 .theme-halloween .sudoku-grid {
-    border-color: var(--sudoku-grid-border, #ff6b35);
+    border-color: var(--sudoku-grid-border, #000000);
 }
 
 .theme-halloween .sudoku-cell.selected {
@@ -7461,7 +7461,7 @@ select:focus-visible,
 }
 
 .theme-christmas .sudoku-grid {
-    border-color: var(--sudoku-grid-border, #c41e3a);
+    border-color: var(--sudoku-grid-border, #000000);
 }
 
 .theme-christmas .sudoku-cell.selected {
@@ -7469,7 +7469,7 @@ select:focus-visible,
 }
 
 .theme-newYear .sudoku-grid {
-    border-color: var(--sudoku-grid-border, #ffd700);
+    border-color: var(--sudoku-grid-border, #000000);
 }
 
 .theme-newYear .sudoku-cell.selected {
@@ -7477,7 +7477,7 @@ select:focus-visible,
 }
 
 .theme-valentines .sudoku-grid {
-    border-color: var(--sudoku-grid-border, #e91e63);
+    border-color: var(--sudoku-grid-border, #000000);
 }
 
 .theme-valentines .sudoku-cell.selected {
@@ -7485,7 +7485,7 @@ select:focus-visible,
 }
 
 .theme-spring .sudoku-grid {
-    border-color: var(--sudoku-grid-border, #32cd32);
+    border-color: var(--sudoku-grid-border, #000000);
 }
 
 .theme-spring .sudoku-cell.selected {
@@ -7493,7 +7493,7 @@ select:focus-visible,
 }
 
 .theme-summer .sudoku-grid {
-    border-color: var(--sudoku-grid-border, #ff4500);
+    border-color: var(--sudoku-grid-border, #000000);
 }
 
 .theme-summer .sudoku-cell.selected {
