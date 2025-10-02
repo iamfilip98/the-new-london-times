@@ -7045,6 +7045,8 @@ select:focus-visible,
     .toggle-candidates-btn span {
         display: inline !important;
         font-size: 0;
+        overflow: visible !important;
+        text-overflow: clip !important;
     }
 
     .toggle-candidates-btn span::before {
