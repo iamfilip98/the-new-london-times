@@ -65,6 +65,12 @@ class SudokuEngine {
         this.loadDailyPuzzles();
         this.setupEventListeners();
 
+        // Load ratings from server (for cross-device sync)
+        await this.loadRatingsFromServer();
+
+        // Sync any pending ratings
+        await this.syncPendingRatings();
+
         // Check if there's a selected difficulty from dashboard
         const selectedDifficulty = sessionStorage.getItem('selectedDifficulty');
         if (selectedDifficulty) {
@@ -1974,25 +1980,144 @@ class SudokuEngine {
         });
     }
 
-    // Store puzzle rating data
-    storePuzzleRating(ratingData) {
+    // Store puzzle rating data (both locally and on server)
+    async storePuzzleRating(ratingData) {
         try {
-            // Get existing ratings or initialize empty array
+            // Store locally first (for offline support)
             let puzzleRatings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
-
-            // Add new rating
             puzzleRatings.push(ratingData);
-
-            // Store back to localStorage
             localStorage.setItem('puzzleRatings', JSON.stringify(puzzleRatings));
 
-            debugLog('Stored puzzle rating:', ratingData);
+            debugLog('Stored puzzle rating locally:', ratingData);
+
+            // Sync to server
+            try {
+                const response = await fetch('/api/ratings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(ratingData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    debugLog('✅ Rating synced to server:', result);
+                    // Mark as synced
+                    ratingData.synced = true;
+                    localStorage.setItem('puzzleRatings', JSON.stringify(puzzleRatings));
+                } else {
+                    debugLog('⚠️  Server sync failed, stored locally only');
+                    // Mark for later sync
+                    ratingData.synced = false;
+                    localStorage.setItem('puzzleRatings', JSON.stringify(puzzleRatings));
+                }
+            } catch (syncError) {
+                debugLog('⚠️  Server unavailable, stored locally only');
+                ratingData.synced = false;
+                localStorage.setItem('puzzleRatings', JSON.stringify(puzzleRatings));
+            }
+
             debugLog('Total ratings stored:', puzzleRatings.length);
 
             // Check if we should run analysis (after 7 days of data)
             this.checkAnalysisReadiness(puzzleRatings);
         } catch (error) {
             console.error('Error storing puzzle rating:', error);
+        }
+    }
+
+    // Sync unsynced ratings to server
+    async syncPendingRatings() {
+        try {
+            const puzzleRatings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+            const unsyncedRatings = puzzleRatings.filter(r => !r.synced);
+
+            if (unsyncedRatings.length === 0) {
+                debugLog('✅ All ratings are synced');
+                return;
+            }
+
+            debugLog(`🔄 Syncing ${unsyncedRatings.length} pending ratings...`);
+
+            for (const rating of unsyncedRatings) {
+                try {
+                    const response = await fetch('/api/ratings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(rating)
+                    });
+
+                    if (response.ok) {
+                        rating.synced = true;
+                        debugLog('✅ Synced rating from', rating.date);
+                    }
+                } catch (err) {
+                    debugLog('⚠️  Failed to sync rating from', rating.date);
+                }
+            }
+
+            // Update localStorage with synced status
+            localStorage.setItem('puzzleRatings', JSON.stringify(puzzleRatings));
+
+            const remainingUnsynced = puzzleRatings.filter(r => !r.synced).length;
+            if (remainingUnsynced === 0) {
+                debugLog('✅ All ratings successfully synced!');
+            } else {
+                debugLog(`⚠️  ${remainingUnsynced} ratings still pending sync`);
+            }
+        } catch (error) {
+            console.error('Error syncing ratings:', error);
+        }
+    }
+
+    // Load ratings from server (for cross-device sync)
+    async loadRatingsFromServer() {
+        try {
+            const player = sessionStorage.getItem('currentPlayer');
+            if (!player) return;
+
+            const response = await fetch(`/api/ratings?player=${player}`);
+
+            if (response.ok) {
+                const result = await response.json();
+                debugLog(`📥 Loaded ${result.count} ratings from server`);
+
+                // Merge with local ratings (avoid duplicates)
+                const localRatings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+                const serverRatings = result.ratings.map(r => ({
+                    rating: r.rating,
+                    timestamp: r.timestamp,
+                    date: r.date,
+                    difficulty: r.difficulty,
+                    time: r.time,
+                    errors: r.errors,
+                    hints: r.hints,
+                    score: parseFloat(r.score),
+                    player: r.player,
+                    puzzle: {
+                        grid: r.puzzle_grid,
+                        solution: r.puzzle_solution
+                    },
+                    synced: true
+                }));
+
+                // Create a Set of unique identifiers (timestamp + player)
+                const localIds = new Set(localRatings.map(r => `${r.timestamp}_${r.player}`));
+                const newFromServer = serverRatings.filter(r => !localIds.has(`${r.timestamp}_${r.player}`));
+
+                if (newFromServer.length > 0) {
+                    const mergedRatings = [...localRatings, ...newFromServer];
+                    localStorage.setItem('puzzleRatings', JSON.stringify(mergedRatings));
+                    debugLog(`✅ Merged ${newFromServer.length} new ratings from server`);
+                }
+
+                return result.ratings;
+            }
+        } catch (error) {
+            debugLog('⚠️  Could not load ratings from server:', error.message);
         }
     }
 
@@ -4363,16 +4488,46 @@ window.debugPuzzleState = function(verbose = true) {
 };
 
 // Global function to analyze puzzle ratings
-window.analyzePuzzleRatings = function() {
+window.analyzePuzzleRatings = async function(useServer = true) {
     console.log('🔍 Starting puzzle rating analysis...\n');
 
-    if (!window.sudokuEngine) {
-        console.warn('⚠️  Sudoku engine not found. Analysis will still proceed with stored data.');
-        console.log('Note: You can call this function from anywhere, anytime.\n');
+    let ratings = [];
+
+    // Try to get ratings from server first (for cross-device data)
+    if (useServer) {
+        try {
+            const player = sessionStorage.getItem('currentPlayer');
+            if (player) {
+                console.log('📡 Fetching ratings from server...');
+                const response = await fetch(`/api/ratings?player=${player}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    ratings = result.ratings.map(r => ({
+                        rating: r.rating,
+                        timestamp: r.timestamp,
+                        date: r.date,
+                        difficulty: r.difficulty,
+                        time: r.time,
+                        errors: r.errors,
+                        hints: r.hints,
+                        score: parseFloat(r.score),
+                        player: r.player
+                    }));
+                    console.log(`✅ Loaded ${ratings.length} ratings from server\n`);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️  Could not fetch from server, using local data');
+        }
     }
 
-    // Get ratings from localStorage directly
-    const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+    // Fallback to localStorage if server fetch failed or disabled
+    if (ratings.length === 0) {
+        ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+        if (ratings.length > 0) {
+            console.log(`📂 Using ${ratings.length} ratings from local storage\n`);
+        }
+    }
 
     if (ratings.length === 0) {
         console.log('📊 No puzzle ratings found yet.');
@@ -4557,8 +4712,30 @@ window.clearPuzzleRatings = function() {
     }
 };
 
+// Helper function to manually sync ratings
+window.syncRatings = async function() {
+    if (window.sudokuEngine) {
+        console.log('🔄 Starting manual sync...');
+        await window.sudokuEngine.syncPendingRatings();
+    } else {
+        console.log('⚠️  Sudoku engine not available. Please navigate to the Sudoku page first.');
+    }
+};
+
+// Helper function to load ratings from server
+window.loadServerRatings = async function() {
+    if (window.sudokuEngine) {
+        console.log('📥 Loading ratings from server...');
+        await window.sudokuEngine.loadRatingsFromServer();
+    } else {
+        console.log('⚠️  Sudoku engine not available. Please navigate to the Sudoku page first.');
+    }
+};
+
 console.log('📊 Puzzle Rating System Loaded!');
 console.log('Available commands:');
-console.log('  - analyzePuzzleRatings() - Analyze collected ratings and find patterns');
+console.log('  - analyzePuzzleRatings() - Analyze collected ratings (from server & local)');
 console.log('  - viewPuzzleRatings() - View all ratings in a table');
+console.log('  - syncRatings() - Manually sync pending ratings to server');
+console.log('  - loadServerRatings() - Pull latest ratings from server');
 console.log('  - clearPuzzleRatings() - Clear all ratings (with confirmation)');
