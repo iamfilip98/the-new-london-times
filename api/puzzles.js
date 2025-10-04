@@ -144,6 +144,25 @@ function generateCompleteSolution(seed) {
   return grid;
 }
 
+// Technique scoring constants for difficulty calculation
+const TECHNIQUE_COSTS = {
+  nakedSingle: { first: 100, subsequent: 100 },
+  hiddenSingle: { first: 100, subsequent: 100 },
+  nakedPair: { first: 750, subsequent: 500 },
+  hiddenPair: { first: 1500, subsequent: 1200 },
+  nakedTriple: { first: 2000, subsequent: 1400 },
+  hiddenTriple: { first: 2000, subsequent: 1400 },
+  pointingPair: { first: 350, subsequent: 200 },
+  boxLineReduction: { first: 350, subsequent: 200 },
+  xWing: { first: 2800, subsequent: 1600 },
+  yWing: { first: 3000, subsequent: 1800 },
+  xyzWing: { first: 3400, subsequent: 2000 },
+  swordfish: { first: 8000, subsequent: 6000 },
+  simpleColoring: { first: 4200, subsequent: 2100 }
+};
+
+const ADVANCED_TECHNIQUES = new Set(['xWing', 'yWing', 'xyzWing', 'swordfish', 'simpleColoring']);
+
 // Generate puzzle from solution by removing numbers with solvability validation
 function generatePuzzle(solution, difficulty, seed) {
   const puzzle = solution.map(row => [...row]);
@@ -158,62 +177,66 @@ function generatePuzzle(solution, difficulty, seed) {
   // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
     easy: {
-      minClues: 35,      // Slightly reduced from previous easy for more challenge
-      maxClues: 42,      // Still beginner-friendly but requires some basic reasoning
+      minClues: 32,
+      maxClues: 36,
       requireNakedSingles: true,
       allowHiddenSingles: true,
-      allowComplexTechniques: false,  // Still no advanced techniques for true beginners
+      allowComplexTechniques: false,
       maxIterations: 100,
-      requireEvenDistribution: true,  // Keep even distribution for easier solving
-      maxEmptyRegions: 2   // Allow slightly more empty regions
+      requireEvenDistribution: true,
+      maxEmptyRegions: 2,
+      minEntryPoints: 4,
+      targetDifficultyScore: [100, 800],
+      maxConsecutiveAdvanced: 0
     },
     medium: {
-      minClues: 19,      // Reduced from 22-28 to make it harder (more thinking required)
-      maxClues: 25,      // Reduced range to increase difficulty
+      minClues: 24,
+      maxClues: 28,
       requireNakedSingles: false,
       allowHiddenSingles: true,
-      allowComplexTechniques: true,   // Must use intermediate techniques
+      allowComplexTechniques: true,
       maxIterations: 300,
       requireEvenDistribution: false,
-      maxEmptyRegions: 6,             // Allow more empty regions
-      allowAdvancedTechniques: true,  // Allow some advanced techniques
-      requireAdvancedSolving: false,  // Don't require them, but allow them
-      minAdvancedMoves: 0,
-      allowXWing: true,               // Enable X-Wing patterns
-      allowSwordfish: false,          // Keep Swordfish off for accessibility
-      allowYWing: false,              // Keep Y-Wing off for accessibility
-      allowXYZWing: false,            // Keep XYZ-Wing off
-      allowChains: false,             // Keep chains off
-      requireHiddenSubsets: true,     // MUST require hidden subsets
-      minHiddenSubsets: 1,            // Require at least 1 hidden subset move
-      maxHiddenLevel: 3,              // Hidden pairs/triples required
-      requireNakedSubsets: true,      // Also require naked pairs/triples
-      minNakedSubsets: 1              // At least 1 naked subset move
+      maxEmptyRegions: 5,
+      allowAdvancedTechniques: false,
+      requireHiddenSubsets: true,
+      minHiddenSubsets: 1,
+      requireNakedSubsets: true,
+      minNakedSubsets: 1,
+      minEntryPoints: 3,
+      targetDifficultyScore: [5500, 7500],
+      maxConsecutiveAdvanced: 0,
+      minDependencyScore: 4,
+      maxDependencyScore: 8
     },
     hard: {
-      minClues: 18,       // Increased from 17 to decrease difficulty by ~5%
-      maxClues: 25,       // Increased from 24 to decrease difficulty by ~5%
+      minClues: 24,
+      maxClues: 28,
       requireNakedSingles: false,
       allowHiddenSingles: true,
-      allowComplexTechniques: true,   // Must use intermediate techniques
-      maxIterations: 400,             // More iterations for complex generation
+      allowComplexTechniques: true,
+      maxIterations: 400,
       requireEvenDistribution: false,
-      maxEmptyRegions: 7,             // Allow even more empty regions
-      allowAdvancedTechniques: true,  // Enable all advanced techniques
-      requireAdvancedSolving: true,   // REQUIRE advanced techniques
-      minAdvancedMoves: 2,            // Must require at least 2 advanced moves
-      allowXWing: true,               // Enable X-Wing patterns
-      allowSwordfish: true,           // Now enable Swordfish for experts
-      allowYWing: true,               // Enable Y-Wing for experts
-      allowXYZWing: true,             // Enable XYZ-Wing for experts
-      allowChains: true,              // Enable simple coloring/chains
-      requireHiddenSubsets: true,     // MUST require hidden subsets
-      minHiddenSubsets: 2,            // Require at least 2 hidden subset moves
-      maxHiddenLevel: 4,              // Allow hidden quads for maximum difficulty
-      requireNakedSubsets: true,      // Also require naked pairs/triples/quads
-      minNakedSubsets: 2,             // At least 2 naked subset moves
-      requireMultipleAdvanced: true,  // Must use multiple different advanced techniques
-      minTechniqueVariety: 3          // Must use at least 3 different advanced technique types
+      maxEmptyRegions: 6,
+      allowAdvancedTechniques: true,
+      requireAdvancedSolving: true,
+      minAdvancedMoves: 1,
+      maxAdvancedMoves: 2,
+      allowXWing: true,
+      allowSwordfish: false,
+      allowYWing: true,
+      allowXYZWing: false,
+      allowChains: false,
+      requireHiddenSubsets: true,
+      minHiddenSubsets: 1,
+      requireNakedSubsets: true,
+      minNakedSubsets: 1,
+      requireMultipleAdvanced: false,
+      minEntryPoints: 3,
+      targetDifficultyScore: [8000, 12000],
+      maxConsecutiveAdvanced: 2,
+      minDependencyScore: 3,
+      maxDependencyScore: 6
     }
   };
 
@@ -270,21 +293,38 @@ function generatePuzzle(solution, difficulty, seed) {
       // Remove the cell temporarily
       testPuzzle[row][col] = 0;
 
-      // Check if puzzle is still solvable with logical techniques AND has unique solution
-      if (isPuzzleSolvableLogically(testPuzzle, settings) && countSolutions(testPuzzle) === 1) {
-        removedCells++;
+      // Check unique solution first (faster check)
+      const solutionCount = countSolutions(testPuzzle);
+      if (solutionCount !== 1) {
+        testPuzzle[row][col] = originalValue;
+        continue;
+      }
 
-        // Check if we've reached a good balance
+      // Check if puzzle is solvable with logical techniques and quality criteria
+      const solverResult = isPuzzleSolvableLogically(testPuzzle, settings, true);
+      if (!solverResult.solvable) {
+        testPuzzle[row][col] = originalValue;
+        continue;
+      }
+
+      // Validate quality metrics
+      const qualityCheck = validatePuzzleQuality(testPuzzle, solution, settings, solverResult);
+      if (qualityCheck.isValid) {
+        removedCells++;
         const currentClues = 81 - removedCells;
         if (currentClues >= settings.minClues && currentClues <= settings.maxClues) {
           if (currentClues < bestClueCount) {
             bestPuzzle = testPuzzle.map(row => [...row]);
             bestClueCount = currentClues;
-            console.log(`🎯 Found better ${difficulty} puzzle with ${currentClues} clues (unique solution verified)`);
+
+            console.log(`🎯 Found better ${difficulty} puzzle with ${currentClues} clues`);
+            console.log(`   ✓ Difficulty score: ${solverResult.difficultyScore}`);
+            console.log(`   ✓ Entry points: ${solverResult.entryPoints}`);
+            console.log(`   ✓ Avg dependency: ${solverResult.averageDependencyScore.toFixed(1)}`);
+            console.log(`   ✓ Max consecutive advanced: ${solverResult.maxConsecutiveAdvanced}`);
           }
         }
       } else {
-        // Restore the cell if removing it makes puzzle unsolvable
         testPuzzle[row][col] = originalValue;
       }
     }
@@ -312,9 +352,9 @@ function createFallbackPuzzle(solution, difficulty, seed) {
     return seedValue / 233280;
   }
   const targetClues = {
-    easy: 38,   // Updated to match new easy range
-    medium: 22, // Updated to match new medium range (reduced for more difficulty)
-    hard: 21    // Increased from 20 to decrease difficulty by ~5%
+    easy: 34,
+    medium: 26,
+    hard: 26
   };
 
   const positions = [];
@@ -365,20 +405,33 @@ function createFallbackPuzzle(solution, difficulty, seed) {
 }
 
 // Comprehensive logical Sudoku solver - no guessing allowed
-function isPuzzleSolvableLogically(puzzle, settings) {
+function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
   const testGrid = puzzle.map(row => [...row]);
   const candidates = initializeCandidates(testGrid);
   let changed = true;
   let iterations = 0;
   const maxSolverIterations = 200;
-  let advancedTechniquesUsed = 0;  // Track usage of advanced techniques
-  let hiddenSubsetsUsed = 0;       // Track usage of hidden subsets
-  let nakedSubsetsUsed = 0;        // Track usage of naked subsets
-  let techniquesUsed = new Set();  // Track variety of techniques used
+
+  // Legacy tracking variables
+  let advancedTechniquesUsed = 0;
+  let hiddenSubsetsUsed = 0;
+  let nakedSubsetsUsed = 0;
+  let techniquesUsed = new Set();
   let xWingUsed = 0;
   let yWingUsed = 0;
   let swordfishUsed = 0;
   let chainsUsed = 0;
+
+  // New quality tracking variables
+  let techniqueUsage = {};
+  let techniqueFirstUse = new Set();
+  let difficultyScore = 0;
+  let consecutiveAdvanced = 0;
+  let maxConsecutiveAdvancedCount = 0;
+  let dependencyScores = [];
+  let entryPointsFound = 0;
+  let stepsWithoutProgress = 0;
+  let lastTechniqueWasAdvanced = false;
 
   while (changed && iterations < maxSolverIterations) {
     changed = false;
@@ -387,15 +440,61 @@ function isPuzzleSolvableLogically(puzzle, settings) {
     // Update candidates first
     updateCandidates(testGrid, candidates);
 
+    // Track dependency score
+    let totalCandidates = 0;
+    let emptyCellCount = 0;
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (testGrid[row][col] === 0) {
+          emptyCellCount++;
+          totalCandidates += candidates[row][col].length;
+        }
+      }
+    }
+    if (emptyCellCount > 0) {
+      dependencyScores.push(totalCandidates / emptyCellCount);
+    }
+
+    // Track entry points on first iteration
+    if (iterations === 1) {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (testGrid[row][col] === 0 && candidates[row][col].length === 1) {
+            entryPointsFound++;
+          }
+        }
+      }
+    }
+
     // Technique 1: Naked Singles (cells with only one candidate)
     if (applyNakedSingles(testGrid, candidates)) {
       changed = true;
+      techniqueUsage.nakedSingle = (techniqueUsage.nakedSingle || 0) + 1;
+      if (!techniqueFirstUse.has('nakedSingle')) {
+        techniqueFirstUse.add('nakedSingle');
+        difficultyScore += TECHNIQUE_COSTS.nakedSingle.first;
+      } else {
+        difficultyScore += TECHNIQUE_COSTS.nakedSingle.subsequent;
+      }
+      consecutiveAdvanced = 0;
+      lastTechniqueWasAdvanced = false;
+      stepsWithoutProgress = 0;
       continue;
     }
 
     // Technique 2: Hidden Singles (numbers that can only go in one place)
     if (settings.allowHiddenSingles && applyHiddenSingles(testGrid, candidates)) {
       changed = true;
+      techniqueUsage.hiddenSingle = (techniqueUsage.hiddenSingle || 0) + 1;
+      if (!techniqueFirstUse.has('hiddenSingle')) {
+        techniqueFirstUse.add('hiddenSingle');
+        difficultyScore += TECHNIQUE_COSTS.hiddenSingle.first;
+      } else {
+        difficultyScore += TECHNIQUE_COSTS.hiddenSingle.subsequent;
+      }
+      consecutiveAdvanced = 0;
+      lastTechniqueWasAdvanced = false;
+      stepsWithoutProgress = 0;
       continue;
     }
 
@@ -404,6 +503,16 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       changed = true;
       nakedSubsetsUsed++;
       techniquesUsed.add('naked_subsets');
+      techniqueUsage.nakedPair = (techniqueUsage.nakedPair || 0) + 1;
+      if (!techniqueFirstUse.has('nakedPair')) {
+        techniqueFirstUse.add('nakedPair');
+        difficultyScore += TECHNIQUE_COSTS.nakedPair.first;
+      } else {
+        difficultyScore += TECHNIQUE_COSTS.nakedPair.subsequent;
+      }
+      consecutiveAdvanced = 0;
+      lastTechniqueWasAdvanced = false;
+      stepsWithoutProgress = 0;
       continue;
     }
 
@@ -412,18 +521,48 @@ function isPuzzleSolvableLogically(puzzle, settings) {
       changed = true;
       hiddenSubsetsUsed++;
       techniquesUsed.add('hidden_subsets');
+      techniqueUsage.hiddenPair = (techniqueUsage.hiddenPair || 0) + 1;
+      if (!techniqueFirstUse.has('hiddenPair')) {
+        techniqueFirstUse.add('hiddenPair');
+        difficultyScore += TECHNIQUE_COSTS.hiddenPair.first;
+      } else {
+        difficultyScore += TECHNIQUE_COSTS.hiddenPair.subsequent;
+      }
+      consecutiveAdvanced = 0;
+      lastTechniqueWasAdvanced = false;
+      stepsWithoutProgress = 0;
       continue;
     }
 
     // Technique 5: Pointing Pairs/Triples (Box/Line Reduction)
     if (settings.allowComplexTechniques && applyPointingPairs(testGrid, candidates)) {
       changed = true;
+      techniqueUsage.pointingPair = (techniqueUsage.pointingPair || 0) + 1;
+      if (!techniqueFirstUse.has('pointingPair')) {
+        techniqueFirstUse.add('pointingPair');
+        difficultyScore += TECHNIQUE_COSTS.pointingPair.first;
+      } else {
+        difficultyScore += TECHNIQUE_COSTS.pointingPair.subsequent;
+      }
+      consecutiveAdvanced = 0;
+      lastTechniqueWasAdvanced = false;
+      stepsWithoutProgress = 0;
       continue;
     }
 
     // Technique 6: Box/Line Reduction
     if (settings.allowComplexTechniques && applyBoxLineReduction(testGrid, candidates)) {
       changed = true;
+      techniqueUsage.boxLineReduction = (techniqueUsage.boxLineReduction || 0) + 1;
+      if (!techniqueFirstUse.has('boxLineReduction')) {
+        techniqueFirstUse.add('boxLineReduction');
+        difficultyScore += TECHNIQUE_COSTS.boxLineReduction.first;
+      } else {
+        difficultyScore += TECHNIQUE_COSTS.boxLineReduction.subsequent;
+      }
+      consecutiveAdvanced = 0;
+      lastTechniqueWasAdvanced = false;
+      stepsWithoutProgress = 0;
       continue;
     }
 
@@ -435,6 +574,21 @@ function isPuzzleSolvableLogically(puzzle, settings) {
         advancedTechniquesUsed++;
         xWingUsed++;
         techniquesUsed.add('xwing');
+        techniqueUsage.xWing = (techniqueUsage.xWing || 0) + 1;
+        if (!techniqueFirstUse.has('xWing')) {
+          techniqueFirstUse.add('xWing');
+          difficultyScore += TECHNIQUE_COSTS.xWing.first;
+        } else {
+          difficultyScore += TECHNIQUE_COSTS.xWing.subsequent;
+        }
+        if (lastTechniqueWasAdvanced) {
+          consecutiveAdvanced++;
+        } else {
+          consecutiveAdvanced = 1;
+        }
+        lastTechniqueWasAdvanced = true;
+        maxConsecutiveAdvancedCount = Math.max(maxConsecutiveAdvancedCount, consecutiveAdvanced);
+        stepsWithoutProgress = 0;
         continue;
       }
 
@@ -444,6 +598,21 @@ function isPuzzleSolvableLogically(puzzle, settings) {
         advancedTechniquesUsed++;
         yWingUsed++;
         techniquesUsed.add('ywing');
+        techniqueUsage.yWing = (techniqueUsage.yWing || 0) + 1;
+        if (!techniqueFirstUse.has('yWing')) {
+          techniqueFirstUse.add('yWing');
+          difficultyScore += TECHNIQUE_COSTS.yWing.first;
+        } else {
+          difficultyScore += TECHNIQUE_COSTS.yWing.subsequent;
+        }
+        if (lastTechniqueWasAdvanced) {
+          consecutiveAdvanced++;
+        } else {
+          consecutiveAdvanced = 1;
+        }
+        lastTechniqueWasAdvanced = true;
+        maxConsecutiveAdvancedCount = Math.max(maxConsecutiveAdvancedCount, consecutiveAdvanced);
+        stepsWithoutProgress = 0;
         continue;
       }
 
@@ -452,6 +621,21 @@ function isPuzzleSolvableLogically(puzzle, settings) {
         changed = true;
         advancedTechniquesUsed++;
         techniquesUsed.add('xyzwing');
+        techniqueUsage.xyzWing = (techniqueUsage.xyzWing || 0) + 1;
+        if (!techniqueFirstUse.has('xyzWing')) {
+          techniqueFirstUse.add('xyzWing');
+          difficultyScore += TECHNIQUE_COSTS.xyzWing.first;
+        } else {
+          difficultyScore += TECHNIQUE_COSTS.xyzWing.subsequent;
+        }
+        if (lastTechniqueWasAdvanced) {
+          consecutiveAdvanced++;
+        } else {
+          consecutiveAdvanced = 1;
+        }
+        lastTechniqueWasAdvanced = true;
+        maxConsecutiveAdvancedCount = Math.max(maxConsecutiveAdvancedCount, consecutiveAdvanced);
+        stepsWithoutProgress = 0;
         continue;
       }
 
@@ -461,6 +645,21 @@ function isPuzzleSolvableLogically(puzzle, settings) {
         advancedTechniquesUsed++;
         swordfishUsed++;
         techniquesUsed.add('swordfish');
+        techniqueUsage.swordfish = (techniqueUsage.swordfish || 0) + 1;
+        if (!techniqueFirstUse.has('swordfish')) {
+          techniqueFirstUse.add('swordfish');
+          difficultyScore += TECHNIQUE_COSTS.swordfish.first;
+        } else {
+          difficultyScore += TECHNIQUE_COSTS.swordfish.subsequent;
+        }
+        if (lastTechniqueWasAdvanced) {
+          consecutiveAdvanced++;
+        } else {
+          consecutiveAdvanced = 1;
+        }
+        lastTechniqueWasAdvanced = true;
+        maxConsecutiveAdvancedCount = Math.max(maxConsecutiveAdvancedCount, consecutiveAdvanced);
+        stepsWithoutProgress = 0;
         continue;
       }
 
@@ -470,9 +669,27 @@ function isPuzzleSolvableLogically(puzzle, settings) {
         advancedTechniquesUsed++;
         chainsUsed++;
         techniquesUsed.add('chains');
+        techniqueUsage.simpleColoring = (techniqueUsage.simpleColoring || 0) + 1;
+        if (!techniqueFirstUse.has('simpleColoring')) {
+          techniqueFirstUse.add('simpleColoring');
+          difficultyScore += TECHNIQUE_COSTS.simpleColoring.first;
+        } else {
+          difficultyScore += TECHNIQUE_COSTS.simpleColoring.subsequent;
+        }
+        if (lastTechniqueWasAdvanced) {
+          consecutiveAdvanced++;
+        } else {
+          consecutiveAdvanced = 1;
+        }
+        lastTechniqueWasAdvanced = true;
+        maxConsecutiveAdvancedCount = Math.max(maxConsecutiveAdvancedCount, consecutiveAdvanced);
+        stepsWithoutProgress = 0;
         continue;
       }
     }
+
+    // If we reach here, no technique worked
+    stepsWithoutProgress++;
 
     // Check if puzzle is completely solved
     let emptyCells = 0;
@@ -484,23 +701,30 @@ function isPuzzleSolvableLogically(puzzle, settings) {
 
     if (emptyCells === 0) {
       // Check if hard puzzles require advanced techniques
+      let meetsAllRequirements = true;
+
       if (settings.requireAdvancedSolving && settings.minAdvancedMoves) {
         if (advancedTechniquesUsed < settings.minAdvancedMoves) {
-          return false; // Hard puzzle should require more advanced techniques
+          meetsAllRequirements = false;
         }
+      }
+
+      // Check max advanced moves
+      if (settings.maxAdvancedMoves && advancedTechniquesUsed > settings.maxAdvancedMoves) {
+        meetsAllRequirements = false;
       }
 
       // Check if hard puzzles require hidden subsets
       if (settings.requireHiddenSubsets && settings.minHiddenSubsets) {
         if (hiddenSubsetsUsed < settings.minHiddenSubsets) {
-          return false; // Hard puzzle should require hidden subset techniques
+          meetsAllRequirements = false;
         }
       }
 
       // Check if hard puzzles require naked subsets
       if (settings.requireNakedSubsets && settings.minNakedSubsets) {
         if (nakedSubsetsUsed < settings.minNakedSubsets) {
-          return false; // Hard puzzle should require naked subset techniques
+          meetsAllRequirements = false;
         }
       }
 
@@ -509,24 +733,62 @@ function isPuzzleSolvableLogically(puzzle, settings) {
         const advancedTechniques = ['xwing', 'ywing', 'xyzwing', 'swordfish', 'chains'];
         const usedAdvanced = advancedTechniques.filter(tech => techniquesUsed.has(tech));
         if (usedAdvanced.length < settings.minTechniqueVariety) {
-          return false; // Hard puzzle should require variety of advanced techniques
+          meetsAllRequirements = false;
         }
       }
 
-      return true; // Puzzle is solvable!
+      // Return enhanced result if details requested
+      if (returnDetails) {
+        return {
+          solvable: meetsAllRequirements,
+          difficultyScore: difficultyScore,
+          techniqueUsage: techniqueUsage,
+          maxConsecutiveAdvanced: maxConsecutiveAdvancedCount,
+          averageDependencyScore: dependencyScores.length > 0 ?
+            dependencyScores.reduce((a, b) => a + b, 0) / dependencyScores.length : 0,
+          entryPoints: entryPointsFound,
+          requiresGuessing: false
+        };
+      }
+
+      return meetsAllRequirements;
     }
 
     // Check for invalid state (cell with no candidates)
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         if (testGrid[row][col] === 0 && candidates[row][col].length === 0) {
-          return false; // Invalid puzzle - cell has no possible values
+          if (returnDetails) {
+            return {
+              solvable: false,
+              difficultyScore: difficultyScore,
+              techniqueUsage: techniqueUsage,
+              maxConsecutiveAdvanced: maxConsecutiveAdvancedCount,
+              averageDependencyScore: dependencyScores.length > 0 ?
+                dependencyScores.reduce((a, b) => a + b, 0) / dependencyScores.length : 0,
+              entryPoints: entryPointsFound,
+              requiresGuessing: true
+            };
+          }
+          return false;
         }
       }
     }
   }
 
   // If we stopped making progress, puzzle requires guessing
+  if (returnDetails) {
+    return {
+      solvable: false,
+      difficultyScore: difficultyScore,
+      techniqueUsage: techniqueUsage,
+      maxConsecutiveAdvanced: maxConsecutiveAdvancedCount,
+      averageDependencyScore: dependencyScores.length > 0 ?
+        dependencyScores.reduce((a, b) => a + b, 0) / dependencyScores.length : 0,
+      entryPoints: entryPointsFound,
+      requiresGuessing: stepsWithoutProgress > 5
+    };
+  }
   return false;
 }
 
@@ -1372,6 +1634,35 @@ async function generateDailyPuzzles(date) {
     console.error('Failed to generate daily puzzles:', error);
     throw error;
   }
+}
+
+// Validate puzzle quality based on difficulty settings and solver results
+function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult) {
+  if (settings.targetDifficultyScore) {
+    const [min, max] = settings.targetDifficultyScore;
+    if (solverResult.difficultyScore < min || solverResult.difficultyScore > max) {
+      return { isValid: false, reason: `Score ${solverResult.difficultyScore} outside [${min}, ${max}]` };
+    }
+  }
+
+  if (settings.minEntryPoints && solverResult.entryPoints < settings.minEntryPoints) {
+    return { isValid: false, reason: `Only ${solverResult.entryPoints} entry points, need ${settings.minEntryPoints}` };
+  }
+
+  if (settings.maxConsecutiveAdvanced !== undefined &&
+      solverResult.maxConsecutiveAdvanced > settings.maxConsecutiveAdvanced) {
+    return { isValid: false, reason: `${solverResult.maxConsecutiveAdvanced} consecutive advanced exceeds ${settings.maxConsecutiveAdvanced}` };
+  }
+
+  if (settings.minDependencyScore && solverResult.averageDependencyScore < settings.minDependencyScore) {
+    return { isValid: false, reason: `Dependency ${solverResult.averageDependencyScore.toFixed(1)} too low` };
+  }
+
+  if (solverResult.requiresGuessing) {
+    return { isValid: false, reason: `Requires guessing` };
+  }
+
+  return { isValid: true, solverResult };
 }
 
 // Critical function: Count the number of solutions to verify uniqueness
