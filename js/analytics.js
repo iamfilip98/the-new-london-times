@@ -333,8 +333,6 @@ class AnalyticsManager {
 
         if (!faidaoFormEl || !filipFormEl || !formNoteEl) return;
 
-        const recentCount = Math.min(5, entries.length);
-
         if (entries.length === 0) {
             faidaoFormEl.textContent = '--';
             filipFormEl.textContent = '--';
@@ -342,26 +340,27 @@ class AnalyticsManager {
             return;
         }
 
-        const recentGames = entries.slice(0, recentCount);
+        // Calculate all-time total points
+        let faidaoTotalPoints = 0;
+        let filipTotalPoints = 0;
 
-        // Count wins in recent games
-        let faidaoRecentWins = 0;
-        let filipRecentWins = 0;
-
-        recentGames.forEach(entry => {
-            const faidaoTotal = entry.faidao?.scores?.total || 0;
-            const filipTotal = entry.filip?.scores?.total || 0;
-
-            if (faidaoTotal > filipTotal) {
-                faidaoRecentWins++;
-            } else if (filipTotal > faidaoTotal) {
-                filipRecentWins++;
-            }
+        entries.forEach(entry => {
+            faidaoTotalPoints += entry.faidao?.scores?.total || 0;
+            filipTotalPoints += entry.filip?.scores?.total || 0;
         });
 
-        faidaoFormEl.textContent = `${faidaoRecentWins}/${recentCount}`;
-        filipFormEl.textContent = `${filipRecentWins}/${recentCount}`;
-        formNoteEl.textContent = `Last ${recentCount} games`;
+        faidaoFormEl.textContent = faidaoTotalPoints.toLocaleString();
+        filipFormEl.textContent = filipTotalPoints.toLocaleString();
+
+        // Show difference
+        const diff = Math.abs(faidaoTotalPoints - filipTotalPoints);
+        if (faidaoTotalPoints > filipTotalPoints) {
+            formNoteEl.textContent = `Faidao leads by ${diff.toLocaleString()}`;
+        } else if (filipTotalPoints > faidaoTotalPoints) {
+            formNoteEl.textContent = `Filip leads by ${diff.toLocaleString()}`;
+        } else {
+            formNoteEl.textContent = 'Perfectly tied!';
+        }
     }
 
     calculateWinStreak(entries, player) {
