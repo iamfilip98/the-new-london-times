@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sync Pending Ratings</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .log { margin: 10px 0; padding: 10px; background: #2a2a2a; border-radius: 4px; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover { background: #2563eb; }
+        pre { background: #2a2a2a; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔄 Rating Sync Tool</h1>
+
+    <button onclick="checkLocalRatings()">Check localStorage Ratings</button>
+    <button onclick="syncPendingRatings()">Sync Pending Ratings</button>
+    <button onclick="clearLocal()">Clear localStorage (Debug)</button>
+
+    <div id="output"></div>
+
+    <script>
+        const PRODUCTION_API = 'https://the-new-london-times.vercel.app/api/ratings';
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            output.innerHTML += `<div class="log ${className}">${message}</div>`;
+        }
+
+        function checkLocalRatings() {
+            document.getElementById('output').innerHTML = '';
+            const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+
+            log(`📊 Total ratings in localStorage: ${ratings.length}`);
+
+            if (ratings.length === 0) {
+                log('⚠️ No ratings found in localStorage', 'warning');
+                return;
+            }
+
+            const synced = ratings.filter(r => r.synced === true);
+            const unsynced = ratings.filter(r => r.synced === false || r.synced === undefined);
+
+            log(`✅ Synced: ${synced.length}`);
+            log(`⏳ Pending: ${unsynced.length}`, 'warning');
+
+            log('<br><strong>All Ratings:</strong>');
+            ratings.forEach((r, i) => {
+                const status = r.synced ? '✅' : '⏳';
+                log(`${status} ${i + 1}. ${r.player} | ${r.date} | ${r.difficulty} | Rating: ${r.rating}/10`);
+            });
+
+            log('<br><strong>Raw Data:</strong>');
+            log(`<pre>${JSON.stringify(ratings, null, 2)}</pre>`);
+        }
+
+        async function syncPendingRatings() {
+            document.getElementById('output').innerHTML = '';
+            log('🔄 Starting sync process...');
+
+            const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
+            const unsynced = ratings.filter(r => !r.synced);
+
+            if (unsynced.length === 0) {
+                log('✅ All ratings already synced!', 'success');
+                return;
+            }
+
+            log(`Found ${unsynced.length} unsynced rating(s). Syncing...`, 'warning');
+
+            for (let i = 0; i < unsynced.length; i++) {
+                const rating = unsynced[i];
+                log(`<br>Syncing rating ${i + 1}/${unsynced.length}...`);
+                log(`  Player: ${rating.player} | Date: ${rating.date} | Rating: ${rating.rating}/10`);
+
+                try {
+                    const response = await fetch(PRODUCTION_API, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(rating)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        log(`  ✅ Synced successfully! ID: ${result.rating?.id}`, 'success');
+                        rating.synced = true;
+                    } else {
+                        const error = await response.text();
+                        log(`  ❌ Sync failed: ${response.status} - ${error}`, 'error');
+                    }
+                } catch (error) {
+                    log(`  ❌ Network error: ${error.message}`, 'error');
+                }
+            }
+
+            // Save updated ratings back to localStorage
+            localStorage.setItem('puzzleRatings', JSON.stringify(ratings));
+
+            const stillUnsynced = ratings.filter(r => !r.synced).length;
+            if (stillUnsynced === 0) {
+                log('<br>🎉 All ratings synced successfully!', 'success');
+            } else {
+                log(`<br>⚠️ ${stillUnsynced} rating(s) still pending`, 'warning');
+            }
+        }
+
+        function clearLocal() {
+            if (confirm('⚠️ This will delete all localStorage ratings. Continue?')) {
+                localStorage.removeItem('puzzleRatings');
+                log('🗑️ localStorage cleared', 'warning');
+            }
+        }
+
+        // Auto-check on load
+        window.onload = checkLocalRatings;
+    </script>
+</body>
+</html>

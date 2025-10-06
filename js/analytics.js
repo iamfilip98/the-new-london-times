@@ -250,6 +250,7 @@ class AnalyticsManager {
         this.updateWinRateStats(entries);
         this.updatePerformanceStats(entries);
         this.updateRecentFormStats(entries);
+        this.updateCompetitiveStats(entries);
     }
 
     updateWinRateStats(entries) {
@@ -360,6 +361,117 @@ class AnalyticsManager {
             formNoteEl.textContent = `Filip leads by ${diff.toLocaleString()}`;
         } else {
             formNoteEl.textContent = 'Perfectly tied!';
+        }
+    }
+
+    updateCompetitiveStats(entries) {
+        const faidaoBiggestWinEl = document.getElementById('faidaoBiggestWin');
+        const filipBiggestWinEl = document.getElementById('filipBiggestWin');
+        const biggestWinNoteEl = document.getElementById('biggestWinNote');
+
+        const faidaoClosestWinEl = document.getElementById('faidaoClosestWin');
+        const filipClosestWinEl = document.getElementById('filipClosestWin');
+        const closestWinNoteEl = document.getElementById('closestWinNote');
+
+        const faidaoDominantGameEl = document.getElementById('faidaoDominantGame');
+        const filipDominantGameEl = document.getElementById('filipDominantGame');
+        const dominantGameNoteEl = document.getElementById('dominantGameNote');
+
+        if (!faidaoBiggestWinEl || !filipBiggestWinEl || !faidaoClosestWinEl ||
+            !filipClosestWinEl || !faidaoDominantGameEl || !filipDominantGameEl) return;
+
+        if (entries.length === 0) {
+            faidaoBiggestWinEl.textContent = '--';
+            filipBiggestWinEl.textContent = '--';
+            faidaoClosestWinEl.textContent = '--';
+            filipClosestWinEl.textContent = '--';
+            faidaoDominantGameEl.textContent = '--';
+            filipDominantGameEl.textContent = '--';
+            return;
+        }
+
+        // Calculate biggest wins, closest wins, and most dominant games
+        let faidaoBiggestWin = 0;
+        let filipBiggestWin = 0;
+        let faidaoClosestWin = Infinity;
+        let filipClosestWin = Infinity;
+        let faidaoMostDominant = 0;
+        let filipMostDominant = 0;
+
+        entries.forEach(entry => {
+            const faidaoTotal = entry.faidao?.scores?.total || 0;
+            const filipTotal = entry.filip?.scores?.total || 0;
+            const margin = Math.abs(faidaoTotal - filipTotal);
+
+            // Track most dominant game (highest score ever)
+            if (faidaoTotal > faidaoMostDominant) {
+                faidaoMostDominant = faidaoTotal;
+            }
+            if (filipTotal > filipMostDominant) {
+                filipMostDominant = filipTotal;
+            }
+
+            // Track biggest and closest wins
+            if (faidaoTotal > filipTotal) {
+                // Faidao won
+                if (margin > faidaoBiggestWin) {
+                    faidaoBiggestWin = margin;
+                }
+                if (margin < faidaoClosestWin) {
+                    faidaoClosestWin = margin;
+                }
+            } else if (filipTotal > faidaoTotal) {
+                // Filip won
+                if (margin > filipBiggestWin) {
+                    filipBiggestWin = margin;
+                }
+                if (margin < filipClosestWin) {
+                    filipClosestWin = margin;
+                }
+            }
+        });
+
+        // Update biggest wins (rounded to whole numbers)
+        faidaoBiggestWinEl.textContent = faidaoBiggestWin > 0 ? Math.round(faidaoBiggestWin) : '--';
+        filipBiggestWinEl.textContent = filipBiggestWin > 0 ? Math.round(filipBiggestWin) : '--';
+
+        // Update closest wins (rounded to whole numbers)
+        faidaoClosestWinEl.textContent = faidaoClosestWin !== Infinity ? Math.round(faidaoClosestWin) : '--';
+        filipClosestWinEl.textContent = filipClosestWin !== Infinity ? Math.round(filipClosestWin) : '--';
+
+        // Update most dominant games (rounded to whole numbers)
+        faidaoDominantGameEl.textContent = faidaoMostDominant > 0 ? Math.round(faidaoMostDominant) : '--';
+        filipDominantGameEl.textContent = filipMostDominant > 0 ? Math.round(filipMostDominant) : '--';
+
+        // Update footer notes
+        if (biggestWinNoteEl) {
+            const biggestOverall = Math.max(faidaoBiggestWin, filipBiggestWin);
+            if (biggestOverall > 0) {
+                biggestWinNoteEl.textContent = `Largest margin: ${Math.round(biggestOverall)} points`;
+            } else {
+                biggestWinNoteEl.textContent = 'Margin of victory';
+            }
+        }
+
+        if (closestWinNoteEl) {
+            const closestOverall = Math.min(
+                faidaoClosestWin !== Infinity ? faidaoClosestWin : Infinity,
+                filipClosestWin !== Infinity ? filipClosestWin : Infinity
+            );
+            if (closestOverall !== Infinity) {
+                closestWinNoteEl.textContent = `Narrowest margin: ${Math.round(closestOverall)} points`;
+            } else {
+                closestWinNoteEl.textContent = 'Smallest margin';
+            }
+        }
+
+        if (dominantGameNoteEl) {
+            const highestScore = Math.max(faidaoMostDominant, filipMostDominant);
+            if (highestScore > 0) {
+                dominantGameNoteEl.textContent = `Highest score: ${Math.round(highestScore)} points`;
+            } else {
+                dominantGameNoteEl.textContent = 'Highest single day score';
+            }
         }
     }
 
