@@ -145,20 +145,23 @@ function generateCompleteSolution(seed) {
 }
 
 // Technique scoring constants for difficulty calculation
+// Simplified scoring: Singles=1pt, Pairs=3pt, Triples=5pt, Quads=8pt
 const TECHNIQUE_COSTS = {
-  nakedSingle: { first: 100, subsequent: 100 },
-  hiddenSingle: { first: 100, subsequent: 100 },
-  nakedPair: { first: 750, subsequent: 500 },
-  hiddenPair: { first: 1500, subsequent: 1200 },
-  nakedTriple: { first: 2000, subsequent: 1400 },
-  hiddenTriple: { first: 2000, subsequent: 1400 },
-  pointingPair: { first: 350, subsequent: 200 },
-  boxLineReduction: { first: 350, subsequent: 200 },
-  xWing: { first: 2800, subsequent: 1600 },
-  yWing: { first: 3000, subsequent: 1800 },
-  xyzWing: { first: 3400, subsequent: 2000 },
-  swordfish: { first: 8000, subsequent: 6000 },
-  simpleColoring: { first: 4200, subsequent: 2100 }
+  nakedSingle: { first: 1, subsequent: 1 },
+  hiddenSingle: { first: 1, subsequent: 1 },
+  nakedPair: { first: 3, subsequent: 3 },
+  hiddenPair: { first: 3, subsequent: 3 },
+  nakedTriple: { first: 5, subsequent: 5 },
+  hiddenTriple: { first: 5, subsequent: 5 },
+  nakedQuad: { first: 8, subsequent: 8 },
+  hiddenQuad: { first: 8, subsequent: 8 },
+  pointingPair: { first: 2, subsequent: 2 },
+  boxLineReduction: { first: 2, subsequent: 2 },
+  xWing: { first: 10, subsequent: 10 },
+  yWing: { first: 12, subsequent: 12 },
+  xyzWing: { first: 15, subsequent: 15 },
+  swordfish: { first: 20, subsequent: 20 },
+  simpleColoring: { first: 18, subsequent: 18 }
 };
 
 const ADVANCED_TECHNIQUES = new Set(['xWing', 'yWing', 'xyzWing', 'swordfish', 'simpleColoring']);
@@ -186,12 +189,12 @@ function generatePuzzle(solution, difficulty, seed) {
       requireEvenDistribution: true,
       maxEmptyRegions: 2,
       minEntryPoints: 4,
-      targetDifficultyScore: [100, 800],
+      targetDifficultyScore: [30, 60],  // Adjusted for new scoring (mostly singles)
       maxConsecutiveAdvanced: 0
     },
     medium: {
-      minClues: 24,
-      maxClues: 28,
+      minClues: 26,
+      maxClues: 30,
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
@@ -200,14 +203,16 @@ function generatePuzzle(solution, difficulty, seed) {
       maxEmptyRegions: 5,
       allowAdvancedTechniques: false,
       requireHiddenSubsets: true,
-      minHiddenSubsets: 1,
+      minHiddenSubsets: 2,  // Require 2-4 uses of pairs/triples
+      maxHiddenSubsets: 4,
       requireNakedSubsets: true,
-      minNakedSubsets: 1,
-      minEntryPoints: 3,
-      targetDifficultyScore: [5500, 7500],
+      minNakedSubsets: 2,
+      maxNakedSubsets: 4,
+      minEntryPoints: 2,
+      targetDifficultyScore: [15, 35],  // 2-4 pairs/triples steps
       maxConsecutiveAdvanced: 0,
-      minDependencyScore: 4,
-      maxDependencyScore: 8
+      minDependencyScore: 3,
+      maxDependencyScore: 6
     },
     hard: {
       minClues: 24,
@@ -219,24 +224,26 @@ function generatePuzzle(solution, difficulty, seed) {
       requireEvenDistribution: false,
       maxEmptyRegions: 6,
       allowAdvancedTechniques: true,
-      requireAdvancedSolving: true,
-      minAdvancedMoves: 1,
+      requireAdvancedSolving: false,  // X-Wing is optional, not required
+      minAdvancedMoves: 0,  // Changed from 1 to 0 - X-Wing optional
       maxAdvancedMoves: 2,
       allowXWing: true,
       allowSwordfish: false,
-      allowYWing: true,
+      allowYWing: false,  // Disable Y-Wing to keep it simpler
       allowXYZWing: false,
       allowChains: false,
       requireHiddenSubsets: true,
-      minHiddenSubsets: 1,
+      minHiddenSubsets: 3,  // Require 3-6 uses of triples/quads
+      maxHiddenSubsets: 6,
       requireNakedSubsets: true,
-      minNakedSubsets: 1,
+      minNakedSubsets: 3,
+      maxNakedSubsets: 6,
       requireMultipleAdvanced: false,
-      minEntryPoints: 3,
-      targetDifficultyScore: [8000, 12000],
+      minEntryPoints: 2,
+      targetDifficultyScore: [35, 60],  // 3-6 triples/quads steps
       maxConsecutiveAdvanced: 2,
       minDependencyScore: 3,
-      maxDependencyScore: 6
+      maxDependencyScore: 5
     }
   };
 
@@ -714,16 +721,26 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
         meetsAllRequirements = false;
       }
 
-      // Check if hard puzzles require hidden subsets
+      // Check if puzzles require hidden subsets (min and max)
       if (settings.requireHiddenSubsets && settings.minHiddenSubsets) {
         if (hiddenSubsetsUsed < settings.minHiddenSubsets) {
           meetsAllRequirements = false;
         }
       }
+      if (settings.maxHiddenSubsets) {
+        if (hiddenSubsetsUsed > settings.maxHiddenSubsets) {
+          meetsAllRequirements = false;
+        }
+      }
 
-      // Check if hard puzzles require naked subsets
+      // Check if puzzles require naked subsets (min and max)
       if (settings.requireNakedSubsets && settings.minNakedSubsets) {
         if (nakedSubsetsUsed < settings.minNakedSubsets) {
+          meetsAllRequirements = false;
+        }
+      }
+      if (settings.maxNakedSubsets) {
+        if (nakedSubsetsUsed > settings.maxNakedSubsets) {
           meetsAllRequirements = false;
         }
       }
@@ -1070,24 +1087,28 @@ function applyNakedSubsetsInRow(grid, candidates, row) {
   const cells = [];
 
   for (let col = 0; col < 9; col++) {
-    if (grid[row][col] === 0 && candidates[row][col].length > 0) {
+    if (grid[row][col] === 0 && candidates[row][col].length > 0 && candidates[row][col].length <= 4) {
       cells.push({ row, col, candidates: [...candidates[row][col]] });
     }
   }
 
-  // Look for naked pairs
-  for (let i = 0; i < cells.length - 1; i++) {
-    for (let j = i + 1; j < cells.length; j++) {
-      const cell1 = cells[i], cell2 = cells[j];
-      if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
-          arraysEqual(cell1.candidates, cell2.candidates)) {
+  // Look for naked pairs, triples, and quads
+  for (let subsetSize = 2; subsetSize <= 4; subsetSize++) {
+    // Get all combinations of cells of size subsetSize
+    const combinations = getCombinations(cells, subsetSize);
 
+    for (const combo of combinations) {
+      // Get union of all candidates in this combination
+      const unionCandidates = [...new Set(combo.flatMap(cell => cell.candidates))];
+
+      // If union has exactly subsetSize candidates, it's a naked subset
+      if (unionCandidates.length === subsetSize) {
         // Remove these candidates from other cells in the row
         for (let col = 0; col < 9; col++) {
-          if (col !== cell1.col && col !== cell2.col && grid[row][col] === 0) {
+          if (grid[row][col] === 0 && !combo.some(c => c.col === col)) {
             const oldLength = candidates[row][col].length;
             candidates[row][col] = candidates[row][col].filter(num =>
-              !cell1.candidates.includes(num));
+              !unionCandidates.includes(num));
             if (candidates[row][col].length < oldLength) changed = true;
           }
         }
@@ -1104,24 +1125,28 @@ function applyNakedSubsetsInColumn(grid, candidates, col) {
   const cells = [];
 
   for (let row = 0; row < 9; row++) {
-    if (grid[row][col] === 0 && candidates[row][col].length > 0) {
+    if (grid[row][col] === 0 && candidates[row][col].length > 0 && candidates[row][col].length <= 4) {
       cells.push({ row, col, candidates: [...candidates[row][col]] });
     }
   }
 
-  // Look for naked pairs
-  for (let i = 0; i < cells.length - 1; i++) {
-    for (let j = i + 1; j < cells.length; j++) {
-      const cell1 = cells[i], cell2 = cells[j];
-      if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
-          arraysEqual(cell1.candidates, cell2.candidates)) {
+  // Look for naked pairs, triples, and quads
+  for (let subsetSize = 2; subsetSize <= 4; subsetSize++) {
+    // Get all combinations of cells of size subsetSize
+    const combinations = getCombinations(cells, subsetSize);
 
+    for (const combo of combinations) {
+      // Get union of all candidates in this combination
+      const unionCandidates = [...new Set(combo.flatMap(cell => cell.candidates))];
+
+      // If union has exactly subsetSize candidates, it's a naked subset
+      if (unionCandidates.length === subsetSize) {
         // Remove these candidates from other cells in the column
         for (let row = 0; row < 9; row++) {
-          if (row !== cell1.row && row !== cell2.row && grid[row][col] === 0) {
+          if (grid[row][col] === 0 && !combo.some(c => c.row === row)) {
             const oldLength = candidates[row][col].length;
             candidates[row][col] = candidates[row][col].filter(num =>
-              !cell1.candidates.includes(num));
+              !unionCandidates.includes(num));
             if (candidates[row][col].length < oldLength) changed = true;
           }
         }
@@ -1141,29 +1166,32 @@ function applyNakedSubsetsInBox(grid, candidates, boxRow, boxCol) {
     for (let c = 0; c < 3; c++) {
       const row = boxRow * 3 + r;
       const col = boxCol * 3 + c;
-      if (grid[row][col] === 0 && candidates[row][col].length > 0) {
+      if (grid[row][col] === 0 && candidates[row][col].length > 0 && candidates[row][col].length <= 4) {
         cells.push({ row, col, candidates: [...candidates[row][col]] });
       }
     }
   }
 
-  // Look for naked pairs
-  for (let i = 0; i < cells.length - 1; i++) {
-    for (let j = i + 1; j < cells.length; j++) {
-      const cell1 = cells[i], cell2 = cells[j];
-      if (cell1.candidates.length === 2 && cell2.candidates.length === 2 &&
-          arraysEqual(cell1.candidates, cell2.candidates)) {
+  // Look for naked pairs, triples, and quads
+  for (let subsetSize = 2; subsetSize <= 4; subsetSize++) {
+    // Get all combinations of cells of size subsetSize
+    const combinations = getCombinations(cells, subsetSize);
 
+    for (const combo of combinations) {
+      // Get union of all candidates in this combination
+      const unionCandidates = [...new Set(combo.flatMap(cell => cell.candidates))];
+
+      // If union has exactly subsetSize candidates, it's a naked subset
+      if (unionCandidates.length === subsetSize) {
         // Remove these candidates from other cells in the box
         for (let r = 0; r < 3; r++) {
           for (let c = 0; c < 3; c++) {
             const row = boxRow * 3 + r;
             const col = boxCol * 3 + c;
-            if ((row !== cell1.row || col !== cell1.col) &&
-                (row !== cell2.row || col !== cell2.col) && grid[row][col] === 0) {
+            if (grid[row][col] === 0 && !combo.some(cell => cell.row === row && cell.col === col)) {
               const oldLength = candidates[row][col].length;
               candidates[row][col] = candidates[row][col].filter(num =>
-                !cell1.candidates.includes(num));
+                !unionCandidates.includes(num));
               if (candidates[row][col].length < oldLength) changed = true;
             }
           }
@@ -1175,21 +1203,21 @@ function applyNakedSubsetsInBox(grid, candidates, boxRow, boxCol) {
   return changed;
 }
 
-// Technique 4: Hidden Pairs/Triples (no quads for accessibility)
+// Technique 4: Hidden Pairs/Triples/Quads
 function applyHiddenSubsets(grid, candidates) {
   let changed = false;
 
-  // Check for hidden pairs and triples in rows (no quads)
+  // Check for hidden pairs, triples, and quads in rows
   for (let row = 0; row < 9; row++) {
     if (applyHiddenSubsetsInRow(grid, candidates, row)) changed = true;
   }
 
-  // Check for hidden pairs and triples in columns (no quads)
+  // Check for hidden pairs, triples, and quads in columns
   for (let col = 0; col < 9; col++) {
     if (applyHiddenSubsetsInColumn(grid, candidates, col)) changed = true;
   }
 
-  // Check for hidden pairs and triples in boxes (no quads)
+  // Check for hidden pairs, triples, and quads in boxes
   for (let boxRow = 0; boxRow < 3; boxRow++) {
     for (let boxCol = 0; boxCol < 3; boxCol++) {
       if (applyHiddenSubsetsInBox(grid, candidates, boxRow, boxCol)) changed = true;
@@ -1269,6 +1297,49 @@ function applyHiddenSubsetsInRow(grid, candidates, row) {
     }
   }
 
+  // Check for hidden quads
+  for (let num1 = 1; num1 <= 6; num1++) {
+    for (let num2 = num1 + 1; num2 <= 7; num2++) {
+      for (let num3 = num2 + 1; num3 <= 8; num3++) {
+        for (let num4 = num3 + 1; num4 <= 9; num4++) {
+          if (!isNumberInRow(grid, row, num1) && !isNumberInRow(grid, row, num2) &&
+              !isNumberInRow(grid, row, num3) && !isNumberInRow(grid, row, num4)) {
+            const positions1 = [], positions2 = [], positions3 = [], positions4 = [];
+
+            for (let col = 0; col < 9; col++) {
+              if (grid[row][col] === 0) {
+                if (candidates[row][col].includes(num1)) positions1.push(col);
+                if (candidates[row][col].includes(num2)) positions2.push(col);
+                if (candidates[row][col].includes(num3)) positions3.push(col);
+                if (candidates[row][col].includes(num4)) positions4.push(col);
+              }
+            }
+
+            // Find union of positions
+            const allPositions = [...new Set([...positions1, ...positions2, ...positions3, ...positions4])];
+
+            // Check if exactly 4 positions contain all four numbers
+            if (allPositions.length === 4 &&
+                allPositions.every(col =>
+                  candidates[row][col].includes(num1) ||
+                  candidates[row][col].includes(num2) ||
+                  candidates[row][col].includes(num3) ||
+                  candidates[row][col].includes(num4))) {
+
+              // Remove all other candidates from these positions
+              for (let col of allPositions) {
+                const oldLength = candidates[row][col].length;
+                candidates[row][col] = candidates[row][col].filter(n =>
+                  n === num1 || n === num2 || n === num3 || n === num4);
+                if (candidates[row][col].length < oldLength) changed = true;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   return changed;
 }
 
@@ -1332,6 +1403,46 @@ function applyHiddenSubsetsInColumn(grid, candidates, col) {
     }
   }
 
+  // Check for hidden quads
+  for (let num1 = 1; num1 <= 6; num1++) {
+    for (let num2 = num1 + 1; num2 <= 7; num2++) {
+      for (let num3 = num2 + 1; num3 <= 8; num3++) {
+        for (let num4 = num3 + 1; num4 <= 9; num4++) {
+          if (!isNumberInColumn(grid, col, num1) && !isNumberInColumn(grid, col, num2) &&
+              !isNumberInColumn(grid, col, num3) && !isNumberInColumn(grid, col, num4)) {
+            const positions1 = [], positions2 = [], positions3 = [], positions4 = [];
+
+            for (let row = 0; row < 9; row++) {
+              if (grid[row][col] === 0) {
+                if (candidates[row][col].includes(num1)) positions1.push(row);
+                if (candidates[row][col].includes(num2)) positions2.push(row);
+                if (candidates[row][col].includes(num3)) positions3.push(row);
+                if (candidates[row][col].includes(num4)) positions4.push(row);
+              }
+            }
+
+            const allPositions = [...new Set([...positions1, ...positions2, ...positions3, ...positions4])];
+
+            if (allPositions.length === 4 &&
+                allPositions.every(row =>
+                  candidates[row][col].includes(num1) ||
+                  candidates[row][col].includes(num2) ||
+                  candidates[row][col].includes(num3) ||
+                  candidates[row][col].includes(num4))) {
+
+              for (let row of allPositions) {
+                const oldLength = candidates[row][col].length;
+                candidates[row][col] = candidates[row][col].filter(n =>
+                  n === num1 || n === num2 || n === num3 || n === num4);
+                if (candidates[row][col].length < oldLength) changed = true;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   return changed;
 }
 
@@ -1367,6 +1478,82 @@ function applyHiddenSubsetsInBox(grid, candidates, boxRow, boxCol) {
             const oldLength = candidates[row][col].length;
             candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2);
             if (candidates[row][col].length < oldLength) changed = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Check for hidden triples
+  for (let num1 = 1; num1 <= 7; num1++) {
+    for (let num2 = num1 + 1; num2 <= 8; num2++) {
+      for (let num3 = num2 + 1; num3 <= 9; num3++) {
+        if (!isNumberInBox(grid, boxRow * 3, boxCol * 3, num1) &&
+            !isNumberInBox(grid, boxRow * 3, boxCol * 3, num2) &&
+            !isNumberInBox(grid, boxRow * 3, boxCol * 3, num3)) {
+
+          const positions1 = [], positions2 = [], positions3 = [];
+
+          for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+              const row = boxRow * 3 + r;
+              const col = boxCol * 3 + c;
+              if (grid[row][col] === 0) {
+                if (candidates[row][col].includes(num1)) positions1.push([row, col]);
+                if (candidates[row][col].includes(num2)) positions2.push([row, col]);
+                if (candidates[row][col].includes(num3)) positions3.push([row, col]);
+              }
+            }
+          }
+
+          const allPositions = [...new Set(positions1.concat(positions2, positions3).map(p => `${p[0]},${p[1]}`))].map(s => s.split(',').map(Number));
+
+          if (allPositions.length === 3) {
+            for (let [row, col] of allPositions) {
+              const oldLength = candidates[row][col].length;
+              candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2 || n === num3);
+              if (candidates[row][col].length < oldLength) changed = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Check for hidden quads
+  for (let num1 = 1; num1 <= 6; num1++) {
+    for (let num2 = num1 + 1; num2 <= 7; num2++) {
+      for (let num3 = num2 + 1; num3 <= 8; num3++) {
+        for (let num4 = num3 + 1; num4 <= 9; num4++) {
+          if (!isNumberInBox(grid, boxRow * 3, boxCol * 3, num1) &&
+              !isNumberInBox(grid, boxRow * 3, boxCol * 3, num2) &&
+              !isNumberInBox(grid, boxRow * 3, boxCol * 3, num3) &&
+              !isNumberInBox(grid, boxRow * 3, boxCol * 3, num4)) {
+
+            const positions1 = [], positions2 = [], positions3 = [], positions4 = [];
+
+            for (let r = 0; r < 3; r++) {
+              for (let c = 0; c < 3; c++) {
+                const row = boxRow * 3 + r;
+                const col = boxCol * 3 + c;
+                if (grid[row][col] === 0) {
+                  if (candidates[row][col].includes(num1)) positions1.push([row, col]);
+                  if (candidates[row][col].includes(num2)) positions2.push([row, col]);
+                  if (candidates[row][col].includes(num3)) positions3.push([row, col]);
+                  if (candidates[row][col].includes(num4)) positions4.push([row, col]);
+                }
+              }
+            }
+
+            const allPositions = [...new Set(positions1.concat(positions2, positions3, positions4).map(p => `${p[0]},${p[1]}`))].map(s => s.split(',').map(Number));
+
+            if (allPositions.length === 4) {
+              for (let [row, col] of allPositions) {
+                const oldLength = candidates[row][col].length;
+                candidates[row][col] = candidates[row][col].filter(n => n === num1 || n === num2 || n === num3 || n === num4);
+                if (candidates[row][col].length < oldLength) changed = true;
+              }
+            }
           }
         }
       }
@@ -1525,6 +1712,24 @@ function arraysEqual(arr1, arr2) {
   const sorted1 = [...arr1].sort();
   const sorted2 = [...arr2].sort();
   return sorted1.every((val, i) => val === sorted2[i]);
+}
+
+// Helper function to get all combinations of k elements from array
+function getCombinations(arr, k) {
+  if (k === 1) return arr.map(item => [item]);
+  if (k === arr.length) return [arr];
+  if (k > arr.length) return [];
+
+  const result = [];
+  for (let i = 0; i <= arr.length - k; i++) {
+    const first = arr[i];
+    const rest = arr.slice(i + 1);
+    const combos = getCombinations(rest, k - 1);
+    for (const combo of combos) {
+      result.push([first, ...combo]);
+    }
+  }
+  return result;
 }
 
 // Convert grid to 81-character string
