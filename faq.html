@@ -377,7 +377,7 @@
                             <li><strong>Select Cells:</strong> Click any cell to select it</li>
                             <li><strong>Enter Numbers:</strong> Type 1-9 to place numbers in selected cells</li>
                             <li><strong>Candidate Notes:</strong> Use small numbers to track possibilities (automatic or manual)</li>
-                            <li><strong>Get Hints:</strong> Click the hint button for help (5s penalty for pointing, 10s for revealing)</li>
+                            <li><strong>Get Hints:</strong> Click hint button for help (gentle 3-20% penalty based on count)</li>
                             <li><strong>Pause/Resume:</strong> Use the pause button to take breaks</li>
                             <li><strong>Auto-Save:</strong> Your progress is automatically saved every 30 seconds</li>
                         </ul>
@@ -391,9 +391,9 @@
                     </div>
                     <div class="faq-answer">
                         Each day, both players compete by completing the same three Sudoku puzzles (Easy, Medium, Hard).
-                        The player with the highest total score wins the day. Scores are calculated based on completion time,
-                        errors made, hints used, and difficulty multipliers. Win streaks, achievements, and overall records
-                        are tracked automatically.
+                        The player with the highest total score wins the day. Scores are calculated using linear time scaling,
+                        harsh error penalties (12% per error), and gentle hint penalties (3-20%). Winners of individual difficulty
+                        levels get a 30% bonus. Win streaks, achievements, and overall records are tracked automatically.
                     </div>
                 </div>
             </div>
@@ -409,7 +409,7 @@
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-brain"></i></div>
                         <div class="feature-title">Smart Hints</div>
-                        <div class="feature-description">Two-stage hint system: first click highlights empty cells in the same region, second click reveals the correct number. Each hint adds time penalties.</div>
+                        <div class="feature-description">Two-stage hint system: first click points to the next solvable cell, second click reveals the answer. Gentle penalties (3-20% based on count) encourage strategic use when stuck.</div>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-eye"></i></div>
@@ -419,7 +419,7 @@
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         <div class="feature-title">Error Detection</div>
-                        <div class="feature-description">Real-time validation highlights incorrect numbers immediately. Errors add 10 seconds to your final time for scoring.</div>
+                        <div class="feature-description">Real-time validation highlights incorrect numbers immediately. Each error costs 12% of your score (max 60%) - accuracy is absolutely critical!</div>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-save"></i></div>
@@ -452,22 +452,33 @@
                         How are scores calculated?
                     </div>
                     <div class="faq-answer">
-                        The scoring system rewards both speed and accuracy:
+                        The new competitive scoring system uses linear time scaling with strategic penalties:
                         <div class="scoring-formula">
                             <div class="formula">
-                                Score = (1,000 ÷ √(Adjusted Time in Minutes)) × Difficulty Multiplier
-                            </div>
-                            <div>
-                                <strong>Adjusted Time</strong> = Base Time + (Errors × 30 seconds) + Hint Penalties<br>
-                                <strong>Difficulty Multipliers:</strong> Easy ×1, Medium ×1.8, Hard ×3.2
+                                Base Scores: Easy 1000, Medium 2000, Hard 4000<br>
+                                Target Times: Easy 4min, Medium 5.5min, Hard 9min<br>
+                                Time Ratio = Your Time ÷ Target Time
                             </div>
                         </div>
+
+                        <p><strong>Time Scoring (Linear):</strong></p>
                         <ul>
-                            <li><strong>Base Time:</strong> Your actual completion time</li>
-                            <li><strong>Error Penalty:</strong> +30 seconds per mistake (significant impact!)</li>
-                            <li><strong>Hint Penalties:</strong> +5 seconds for first hint (pointing), +10 seconds for second hint (revealing)</li>
-                            <li><strong>Square Root Scaling:</strong> Rewards fast times more dramatically</li>
-                            <li><strong>Daily Winner:</strong> Highest total score across all three difficulties</li>
+                            <li><strong>Faster than target (ratio ≤ 1.0):</strong> Score = Base × (2 - ratio) [2x at instant, 1x at target]</li>
+                            <li><strong>Slower than target (ratio 1.0-2.0):</strong> Score = Base × (1.5 - ratio × 0.5) [1x to 0.5x]</li>
+                            <li><strong>Very slow (ratio > 2.0):</strong> Score = Base × 0.25 [minimum 25%]</li>
+                        </ul>
+
+                        <p><strong>Penalties Applied:</strong></p>
+                        <ul>
+                            <li><strong>Error Penalty (HARSH):</strong> 12% per error, max 60% - accuracy is absolutely critical!</li>
+                            <li><strong>Hint Penalty (GENTLE):</strong> 1H: 3%, 2H: 6%, 3H: 10%, 4H: 15%, 5+H: 20% cap - encourages strategic use when stuck</li>
+                        </ul>
+
+                        <p><strong>Winner Bonuses:</strong></p>
+                        <ul>
+                            <li><strong>Per-Difficulty Bonus:</strong> 30% bonus to the winner of each difficulty level</li>
+                            <li><strong>Applied at Daily Level:</strong> Bonuses calculated in daily totals, not individual puzzle scores</li>
+                            <li><strong>Daily Winner:</strong> Highest total score after bonuses applied</li>
                         </ul>
                     </div>
                 </div>
@@ -478,15 +489,52 @@
                         What's a good score?
                     </div>
                     <div class="faq-answer">
-                        <p>With the square root scoring system, scores can get quite high for fast completion times:</p>
+                        <p>With the new linear scoring system, here are benchmark scores:</p>
+
+                        <p><strong>Individual Puzzle Scores:</strong></p>
                         <ul>
-                            <li><strong>Easy:</strong> 500+ (sub-3min), 400+ (sub-5min), 300+ (sub-10min), 200+ (decent)</li>
-                            <li><strong>Medium:</strong> 800+ (sub-5min), 600+ (sub-10min), 400+ (sub-15min), 300+ (decent)</li>
-                            <li><strong>Hard:</strong> 1000+ (sub-10min), 700+ (sub-20min), 500+ (sub-30min), 300+ (decent)</li>
-                            <li><strong>Daily Total:</strong> 2500+ (champion level), 2000+ (excellent), 1500+ (very good), 1200+ (good), 800+ (decent)</li>
+                            <li><strong>Easy (range: 250-2000):</strong>
+                                <ul>
+                                    <li>1500+ (2min, 0E, 0H) - Exceptional</li>
+                                    <li>1000 (4min, 0E, 0H) - Target/Good</li>
+                                    <li>750 (6min, 0E, 0H) - Decent</li>
+                                    <li>500 (8min+, 0E, 0H) - Minimum</li>
+                                </ul>
+                            </li>
+                            <li><strong>Medium (range: 500-4000):</strong>
+                                <ul>
+                                    <li>3000+ (3min, 0E, 0H) - Exceptional</li>
+                                    <li>2000 (5.5min, 0E, 0H) - Target/Good</li>
+                                    <li>1500 (8min, 0E, 0H) - Decent</li>
+                                    <li>1000 (11min+, 0E, 0H) - Minimum</li>
+                                </ul>
+                            </li>
+                            <li><strong>Hard (range: 1000-8000):</strong>
+                                <ul>
+                                    <li>6000+ (5min, 0E, 0H) - Exceptional</li>
+                                    <li>4000 (9min, 0E, 0H) - Target/Good</li>
+                                    <li>3000 (13min, 0E, 0H) - Decent</li>
+                                    <li>2000 (18min+, 0E, 0H) - Minimum</li>
+                                </ul>
+                            </li>
                         </ul>
-                        <p><strong>Pro tip:</strong> Accuracy is crucial - each error adds 30 seconds, significantly impacting your score!</p>
-                        <p><strong>Elite Performance:</strong> 3000+ total represents lightning-fast completion times (averaging under 3-4 minutes per puzzle) with minimal errors - truly exceptional Sudoku mastery! Our new achievements reward the most elite performances: Point Titan (3000+), Point Legend (4000+), and the ultimate Point God (5000+)!</p>
+
+                        <p><strong>Daily Total Scores (with 30% winner bonuses):</strong></p>
+                        <ul>
+                            <li><strong>9000+:</strong> Champion level - exceptional speed and accuracy across all difficulties</li>
+                            <li><strong>7000+:</strong> Excellent - consistently fast with minimal errors</li>
+                            <li><strong>5000+:</strong> Very good - solid performance across the board</li>
+                            <li><strong>3500+:</strong> Good - meeting targets with room for improvement</li>
+                            <li><strong>2000+:</strong> Decent - completing all puzzles but slower times</li>
+                        </ul>
+
+                        <p><strong>Pro tips:</strong></p>
+                        <ul>
+                            <li><strong>Accuracy is CRITICAL:</strong> Each error costs 12% of your score (5 errors = 60% penalty!)</li>
+                            <li><strong>Use hints strategically:</strong> Gentle penalties (3-20%) make them worthwhile when stuck</li>
+                            <li><strong>Aim for target times:</strong> 4min (Easy), 5.5min (Medium), 9min (Hard) for base score</li>
+                            <li><strong>Win individual difficulties:</strong> 30% bonus makes winning each difficulty valuable!</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -741,10 +789,10 @@
                         <ul>
                             <li><strong>Learn Techniques:</strong> Master naked singles, hidden singles, then progress to pairs and triples</li>
                             <li><strong>Use Candidate Notes:</strong> Track possible numbers to spot patterns</li>
-                            <li><strong>Start with Easy:</strong> Build confidence and speed on easier puzzles</li>
+                            <li><strong>Prioritize Accuracy:</strong> Each error costs 12% of your score - avoid mistakes at all costs!</li>
                             <li><strong>Practice Regularly:</strong> Consistency is key to improvement</li>
                             <li><strong>Analyze Your Errors:</strong> Use the analytics page to identify weak areas</li>
-                            <li><strong>Time Management:</strong> Balance speed with accuracy for optimal scores</li>
+                            <li><strong>Know Your Targets:</strong> Aim for 4min (Easy), 5.5min (Medium), 9min (Hard) for base scores</li>
                         </ul>
                     </div>
                 </div>
@@ -756,10 +804,11 @@
                     </div>
                     <div class="faq-answer">
                         <ul>
-                            <li><strong>Minimize Errors:</strong> Each error costs 30 seconds - accuracy is absolutely critical!</li>
-                            <li><strong>Use Hints Sparingly:</strong> They help but add time penalties</li>
-                            <li><strong>Focus on Medium/Hard:</strong> Higher difficulty multipliers boost total scores</li>
-                            <li><strong>Practice Speed:</strong> The faster you solve, the higher your score</li>
+                            <li><strong>Minimize Errors:</strong> Each error costs 12% of your score (max 60%) - accuracy is absolutely critical!</li>
+                            <li><strong>Use Hints Strategically:</strong> Gentle penalties (3-20%) make them worthwhile when stuck</li>
+                            <li><strong>Beat Target Times:</strong> 4min (Easy), 5.5min (Medium), 9min (Hard) gets you base score</li>
+                            <li><strong>Win Individual Difficulties:</strong> 30% bonus for winning each difficulty level is huge!</li>
+                            <li><strong>Focus on Speed AND Accuracy:</strong> Linear scoring rewards both proportionally</li>
                             <li><strong>Complete All Three:</strong> Daily victories require finishing all difficulties</li>
                         </ul>
                     </div>

@@ -71,21 +71,32 @@ function generatePuzzle(solution, difficulty, seed) {
 - **Auto-Save**: Automatic game state persistence every 30 seconds
 - **Completion Detection**: Automatic puzzle validation and scoring
 
-### 🏆 **Sophisticated Scoring System**
+### 🏆 **Competitive Scoring System**
 ```javascript
-// Advanced scoring formula with square root scaling for better distribution
-const baseScore = 1000;
-const adjustedTime = timeInSeconds + (errors * 30) + hintTimePenalty;
-const adjustedMinutes = adjustedTime / 60;
-const difficultyMultiplier = { easy: 1, medium: 1.8, hard: 3.2 };
-const finalScore = (baseScore / Math.sqrt(adjustedMinutes)) * difficultyMultiplier[difficulty];
+// Linear time scaling with harsh error and gentle hint penalties
+const baseScores = { easy: 1000, medium: 2000, hard: 4000 };
+const targetTimes = { easy: 240, medium: 330, hard: 540 }; // seconds
+const timeRatio = timer / targetTime;
+
+// Time scoring: 2x at instant, 1x at target, 0.5x at 2x target, 0.25x min
+let score = timeRatio <= 1.0 ? baseScore * (2 - timeRatio) :
+            timeRatio <= 2.0 ? baseScore * (1.5 - timeRatio * 0.5) :
+            baseScore * 0.25;
+
+// Error penalty: harsh 12% per error (max 60%)
+score *= (1 - Math.min(errors * 0.12, 0.60));
+
+// Hint penalty: gentle 3-20% based on count
+score *= (1 - hintPenalty); // 1H: 3%, 2H: 6%, 3H: 10%, 4H: 15%, 5+H: 20%
 ```
 
 **Scoring Features:**
-- **Square Root Scaling**: Better score distribution and more rewarding for fast times
-- **Error Penalties**: +30 seconds per mistake (significant impact)
-- **Hint Penalties**: Progressive time penalties (5s → 10s)
-- **Difficulty Multipliers**: Easy ×1, Medium ×1.8, Hard ×3.2
+- **Linear Time Scaling**: Predictable score ranges, rewards speed proportionally
+- **Target-Based**: 4min (Easy), 5.5min (Medium), 9min (Hard) for base score
+- **Harsh Error Penalties**: 12% per error (max 60%) - accuracy is critical!
+- **Gentle Hint Penalties**: 3-20% based on count - encourages strategic use
+- **Winner Bonuses**: 30% bonus per difficulty level at daily summary (not individual puzzles)
+- **Score Ranges**: Easy 250-2000, Medium 500-4000, Hard 1000-8000 points
 - **Real-Time Updates**: Live score calculations and comparisons
 
 ### 🎲 **Intelligent Puzzle Algorithm**
@@ -281,7 +292,7 @@ The application is deployed on Vercel with:
 - **3 Difficulty Levels**: Calibrated puzzle generation with advanced algorithms
 - **Real-Time Updates**: Live competition tracking and opponent notifications
 - **Complete Analytics**: Performance insights and trends with interactive charts
-- **Full Sudoku Engine**: Professional game implementation with square-root scoring
+- **Full Sudoku Engine**: Professional game implementation with competitive linear scoring
 
 ## 🌐 Browser Compatibility
 

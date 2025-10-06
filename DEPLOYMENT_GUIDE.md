@@ -38,14 +38,26 @@ Your competitive analytics dashboard has been transformed into a full Sudoku gam
 
 ### 4. **Scoring System**
 ```
-Final Score = (1000 ÷ (adjusted_time_in_minutes)) × difficulty_multiplier × theme_multiplier
+New Linear Time Scaling System:
 
-Where:
-- adjusted_time = actual_time + (errors × 30 seconds) + hint_penalties
-- hint_penalties = (hint_pointings × 5 seconds) + (hint_reveals × 10 seconds)
-- Each full hint use = 15 seconds total (5s pointing + 10s revealing)
-- difficulty_multiplier = Easy: 1x, Medium: 1.8x, Hard: 3.2x
-- theme_multiplier = 1.0x to 1.4x based on seasonal theme
+Base Scores: Easy 1000, Medium 2000, Hard 4000
+Target Times: Easy 4min, Medium 5.5min, Hard 9min
+Time Ratio = Your Time ÷ Target Time
+
+Time Scoring:
+- Faster than target (ratio ≤ 1.0): Score = Base × (2 - ratio) [2x at instant, 1x at target]
+- Slower than target (ratio 1.0-2.0): Score = Base × (1.5 - ratio × 0.5) [1x to 0.5x]
+- Very slow (ratio > 2.0): Score = Base × 0.25 [minimum 25%]
+
+Penalties:
+- Error Penalty (HARSH): 12% per error, max 60% - accuracy is critical!
+- Hint Penalty (GENTLE): 1H: 3%, 2H: 6%, 3H: 10%, 4H: 15%, 5+H: 20% cap
+
+Winner Bonuses:
+- 30% bonus to winner of each difficulty level (applied at daily summary)
+- Bonuses calculated in daily totals, not individual puzzle scores
+
+Score Ranges: Easy 250-2000, Medium 500-4000, Hard 1000-8000
 ```
 
 ---
@@ -151,7 +163,8 @@ Where:
 1. **Start with Easy**: Build confidence and momentum
 2. **Progress to Medium**: Test your skills with moderate challenge
 3. **Tackle Hard**: Go for maximum points with difficulty multiplier
-4. **Use Hints Strategically**: Remember each hint adds 15 seconds
+4. **Use Hints Strategically**: Gentle penalties (3-20%) make them worthwhile when stuck
+5. **Focus on Accuracy**: Each error costs 12% of your score - avoid mistakes!
 
 ### 🌙 **Evening Review**
 1. **Check Results**: See final scores and winner determination
@@ -164,10 +177,11 @@ Where:
 ## 🏅 Winning Strategies
 
 ### 🎯 **Scoring Optimization**
-- **Speed vs Accuracy**: Balance quick solving with error avoidance
-- **Strategic Hints**: Use hints early to prevent bigger mistakes later
-- **Theme Timing**: Play during high-multiplier seasons for bonus points
-- **Difficulty Order**: Complete all three difficulties for maximum total score
+- **Accuracy First**: Each error costs 12% of score (max 60%) - avoid mistakes!
+- **Strategic Hints**: Gentle penalties (3-20%) make hints worthwhile when stuck
+- **Beat Target Times**: Aim for 4min (Easy), 5.5min (Medium), 9min (Hard)
+- **Win Individual Difficulties**: 30% bonus for each difficulty is huge!
+- **Complete All Three**: Finish all difficulties for maximum daily total
 
 ### 🧠 **Solving Techniques**
 - **Naked Singles**: Look for cells with only one possible number
