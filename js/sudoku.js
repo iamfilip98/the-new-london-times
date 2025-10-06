@@ -1882,19 +1882,7 @@ class SudokuEngine {
                 <div class="completion-text">Puzzle Complete!</div>
                 <div class="completion-time">${this.formatTime(this.timer)}</div>
 
-                <!-- Rating System -->
-                <div class="puzzle-rating-section">
-                    <div class="rating-prompt">How would you rate this puzzle?</div>
-                    <div class="rating-stars" id="puzzleRatingStars">
-                        ${[1,2,3,4,5,6,7,8,9,10].map(rating =>
-                            `<button class="rating-star" data-rating="${rating}" onclick="window.sudokuEngine.ratePuzzle(${rating})">${rating}</button>`
-                        ).join('')}
-                    </div>
-                    <div class="rating-feedback" id="ratingFeedback"></div>
-                </div>
-
                 ${navigationButton}
-                ${isPersistent ? '<div class="completion-hint">Click anywhere to dismiss</div>' : ''}
             </div>
         `;
 
@@ -1929,30 +1917,10 @@ class SudokuEngine {
             // Store notification reference for later dismissal
             this.activeNotification = notification;
 
-            if (isPersistent) {
-                // Add click handler to dismiss persistent notification
-                const dismissNotification = () => {
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 500);
-                    document.removeEventListener('click', dismissNotification);
-                };
+            // Enable pointer events so navigation button works
+            notification.style.pointerEvents = 'auto';
 
-                // Allow clicking to dismiss
-                notification.style.pointerEvents = 'auto';
-                notification.style.cursor = 'pointer';
-                setTimeout(() => {
-                    document.addEventListener('click', dismissNotification);
-                }, 100); // Small delay to prevent immediate dismissal
-            } else {
-                // For fresh completions, enable pointer events so rating buttons work
-                notification.style.pointerEvents = 'auto';
-            }
-            // Notification stays visible until user rates
-            // No auto-dismiss timeout - will be dismissed when user clicks a rating
+            // Notification stays visible until user clicks the navigation button
         } else {
             console.error('Could not find grid container for completion notification');
         }
