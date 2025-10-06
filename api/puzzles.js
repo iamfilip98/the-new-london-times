@@ -2540,12 +2540,13 @@ module.exports = async function handler(req, res) {
           await saveGameState(player, date, difficulty, state);
           return res.status(200).json({ success: true });
         } else if (action === 'reset' && date) {
-          // Reset puzzles and game states for specific date
+          // Reset puzzles, game states, and completion times for specific date
           await sql`DELETE FROM daily_puzzles WHERE date = ${date}`;
           await sql`DELETE FROM game_states WHERE date = ${date}`;
+          await sql`DELETE FROM individual_games WHERE date = ${date}`;
           return res.status(200).json({
             success: true,
-            message: `Reset completed for ${date}`
+            message: `Reset completed for ${date} (puzzles, game states, and times cleared)`
           });
         } else {
           return res.status(400).json({ error: 'Invalid request parameters' });
@@ -2556,9 +2557,10 @@ module.exports = async function handler(req, res) {
         const { date } = req.body;
 
         if (date) {
-          // Delete puzzles and game states for specific date
+          // Delete puzzles, game states, and completion times for specific date
           await sql`DELETE FROM daily_puzzles WHERE date = ${date}`;
           await sql`DELETE FROM game_states WHERE date = ${date}`;
+          await sql`DELETE FROM individual_games WHERE date = ${date}`;
           return res.status(200).json({
             success: true,
             message: `Deleted all data for ${date}`
