@@ -4015,8 +4015,20 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '';
 
-        // Navigate to medium difficulty while preserving completed state if it exists
-        this.navigateToDifficulty('medium');
+        // Start fresh medium puzzle
+        this.currentDifficulty = 'medium';
+
+        // Update UI
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const mediumBtn = document.querySelector('[data-difficulty="medium"]');
+        if (mediumBtn) {
+            mediumBtn.classList.add('active');
+        }
+
+        // Load the puzzle (will check if already completed)
+        this.loadPuzzle('medium');
     }
 
     navigateToHard() {
@@ -4033,8 +4045,20 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '';
 
-        // Navigate to hard difficulty while preserving completed state if it exists
-        this.navigateToDifficulty('hard');
+        // Start fresh hard puzzle
+        this.currentDifficulty = 'hard';
+
+        // Update UI
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const hardBtn = document.querySelector('[data-difficulty="hard"]');
+        if (hardBtn) {
+            hardBtn.classList.add('active');
+        }
+
+        // Load the puzzle (will check if already completed)
+        this.loadPuzzle('hard');
     }
 
     // New method to handle navigation that preserves completed state
@@ -4102,21 +4126,44 @@ class SudokuEngine {
     }
 
     navigateToDashboard() {
-        // Navigate to dashboard section in the main app
-        if (window.sudokuApp && window.sudokuApp.switchPage) {
-            window.sudokuApp.switchPage('dashboard');
-        } else {
-            // Fallback: trigger navigation event
-            const navEvent = new CustomEvent('navigate', {
-                detail: { page: 'dashboard' }
-            });
-            document.dispatchEvent(navEvent);
-        }
-
-        // Remove completion notification
+        // Remove completion notification first
         const notification = document.querySelector('.completion-notification-overlay');
         if (notification) {
             notification.remove();
+        }
+
+        // Close any modals
+        document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
+        const gameStatus = document.getElementById('gameStatus');
+        if (gameStatus) {
+            gameStatus.innerHTML = '';
+        }
+
+        // Navigate to dashboard page
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        // Update active nav link to dashboard
+        navLinks.forEach(l => l.classList.remove('active'));
+        const dashboardNavLink = document.querySelector('[data-page="dashboard"]');
+        if (dashboardNavLink) {
+            dashboardNavLink.classList.add('active');
+        }
+
+        // Update active page to dashboard
+        pages.forEach(page => page.classList.remove('active'));
+        const dashboardPage = document.getElementById('dashboard');
+        if (dashboardPage) {
+            dashboardPage.classList.add('active');
+        }
+
+        // Scroll to top
+        window.scrollTo(0, 0);
+
+        // Refresh dashboard data
+        if (window.sudokuApp) {
+            window.sudokuApp.updateTodayProgress();
+            window.sudokuApp.updateDashboard();
         }
     }
 }
