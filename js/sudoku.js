@@ -4402,18 +4402,34 @@ window.masterRefresh = async function(verbose = true) {
             }
         }
 
-        // Step 6: Force UI refresh
-        debugLog('🖼️ Step 6: Force refreshing UI...');
-        if (window.location.pathname.includes('sudoku') || window.location.pathname.includes('puzzle')) {
-            debugLog('On puzzle page - you may need to select a difficulty to see new puzzles');
+        // Step 6: Force UI refresh and start new game
+        debugLog('🖼️ Step 6: Force refreshing UI and starting new game...');
+
+        // Determine which difficulty to start
+        let difficultyToStart = 'easy';
+        if (window.sudokuEngine && window.sudokuEngine.currentDifficulty) {
+            difficultyToStart = window.sudokuEngine.currentDifficulty;
+            debugLog(`Restarting with previous difficulty: ${difficultyToStart}`);
         } else {
-            debugLog('Navigate to puzzle page to test new puzzles');
+            debugLog('Starting with default difficulty: easy');
+        }
+
+        // Start a fresh game with the new puzzle
+        if (window.sudokuEngine && window.sudokuEngine.dailyPuzzles) {
+            try {
+                await window.sudokuEngine.startGame(difficultyToStart);
+                debugLog(`✅ New ${difficultyToStart} game started with fresh puzzle`);
+            } catch (error) {
+                debugLog('⚠️ Could not auto-start game:', error.message);
+                debugLog('💡 Manually select a difficulty to see the new puzzles');
+            }
+        } else {
+            debugLog('💡 Navigate to puzzle page or manually select a difficulty');
         }
 
         debugLog('=' .repeat(60));
         debugLog('🎯 MASTER REFRESH COMPLETE!');
-        debugLog('💡 Try selecting a difficulty level to see the new puzzles');
-        debugLog('📝 New algorithm: Easy=32-38, Medium=22-30, Hard=17-25 clues');
+        debugLog('📝 New puzzles generated and loaded');
 
         // Restore original debug state
         window.sudokuDebug = originalDebug;
