@@ -178,6 +178,51 @@ function parseTimeToSeconds(timeString) {
   return isNaN(totalSeconds) ? null : totalSeconds;
 }
 
+/**
+ * Apply 30% winner bonus to each difficulty level
+ * The player with the higher score in each difficulty gets a 30% bonus
+ */
+function applyWinnerBonuses(player1Scores, player2Scores) {
+  // player1Scores and player2Scores are objects: { easy, medium, hard }
+
+  const difficulties = ['easy', 'medium', 'hard'];
+  const result1 = { ...player1Scores };
+  const result2 = { ...player2Scores };
+
+  difficulties.forEach(diff => {
+    if (result1[diff] && result2[diff]) {
+      if (result1[diff] > result2[diff]) {
+        // Player 1 wins this difficulty
+        result1[diff] = Math.round(result1[diff] * 1.3);
+      } else if (result2[diff] > result1[diff]) {
+        // Player 2 wins this difficulty
+        result2[diff] = Math.round(result2[diff] * 1.3);
+      }
+      // If tied, no bonus for either
+    }
+  });
+
+  return { player1: result1, player2: result2 };
+}
+
+/**
+ * Calculate daily winner based on total scores with winner bonuses applied
+ */
+function calculateDailyWinner(player1Scores, player2Scores) {
+  // Apply winner bonuses first
+  const bonusedScores = applyWinnerBonuses(player1Scores, player2Scores);
+
+  // Calculate totals
+  const p1Total = (bonusedScores.player1.easy || 0) + (bonusedScores.player1.medium || 0) + (bonusedScores.player1.hard || 0);
+  const p2Total = (bonusedScores.player2.easy || 0) + (bonusedScores.player2.medium || 0) + (bonusedScores.player2.hard || 0);
+
+  return {
+    player1Total: p1Total,
+    player2Total: p2Total,
+    winner: p1Total > p2Total ? 'player1' : (p2Total > p1Total ? 'player2' : 'tie')
+  };
+}
+
 async function getAllEntries() {
   try {
     const result = await sql`

@@ -13,7 +13,6 @@ class SudokuEngine {
         this.timerInterval = null;
         this.hints = 0;
         this.errors = 0;
-        this.hintTimePenalty = 0; // Track actual time penalty for scoring
         this.currentHintCell = null; // Track which cell is being hinted
         this.hintState = 'none'; // 'none', 'pointing', 'revealed'
         this.currentDifficulty = 'easy';
@@ -827,7 +826,6 @@ class SudokuEngine {
         document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
         this.hints = 0;
         this.errors = 0;
-        this.hintTimePenalty = 0;
         this.currentHintCell = null;
         this.hintState = 'none';
         this.gameStarted = true;
@@ -1372,7 +1370,6 @@ class SudokuEngine {
                 this.currentHintCell = { row, col, value, technique };
                 this.hintState = 'pointing';
                 this.hints++;
-                this.hintTimePenalty += 5; // 5 second penalty for pointing
 
                 // Clear any existing hint visual indicators
                 this.clearHintIndicators();
@@ -1407,7 +1404,6 @@ class SudokuEngine {
             if (this.currentHintCell) {
                 const { row, col, value, technique } = this.currentHintCell;
                 this.hintState = 'revealed';
-                this.hintTimePenalty += 10; // 10 second penalty for revealing
 
                 // Place the value
                 this.playerGrid[row][col] = value;
@@ -1816,28 +1812,58 @@ class SudokuEngine {
 
     calculateCurrentScore() {
         if (!this.gameStarted) return 0;
-
-        // Use progressive hint penalty system
-        const adjustedTime = this.timer + (this.errors * 30) + this.hintTimePenalty;
-        const adjustedMinutes = adjustedTime / 60;
-        const multipliers = { easy: 1, medium: 1.8, hard: 3.2 };
-
-        if (adjustedMinutes === 0) return 0;
-
-        // Square root scaling for better score distribution
-        let score = (1000 / Math.sqrt(adjustedMinutes)) * multipliers[this.currentDifficulty];
-
-        // Apply theme multiplier if theme manager is available
-        if (window.themeManager) {
-            const themeMultiplier = window.themeManager.getCurrentMultiplier();
-            score *= themeMultiplier;
-        }
-
-        return Math.round(score);
+        return this.calculateFinalScore();
     }
 
+    /**
+     * Calculate final score for completed puzzle
+     * Uses linear time scaling with harsh error penalties and gentle hint penalties
+     */
     calculateFinalScore() {
-        return this.calculateCurrentScore();
+        const baseScores = {
+            easy: 1000,
+            medium: 2000,
+            hard: 4000
+        };
+
+        const targetTimes = {
+            easy: 240,    // 4 minutes
+            medium: 330,  // 5.5 minutes
+            hard: 540     // 9 minutes
+        };
+
+        // TIME SCORING (linear scaling)
+        const baseScore = baseScores[this.currentDifficulty];
+        const targetTime = targetTimes[this.currentDifficulty];
+        const timeRatio = this.timer / targetTime;
+
+        let score;
+        if (timeRatio <= 1.0) {
+            // Faster than target: scale from 2x down to 1x
+            score = baseScore * (2 - timeRatio);
+        } else if (timeRatio <= 2.0) {
+            // Slower than target: scale from 1x down to 0.5x
+            score = baseScore * (1.5 - (timeRatio * 0.5));
+        } else {
+            // Very slow: minimum 0.25x base score
+            score = baseScore * 0.25;
+        }
+
+        // ERROR PENALTY (harsh - 12% per error, max 60%)
+        const errorPenalty = this.errors * 0.12;
+        score *= (1 - Math.min(errorPenalty, 0.60));
+
+        // HINT PENALTY (gentle - encouraging use when stuck)
+        let hintPenalty = 0;
+        if (this.hints === 1) hintPenalty = 0.03;      // 3%
+        else if (this.hints === 2) hintPenalty = 0.06; // 6%
+        else if (this.hints === 3) hintPenalty = 0.10; // 10%
+        else if (this.hints === 4) hintPenalty = 0.15; // 15%
+        else if (this.hints >= 5) hintPenalty = 0.20;  // 20% cap
+
+        score *= (1 - hintPenalty);
+
+        return Math.round(score);
     }
 
     showCompletionNotification(isPersistent = false) {
@@ -2431,7 +2457,6 @@ class SudokuEngine {
             timer: this.timer,
             hints: this.hints,
             errors: this.errors,
-            hintTimePenalty: this.hintTimePenalty,
             currentHintCell: this.currentHintCell,
             hintState: this.hintState,
             difficulty: this.currentDifficulty,
@@ -2550,7 +2575,6 @@ class SudokuEngine {
                 this.timer = gameState.timer || 0;
                 this.hints = gameState.hints || 0;
                 this.errors = gameState.errors || 0;
-                this.hintTimePenalty = gameState.hintTimePenalty || 0;
                 this.currentHintCell = gameState.currentHintCell || null;
                 this.hintState = gameState.hintState || 'none';
                 this.gameStarted = gameState.gameStarted || false;
@@ -3154,7 +3178,6 @@ class SudokuEngine {
         this.timer = 0;
         this.hints = 0;
         this.errors = 0;
-        this.hintTimePenalty = 0;
         this.currentHintCell = null;
         this.hintState = 'none';
     }
@@ -3905,7 +3928,6 @@ class SudokuEngine {
         this.timer = 0;
         this.hints = 0;
         this.errors = 0;
-        this.hintTimePenalty = 0;
         this.currentHintCell = null;
         this.hintState = 'none';
         this.gameStarted = false;
