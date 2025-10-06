@@ -65,11 +65,9 @@ class SudokuEngine {
         this.loadDailyPuzzles();
         this.setupEventListeners();
 
-        // Load ratings from server (for cross-device sync)
-        await this.loadRatingsFromServer();
-
-        // Sync any pending ratings
-        await this.syncPendingRatings();
+        // 🚀 PERFORMANCE: Load ratings in background (non-blocking)
+        // These operations don't need to complete before the game is playable
+        this.loadRatingsInBackground();
 
         // Check if there's a selected difficulty from dashboard
         const selectedDifficulty = sessionStorage.getItem('selectedDifficulty');
@@ -90,25 +88,53 @@ class SudokuEngine {
                 targetBtn.classList.add('active');
             }
 
-            // Always try to load saved state first, regardless of how we got here
-            debugLog('Attempting to load saved game state for difficulty:', this.currentDifficulty);
+            // 🚀 PERFORMANCE: Load game state in background to avoid blocking
+            this.loadGameStateInBackground(this.currentDifficulty);
+
+        } else {
+            // No difficulty was explicitly selected - load saved game state in background
+            debugLog('No explicit difficulty selection, loading saved game state');
+            this.loadGameStateInBackground(null);
+        }
+    }
+
+    // 🚀 PERFORMANCE: Background loading for ratings (non-blocking)
+    async loadRatingsInBackground() {
+        try {
+            // Load ratings from server (for cross-device sync)
+            await this.loadRatingsFromServer();
+
+            // Sync any pending ratings
+            await this.syncPendingRatings();
+
+            debugLog('✅ Ratings loaded and synced in background');
+        } catch (error) {
+            debugLog('⚠️ Background rating sync failed (non-critical):', error);
+        }
+    }
+
+    // 🚀 PERFORMANCE: Background loading for game state (non-blocking)
+    async loadGameStateInBackground(difficulty) {
+        try {
+            // Always try to load saved state first
+            debugLog('Attempting to load saved game state for difficulty:', difficulty || 'auto-detect');
             await this.loadGameState();
 
             // If no saved game state was found, start a new game
             if (!this.gameStarted) {
-                debugLog('No saved state found, loading fresh puzzle:', this.currentDifficulty);
-                this.loadPuzzle(this.currentDifficulty);
+                const targetDifficulty = difficulty || this.currentDifficulty;
+                if (targetDifficulty) {
+                    debugLog('No saved state found, loading fresh puzzle:', targetDifficulty);
+                    this.loadPuzzle(targetDifficulty);
+                }
             }
-        } else {
-            // No difficulty was explicitly selected - try to load saved game state
-            debugLog('No explicit difficulty selection, loading saved game state');
-            await this.loadGameState();
 
-            // If no saved game state and we have a current difficulty, start new game
-            if (!this.gameStarted && this.currentDifficulty) {
-                debugLog('No saved state found, loading fresh puzzle for default difficulty:', this.currentDifficulty);
-                this.loadPuzzle(this.currentDifficulty);
-            }
+            debugLog('✅ Game state loaded in background');
+        } catch (error) {
+            debugLog('⚠️ Background game state load failed:', error);
+            // On error, try to load a fresh puzzle
+            const targetDifficulty = difficulty || this.currentDifficulty || 'easy';
+            this.loadPuzzle(targetDifficulty);
         }
     }
 
