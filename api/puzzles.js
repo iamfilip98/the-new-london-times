@@ -166,6 +166,149 @@ const TECHNIQUE_COSTS = {
 
 const ADVANCED_TECHNIQUES = new Set(['xWing', 'yWing', 'xyzWing', 'swordfish', 'simpleColoring']);
 
+// Enhanced complexity scoring that accounts for pattern obscurity and cognitive load
+function calculateEnhancedComplexityScore(puzzle, solverResult, settings) {
+  let score = 0;
+  const techniques = solverResult.techniqueUsage || {};
+
+  // Core technique scoring with higher weights for hidden techniques
+  score += (techniques.nakedSingle || 0) * 1;
+  score += (techniques.hiddenSingle || 0) * 2;  // Hidden slightly harder than naked
+  score += (techniques.nakedPair || 0) * 4;
+  score += (techniques.hiddenPair || 0) * 6;  // Hidden pairs significantly harder
+  score += (techniques.nakedTriple || 0) * 8;
+  score += (techniques.hiddenTriple || 0) * 12;  // Hidden triples much harder
+  score += (techniques.nakedQuad || 0) * 12;
+  score += (techniques.hiddenQuad || 0) * 18;  // Hidden quads very challenging
+  score += (techniques.pointingPair || 0) * 3;
+  score += (techniques.boxLineReduction || 0) * 3;
+
+  // Penalize early naked singles heavily (makes puzzle too easy)
+  let earlyNakedSingles = 0;
+  const firstMovesCount = settings.firstMovesCount || 5;
+  if (solverResult.solvePath && solverResult.solvePath.length > 0) {
+    for (let i = 0; i < Math.min(firstMovesCount, solverResult.solvePath.length); i++) {
+      if (solverResult.solvePath[i] === 'nakedSingle') {
+        earlyNakedSingles++;
+      }
+    }
+  }
+  const maxEarlyNS = settings.maxNakedSinglesInFirstMoves || 3;
+  if (earlyNakedSingles > maxEarlyNS) {
+    score -= (earlyNakedSingles - maxEarlyNS) * 15;  // Heavy penalty
+  }
+
+  // Reward high candidate density (more cognitive load)
+  const clueCount = puzzle.flat().filter(cell => cell !== 0).length;
+  score += (81 - clueCount) * 1.5;
+
+  // Reward low entry points (fewer obvious starting moves)
+  const entryPoints = solverResult.entryPoints || 0;
+  if (entryPoints < 3) {
+    score += (3 - entryPoints) * 10;
+  } else if (entryPoints > 5) {
+    score -= (entryPoints - 5) * 8;  // Penalty for too many entry points
+  }
+
+  // Reward average dependency score (pattern depth)
+  const avgDependency = solverResult.averageDependencyScore || 0;
+  if (avgDependency >= settings.minDependencyScore && avgDependency <= settings.maxDependencyScore) {
+    score += avgDependency * 5;
+  }
+
+  // Detect combination patterns (multiple techniques in same region)
+  // This would require deeper analysis, use approximation
+  const totalAdvancedTechniques = (techniques.hiddenPair || 0) + (techniques.hiddenTriple || 0) +
+                                  (techniques.hiddenQuad || 0) + (techniques.nakedTriple || 0) + (techniques.nakedQuad || 0);
+  if (totalAdvancedTechniques >= 4) {
+    score += 20;  // Bonus for multiple complex patterns
+  }
+
+  // Reward puzzles with starved boxes (creates pattern obscurity)
+  if (settings.starveBoxes) {
+    const boxClueCounts = getBoxClueCounts(puzzle);
+    let starvedBoxCount = 0;
+    for (const count of boxClueCounts) {
+      if (count <= (settings.maxCluesPerStarvedBox || 2)) {
+        starvedBoxCount++;
+      }
+    }
+    if (starvedBoxCount >= (settings.minStarvedBoxes || 2)) {
+      score += starvedBoxCount * 8;
+    }
+  }
+
+  return Math.round(score);
+}
+
+// Helper function to count clues per box
+function getBoxClueCounts(puzzle) {
+  const boxCounts = Array(9).fill(0);
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (puzzle[row][col] !== 0) {
+        const boxIndex = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+        boxCounts[boxIndex]++;
+      }
+    }
+  }
+  return boxCounts;
+}
+
+// Strategic clue removal - prioritize cells that create pattern obscurity
+function getStrategicRemovalOrder(solution, seed, settings) {
+  const positions = [];
+
+  // Seeded random for determinism
+  let seedValue = seed || Date.now();
+  function seededRandom() {
+    seedValue = (seedValue * 9301 + 49297) % 233280;
+    return seedValue / 233280;
+  }
+
+  // Get box clue counts to identify which boxes to starve
+  const boxClueCounts = getBoxClueCounts(solution);
+  const boxPriority = [];
+  for (let i = 0; i < 9; i++) {
+    boxPriority.push({ boxIndex: i, priority: seededRandom() });
+  }
+  boxPriority.sort((a, b) => a.priority - b.priority);
+
+  // Identify boxes to starve (lowest priority boxes)
+  const starveBoxCount = settings.minStarvedBoxes || 2;
+  const boxesToStarve = new Set(boxPriority.slice(0, starveBoxCount).map(b => b.boxIndex));
+
+  // Create position list with priorities
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const boxIndex = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+      let priority = 0;
+
+      // High priority: cells in boxes we want to starve
+      if (boxesToStarve.has(boxIndex)) {
+        priority += 100;
+      }
+
+      // Medium priority: cells at row/col/box intersections (create more candidates)
+      const rowClues = solution[row].filter(c => c !== 0).length;
+      const colClues = solution.map(r => r[col]).filter(c => c !== 0).length;
+      if (rowClues <= 4 || colClues <= 4) {
+        priority += 50;
+      }
+
+      // Add randomness for variation
+      priority += seededRandom() * 20;
+
+      positions.push({ row, col, priority });
+    }
+  }
+
+  // Sort by priority (highest first)
+  positions.sort((a, b) => b.priority - a.priority);
+
+  return positions.map(p => [p.row, p.col]);
+}
+
 // Generate puzzle from solution by removing numbers with solvability validation
 function generatePuzzle(solution, difficulty, seed) {
   const puzzle = solution.map(row => [...row]);
@@ -193,159 +336,270 @@ function generatePuzzle(solution, difficulty, seed) {
       maxConsecutiveAdvanced: 0
     },
     medium: {
-      minClues: 26,
-      maxClues: 30,
+      minClues: 23,
+      maxClues: 26,
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 300,
+      maxIterations: 500,  // More iterations to find better puzzles
       requireEvenDistribution: false,
       maxEmptyRegions: 5,
       allowAdvancedTechniques: false,
       requireHiddenSubsets: true,
-      minHiddenSubsets: 2,  // Require 2-4 uses of pairs/triples
-      maxHiddenSubsets: 4,
+      minHiddenSubsets: 3,  // Increased from 2 - require more hidden techniques
+      maxHiddenSubsets: 6,
       requireNakedSubsets: true,
       minNakedSubsets: 2,
-      maxNakedSubsets: 4,
-      minEntryPoints: 2,
-      targetDifficultyScore: [15, 35],  // 2-4 pairs/triples steps
+      maxNakedSubsets: 5,
+      minEntryPoints: 1,  // Reduced - fewer obvious starting points
+      targetDifficultyScore: [50, 80],  // Much higher score requirement
       maxConsecutiveAdvanced: 0,
-      minDependencyScore: 3,
-      maxDependencyScore: 6
+      minDependencyScore: 4,  // Higher candidate density
+      maxDependencyScore: 7,
+      maxNakedSinglesInFirstMoves: 2,  // Limit early naked singles
+      firstMovesCount: 5,
+      requireCombinationPatterns: true,
+      minCombinationPatterns: 1,
+      starveBoxes: true,
+      minStarvedBoxes: 2,
+      maxCluesPerStarvedBox: 2,
+      useStrategicRemoval: true,
+      candidateCount: 10  // Generate multiple candidates
     },
     hard: {
-      minClues: 24,
-      maxClues: 28,
+      minClues: 19,
+      maxClues: 22,
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 400,
+      maxIterations: 600,  // More iterations for harder puzzles
       requireEvenDistribution: false,
-      maxEmptyRegions: 6,
-      allowAdvancedTechniques: true,
-      requireAdvancedSolving: false,  // X-Wing is optional, not required
-      minAdvancedMoves: 0,  // Changed from 1 to 0 - X-Wing optional
-      maxAdvancedMoves: 2,
-      allowXWing: true,
+      maxEmptyRegions: 7,
+      allowAdvancedTechniques: false,  // Don't require X-Wing, Y-Wing etc
+      requireAdvancedSolving: false,
+      minAdvancedMoves: 0,
+      maxAdvancedMoves: 0,
+      allowXWing: false,  // Keep it solvable with known techniques only
       allowSwordfish: false,
-      allowYWing: false,  // Disable Y-Wing to keep it simpler
+      allowYWing: false,
       allowXYZWing: false,
       allowChains: false,
       requireHiddenSubsets: true,
-      minHiddenSubsets: 3,  // Require 3-6 uses of triples/quads
-      maxHiddenSubsets: 6,
+      minHiddenSubsets: 4,  // Increased - more hidden triples/quads required
+      maxHiddenSubsets: 8,
       requireNakedSubsets: true,
       minNakedSubsets: 3,
-      maxNakedSubsets: 6,
+      maxNakedSubsets: 7,
       requireMultipleAdvanced: false,
-      minEntryPoints: 2,
-      targetDifficultyScore: [35, 60],  // 3-6 triples/quads steps
-      maxConsecutiveAdvanced: 2,
-      minDependencyScore: 3,
-      maxDependencyScore: 5
+      minEntryPoints: 1,  // Very few entry points
+      targetDifficultyScore: [80, 120],  // Much higher score requirement
+      maxConsecutiveAdvanced: 0,
+      minDependencyScore: 5,  // Very high candidate density
+      maxDependencyScore: 8,
+      maxNakedSinglesInFirstMoves: 1,  // Almost no early naked singles
+      firstMovesCount: 6,
+      requireCombinationPatterns: true,
+      minCombinationPatterns: 2,  // Multiple overlapping patterns
+      starveBoxes: true,
+      minStarvedBoxes: 3,
+      maxCluesPerStarvedBox: 2,
+      useStrategicRemoval: true,
+      candidateCount: 12  // Generate more candidates to find best
     }
   };
 
   const settings = difficultySettings[difficulty];
 
-  // Create list of all positions
-  const positions = [];
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
-      positions.push([i, j]);
-    }
-  }
-
-  // Shuffle positions for randomness
-  for (let i = positions.length - 1; i > 0; i--) {
-    const j = Math.floor(seededRandom() * (i + 1));
-    [positions[i], positions[j]] = [positions[j], positions[i]];
-  }
-
-  // Remove cells while maintaining solvability
-  let iterations = 0;
-  let bestPuzzle = null;
-  let bestClueCount = 81;
-
-  while (iterations < settings.maxIterations) {
-    const testPuzzle = solution.map(row => [...row]);
-    let removedCells = 0;
-    const shuffledPositions = [...positions];
-
-    // Shuffle again for this iteration
-    for (let i = shuffledPositions.length - 1; i > 0; i--) {
-      const j = Math.floor(seededRandom() * (i + 1));
-      [shuffledPositions[i], shuffledPositions[j]] = [shuffledPositions[j], shuffledPositions[i]];
-    }
-
-    // Try to remove cells while maintaining solvability
-    for (let [row, col] of shuffledPositions) {
-      if (81 - removedCells <= settings.minClues) break;
-
-      const originalValue = testPuzzle[row][col];
-      if (originalValue === 0) continue;
-
-      // For Easy difficulty, check distribution constraints
-      if (settings.requireEvenDistribution || settings.maxEmptyRegions) {
-        const testPuzzleAfterRemoval = testPuzzle.map(row => [...row]);
-        testPuzzleAfterRemoval[row][col] = 0;
-
-        // Check if this removal violates distribution rules
-        if (!isValidDistribution(testPuzzleAfterRemoval, settings)) {
-          continue; // Skip this cell removal
-        }
-      }
-
-      // Remove the cell temporarily
-      testPuzzle[row][col] = 0;
-
-      // Check unique solution first (faster check)
-      const solutionCount = countSolutions(testPuzzle);
-      if (solutionCount !== 1) {
-        testPuzzle[row][col] = originalValue;
-        continue;
-      }
-
-      // Check if puzzle is solvable with logical techniques and quality criteria
-      const solverResult = isPuzzleSolvableLogically(testPuzzle, settings, true);
-      if (!solverResult.solvable) {
-        testPuzzle[row][col] = originalValue;
-        continue;
-      }
-
-      // Validate quality metrics
-      const qualityCheck = validatePuzzleQuality(testPuzzle, solution, settings, solverResult);
-      if (qualityCheck.isValid) {
-        removedCells++;
-        const currentClues = 81 - removedCells;
-        if (currentClues >= settings.minClues && currentClues <= settings.maxClues) {
-          if (currentClues < bestClueCount) {
-            bestPuzzle = testPuzzle.map(row => [...row]);
-            bestClueCount = currentClues;
-
-            console.log(`🎯 Found better ${difficulty} puzzle with ${currentClues} clues`);
-            console.log(`   ✓ Difficulty score: ${solverResult.difficultyScore}`);
-            console.log(`   ✓ Entry points: ${solverResult.entryPoints}`);
-            console.log(`   ✓ Avg dependency: ${solverResult.averageDependencyScore.toFixed(1)}`);
-            console.log(`   ✓ Max consecutive advanced: ${solverResult.maxConsecutiveAdvanced}`);
+  // Use strategic removal for medium/hard, random for easy
+  const positions = settings.useStrategicRemoval
+    ? getStrategicRemovalOrder(solution, seed, settings)
+    : (() => {
+        const pos = [];
+        for (let i = 0; i < 9; i++) {
+          for (let j = 0; j < 9; j++) {
+            pos.push([i, j]);
           }
         }
-      } else {
-        testPuzzle[row][col] = originalValue;
+        // Shuffle for randomness
+        for (let i = pos.length - 1; i > 0; i--) {
+          const j = Math.floor(seededRandom() * (i + 1));
+          [pos[i], pos[j]] = [pos[j], pos[i]];
+        }
+        return pos;
+      })();
+
+  // For medium/hard: generate multiple candidates and pick best by complexity score
+  // For easy: use original approach (fewest clues)
+  if (settings.candidateCount && settings.candidateCount > 1) {
+    // Multi-candidate generation for medium/hard
+    const candidates = [];
+    const candidateIterations = settings.candidateCount;
+
+    console.log(`🎲 Generating ${candidateIterations} ${difficulty} puzzle candidates...`);
+
+    for (let candIdx = 0; candIdx < candidateIterations; candIdx++) {
+      const testPuzzle = solution.map(row => [...row]);
+      let removedCells = 0;
+
+      // Get fresh strategic positions for this candidate (with seed variation)
+      const candPositions = settings.useStrategicRemoval
+        ? getStrategicRemovalOrder(solution, seed + candIdx * 100, settings)
+        : positions;
+
+      // Try to remove cells while maintaining solvability
+      for (let [row, col] of candPositions) {
+        if (81 - removedCells <= settings.minClues) break;
+
+        const originalValue = testPuzzle[row][col];
+        if (originalValue === 0) continue;
+
+        // Remove the cell temporarily
+        testPuzzle[row][col] = 0;
+
+        // Check unique solution first (faster check)
+        const solutionCount = countSolutions(testPuzzle);
+        if (solutionCount !== 1) {
+          testPuzzle[row][col] = originalValue;
+          continue;
+        }
+
+        // Check if puzzle is solvable with logical techniques
+        const solverResult = isPuzzleSolvableLogically(testPuzzle, settings, true);
+        if (!solverResult.solvable) {
+          testPuzzle[row][col] = originalValue;
+          continue;
+        }
+
+        // Validate quality metrics
+        const qualityCheck = validatePuzzleQuality(testPuzzle, solution, settings, solverResult);
+        if (qualityCheck.isValid) {
+          removedCells++;
+        } else {
+          testPuzzle[row][col] = originalValue;
+        }
+      }
+
+      const currentClues = 81 - removedCells;
+
+      // Only accept candidates in the target range
+      if (currentClues >= settings.minClues && currentClues <= settings.maxClues) {
+        const finalSolverResult = isPuzzleSolvableLogically(testPuzzle, settings, true);
+        if (finalSolverResult.solvable) {
+          const complexityScore = calculateEnhancedComplexityScore(testPuzzle, finalSolverResult, settings);
+
+          candidates.push({
+            puzzle: testPuzzle.map(row => [...row]),
+            clues: currentClues,
+            score: complexityScore,
+            solverResult: finalSolverResult
+          });
+
+          console.log(`  Candidate ${candIdx + 1}: ${currentClues} clues, score ${complexityScore}`);
+        }
       }
     }
 
-    iterations++;
+    // Sort candidates by complexity score (highest first)
+    candidates.sort((a, b) => b.score - a.score);
 
-    // If we found a good puzzle in acceptable range, we can stop early
-    if (bestPuzzle && bestClueCount >= settings.minClues && bestClueCount <= settings.maxClues) {
-      break;
+    // Select best candidate deterministically (highest scoring that meets requirements)
+    if (candidates.length > 0) {
+      const best = candidates[0];
+      console.log(`✅ Selected best ${difficulty} puzzle: ${best.clues} clues, score ${best.score}`);
+      console.log(`   ✓ Entry points: ${best.solverResult.entryPoints}`);
+      console.log(`   ✓ Hidden subsets: ${(best.solverResult.techniqueUsage.hiddenPair || 0) + (best.solverResult.techniqueUsage.hiddenTriple || 0) + (best.solverResult.techniqueUsage.hiddenQuad || 0)}`);
+      console.log(`   ✓ Avg dependency: ${best.solverResult.averageDependencyScore.toFixed(1)}`);
+
+      return best.puzzle;
+    } else {
+      console.log(`⚠️ No valid ${difficulty} candidates found, using fallback`);
+      return createFallbackPuzzle(solution, difficulty, seed);
     }
-  }
+  } else {
+    // Original approach for easy difficulty
+    let iterations = 0;
+    let bestPuzzle = null;
+    let bestClueCount = 81;
 
-  // Return best puzzle found, or fallback to a simpler approach if needed
-  return bestPuzzle || createFallbackPuzzle(solution, difficulty, seed);
+    while (iterations < settings.maxIterations) {
+      const testPuzzle = solution.map(row => [...row]);
+      let removedCells = 0;
+      const shuffledPositions = [...positions];
+
+      // Shuffle again for this iteration
+      for (let i = shuffledPositions.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom() * (i + 1));
+        [shuffledPositions[i], shuffledPositions[j]] = [shuffledPositions[j], shuffledPositions[i]];
+      }
+
+      // Try to remove cells while maintaining solvability
+      for (let [row, col] of shuffledPositions) {
+        if (81 - removedCells <= settings.minClues) break;
+
+        const originalValue = testPuzzle[row][col];
+        if (originalValue === 0) continue;
+
+        // For Easy difficulty, check distribution constraints
+        if (settings.requireEvenDistribution || settings.maxEmptyRegions) {
+          const testPuzzleAfterRemoval = testPuzzle.map(row => [...row]);
+          testPuzzleAfterRemoval[row][col] = 0;
+
+          // Check if this removal violates distribution rules
+          if (!isValidDistribution(testPuzzleAfterRemoval, settings)) {
+            continue; // Skip this cell removal
+          }
+        }
+
+        // Remove the cell temporarily
+        testPuzzle[row][col] = 0;
+
+        // Check unique solution first (faster check)
+        const solutionCount = countSolutions(testPuzzle);
+        if (solutionCount !== 1) {
+          testPuzzle[row][col] = originalValue;
+          continue;
+        }
+
+        // Check if puzzle is solvable with logical techniques and quality criteria
+        const solverResult = isPuzzleSolvableLogically(testPuzzle, settings, true);
+        if (!solverResult.solvable) {
+          testPuzzle[row][col] = originalValue;
+          continue;
+        }
+
+        // Validate quality metrics
+        const qualityCheck = validatePuzzleQuality(testPuzzle, solution, settings, solverResult);
+        if (qualityCheck.isValid) {
+          removedCells++;
+          const currentClues = 81 - removedCells;
+          if (currentClues >= settings.minClues && currentClues <= settings.maxClues) {
+            if (currentClues < bestClueCount) {
+              bestPuzzle = testPuzzle.map(row => [...row]);
+              bestClueCount = currentClues;
+
+              console.log(`🎯 Found better ${difficulty} puzzle with ${currentClues} clues`);
+              console.log(`   ✓ Difficulty score: ${solverResult.difficultyScore}`);
+              console.log(`   ✓ Entry points: ${solverResult.entryPoints}`);
+              console.log(`   ✓ Avg dependency: ${solverResult.averageDependencyScore.toFixed(1)}`);
+              console.log(`   ✓ Max consecutive advanced: ${solverResult.maxConsecutiveAdvanced}`);
+            }
+          }
+        } else {
+          testPuzzle[row][col] = originalValue;
+        }
+      }
+
+      iterations++;
+
+      // If we found a good puzzle in acceptable range, we can stop early
+      if (bestPuzzle && bestClueCount >= settings.minClues && bestClueCount <= settings.maxClues) {
+        break;
+      }
+    }
+
+    // Return best puzzle found, or fallback to a simpler approach if needed
+    return bestPuzzle || createFallbackPuzzle(solution, difficulty, seed);
+  }
 }
 
 // Improved fallback puzzle creation that ensures unique solutions
@@ -439,6 +693,7 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
   let entryPointsFound = 0;
   let stepsWithoutProgress = 0;
   let lastTechniqueWasAdvanced = false;
+  let solvePath = [];  // Track sequence of techniques used
 
   while (changed && iterations < maxSolverIterations) {
     changed = false;
@@ -477,6 +732,7 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
     if (applyNakedSingles(testGrid, candidates)) {
       changed = true;
       techniqueUsage.nakedSingle = (techniqueUsage.nakedSingle || 0) + 1;
+      solvePath.push('nakedSingle');
       if (!techniqueFirstUse.has('nakedSingle')) {
         techniqueFirstUse.add('nakedSingle');
         difficultyScore += TECHNIQUE_COSTS.nakedSingle.first;
@@ -493,6 +749,7 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
     if (settings.allowHiddenSingles && applyHiddenSingles(testGrid, candidates)) {
       changed = true;
       techniqueUsage.hiddenSingle = (techniqueUsage.hiddenSingle || 0) + 1;
+      solvePath.push('hiddenSingle');
       if (!techniqueFirstUse.has('hiddenSingle')) {
         techniqueFirstUse.add('hiddenSingle');
         difficultyScore += TECHNIQUE_COSTS.hiddenSingle.first;
@@ -511,6 +768,7 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
       nakedSubsetsUsed++;
       techniquesUsed.add('naked_subsets');
       techniqueUsage.nakedPair = (techniqueUsage.nakedPair || 0) + 1;
+      solvePath.push('nakedSubset');
       if (!techniqueFirstUse.has('nakedPair')) {
         techniqueFirstUse.add('nakedPair');
         difficultyScore += TECHNIQUE_COSTS.nakedPair.first;
@@ -529,6 +787,7 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
       hiddenSubsetsUsed++;
       techniquesUsed.add('hidden_subsets');
       techniqueUsage.hiddenPair = (techniqueUsage.hiddenPair || 0) + 1;
+      solvePath.push('hiddenSubset');
       if (!techniqueFirstUse.has('hiddenPair')) {
         techniqueFirstUse.add('hiddenPair');
         difficultyScore += TECHNIQUE_COSTS.hiddenPair.first;
@@ -764,7 +1023,8 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
           averageDependencyScore: dependencyScores.length > 0 ?
             dependencyScores.reduce((a, b) => a + b, 0) / dependencyScores.length : 0,
           entryPoints: entryPointsFound,
-          requiresGuessing: false
+          requiresGuessing: false,
+          solvePath: solvePath
         };
       }
 
@@ -784,7 +1044,8 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
               averageDependencyScore: dependencyScores.length > 0 ?
                 dependencyScores.reduce((a, b) => a + b, 0) / dependencyScores.length : 0,
               entryPoints: entryPointsFound,
-              requiresGuessing: true
+              requiresGuessing: true,
+              solvePath: solvePath
             };
           }
           return false;
@@ -803,7 +1064,8 @@ function isPuzzleSolvableLogically(puzzle, settings, returnDetails = false) {
       averageDependencyScore: dependencyScores.length > 0 ?
         dependencyScores.reduce((a, b) => a + b, 0) / dependencyScores.length : 0,
       entryPoints: entryPointsFound,
-      requiresGuessing: stepsWithoutProgress > 5
+      requiresGuessing: stepsWithoutProgress > 5,
+      solvePath: solvePath
     };
   }
   return false;
