@@ -1822,14 +1822,14 @@ class SudokuEngine {
     calculateFinalScore() {
         const baseScores = {
             easy: 1000,
-            medium: 2000,
-            hard: 4000
+            medium: 1500,
+            hard: 5000
         };
 
         const targetTimes = {
-            easy: 240,    // 4 minutes
-            medium: 330,  // 5.5 minutes
-            hard: 540     // 9 minutes
+            easy: 300,    // 5 minutes
+            medium: 100,  // 1:40 (100 seconds)
+            hard: 480     // 8 minutes
         };
 
         // TIME SCORING (linear scaling)

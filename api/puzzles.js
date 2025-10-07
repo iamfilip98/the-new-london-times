@@ -323,8 +323,8 @@ function generatePuzzle(solution, difficulty, seed) {
   // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
     easy: {
-      minClues: 32,
-      maxClues: 36,
+      minClues: 35,
+      maxClues: 39,
       requireNakedSingles: true,
       allowHiddenSingles: true,
       allowComplexTechniques: false,
