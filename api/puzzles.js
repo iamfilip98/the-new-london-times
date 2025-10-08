@@ -404,7 +404,11 @@ function generatePuzzle(solution, difficulty, seed) {
       minStarvedBoxes: 3,
       maxCluesPerStarvedBox: 2,
       useStrategicRemoval: true,
-      candidateCount: 12  // Generate more candidates to find best
+      candidateCount: 12,  // Generate more candidates to find best
+      requireCandidateElimination: true,  // NEW: Force candidate elimination work
+      minCandidateEliminationDepth: 80,  // NEW: Require significant candidate work
+      requireForcedBottlenecks: true,  // NEW: Force player to get stuck
+      minForcedBottlenecks: 2  // NEW: At least 2 bottlenecks where progress stops
     }
   };
 
@@ -2103,6 +2107,274 @@ async function generateDailyPuzzles(date) {
   }
 }
 
+// Calculate how much candidate elimination work is required to solve the puzzle
+function calculateCandidateEliminationDepth(puzzle) {
+  let depth = 0;
+  let workingGrid = puzzle.map(row => [...row]);
+  let iterations = 0;
+  const maxIterations = 50;
+
+  while (iterations < maxIterations) {
+    iterations++;
+    let madeProgress = false;
+
+    // Initialize candidates for current state
+    const candidates = initializeCandidates(workingGrid);
+
+    // Try to find ANY placement using logical techniques
+    let foundPlacement = false;
+
+    // First try naked singles
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (workingGrid[row][col] === 0 && candidates[row][col].length === 1) {
+          // Found a placement - count candidates that had to be considered
+          depth += candidates[row][col].length;
+          workingGrid[row][col] = candidates[row][col][0];
+          foundPlacement = true;
+          madeProgress = true;
+          break;
+        }
+      }
+      if (foundPlacement) break;
+    }
+
+    // Then try hidden singles
+    if (!foundPlacement) {
+      // Check rows
+      for (let row = 0; row < 9; row++) {
+        for (let num = 1; num <= 9; num++) {
+          if (!isNumberInRow(workingGrid, row, num)) {
+            const possibleCols = [];
+            for (let col = 0; col < 9; col++) {
+              if (workingGrid[row][col] === 0 && candidates[row][col].includes(num)) {
+                possibleCols.push(col);
+              }
+            }
+            if (possibleCols.length === 1) {
+              const col = possibleCols[0];
+              depth += candidates[row][col].length;
+              workingGrid[row][col] = num;
+              foundPlacement = true;
+              madeProgress = true;
+              break;
+            }
+          }
+        }
+        if (foundPlacement) break;
+      }
+    }
+
+    // Check columns for hidden singles
+    if (!foundPlacement) {
+      for (let col = 0; col < 9; col++) {
+        for (let num = 1; num <= 9; num++) {
+          if (!isNumberInColumn(workingGrid, col, num)) {
+            const possibleRows = [];
+            for (let row = 0; row < 9; row++) {
+              if (workingGrid[row][col] === 0 && candidates[row][col].includes(num)) {
+                possibleRows.push(row);
+              }
+            }
+            if (possibleRows.length === 1) {
+              const row = possibleRows[0];
+              depth += candidates[row][col].length;
+              workingGrid[row][col] = num;
+              foundPlacement = true;
+              madeProgress = true;
+              break;
+            }
+          }
+        }
+        if (foundPlacement) break;
+      }
+    }
+
+    // Check boxes for hidden singles
+    if (!foundPlacement) {
+      for (let boxRow = 0; boxRow < 3; boxRow++) {
+        for (let boxCol = 0; boxCol < 3; boxCol++) {
+          for (let num = 1; num <= 9; num++) {
+            const startRow = boxRow * 3;
+            const startCol = boxCol * 3;
+            if (!isNumberInBox(workingGrid, startRow, startCol, num)) {
+              const possiblePositions = [];
+              for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                  const row = startRow + r;
+                  const col = startCol + c;
+                  if (workingGrid[row][col] === 0 && candidates[row][col].includes(num)) {
+                    possiblePositions.push({ row, col });
+                  }
+                }
+              }
+              if (possiblePositions.length === 1) {
+                const { row, col } = possiblePositions[0];
+                depth += candidates[row][col].length;
+                workingGrid[row][col] = num;
+                foundPlacement = true;
+                madeProgress = true;
+                break;
+              }
+            }
+          }
+          if (foundPlacement) break;
+        }
+        if (foundPlacement) break;
+      }
+    }
+
+    if (!madeProgress) break;
+
+    // Check if puzzle is complete
+    let complete = true;
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (workingGrid[row][col] === 0) {
+          complete = false;
+          break;
+        }
+      }
+      if (!complete) break;
+    }
+    if (complete) break;
+  }
+
+  return depth;
+}
+
+// Count how many times the solver gets "stuck" and needs advanced techniques
+function countForcedBottlenecks(puzzle) {
+  let bottlenecks = 0;
+  let workingGrid = puzzle.map(row => [...row]);
+  let iterations = 0;
+  const maxIterations = 50;
+
+  while (iterations < maxIterations) {
+    iterations++;
+    let foundSimpleMove = false;
+
+    // Try only simple techniques (naked/hidden singles)
+    const candidates = initializeCandidates(workingGrid);
+
+    // Try naked singles
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (workingGrid[row][col] === 0 && candidates[row][col].length === 1) {
+          workingGrid[row][col] = candidates[row][col][0];
+          foundSimpleMove = true;
+          break;
+        }
+      }
+      if (foundSimpleMove) break;
+    }
+
+    // Try hidden singles if no naked single found
+    if (!foundSimpleMove) {
+      // Try rows
+      for (let row = 0; row < 9; row++) {
+        for (let num = 1; num <= 9; num++) {
+          if (!isNumberInRow(workingGrid, row, num)) {
+            const possibleCols = [];
+            for (let col = 0; col < 9; col++) {
+              if (workingGrid[row][col] === 0 && candidates[row][col].includes(num)) {
+                possibleCols.push(col);
+              }
+            }
+            if (possibleCols.length === 1) {
+              workingGrid[row][possibleCols[0]] = num;
+              foundSimpleMove = true;
+              break;
+            }
+          }
+        }
+        if (foundSimpleMove) break;
+      }
+    }
+
+    // Try columns
+    if (!foundSimpleMove) {
+      for (let col = 0; col < 9; col++) {
+        for (let num = 1; num <= 9; num++) {
+          if (!isNumberInColumn(workingGrid, col, num)) {
+            const possibleRows = [];
+            for (let row = 0; row < 9; row++) {
+              if (workingGrid[row][col] === 0 && candidates[row][col].includes(num)) {
+                possibleRows.push(row);
+              }
+            }
+            if (possibleRows.length === 1) {
+              workingGrid[possibleRows[0]][col] = num;
+              foundSimpleMove = true;
+              break;
+            }
+          }
+        }
+        if (foundSimpleMove) break;
+      }
+    }
+
+    // Try boxes
+    if (!foundSimpleMove) {
+      for (let boxRow = 0; boxRow < 3; boxRow++) {
+        for (let boxCol = 0; boxCol < 3; boxCol++) {
+          for (let num = 1; num <= 9; num++) {
+            const startRow = boxRow * 3;
+            const startCol = boxCol * 3;
+            if (!isNumberInBox(workingGrid, startRow, startCol, num)) {
+              const possiblePositions = [];
+              for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                  const row = startRow + r;
+                  const col = startCol + c;
+                  if (workingGrid[row][col] === 0 && candidates[row][col].includes(num)) {
+                    possiblePositions.push({ row, col });
+                  }
+                }
+              }
+              if (possiblePositions.length === 1) {
+                const { row, col } = possiblePositions[0];
+                workingGrid[row][col] = num;
+                foundSimpleMove = true;
+                break;
+              }
+            }
+          }
+          if (foundSimpleMove) break;
+        }
+        if (foundSimpleMove) break;
+      }
+    }
+
+    if (foundSimpleMove) {
+      continue; // Keep trying simple moves
+    }
+
+    // No simple move found - this is a bottleneck!
+    bottlenecks++;
+
+    // Try to break through with advanced technique (naked/hidden pairs)
+    let foundAdvancedMove = false;
+
+    // Try applying naked pairs/triples to eliminate candidates
+    const beforeCandidates = JSON.stringify(candidates);
+    applyNakedSubsets(workingGrid, candidates);
+    applyHiddenSubsets(workingGrid, candidates);
+    const afterCandidates = JSON.stringify(candidates);
+
+    if (beforeCandidates !== afterCandidates) {
+      foundAdvancedMove = true;
+    }
+
+    if (!foundAdvancedMove) {
+      // Can't progress further
+      break;
+    }
+  }
+
+  return bottlenecks;
+}
+
 // Validate puzzle quality based on difficulty settings and solver results
 function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult) {
   if (settings.targetDifficultyScore) {
@@ -2127,6 +2399,26 @@ function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult)
 
   if (solverResult.requiresGuessing) {
     return { isValid: false, reason: `Requires guessing` };
+  }
+
+  // NEW: Hard difficulty validation for candidate elimination depth
+  if (settings.requireCandidateElimination) {
+    const eliminationDepth = calculateCandidateEliminationDepth(puzzle);
+    const minDepth = settings.minCandidateEliminationDepth || 80;
+
+    if (eliminationDepth < minDepth) {
+      return { isValid: false, reason: `Elimination depth ${eliminationDepth} < ${minDepth} (not enough candidate work)` };
+    }
+  }
+
+  // NEW: Hard difficulty validation for forced bottlenecks
+  if (settings.requireForcedBottlenecks) {
+    const bottlenecks = countForcedBottlenecks(puzzle);
+    const minBottlenecks = settings.minForcedBottlenecks || 2;
+
+    if (bottlenecks < minBottlenecks) {
+      return { isValid: false, reason: `Only ${bottlenecks} bottlenecks, need ${minBottlenecks}` };
+    }
   }
 
   return { isValid: true, solverResult };
