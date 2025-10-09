@@ -7319,7 +7319,7 @@ select:focus-visible,
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
-    min-width: 70px;
+    width: 70px;
 }
 
 .progress-status .completion-score {
@@ -7331,8 +7331,7 @@ select:focus-visible,
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
-    min-width: 60px;
-    padding-right: 4px;
+    width: 65px;
 }
 
 
