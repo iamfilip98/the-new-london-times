@@ -7321,6 +7321,7 @@ select:focus-visible,
     white-space: nowrap;
 }
 
+/* Score alignment fix - updated */
 .progress-status .completion-score {
     font-family: 'Orbitron', monospace;
     font-size: 1.05rem;
@@ -7330,7 +7331,8 @@ select:focus-visible,
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
-    width: 62px;
+    width: 60px !important;
+    max-width: 60px !important;
 }
 
 
