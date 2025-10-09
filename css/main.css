@@ -7304,35 +7304,37 @@ select:focus-visible,
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     flex: 1;
     min-width: 0;
-    max-width: 150px;
+    max-width: 180px;
     margin-left: auto;
     flex-wrap: nowrap;
 }
 
 .progress-status .completion-time {
     font-family: 'Orbitron', monospace;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: white;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
+    min-width: 70px;
 }
 
 .progress-status .completion-score {
     font-family: 'Orbitron', monospace;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #ff69b4;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
-    width: 55px;
+    min-width: 60px;
+    padding-right: 4px;
 }
 
 
