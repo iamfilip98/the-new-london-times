@@ -7215,12 +7215,13 @@ select:focus-visible,
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem 0.75rem 0.75rem;
+    padding: 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition);
     cursor: pointer;
+    overflow: visible;
 }
 
 .progress-item:hover {
@@ -7311,26 +7312,27 @@ select:focus-visible,
 
 .progress-status .completion-time {
     font-family: 'Orbitron', monospace;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: white;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
-    width: 70px;
+    min-width: 70px;
 }
 
 .progress-status .completion-score {
     font-family: 'Orbitron', monospace;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #ff69b4;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
-    width: 65px;
+    min-width: 60px;
+    padding-right: 4px;
 }
 
 
