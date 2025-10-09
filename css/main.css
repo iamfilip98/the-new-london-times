@@ -7303,9 +7303,10 @@ select:focus-visible,
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     flex: 1;
     min-width: 0;
+    padding-right: 20px;
 }
 
 .progress-status:has(.completion-time) {
