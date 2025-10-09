@@ -367,12 +367,12 @@ function generatePuzzle(solution, difficulty, seed) {
       candidateCount: 10  // Generate multiple candidates
     },
     hard: {
-      minClues: 19,
-      maxClues: 22,
+      minClues: 17,  // STRICTER: Reduced from 19 (fewer clues = more work)
+      maxClues: 19,  // STRICTER: Reduced from 22
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
-      maxIterations: 600,  // More iterations for harder puzzles
+      maxIterations: 800,  // INCREASED: More iterations for stricter validation
       requireEvenDistribution: false,
       maxEmptyRegions: 7,
       allowAdvancedTechniques: false,  // Don't require X-Wing, Y-Wing etc
@@ -385,30 +385,32 @@ function generatePuzzle(solution, difficulty, seed) {
       allowXYZWing: false,
       allowChains: false,
       requireHiddenSubsets: true,
-      minHiddenSubsets: 4,  // Increased - more hidden triples/quads required
-      maxHiddenSubsets: 8,
+      minHiddenSubsets: 5,  // STRICTER: Increased from 4 (was 3 originally)
+      maxHiddenSubsets: 10,  // Allow more for flexibility
       requireNakedSubsets: true,
       minNakedSubsets: 3,
       maxNakedSubsets: 7,
       requireMultipleAdvanced: false,
       minEntryPoints: 1,  // Very few entry points
-      targetDifficultyScore: [80, 120],  // Much higher score requirement
+      targetDifficultyScore: [95, 140],  // STRICTER: Raised from [80, 120]
       maxConsecutiveAdvanced: 0,
       minDependencyScore: 5,  // Very high candidate density
       maxDependencyScore: 8,
-      maxNakedSinglesInFirstMoves: 1,  // Almost no early naked singles
+      maxNakedSinglesInFirstMoves: 0,  // STRICTER: Was 1, now 0 (no easy starts!)
       firstMovesCount: 6,
       requireCombinationPatterns: true,
-      minCombinationPatterns: 2,  // Multiple overlapping patterns
+      minCombinationPatterns: 3,  // STRICTER: Increased from 2
       starveBoxes: true,
       minStarvedBoxes: 3,
       maxCluesPerStarvedBox: 2,
       useStrategicRemoval: true,
-      candidateCount: 12,  // Generate more candidates to find best
-      requireCandidateElimination: true,  // NEW: Force candidate elimination work
-      minCandidateEliminationDepth: 80,  // NEW: Require significant candidate work
-      requireForcedBottlenecks: true,  // NEW: Force player to get stuck
-      minForcedBottlenecks: 2  // NEW: At least 2 bottlenecks where progress stops
+      candidateCount: 15,  // INCREASED: More attempts to find valid puzzles
+      requireCandidateElimination: true,
+      minCandidateEliminationDepth: 100,  // STRICTER: Raised from 80
+      requireForcedBottlenecks: true,
+      minForcedBottlenecks: 3,  // STRICTER: Increased from 2
+      requirePatternDepth: true,  // NEW: Patterns must be deeply buried
+      minPatternDepth: 6  // NEW: Patterns only visible after 6+ moves
     }
   };
 
@@ -2375,6 +2377,43 @@ function countForcedBottlenecks(puzzle) {
   return bottlenecks;
 }
 
+// Calculate how many moves before hidden patterns become visible
+function calculatePatternDepth(puzzle) {
+  let depth = 0;
+  let workingGrid = puzzle.map(row => [...row]);
+  const maxDepth = 20;
+
+  while (depth < maxDepth) {
+    let foundSingle = false;
+
+    // Try to find naked singles only (simplest technique)
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (workingGrid[row][col] === 0) {
+          const candidates = getPossibleValues(workingGrid, row, col);
+
+          if (candidates.length === 1) {
+            // Found naked single
+            workingGrid[row][col] = candidates[0];
+            depth++;
+            foundSingle = true;
+            break;
+          }
+        }
+      }
+      if (foundSingle) break;
+    }
+
+    if (!foundSingle) {
+      // No more naked singles - patterns must be used now
+      // Return depth at which patterns become necessary
+      return depth;
+    }
+  }
+
+  return depth;
+}
+
 // Validate puzzle quality based on difficulty settings and solver results
 function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult) {
   if (settings.targetDifficultyScore) {
@@ -2418,6 +2457,16 @@ function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult)
 
     if (bottlenecks < minBottlenecks) {
       return { isValid: false, reason: `Only ${bottlenecks} bottlenecks, need ${minBottlenecks}` };
+    }
+  }
+
+  // NEW: Hard difficulty validation for pattern depth (patterns buried deep)
+  if (settings.requirePatternDepth) {
+    const patternDepth = calculatePatternDepth(puzzle);
+    const minDepth = settings.minPatternDepth || 6;
+
+    if (patternDepth < minDepth) {
+      return { isValid: false, reason: `Pattern depth ${patternDepth} < ${minDepth} (patterns too visible)` };
     }
   }
 
