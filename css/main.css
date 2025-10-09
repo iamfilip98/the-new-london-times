@@ -7315,12 +7315,12 @@ select:focus-visible,
     font-weight: 700;
     color: white;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
-    text-align: left;
+    text-align: right;
     flex-shrink: 0;
     white-space: nowrap;
     order: 1;
     margin-left: auto;
-    margin-right: 0.5rem;
+    width: 80px;
 }
 
 .progress-status .completion-score {
@@ -7333,6 +7333,7 @@ select:focus-visible,
     flex-shrink: 0;
     white-space: nowrap;
     order: 2;
+    width: 60px;
 }
 
 
