@@ -7311,7 +7311,8 @@ select:focus-visible,
 
 .progress-status:has(.completion-time) {
     display: grid;
-    grid-template-columns: 1fr 75px;
+    grid-template-columns: 1fr 70px 75px;
+    gap: 0.5rem;
 }
 
 .progress-status .completion-time {
