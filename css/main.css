@@ -7300,12 +7300,17 @@ select:focus-visible,
     text-align: right;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
     min-height: 2.5rem;
-    display: grid;
-    grid-template-columns: 1fr 75px;
+    display: flex;
+    justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
     flex: 1;
     min-width: 0;
+}
+
+.progress-status:has(.completion-time) {
+    display: grid;
+    grid-template-columns: 1fr 75px;
 }
 
 .progress-status .completion-time {
