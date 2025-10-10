@@ -3946,10 +3946,8 @@ class SudokuEngine {
         this.manualCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
         this.removedCandidates = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
-        // Force a display update to clear the DOM
-        this.updateDisplay();
-
         // Reload the same puzzle fresh for the target difficulty
+        // (loadPuzzle will call updateDisplay internally, so no need to call it here)
         this.loadPuzzle(targetDifficulty);
 
         // If the game was paused before restarting, pause it again
