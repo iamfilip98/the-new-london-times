@@ -323,8 +323,8 @@ function generatePuzzle(solution, difficulty, seed) {
   // Rigorous difficulty settings - all puzzles must be solvable with logical techniques only
   const difficultySettings = {
     easy: {
-      minClues: 35,
-      maxClues: 39,
+      minClues: 44,
+      maxClues: 46,
       requireNakedSingles: true,
       allowHiddenSingles: true,
       allowComplexTechniques: false,
@@ -333,11 +333,12 @@ function generatePuzzle(solution, difficulty, seed) {
       maxEmptyRegions: 2,
       minEntryPoints: 4,
       targetDifficultyScore: [30, 60],  // Adjusted for new scoring (mostly singles)
-      maxConsecutiveAdvanced: 0
+      maxConsecutiveAdvanced: 0,
+      candidateCount: 20  // Increased from default
     },
     medium: {
-      minClues: 23,
-      maxClues: 26,
+      minClues: 26,
+      maxClues: 28,
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
@@ -364,11 +365,11 @@ function generatePuzzle(solution, difficulty, seed) {
       minStarvedBoxes: 2,
       maxCluesPerStarvedBox: 2,
       useStrategicRemoval: true,
-      candidateCount: 10  // Generate multiple candidates
+      candidateCount: 30  // Increased from 10
     },
     hard: {
-      minClues: 17,  // STRICTER: Reduced from 19 (fewer clues = more work)
-      maxClues: 19,  // STRICTER: Reduced from 22
+      minClues: 17,
+      maxClues: 19,
       requireNakedSingles: false,
       allowHiddenSingles: true,
       allowComplexTechniques: true,
@@ -404,7 +405,7 @@ function generatePuzzle(solution, difficulty, seed) {
       minStarvedBoxes: 3,
       maxCluesPerStarvedBox: 2,
       useStrategicRemoval: true,
-      candidateCount: 15,  // INCREASED: More attempts to find valid puzzles
+      candidateCount: 50,  // Increased from 15
       requireCandidateElimination: true,
       minCandidateEliminationDepth: 100,  // STRICTER: Raised from 80
       requireForcedBottlenecks: true,
@@ -440,10 +441,17 @@ function generatePuzzle(solution, difficulty, seed) {
     // Multi-candidate generation for medium/hard
     const candidates = [];
     const candidateIterations = settings.candidateCount;
+    const startTime = Date.now();
+    const TIMEOUT_MS = 30000; // 30 seconds
 
     console.log(`🎲 Generating ${candidateIterations} ${difficulty} puzzle candidates...`);
 
     for (let candIdx = 0; candIdx < candidateIterations; candIdx++) {
+      // Check timeout
+      if (Date.now() - startTime > TIMEOUT_MS) {
+        console.warn(`⏱️ Puzzle generation timeout for ${difficulty} after ${candIdx} candidates`);
+        break;
+      }
       const testPuzzle = solution.map(row => [...row]);
       let removedCells = 0;
 
@@ -619,9 +627,9 @@ function createFallbackPuzzle(solution, difficulty, seed) {
     return seedValue / 233280;
   }
   const targetClues = {
-    easy: 34,
-    medium: 26,
-    hard: 26
+    easy: 45,
+    medium: 27,
+    hard: 18
   };
 
   const positions = [];
@@ -2415,7 +2423,23 @@ function calculatePatternDepth(puzzle) {
 }
 
 // Validate puzzle quality based on difficulty settings and solver results
-function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult) {
+/*
+ * AUDIT 2025-01-10:
+ * Current validation works through difficultySettings in generatePuzzle() function:
+ * - Easy: 35-39 clues, targetDifficultyScore [30, 60], maxConsecutiveAdvanced: 0
+ * - Medium: 23-26 clues, targetDifficultyScore [50, 80], requires 3-6 hidden subsets, 2-5 naked subsets
+ * - Hard: 17-19 clues, targetDifficultyScore [95, 140], requires 5-10 hidden subsets, 3-7 naked subsets
+ * Helper functions used: calculateEnhancedComplexityScore, countForcedBottlenecks, calculateCandidateEliminationDepth, calculatePatternDepth
+ *
+ * ISSUE: Validation is spread across settings objects and validatePuzzleQuality function
+ * SOLUTION: Create single isValidForDifficulty() function as single source of truth
+ */
+
+/*
+// ===== OLD VALIDATION (BACKUP - DO NOT USE) =====
+// Backed up 2025-01-10 before complete rewrite
+//
+function validatePuzzleQuality_OLD(puzzle, expectedSolution, settings, solverResult) {
   if (settings.targetDifficultyScore) {
     const [min, max] = settings.targetDifficultyScore;
     if (solverResult.difficultyScore < min || solverResult.difficultyScore > max) {
@@ -2471,6 +2495,161 @@ function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult)
   }
 
   return { isValid: true, solverResult };
+}
+// ===== END OLD VALIDATION =====
+*/
+
+// NEW SINGLE SOURCE OF TRUTH FOR VALIDATION
+function isValidForDifficulty(puzzle, techniquePath, difficulty) {
+  /*
+   * REWRITTEN 2025-01-10
+   * Complete replacement for consistency (removed accumulated patches)
+   *
+   * Goal: Narrow validation ranges for day-to-day consistency
+   * - Easy: 44-46 clues, singles-only, no candidates needed
+   * - Medium: 26-28 clues, 2-3 hidden patterns, exactly 1 bottleneck
+   * - Hard: 17-19 clues, diverse techniques, exactly 3 bottlenecks
+   */
+
+  // === EASY VALIDATION ===
+  if (difficulty === 'easy') {
+    const nakedSingles = techniquePath.nakedSingles || 0;
+    const hiddenPairs = techniquePath.hiddenPairs || 0;
+    const hiddenTriples = techniquePath.hiddenTriples || 0;
+    const hiddenTechniques = hiddenPairs + hiddenTriples;
+
+    // Must have lots of naked singles (easy flow)
+    if (nakedSingles < 15) {
+      return { isValid: false, reason: `Easy needs 15+ naked singles, got ${nakedSingles}` };
+    }
+
+    // Very few hidden techniques allowed
+    if (hiddenTechniques > 2) {
+      return { isValid: false, reason: `Easy allows max 2 hidden techniques, got ${hiddenTechniques}` };
+    }
+
+    // Low complexity score
+    const score = calculateEnhancedComplexityScore(puzzle, techniquePath, {});
+    if (score > 35) {
+      return { isValid: false, reason: `Easy score ${score} exceeds 35` };
+    }
+
+    // No bottlenecks (smooth flow)
+    if (typeof countForcedBottlenecks === 'function') {
+      const bottlenecks = countForcedBottlenecks(puzzle);
+      if (bottlenecks > 0) {
+        return { isValid: false, reason: `Easy should have 0 bottlenecks, got ${bottlenecks}` };
+      }
+    }
+
+    return { isValid: true, solverResult: techniquePath };
+  }
+
+  // === MEDIUM VALIDATION ===
+  if (difficulty === 'medium') {
+    const hiddenPairs = techniquePath.hiddenPairs || 0;
+    const hiddenTriples = techniquePath.hiddenTriples || 0;
+    const hiddenQuads = techniquePath.hiddenQuads || 0;
+    const nakedSinglesEarly = techniquePath.nakedSinglesBeforeMove5 || 0;
+
+    // Total hidden techniques: 2-3 only (narrow range)
+    const totalHidden = hiddenPairs + hiddenTriples;
+    if (totalHidden < 2 || totalHidden > 3) {
+      return { isValid: false, reason: `Medium needs 2-3 hidden techniques, got ${totalHidden}` };
+    }
+
+    // No quads in Medium
+    if (hiddenQuads > 0) {
+      return { isValid: false, reason: `Medium should not have hidden quads` };
+    }
+
+    // Moderate early singles: 2-4
+    if (nakedSinglesEarly < 2 || nakedSinglesEarly > 4) {
+      return { isValid: false, reason: `Medium needs 2-4 early singles, got ${nakedSinglesEarly}` };
+    }
+
+    // Narrow complexity range (40-55)
+    const score = calculateEnhancedComplexityScore(puzzle, techniquePath, {});
+    if (score < 40 || score > 55) {
+      return { isValid: false, reason: `Medium score ${score} outside [40, 55]` };
+    }
+
+    // Exactly 1 bottleneck (not 0, not 2+)
+    if (typeof countForcedBottlenecks === 'function') {
+      const bottlenecks = countForcedBottlenecks(puzzle);
+      if (bottlenecks !== 1) {
+        return { isValid: false, reason: `Medium needs exactly 1 bottleneck, got ${bottlenecks}` };
+      }
+    }
+
+    return { isValid: true, solverResult: techniquePath };
+  }
+
+  // === HARD VALIDATION ===
+  if (difficulty === 'hard') {
+    const hiddenPairs = techniquePath.hiddenPairs || 0;
+    const hiddenTriples = techniquePath.hiddenTriples || 0;
+    const hiddenQuads = techniquePath.hiddenQuads || 0;
+    const nakedSinglesEarly = techniquePath.nakedSinglesBeforeMove5 || 0;
+
+    // DIVERSITY REQUIREMENT: Must have variety
+
+    // At least 1 hidden pair
+    if (hiddenPairs < 1) {
+      return { isValid: false, reason: `Hard needs at least 1 hidden pair` };
+    }
+
+    // 1-2 hidden triples (prevent repetitive spam)
+    if (hiddenTriples < 1 || hiddenTriples > 2) {
+      return { isValid: false, reason: `Hard needs 1-2 hidden triples, got ${hiddenTriples}` };
+    }
+
+    // At least 1 hidden quad
+    if (hiddenQuads < 1) {
+      return { isValid: false, reason: `Hard needs at least 1 hidden quad` };
+    }
+
+    // Total advanced: 3-5 techniques
+    const totalAdvanced = hiddenPairs + hiddenTriples + hiddenQuads;
+    if (totalAdvanced < 3 || totalAdvanced > 5) {
+      return { isValid: false, reason: `Hard needs 3-5 advanced techniques, got ${totalAdvanced}` };
+    }
+
+    // NO early singles allowed
+    if (nakedSinglesEarly > 0) {
+      return { isValid: false, reason: `Hard should have no early singles, got ${nakedSinglesEarly}` };
+    }
+
+    // Very narrow complexity range (95-110)
+    const score = calculateEnhancedComplexityScore(puzzle, techniquePath, {});
+    if (score < 95 || score > 110) {
+      return { isValid: false, reason: `Hard score ${score} outside [95, 110]` };
+    }
+
+    // Exactly 3 bottlenecks
+    if (typeof countForcedBottlenecks === 'function') {
+      const bottlenecks = countForcedBottlenecks(puzzle);
+      if (bottlenecks !== 3) {
+        return { isValid: false, reason: `Hard needs exactly 3 bottlenecks, got ${bottlenecks}` };
+      }
+    }
+
+    return { isValid: true, solverResult: techniquePath };
+  }
+
+  // Unknown difficulty - reject
+  return { isValid: false, reason: `Unknown difficulty: ${difficulty}` };
+}
+
+// Keep old function signature for backward compatibility
+function validatePuzzleQuality(puzzle, expectedSolution, settings, solverResult) {
+  // Extract difficulty from settings
+  let difficulty = 'medium';
+  if (settings.minClues >= 35) difficulty = 'easy';
+  else if (settings.minClues <= 19) difficulty = 'hard';
+
+  // Use new validation function
+  return isValidForDifficulty(puzzle, solverResult, difficulty);
 }
 
 // Critical function: Count the number of solutions to verify uniqueness

@@ -1827,9 +1827,9 @@ class SudokuEngine {
         };
 
         const targetTimes = {
-            easy: 300,    // 5:00 (keep - working well)
-            medium: 270,  // 4:30 (keep around current average)
-            hard: 480     // 8:00 (increased to match new significantly harder difficulty)
+            easy: 270,    // 4:30
+            medium: 210,  // 3:30
+            hard: 450     // 7:30
         };
 
         // TIME SCORING (linear scaling)
