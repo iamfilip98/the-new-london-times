@@ -1044,7 +1044,12 @@ class SudokuEngine {
             this.removedCandidates[row][col].clear();
             this.lockedGrid[row][col] = false;
         } else if (this.candidateMode) {
-            // Toggle candidate - allow even if cell has a value
+            // Can only add/remove candidates from empty cells
+            if (this.playerGrid[row][col] !== 0) {
+                // Cell already has a number - cannot add candidates
+                return;
+            }
+
             if (this.candidates[row][col].has(number)) {
                 // Removing candidate
                 this.candidates[row][col].delete(number);
