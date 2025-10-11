@@ -627,9 +627,9 @@ function createFallbackPuzzle(solution, difficulty, seed) {
     return seedValue / 233280;
   }
   const targetClues = {
-    easy: 45,
-    medium: 27,
-    hard: 18
+    easy: 42,    // Was 45, now 42 (creates 39 empty cells)
+    medium: 24,  // Was 27, now 24 (creates 57 empty cells)
+    hard: 18     // Perfect as-is (63 empty cells)
   };
 
   const positions = [];

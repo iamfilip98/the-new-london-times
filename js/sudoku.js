@@ -1827,9 +1827,9 @@ class SudokuEngine {
         };
 
         const targetTimes = {
-            easy: 270,    // 4:30
-            medium: 210,  // 3:30
-            hard: 450     // 7:30
+            easy: 210,    // 3:30 (adjusted for fewer clues)
+            medium: 180,  // 3:00 (adjusted for fewer clues)
+            hard: 450     // 7:30 (perfect as-is)
         };
 
         // TIME SCORING (linear scaling)
