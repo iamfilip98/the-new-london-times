@@ -950,6 +950,9 @@ module.exports = async function handler(req, res) {
       case 'POST': {
         const { action, player, date, difficulty, state, forceSeed } = req.body;
 
+        // Log the request for debugging
+        console.log('POST /api/puzzles', { action, date: date ? 'present' : 'missing', forceSeed: forceSeed ? 'present' : 'missing' });
+
         if (action === 'cleanup') {
           const result = await cleanupOldPuzzles();
           return res.status(200).json(result);
@@ -972,7 +975,11 @@ module.exports = async function handler(req, res) {
             message: `Reset completed for ${date} (puzzles, game states, and times cleared)`
           });
         } else {
-          return res.status(400).json({ error: 'Invalid request parameters' });
+          console.error('Invalid request - action:', action, 'date:', date);
+          return res.status(400).json({
+            error: 'Invalid request parameters',
+            received: { action, hasDate: !!date, hasPlayer: !!player, hasDifficulty: !!difficulty, hasState: !!state }
+          });
         }
       }
 
