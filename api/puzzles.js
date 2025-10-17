@@ -185,9 +185,9 @@ const CLUE_COUNTS = {
 };
 
 const CANDIDATE_ATTEMPTS = {
-  easy: 20,
-  medium: 30,
-  hard: 50
+  easy: 30,    // Was 20, now 30
+  medium: 50,  // Was 30, now 50
+  hard: 100    // Was 50, now 100
 };
 
 // ═══════════════════════════════════════════════
@@ -567,17 +567,161 @@ function solvePuzzleWithTracking(puzzle) {
 }
 
 // ═══════════════════════════════════════════════
+// UNIQUE SOLUTION VALIDATION
+// ═══════════════════════════════════════════════
+
+function isValidPuzzleState(puzzle) {
+  // Check rows for duplicates
+  for (let row = 0; row < 9; row++) {
+    const seen = new Set();
+    for (let col = 0; col < 9; col++) {
+      const num = puzzle[row][col];
+      if (num !== 0) {
+        if (seen.has(num)) return false; // Duplicate in row
+        seen.add(num);
+      }
+    }
+  }
+
+  // Check columns for duplicates
+  for (let col = 0; col < 9; col++) {
+    const seen = new Set();
+    for (let row = 0; row < 9; row++) {
+      const num = puzzle[row][col];
+      if (num !== 0) {
+        if (seen.has(num)) return false; // Duplicate in column
+        seen.add(num);
+      }
+    }
+  }
+
+  // Check 3x3 boxes for duplicates
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+      const seen = new Set();
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const num = puzzle[boxRow * 3 + r][boxCol * 3 + c];
+          if (num !== 0) {
+            if (seen.has(num)) return false; // Duplicate in box
+            seen.add(num);
+          }
+        }
+      }
+    }
+  }
+
+  return true; // No conflicts found
+}
+
+function countSolutions(puzzle, maxSolutions = 2) {
+  // First check if the puzzle has any immediate conflicts
+  if (!isValidPuzzleState(puzzle)) {
+    return 0; // Invalid puzzle
+  }
+
+  const solutions = [];
+  const testGrid = puzzle.map(row => [...row]);
+
+  function isValidForSolver(grid, row, col, num) {
+    // Check row
+    for (let x = 0; x < 9; x++) {
+      if (grid[row][x] === num) return false;
+    }
+
+    // Check column
+    for (let x = 0; x < 9; x++) {
+      if (grid[x][col] === num) return false;
+    }
+
+    // Check 3x3 box
+    const startRow = row - row % 3;
+    const startCol = col - col % 3;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (grid[i + startRow][j + startCol] === num) return false;
+      }
+    }
+
+    return true;
+  }
+
+  function solveAndCount(grid) {
+    if (solutions.length >= maxSolutions) return; // Stop if we found enough solutions
+
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0) {
+          let foundValid = false;
+          for (let num = 1; num <= 9; num++) {
+            if (isValidForSolver(grid, row, col, num)) {
+              foundValid = true;
+              grid[row][col] = num;
+              solveAndCount(grid);
+              grid[row][col] = 0;
+
+              // Early exit if we found enough solutions
+              if (solutions.length >= maxSolutions) return;
+            }
+          }
+          if (!foundValid) return; // No valid numbers for this cell
+          return; // Processed this empty cell
+        }
+      }
+    }
+
+    // Grid is complete - found a solution
+    solutions.push(grid.map(row => [...row]));
+  }
+
+  solveAndCount(testGrid);
+  return solutions.length;
+}
+
+// ═══════════════════════════════════════════════
 // DIFFICULTY VALIDATION FUNCTIONS
 // ═══════════════════════════════════════════════
 
 function validateEasy(puzzle, solution) {
-  const stats = solvePuzzleWithTracking(puzzle);
-
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.easy;
 
   console.log(`\nEASY VALIDATION:`);
   console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
+
+  // ========================================
+  // CRITICAL: Verify unique solution FIRST
+  // ========================================
+  console.log(`  Checking unique solution...`);
+
+  const solutionCount = countSolutions(puzzle);
+
+  if (solutionCount === 0) {
+    console.log(`  ❌ No solutions found`);
+    return {
+      valid: false,
+      stats: null,
+      clueCount,
+      targetClues
+    };
+  }
+
+  if (solutionCount > 1) {
+    console.log(`  ❌ CRITICAL: Multiple solutions found (${solutionCount}+)`);
+    console.log(`  This puzzle is NOT logically solvable - REJECTED`);
+    return {
+      valid: false,
+      stats: null,
+      clueCount,
+      targetClues
+    };
+  }
+
+  console.log(`  ✓ Unique solution verified`);
+
+  // Now check technique requirements
+  const stats = solvePuzzleWithTracking(puzzle);
+
   console.log(`  Naked Singles: ${stats.nakedSingles} (need 15+)`);
   console.log(`  Hidden Techniques: ${stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads} (max 2)`);
   console.log(`  Complexity: ${stats.complexityScore} (max 35)`);
@@ -599,14 +743,46 @@ function validateEasy(puzzle, solution) {
 }
 
 function validateMedium(puzzle, solution) {
-  const stats = solvePuzzleWithTracking(puzzle);
-
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.medium;
-  const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
 
   console.log(`\nMEDIUM VALIDATION:`);
   console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
+
+  // ========================================
+  // CRITICAL: Verify unique solution FIRST
+  // ========================================
+  console.log(`  Checking unique solution...`);
+
+  const solutionCount = countSolutions(puzzle);
+
+  if (solutionCount === 0) {
+    console.log(`  ❌ No solutions found`);
+    return {
+      valid: false,
+      stats: null,
+      clueCount,
+      targetClues
+    };
+  }
+
+  if (solutionCount > 1) {
+    console.log(`  ❌ CRITICAL: Multiple solutions found (${solutionCount}+)`);
+    console.log(`  This puzzle is NOT logically solvable - REJECTED`);
+    return {
+      valid: false,
+      stats: null,
+      clueCount,
+      targetClues
+    };
+  }
+
+  console.log(`  ✓ Unique solution verified`);
+
+  // Now check technique requirements
+  const stats = solvePuzzleWithTracking(puzzle);
+  const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
+
   console.log(`  Hidden Techniques: ${hiddenTechniques} (need 2-3)`);
   console.log(`  Complexity: ${stats.complexityScore} (need 40-55)`);
   console.log(`  Bottlenecks: ${stats.bottlenecks} (need exactly 1)`);
@@ -628,13 +804,45 @@ function validateMedium(puzzle, solution) {
 }
 
 function validateHard(puzzle, solution) {
-  const stats = solvePuzzleWithTracking(puzzle);
-
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.hard;
 
   console.log(`\nHARD VALIDATION:`);
   console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
+
+  // ========================================
+  // CRITICAL: Verify unique solution FIRST
+  // ========================================
+  console.log(`  Checking unique solution...`);
+
+  const solutionCount = countSolutions(puzzle);
+
+  if (solutionCount === 0) {
+    console.log(`  ❌ No solutions found`);
+    return {
+      valid: false,
+      stats: null,
+      clueCount,
+      targetClues
+    };
+  }
+
+  if (solutionCount > 1) {
+    console.log(`  ❌ CRITICAL: Multiple solutions found (${solutionCount}+)`);
+    console.log(`  This puzzle is NOT logically solvable - REJECTED`);
+    return {
+      valid: false,
+      stats: null,
+      clueCount,
+      targetClues
+    };
+  }
+
+  console.log(`  ✓ Unique solution verified`);
+
+  // Now check technique requirements
+  const stats = solvePuzzleWithTracking(puzzle);
+
   console.log(`  Hidden Pairs: ${stats.hiddenPairs} (need 1+)`);
   console.log(`  Hidden Triples: ${stats.hiddenTriples} (need 1-2)`);
   console.log(`  Hidden Quads: ${stats.hiddenQuads} (need 1+)`);
