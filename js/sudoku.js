@@ -4391,13 +4391,21 @@ window.masterRefresh = async function(verbose = true) {
             console.warn('⚠️ Database cleanup error:', error.message);
         }
 
-        // Step 4: Force generate new puzzles
+        // Step 4: Force generate new puzzles with random seed
         debugLog('🎲 Step 4: Force generating new puzzles...');
         try {
+            // Use timestamp + random to ensure different puzzles each time
+            const randomSeed = Date.now() + Math.floor(Math.random() * 1000000);
+            debugLog(`Using random seed: ${randomSeed}`);
+
             const generateResponse = await fetch('/api/puzzles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'generate', date: today })
+                body: JSON.stringify({
+                    action: 'generate',
+                    date: today,
+                    forceSeed: randomSeed
+                })
             });
             if (generateResponse.ok) {
                 const newPuzzles = await generateResponse.json();
@@ -4463,6 +4471,13 @@ window.masterRefresh = async function(verbose = true) {
             try {
                 await window.sudokuEngine.startGame(difficultyToStart);
                 debugLog(`✅ New ${difficultyToStart} game started with fresh puzzle`);
+
+                // Force UI updates to show the new puzzle
+                if (window.sudokuApp) {
+                    await window.sudokuApp.updateTodayProgress();
+                    await window.sudokuApp.updateDashboard();
+                    debugLog('✅ UI updated with new puzzle');
+                }
             } catch (error) {
                 debugLog('⚠️ Could not auto-start game:', error.message);
                 debugLog('💡 Manually select a difficulty to see the new puzzles');

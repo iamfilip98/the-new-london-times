@@ -742,14 +742,15 @@ function generateDailyPuzzle(solution, difficulty, seed) {
 // GENERATE ALL THREE DIFFICULTIES
 // ═══════════════════════════════════════════════
 
-async function generateDailyPuzzles(date) {
+async function generateDailyPuzzles(date, forceSeed = null) {
   try {
     console.log(`\n${'═'.repeat(60)}`);
     console.log(`GENERATING DAILY PUZZLES FOR ${date}`);
     console.log(`${'═'.repeat(60)}`);
 
-    const seed = dateToSeed(date);
-    console.log(`Date seed: ${seed}`);
+    // Use forceSeed if provided (for manual regeneration), otherwise use date-based seed
+    const seed = forceSeed !== null ? forceSeed : dateToSeed(date);
+    console.log(`Seed: ${seed}${forceSeed !== null ? ' (forced)' : ' (date-based)'}`);
 
     // Generate one solution for all difficulties
     console.log(`\nGenerating complete solution...`);
@@ -947,14 +948,15 @@ module.exports = async function handler(req, res) {
       }
 
       case 'POST': {
-        const { action, player, date, difficulty, state } = req.body;
+        const { action, player, date, difficulty, state, forceSeed } = req.body;
 
         if (action === 'cleanup') {
           const result = await cleanupOldPuzzles();
           return res.status(200).json(result);
         } else if (action === 'generate' && date) {
           // Generate new puzzles for specific date
-          const puzzles = await generateDailyPuzzles(date);
+          // If forceSeed is provided, use it to generate different puzzles for the same date
+          const puzzles = await generateDailyPuzzles(date, forceSeed);
           return res.status(200).json(puzzles);
         } else if (action === 'save' && player && date && difficulty && state) {
           // Save game state
