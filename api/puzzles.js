@@ -328,7 +328,7 @@ function generatePuzzle(solution, difficulty, seed) {
       requireNakedSingles: true,
       allowHiddenSingles: true,
       allowComplexTechniques: false,
-      maxIterations: 100,
+      maxIterations: 200,  // INCREASED: Was 100, now 200 to avoid fallback with strict distribution rules
       requireEvenDistribution: true,
       maxEmptyRegions: 2,
       minEntryPoints: 4,
@@ -650,7 +650,15 @@ function createFallbackPuzzle(solution, difficulty, seed) {
   let attempts = 0;
   const maxAttempts = difficulty === 'hard' ? 150 : 100; // More attempts for hard puzzles
 
-  // Remove cells one by one while maintaining uniqueness
+  // Build basic settings for distribution checking
+  const distributionSettings = {
+    requireEvenDistribution: difficulty === 'easy',
+    maxEmptyRegions: difficulty === 'easy' ? 2 : difficulty === 'medium' ? 5 : 7,
+    minClues: minClues,
+    maxClues: minClues + 4  // Allow some range
+  };
+
+  // Remove cells one by one while maintaining uniqueness AND distribution
   for (let [row, col] of positions) {
     if (currentClues <= minClues || attempts >= maxAttempts) break;
     attempts++;
@@ -658,6 +666,12 @@ function createFallbackPuzzle(solution, difficulty, seed) {
     // Try removing this cell
     const originalValue = puzzle[row][col];
     puzzle[row][col] = 0;
+
+    // Check distribution constraints first (faster than uniqueness check)
+    if (!isValidDistribution(puzzle, distributionSettings)) {
+      puzzle[row][col] = originalValue;
+      continue;
+    }
 
     // Check if puzzle still has unique solution
     const solutionCount = countSolutions(puzzle);
@@ -1200,6 +1214,13 @@ function isValidDistribution(grid, settings) {
       }
       if (count > maxCluesPerRegion) {
         return false; // Region has too many clues
+      }
+      // CRITICAL: Prevent full or nearly-full boxes (boring!)
+      if (count >= 9) {
+        return false; // Box is completely filled - no puzzle to solve!
+      }
+      if (count === 8) {
+        return false; // Box has only 1 empty cell - too easy and boring!
       }
     }
 
