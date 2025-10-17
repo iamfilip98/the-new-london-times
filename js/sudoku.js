@@ -4370,21 +4370,22 @@ window.masterRefresh = async function(verbose = true) {
             debugLog('✅ App caches cleared');
         }
 
-        // Step 3: Reset database puzzles via API
-        debugLog('🗃️ Step 3: Resetting database puzzles...');
+        // Step 3: Cleanup ALL old puzzles from database (new cleanup endpoint)
+        debugLog('🗃️ Step 3: Cleaning up ALL old puzzles from database...');
         try {
-            const resetResponse = await fetch('/api/puzzles', {
+            const cleanupResponse = await fetch('/api/puzzles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'reset', date: today })
+                body: JSON.stringify({ action: 'cleanup' })
             });
-            if (resetResponse.ok) {
-                debugLog('✅ Database puzzles reset');
+            if (cleanupResponse.ok) {
+                const result = await cleanupResponse.json();
+                debugLog(`✅ Database cleanup complete - deleted ${result.deleted} puzzle entries`);
             } else {
-                console.warn('⚠️ Database reset failed, continuing...');
+                console.warn('⚠️ Database cleanup failed, continuing...');
             }
         } catch (error) {
-            console.warn('⚠️ Database reset error:', error.message);
+            console.warn('⚠️ Database cleanup error:', error.message);
         }
 
         // Step 4: Force generate new puzzles
