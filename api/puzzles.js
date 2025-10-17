@@ -180,8 +180,8 @@ function generateCompleteSolution(seed) {
 
 const CLUE_COUNTS = {
   easy: 42,    // 39 empty cells
-  medium: 24,  // 57 empty cells
-  hard: 18     // 63 empty cells
+  medium: 25,  // 56 empty cells
+  hard: 19     // 62 empty cells
 };
 
 const CANDIDATE_ATTEMPTS = {

@@ -1834,7 +1834,7 @@ class SudokuEngine {
         const targetTimes = {
             easy: 210,    // 3:30 (adjusted for fewer clues)
             medium: 180,  // 3:00 (adjusted for fewer clues)
-            hard: 450     // 7:30 (perfect as-is)
+            hard: 435     // 7:15 (slightly reduced with 1 more clue)
         };
 
         // TIME SCORING (linear scaling)
