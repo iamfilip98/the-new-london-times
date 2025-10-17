@@ -4469,7 +4469,8 @@ window.masterRefresh = async function(verbose = true) {
         // Start a fresh game with the new puzzle
         if (window.sudokuEngine && window.sudokuEngine.dailyPuzzles) {
             try {
-                await window.sudokuEngine.startGame(difficultyToStart);
+                // Load the puzzle for the selected difficulty
+                window.sudokuEngine.loadPuzzle(difficultyToStart);
                 debugLog(`✅ New ${difficultyToStart} game started with fresh puzzle`);
 
                 // Force UI updates to show the new puzzle
@@ -4479,7 +4480,7 @@ window.masterRefresh = async function(verbose = true) {
                     debugLog('✅ UI updated with new puzzle');
                 }
             } catch (error) {
-                debugLog('⚠️ Could not auto-start game:', error.message);
+                debugLog('⚠️ Could not auto-load puzzle:', error.message);
                 debugLog('💡 Manually select a difficulty to see the new puzzles');
             }
         } else {
