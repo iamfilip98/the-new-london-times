@@ -59,8 +59,8 @@ class SudokuEngine {
         // Setup automatic daily refresh system
         this.setupAutomaticRefresh();
 
-        // Load puzzles (now instant due to fallback)
-        this.loadDailyPuzzles();
+        // Load puzzles (MUST await to ensure puzzles are loaded before game starts)
+        await this.loadDailyPuzzles();
         this.setupEventListeners();
 
         // 🚀 PERFORMANCE: Load ratings in background (non-blocking)
