@@ -66,7 +66,7 @@ async function generateToday() {
       
       if (responseData.hard && responseData.hard.puzzle) {
         const hardClues = responseData.hard.puzzle.flat().filter(n => n !== 0).length;
-        console.log(`Hard:   ${hardClues} clues (target: 19)`);
+        console.log(`Hard:   ${hardClues} clues (target: 25)`);
       }
       
       console.log('═══════════════════════════════════════════\n');

@@ -923,6 +923,17 @@ class SudokuEngine {
     }
 
     updateNumberButtons() {
+        // Debounce to prevent rapid successive updates that cause flickering
+        if (this._numberButtonUpdateTimer) {
+            clearTimeout(this._numberButtonUpdateTimer);
+        }
+
+        this._numberButtonUpdateTimer = setTimeout(() => {
+            this._doUpdateNumberButtons();
+        }, 50); // 50ms debounce - imperceptible delay but prevents flickering
+    }
+
+    _doUpdateNumberButtons() {
         // Count how many of each number (1-9) are on the grid
         const numberCounts = Array(10).fill(0);
 
@@ -939,10 +950,16 @@ class SudokuEngine {
         for (let num = 1; num <= 9; num++) {
             const button = document.querySelector(`.number-btn[data-number="${num}"]`);
             if (button) {
-                if (numberCounts[num] >= 9) {
-                    button.classList.add('completed');
-                } else {
-                    button.classList.remove('completed');
+                const isCompleted = numberCounts[num] >= 9;
+                const wasCompleted = button.classList.contains('completed');
+
+                // Only update DOM if state actually changed
+                if (isCompleted !== wasCompleted) {
+                    if (isCompleted) {
+                        button.classList.add('completed');
+                    } else {
+                        button.classList.remove('completed');
+                    }
                 }
             }
         }
@@ -3387,7 +3404,8 @@ class SudokuEngine {
         }
 
         // Select the cell that was just undone
-        this.selectCell(row, col);
+        // Note: selectCell calls updateDisplay internally, so we don't need to call it again
+        this.selectedCell = { row, col };
         this.updateDisplay();
 
         document.getElementById('gameStatus').innerHTML =
@@ -3959,6 +3977,12 @@ class SudokuEngine {
         if (this.autoSaveInterval) {
             clearInterval(this.autoSaveInterval);
             this.autoSaveInterval = null;
+        }
+
+        // Clear number button update timer to prevent memory leaks
+        if (this._numberButtonUpdateTimer) {
+            clearTimeout(this._numberButtonUpdateTimer);
+            this._numberButtonUpdateTimer = null;
         }
 
         // Reset game state flags to prevent timer restart

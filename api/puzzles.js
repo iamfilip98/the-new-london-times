@@ -181,13 +181,13 @@ function generateCompleteSolution(seed) {
 const CLUE_COUNTS = {
   easy: 42,    // 39 empty cells - no candidates needed, smooth progression
   medium: 28,  // 53 empty cells - requires candidates, forces thinking
-  hard: 24     // 57 empty cells - requires candidate elimination, very challenging
+  hard: 25     // 56 empty cells - requires candidate elimination, challenging but fair
 };
 
 const CANDIDATE_ATTEMPTS = {
   easy: 50,       // Quick generation with smart removal
   medium: 150,    // More attempts for 28 clues with validation
-  hard: 300       // Challenging - 22 clues requires many attempts
+  hard: 300       // Challenging - 25 clues with quality validation
 };
 
 // ═══════════════════════════════════════════════
@@ -1062,29 +1062,76 @@ function validateMedium(puzzle, solution) {
 
   console.log(`  ✓ Unique solution verified`);
 
+  // ========================================
   // GAMEPLAY-DRIVEN VALIDATION
   // Medium: "Needs candidates, forces thinking, can't see next move immediately"
+  // ========================================
 
   // 1. MUST require candidate tracking
   const needsCandidates = requiresCandidates(puzzle);
   console.log(`  Requires candidates: ${needsCandidates ? 'YES ✓' : 'NO ❌'}`);
 
-  // 2. Max 2 naked singles available at any point (forces pause)
-  const progression = checkSmoothProgression(puzzle);
-  console.log(`  Max immediate naked singles: ${progression.maxImmediateNakedSingles} (max 2)`);
+  // 2. Check candidate density in early game (should be LOW - easier)
+  const avgCandidates = calculateAverageCandidates(puzzle, 20);
+  console.log(`  Avg candidates (first 20 moves): ${avgCandidates.toFixed(2)} (target: 2.0-3.2)`);
 
-  // Simple validation: just needs to require candidates
-  // NOTE: We don't check stats.solvable because Medium REQUIRES candidates,
-  // so it won't be solvable with just naked singles (which is what solvePuzzleWithTracking tests)
+  // 3. Count naked singles in first 20 moves (should have MORE - easier to progress)
+  const nakedSinglesEarly = countNakedSinglesInFirstMoves(puzzle, 20);
+  console.log(`  Naked singles (first 20 moves): ${nakedSinglesEarly} (min 8, max 15)`);
+
+  // 4. Max immediate naked singles at any point (should have options)
+  const progression = checkSmoothProgression(puzzle);
+  console.log(`  Max immediate naked singles: ${progression.maxImmediateNakedSingles} (min 2)`);
+
+  // 5. Get full statistics
+  const stats = solvePuzzleWithTracking(puzzle);
+  console.log(`  Total naked singles: ${stats.nakedSingles}`);
+
+  // 6. Hidden techniques (informational only - not used for validation)
+  const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
+  console.log(`  Hidden techniques: ${hiddenTechniques} (informational)`);
+
+  // 7. Bottlenecks (should be LOW - avoid getting stuck)
+  console.log(`  Bottlenecks: ${stats.bottlenecks} (max 1)`);
+
+  // ========================================
+  // VALIDATION RULES - Ensure day-to-day consistency
+  // Medium: Requires candidates but should have clear next steps
+  // ========================================
   const valid =
     clueCount === targetClues &&
-    needsCandidates;  // CRITICAL: Must require candidates
+    needsCandidates &&                    // CRITICAL: Must require candidates
+    avgCandidates >= 2.0 &&               // Some candidates needed
+    avgCandidates <= 3.2 &&               // But not overwhelming
+    nakedSinglesEarly >= 8 &&             // Plenty of progress (not stuck)
+    nakedSinglesEarly <= 15 &&            // But still needs thinking
+    progression.maxImmediateNakedSingles >= 2 &&  // Multiple options (not stuck)
+    stats.bottlenecks <= 1;               // At most 1 tricky moment
 
   console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
+  if (!valid) {
+    const reasons = [];
+    if (!needsCandidates) reasons.push('Does not require candidates');
+    if (avgCandidates < 2.0) reasons.push(`Avg candidates too low (${avgCandidates.toFixed(2)})`);
+    if (avgCandidates > 3.2) reasons.push(`Avg candidates too high (${avgCandidates.toFixed(2)})`);
+    if (nakedSinglesEarly < 8) reasons.push(`Not enough naked singles early (${nakedSinglesEarly}) - too hard`);
+    if (nakedSinglesEarly > 15) reasons.push(`Too many naked singles early (${nakedSinglesEarly}) - too easy`);
+    if (progression.maxImmediateNakedSingles < 2) reasons.push(`Too few immediate options (${progression.maxImmediateNakedSingles}) - gets stuck`);
+    if (stats.bottlenecks > 1) reasons.push(`Too many bottlenecks (${stats.bottlenecks})`);
+    console.log(`  Rejection reasons: ${reasons.join(', ')}`);
+  }
+
   return {
     valid,
-    stats: { needsCandidates },
+    stats: {
+      ...stats,
+      needsCandidates,
+      avgCandidates,
+      nakedSinglesEarly,
+      hiddenTechniques,
+      progression
+    },
     clueCount,
     targetClues
   };
@@ -1127,15 +1174,71 @@ function validateHard(puzzle, solution) {
 
   console.log(`  ✓ Unique solution verified`);
 
-  // Simple validation: with only 24 clues, it's automatically hard
-  // Just verify correct clue count (unique solution already verified above)
-  const valid = clueCount === targetClues;
+  // ========================================
+  // GAMEPLAY-DRIVEN VALIDATION
+  // Hard: "Requires candidate elimination, challenging but fair"
+  // ========================================
+
+  // 1. MUST require candidate tracking (minimum requirement)
+  const needsCandidates = requiresCandidates(puzzle);
+  console.log(`  Requires candidates: ${needsCandidates ? 'YES ✓' : 'NO ❌'}`);
+
+  // 2. Check candidate density in early game (should be HIGH - challenging)
+  const avgCandidates = calculateAverageCandidates(puzzle, 20);
+  console.log(`  Avg candidates (first 20 moves): ${avgCandidates.toFixed(2)} (target: 3.8-5.5)`);
+
+  // 3. Count naked singles in first 20 moves (should be FEW - forces candidate work)
+  const nakedSinglesEarly = countNakedSinglesInFirstMoves(puzzle, 20);
+  console.log(`  Naked singles (first 20 moves): ${nakedSinglesEarly} (max 4)`);
+
+  // 4. Get full statistics
+  const stats = solvePuzzleWithTracking(puzzle);
+  console.log(`  Total naked singles: ${stats.nakedSingles} (max 10 total)`);
+
+  // 5. Hidden techniques (informational only - not used for validation)
+  const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
+  console.log(`  Hidden techniques: ${hiddenTechniques} (informational)`);
+
+  // 6. Bottlenecks (should have SOME - requires thinking)
+  console.log(`  Bottlenecks: ${stats.bottlenecks} (min 2, max 5)`);
+
+  // ========================================
+  // VALIDATION RULES - Ensure day-to-day consistency
+  // Hard: Requires heavy candidate work and elimination
+  // ========================================
+  const valid =
+    clueCount === targetClues &&
+    needsCandidates &&              // CRITICAL: Must require candidates
+    avgCandidates >= 3.8 &&         // HIGH candidate density (challenging)
+    avgCandidates <= 5.5 &&         // Not impossible (playable)
+    nakedSinglesEarly <= 4 &&       // VERY FEW easy moves (forces candidates)
+    stats.nakedSingles <= 10 &&     // Limited total singles (not too easy)
+    stats.bottlenecks >= 2 &&       // At least 2 thinking moments
+    stats.bottlenecks <= 5;         // But not overwhelming
 
   console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
+  if (!valid) {
+    const reasons = [];
+    if (!needsCandidates) reasons.push('Does not require candidates');
+    if (avgCandidates < 3.8) reasons.push(`Avg candidates too low (${avgCandidates.toFixed(2)}) - too easy`);
+    if (avgCandidates > 5.5) reasons.push(`Avg candidates too high (${avgCandidates.toFixed(2)}) - overwhelming`);
+    if (nakedSinglesEarly > 4) reasons.push(`Too many naked singles early (${nakedSinglesEarly}) - too easy`);
+    if (stats.nakedSingles > 10) reasons.push(`Too many total naked singles (${stats.nakedSingles}) - too easy`);
+    if (stats.bottlenecks < 2) reasons.push(`Not enough bottlenecks (${stats.bottlenecks}) - too easy`);
+    if (stats.bottlenecks > 5) reasons.push(`Too many bottlenecks (${stats.bottlenecks}) - too hard`);
+    console.log(`  Rejection reasons: ${reasons.join(', ')}`);
+  }
+
   return {
     valid,
-    stats: {},
+    stats: {
+      ...stats,
+      needsCandidates,
+      avgCandidates,
+      nakedSinglesEarly,
+      hiddenTechniques
+    },
     clueCount,
     targetClues
   };

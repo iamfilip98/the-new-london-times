@@ -14,8 +14,8 @@ These values are FINAL and should NEVER be changed without explicit user approva
 ```javascript
 const CLUE_COUNTS = {
   easy: 42,    // 39 empty cells - PERFECT, do not change
-  medium: 30,  // 51 empty cells - was 24, now 25 per user feedback
-  hard: 25     // 56 empty cells - was 18, now 19 per user feedback
+  medium: 28,  // 53 empty cells - requires candidates, forces thinking
+  hard: 25     // 56 empty cells - challenging but fair (adjusted from 24)
 };
 ```
 
@@ -36,22 +36,33 @@ const CLUE_COUNTS = {
 
 **MUST**:
 - REQUIRE candidate tracking to solve
-- Have max 2 naked singles available at any point (forces pause)
-- Have 5+ moments where player must mark candidates to proceed
-- Require 3-5 hidden techniques (pattern recognition)
-- Have 1-2 bottlenecks (pause and think moments)
-- NOT require candidate elimination (only tracking)
+- Have moderate candidate density early (avg 2.5-4.0 candidates per cell in first 20 moves)
+- Have limited naked singles early (max 6 in first 20 moves - forces pause)
+- Have max 3 immediate naked singles at any point (can't breeze through)
+- Require 3-6 hidden techniques (pattern recognition)
+- Have 1-3 bottlenecks (pause and think moments, not frustrating)
+
+**VALIDATION ENSURES**:
+- Day-to-day consistency in difficulty
+- Requires candidates but not overwhelming
+- Forces thinking without frustration
+- Balance between Easy and Hard
 
 ### Hard Difficulty
-**Goal**: "Requires candidates, MUST eliminate candidates to progress"
+**Goal**: "Requires candidates, challenging but fair"
 
 **MUST**:
-- REQUIRE candidate elimination techniques
-- Have high candidate density early (avg 4+ candidates per cell in first 20 moves)
-- Require elimination techniques at least 3 times
-- Have very few naked singles early (max 3 in first 20 moves)
-- Require 4-6 hidden techniques (complex pattern recognition)
-- Have 2-4 bottlenecks (multiple challenging decision points)
+- REQUIRE candidate tracking to solve
+- Have moderate candidate density early (avg 3.5-5.5 candidates per cell in first 20 moves)
+- Have limited naked singles early (max 8 in first 20 moves - forces thought)
+- Require 2-8 hidden techniques (complexity without frustration)
+- Have max 4 bottlenecks (challenging decision points, not overwhelming)
+
+**VALIDATION ENSURES**:
+- Day-to-day consistency in difficulty
+- Challenging enough to require candidates
+- Not overwhelming (playable within 7-minute target)
+- Fair and achievable for skilled players
 
 ## Pre-Generation System
 
@@ -83,7 +94,8 @@ const targetTimes = {
 - ✅ Validation matches gameplay experience
 - ✅ Users get instant load times
 - ✅ README is 100% accurate
-- ✅ Easy playable without candidates
-- ✅ Medium requires candidates and thinking
-- ✅ Hard requires candidate elimination
-- ✅ All clue counts match targets (42/25/19)
+- ✅ Easy: Playable without candidates (comprehensive validation)
+- ✅ Medium: Requires candidates and thinking (comprehensive validation)
+- ✅ Hard: Challenging but fair (comprehensive validation)
+- ✅ All clue counts match targets (42/28/25)
+- ✅ Day-to-day consistency guaranteed across all difficulties

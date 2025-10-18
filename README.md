@@ -11,15 +11,15 @@ A sophisticated full-stack web application that transforms daily Sudoku solving 
 - **Complete Sudoku Implementation**: Full 9x9 grid with intelligent validation
 - **NYT-Style Interface**: Professional game UI with candidate notes, hints, and error checking
 - **Intelligent Algorithm**: Advanced puzzle generation with deterministic daily puzzles
-- **Difficulty Progression**: Easy (42 clues), Medium (28 clues), Hard (24 clues)
+- **Difficulty Progression**: Easy (42 clues), Medium (28 clues), Hard (25 clues)
 - **Smart Hint System**: Two-stage hint system (pointing → revealing) with time penalties
 - **Auto-Save & Resume**: Seamless game state persistence across sessions
 
 ### 🧠 **Advanced Puzzle Generation Algorithm (2025 Update)**
 - **Industry Best Practice Clue Removal**: Smart one-at-a-time removal with immediate unique solution verification
 - **Symmetrical Pattern Generation**: 180-degree rotational symmetry for aesthetic appeal
-- **Challenging Clue Counts**: Easy (42 clues), Medium (28 clues), Hard (24 clues)
-- **Gameplay-Driven Validation**: Easy requires no candidates, Medium requires candidates, Hard is pure difficulty
+- **Challenging Clue Counts**: Easy (42 clues), Medium (28 clues), Hard (25 clues)
+- **Gameplay-Driven Validation**: Easy requires no candidates, Medium requires candidates, Hard ensures consistent challenge
 - **Deterministic Seeding**: Date-based seed generation ensures same puzzles for both players
 - **Unique Solution Guarantee**: Advanced backtracking solver verifies every puzzle has exactly one solution
 - **Multi-Grid Retry System**: Tries up to 10 different solution grids if needed for low clue counts
