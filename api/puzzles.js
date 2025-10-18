@@ -1183,17 +1183,17 @@ function validateHard(puzzle, solution) {
   const needsCandidates = requiresCandidates(puzzle);
   console.log(`  Requires candidates: ${needsCandidates ? 'YES ✓' : 'NO ❌'}`);
 
-  // 2. Check candidate density in early game (should be VERY HIGH - very challenging)
+  // 2. Check candidate density in early game (should be HIGH - harder than medium)
   const avgCandidates = calculateAverageCandidates(puzzle, 20);
-  console.log(`  Avg candidates (first 20 moves): ${avgCandidates.toFixed(2)} (target: 4.0-5.5)`);
+  console.log(`  Avg candidates (first 20 moves): ${avgCandidates.toFixed(2)} (target: 3.4-5.0)`);
 
   // 3. Count naked singles in first 20 moves (should be VERY FEW - forces candidate work)
   const nakedSinglesEarly = countNakedSinglesInFirstMoves(puzzle, 20);
-  console.log(`  Naked singles (first 20 moves): ${nakedSinglesEarly} (max 3)`);
+  console.log(`  Naked singles (first 20 moves): ${nakedSinglesEarly} (max 5)`);
 
   // 4. Get full statistics
   const stats = solvePuzzleWithTracking(puzzle);
-  console.log(`  Total naked singles: ${stats.nakedSingles} (max 8 total)`);
+  console.log(`  Total naked singles: ${stats.nakedSingles} (max 12 total)`);
 
   // 5. Hidden techniques (informational only - not used for validation)
   const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
@@ -1204,25 +1204,27 @@ function validateHard(puzzle, solution) {
 
   // ========================================
   // VALIDATION RULES - Ensure day-to-day consistency
-  // Hard: Requires heavy candidate work and elimination, significantly harder than medium
+  // Hard: Requires heavy candidate work, significantly harder than medium
+  // Medium: 2.5-3.3 candidates, 6-15 naked singles
+  // Hard: 3.4-5.0 candidates (higher floor), max 5 naked singles early (much stricter)
   // ========================================
   const valid =
     clueCount === targetClues &&
     needsCandidates &&              // CRITICAL: Must require candidates
-    avgCandidates >= 4.0 &&         // VERY HIGH candidate density (much harder than medium)
-    avgCandidates <= 5.5 &&         // Not impossible (playable)
-    nakedSinglesEarly <= 3 &&       // EXTREMELY FEW easy moves (forces candidates)
-    stats.nakedSingles <= 8;        // Very limited total singles (harder than medium)
+    avgCandidates >= 3.4 &&         // Higher than medium's max (3.3), clearer separation
+    avgCandidates <= 5.0 &&         // Not overwhelming (playable)
+    nakedSinglesEarly <= 5 &&       // FEWER than medium's min (6) - forces more candidate work
+    stats.nakedSingles <= 12;       // Fewer total easy moves
 
   console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
   if (!valid) {
     const reasons = [];
     if (!needsCandidates) reasons.push('Does not require candidates');
-    if (avgCandidates < 4.0) reasons.push(`Avg candidates too low (${avgCandidates.toFixed(2)}) - too easy`);
-    if (avgCandidates > 5.5) reasons.push(`Avg candidates too high (${avgCandidates.toFixed(2)}) - overwhelming`);
-    if (nakedSinglesEarly > 3) reasons.push(`Too many naked singles early (${nakedSinglesEarly}) - too easy`);
-    if (stats.nakedSingles > 8) reasons.push(`Too many total naked singles (${stats.nakedSingles}) - too easy`);
+    if (avgCandidates < 3.4) reasons.push(`Avg candidates too low (${avgCandidates.toFixed(2)}) - too easy`);
+    if (avgCandidates > 5.0) reasons.push(`Avg candidates too high (${avgCandidates.toFixed(2)}) - overwhelming`);
+    if (nakedSinglesEarly > 5) reasons.push(`Too many naked singles early (${nakedSinglesEarly}) - too easy`);
+    if (stats.nakedSingles > 12) reasons.push(`Too many total naked singles (${stats.nakedSingles}) - too easy`);
     console.log(`  Rejection reasons: ${reasons.join(', ')}`);
   }
 
