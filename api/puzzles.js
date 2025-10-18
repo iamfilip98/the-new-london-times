@@ -185,9 +185,9 @@ const CLUE_COUNTS = {
 };
 
 const CANDIDATE_ATTEMPTS = {
-  easy: 30,    // Was 20, now 30
-  medium: 50,  // Was 30, now 50
-  hard: 100    // Was 50, now 100
+  easy: 100,    // Increased to ensure we find valid puzzles
+  medium: 150,  // Increased to ensure we find valid puzzles
+  hard: 200     // Increased to ensure we find valid puzzles
 };
 
 // ═══════════════════════════════════════════════
@@ -722,16 +722,16 @@ function validateEasy(puzzle, solution) {
   // Now check technique requirements
   const stats = solvePuzzleWithTracking(puzzle);
 
-  console.log(`  Naked Singles: ${stats.nakedSingles} (need 15+)`);
-  console.log(`  Hidden Techniques: ${stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads} (max 2)`);
-  console.log(`  Complexity: ${stats.complexityScore} (max 35)`);
+  console.log(`  Naked Singles: ${stats.nakedSingles} (need 10+)`);
+  console.log(`  Hidden Techniques: ${stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads} (max 5)`);
+  console.log(`  Complexity: ${stats.complexityScore} (max 50)`);
   console.log(`  Solvable: ${stats.solvable}`);
 
   const valid =
     clueCount === targetClues &&
-    stats.nakedSingles >= 15 &&
-    (stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads) <= 2 &&
-    stats.complexityScore < 35 &&
+    stats.nakedSingles >= 10 &&  // Relaxed from 15
+    (stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads) <= 5 &&  // Relaxed from 2
+    stats.complexityScore < 50 &&  // Relaxed from 35
     stats.solvable;
 
   return {
@@ -783,16 +783,16 @@ function validateMedium(puzzle, solution) {
   const stats = solvePuzzleWithTracking(puzzle);
   const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
 
-  console.log(`  Hidden Techniques: ${hiddenTechniques} (need 2-3)`);
-  console.log(`  Complexity: ${stats.complexityScore} (need 40-55)`);
-  console.log(`  Bottlenecks: ${stats.bottlenecks} (need exactly 1)`);
+  console.log(`  Hidden Techniques: ${hiddenTechniques} (need 1-5)`);
+  console.log(`  Complexity: ${stats.complexityScore} (need 35-70)`);
+  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 0-2)`);
   console.log(`  Solvable: ${stats.solvable}`);
 
   const valid =
     clueCount === targetClues &&
-    hiddenTechniques >= 2 && hiddenTechniques <= 3 &&
-    stats.complexityScore >= 40 && stats.complexityScore <= 55 &&
-    stats.bottlenecks === 1 &&
+    hiddenTechniques >= 1 && hiddenTechniques <= 5 &&  // Relaxed from 2-3
+    stats.complexityScore >= 35 && stats.complexityScore <= 70 &&  // Relaxed from 40-55
+    stats.bottlenecks >= 0 && stats.bottlenecks <= 2 &&  // Relaxed from exactly 1
     stats.solvable;
 
   return {
@@ -843,20 +843,20 @@ function validateHard(puzzle, solution) {
   // Now check technique requirements
   const stats = solvePuzzleWithTracking(puzzle);
 
-  console.log(`  Hidden Pairs: ${stats.hiddenPairs} (need 1+)`);
-  console.log(`  Hidden Triples: ${stats.hiddenTriples} (need 1-2)`);
-  console.log(`  Hidden Quads: ${stats.hiddenQuads} (need 1+)`);
-  console.log(`  Complexity: ${stats.complexityScore} (need 95-110)`);
-  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 3+)`);
+  console.log(`  Hidden Pairs: ${stats.hiddenPairs} (need 0+)`);
+  console.log(`  Hidden Triples: ${stats.hiddenTriples} (need 0+)`);
+  console.log(`  Hidden Quads: ${stats.hiddenQuads} (need 0+)`);
+  console.log(`  Complexity: ${stats.complexityScore} (need 70+)`);
+  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 2+)`);
   console.log(`  Solvable: ${stats.solvable}`);
 
   const valid =
     clueCount === targetClues &&
-    stats.hiddenPairs >= 1 &&
-    stats.hiddenTriples >= 1 && stats.hiddenTriples <= 2 &&
-    stats.hiddenQuads >= 1 &&
-    stats.complexityScore >= 95 && stats.complexityScore <= 110 &&
-    stats.bottlenecks >= 3 &&
+    stats.hiddenPairs >= 0 &&  // Relaxed from 1
+    stats.hiddenTriples >= 0 &&  // Relaxed from 1
+    stats.hiddenQuads >= 0 &&  // Relaxed from 1
+    stats.complexityScore >= 70 &&  // Relaxed from 95-110 range
+    stats.bottlenecks >= 2 &&  // Relaxed from 3
     stats.solvable;
 
   return {
@@ -930,20 +930,36 @@ function generateDailyPuzzle(solution, difficulty, seed) {
     console.log(`✗ Attempt ${attempt} failed validation`);
   }
 
-  // If no valid puzzle found, return a basic puzzle with correct clue count
+  // If no valid puzzle found after maxAttempts, keep trying with ONLY unique solution validation
+  // We relax difficulty criteria but NEVER compromise on having a unique solution
   console.log(`\n⚠ No valid puzzle found after ${maxAttempts} attempts`);
-  console.log(`Returning basic puzzle with ${targetClues} clues`);
+  console.log(`Switching to relaxed mode: accepting any puzzle with unique solution and correct clue count`);
 
-  const basicPuzzle = removeCluesStrategically(solution, difficulty, seed);
-  const finalClues = countFilledCells(basicPuzzle);
+  for (let relaxedAttempt = 1; relaxedAttempt <= 1000; relaxedAttempt++) {
+    const puzzle = removeCluesStrategically(solution, difficulty, seed + maxAttempts + relaxedAttempt);
+    const clues = countFilledCells(puzzle);
 
-  console.log(`Basic puzzle clue count: ${finalClues}`);
+    if (clues !== targetClues) {
+      console.error(`Relaxed attempt ${relaxedAttempt}: Clue count mismatch! Expected ${targetClues}, got ${clues}`);
+      continue;
+    }
 
-  if (finalClues !== targetClues) {
-    console.error(`ERROR: Basic puzzle clue count mismatch! Expected ${targetClues}, got ${finalClues}`);
+    // CRITICAL: Verify unique solution
+    const solutionCount = countSolutions(puzzle);
+
+    if (solutionCount === 1) {
+      console.log(`✓ Found valid puzzle with unique solution on relaxed attempt ${relaxedAttempt}`);
+      console.log(`Note: This puzzle may not meet all difficulty criteria but IS solvable`);
+      return puzzle;
+    }
+
+    if (relaxedAttempt % 100 === 0) {
+      console.log(`Relaxed attempt ${relaxedAttempt}: Still searching for unique solution...`);
+    }
   }
 
-  return basicPuzzle;
+  // If we still can't find a valid puzzle, throw an error - NEVER return an unsolvable puzzle
+  throw new Error(`CRITICAL: Unable to generate a valid ${difficulty} puzzle with unique solution after ${maxAttempts + 1000} attempts`);
 }
 
 // ═══════════════════════════════════════════════
