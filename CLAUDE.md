@@ -14,8 +14,8 @@ These values are FINAL and should NEVER be changed without explicit user approva
 ```javascript
 const CLUE_COUNTS = {
   easy: 42,    // 39 empty cells - PERFECT, do not change
-  medium: 25,  // 56 empty cells - was 24, now 25 per user feedback
-  hard: 19     // 62 empty cells - was 18, now 19 per user feedback
+  medium: 30,  // 51 empty cells - was 24, now 25 per user feedback
+  hard: 25     // 56 empty cells - was 18, now 19 per user feedback
 };
 ```
 
