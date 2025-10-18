@@ -32,37 +32,39 @@ const CLUE_COUNTS = {
 - Have 0 bottlenecks (smooth flow)
 
 ### Medium Difficulty
-**Goal**: "Requires candidates, forces thinking, can't see next move immediately"
+**Goal**: "Requires candidates, forces thinking, smooth but not trivial"
 
 **MUST**:
 - REQUIRE candidate tracking to solve
-- Have moderate candidate density early (avg 2.5-4.0 candidates per cell in first 20 moves)
-- Have limited naked singles early (max 6 in first 20 moves - forces pause)
-- Have max 3 immediate naked singles at any point (can't breeze through)
-- Require 3-6 hidden techniques (pattern recognition)
-- Have 1-3 bottlenecks (pause and think moments, not frustrating)
+- Have moderate candidate density early (avg 2.5-3.3 candidates per cell in first 20 moves)
+- Have decent naked singles early (6-15 in first 20 moves - progress without being easy)
+- Have 2-4 immediate naked singles at any point (consistent options)
+- Hidden techniques are informational only (not used for validation)
+- Bottlenecks are informational only (natural variation expected)
 
 **VALIDATION ENSURES**:
 - Day-to-day consistency in difficulty
-- Requires candidates but not overwhelming
-- Forces thinking without frustration
-- Balance between Easy and Hard
+- Requires candidates but provides smooth progression
+- Forces thinking without getting stuck
+- Clear separation from Easy (requires candidates) and Hard (harder metrics)
 
 ### Hard Difficulty
-**Goal**: "Requires candidates, challenging but fair"
+**Goal**: "Requires heavy candidate work, significantly harder than Medium"
 
 **MUST**:
 - REQUIRE candidate tracking to solve
-- Have moderate candidate density early (avg 3.5-5.5 candidates per cell in first 20 moves)
-- Have limited naked singles early (max 8 in first 20 moves - forces thought)
-- Require 2-8 hidden techniques (complexity without frustration)
-- Have max 4 bottlenecks (challenging decision points, not overwhelming)
+- Have HIGH candidate density early (avg 3.4-5.0 candidates per cell in first 20 moves)
+- Have VERY FEW naked singles early (max 5 in first 20 moves - forces candidate work)
+- Have limited total naked singles (max 12 total - requires more thinking)
+- Hidden techniques are informational only (not used for validation)
+- Bottlenecks are informational only (natural variation expected)
 
 **VALIDATION ENSURES**:
 - Day-to-day consistency in difficulty
-- Challenging enough to require candidates
-- Not overwhelming (playable within 7-minute target)
-- Fair and achievable for skilled players
+- Significantly harder than Medium (3.4+ candidates vs 3.3 max)
+- Forces heavy candidate work (max 5 naked singles vs min 6 for Medium)
+- Challenging but fair (playable within 7-minute target)
+- Clear separation: Hard always has higher candidate density AND fewer naked singles
 
 ## Pre-Generation System
 

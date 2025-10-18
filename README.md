@@ -19,10 +19,14 @@ A sophisticated full-stack web application that transforms daily Sudoku solving 
 - **Industry Best Practice Clue Removal**: Smart one-at-a-time removal with immediate unique solution verification
 - **Symmetrical Pattern Generation**: 180-degree rotational symmetry for aesthetic appeal
 - **Challenging Clue Counts**: Easy (42 clues), Medium (28 clues), Hard (25 clues)
-- **Gameplay-Driven Validation**: Easy requires no candidates, Medium requires candidates, Hard ensures consistent challenge
+- **Gameplay-Driven Validation**:
+  - Easy: No candidates needed (smooth, 15+ naked singles)
+  - Medium: Requires candidates (2.5-3.3 avg density, 6-15 naked singles early)
+  - Hard: Heavy candidate work (3.4-5.0 avg density, max 5 naked singles early)
 - **Deterministic Seeding**: Date-based seed generation ensures same puzzles for both players
 - **Unique Solution Guarantee**: Advanced backtracking solver verifies every puzzle has exactly one solution
 - **Multi-Grid Retry System**: Tries up to 10 different solution grids if needed for low clue counts
+- **Day-to-Day Consistency**: Comprehensive validation ensures consistent difficulty across days
 - **Database Storage**: PostgreSQL backend for puzzle persistence and consistency
 
 ### ⚡ **High-Performance Architecture (2025 Update)**
@@ -107,12 +111,16 @@ score *= (1 - hintPenalty); // 1H: 3%, 2H: 6%, 3H: 10%, 4H: 15%, 5+H: 20%
 ### 🎲 **Intelligent Puzzle Algorithm**
 The puzzle generation system uses advanced techniques:
 
-1. **Deterministic Generation**: Date-based seeding ensures identical puzzles
+1. **Deterministic Generation**: Date-based seeding ensures identical puzzles for both players
 2. **Complete Solution Generation**: Backtracking algorithm with seeded randomization
-3. **Strategic Clue Removal**: Sophisticated removal with uniqueness validation
-4. **Difficulty Calibration**: Clue count ranges ensure appropriate challenge levels
-5. **Solvability Validation**: Advanced solver ensures logical solution paths
-6. **Quality Assurance**: Multiple validation passes for puzzle integrity
+3. **Strategic Clue Removal**: One-at-a-time removal with immediate unique solution verification
+4. **Difficulty Calibration**: Precise clue counts (42/28/25) with gameplay-driven validation
+5. **Gameplay Simulation**: Validates puzzles by simulating actual solving experience
+6. **Consistency Guarantees**:
+   - Medium: 2.5-3.3 avg candidates, 6-15 naked singles early
+   - Hard: 3.4-5.0 avg candidates (always higher), max 5 naked singles (always fewer)
+7. **Multi-Grid Retry**: Tries up to 10 different solution grids to meet strict validation
+8. **Quality Assurance**: Comprehensive validation ensures day-to-day consistency
 
 ### 📱 **Multi-Page Application Architecture**
 - **🏠 Dashboard**: Live battle status, win streaks, today's progress, real-time notifications
