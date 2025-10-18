@@ -17,7 +17,8 @@ async function generateToday() {
     method: 'POST',
     body: {
       action: 'generate',
-      date: today
+      date: today,
+      forceSeed: Date.now() // Force new seed for completely different puzzles
     },
     headers: {}
   };
