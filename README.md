@@ -11,21 +11,26 @@ A sophisticated full-stack web application that transforms daily Sudoku solving 
 - **Complete Sudoku Implementation**: Full 9x9 grid with intelligent validation
 - **NYT-Style Interface**: Professional game UI with candidate notes, hints, and error checking
 - **Intelligent Algorithm**: Advanced puzzle generation with deterministic daily puzzles
-- **Difficulty Progression**: Easy (35-42 clues), Medium (19-25 clues), Hard (18-25 clues)
+- **Difficulty Progression**: Easy (42 clues), Medium (28 clues), Hard (24 clues)
 - **Smart Hint System**: Two-stage hint system (pointing → revealing) with time penalties
 - **Auto-Save & Resume**: Seamless game state persistence across sessions
 
-### 🧠 **Advanced Puzzle Generation Algorithm**
+### 🧠 **Advanced Puzzle Generation Algorithm (2025 Update)**
+- **Industry Best Practice Clue Removal**: Smart one-at-a-time removal with immediate unique solution verification
+- **Symmetrical Pattern Generation**: 180-degree rotational symmetry for aesthetic appeal
+- **Challenging Clue Counts**: Easy (42 clues), Medium (28 clues), Hard (24 clues)
+- **Gameplay-Driven Validation**: Easy requires no candidates, Medium requires candidates, Hard is pure difficulty
 - **Deterministic Seeding**: Date-based seed generation ensures same puzzles for both players
-- **Unique Solution Validation**: Advanced backtracking solver ensures puzzle uniqueness
-- **Difficulty Calibration**: Sophisticated clue removal with solvability validation
-- **Advanced Techniques Required**: Medium/Hard puzzles require logical solving techniques (hidden subsets, naked pairs, etc.)
-- **Fallback System**: Instant puzzle generation with quality guarantees
+- **Unique Solution Guarantee**: Advanced backtracking solver verifies every puzzle has exactly one solution
+- **Multi-Grid Retry System**: Tries up to 10 different solution grids if needed for low clue counts
 - **Database Storage**: PostgreSQL backend for puzzle persistence and consistency
 
-### ⚡ **High-Performance Architecture**
+### ⚡ **High-Performance Architecture (2025 Update)**
+- **SessionStorage Architecture**: Game data uses sessionStorage instead of localStorage for fresh data on each session
+- **Database as Source of Truth**: All game data loads from database on session start
+- **No Stale Data**: Session-level caching prevents old data from persisting across days
 - **Instant Loading**: Comprehensive data preloading during authentication
-- **In-Memory Caching**: Reduced localStorage dependency with intelligent caching
+- **In-Memory Caching**: Optimized caching with intelligent invalidation
 - **Optimized Database**: PostgreSQL with connection pooling and query optimization
 - **Background Processing**: Non-blocking puzzle generation and data loading
 - **Real-Time Updates**: Live progress tracking and opponent notifications
@@ -260,6 +265,25 @@ npm run dev
 cp .env.example .env.local
 # Configure PostgreSQL connection string
 ```
+
+### **Database Management**
+```bash
+# Reset today's puzzles and user data (for testing)
+node reset_db.js
+
+# Generate fresh puzzles for today
+node generate_today.js
+
+# Clear database with timezone-aware date matching
+# Clears: daily_puzzles, game_states, individual_games,
+#         sudoku_games, daily_completions, entries, puzzle_ratings
+```
+
+**Database Reset Features:**
+- Timezone-aware date matching using PostgreSQL `date::date` casting
+- Clears all user progress data for today across 7+ tables
+- Leaves historical data intact for other dates
+- Essential for testing new puzzle generation algorithms
 
 ### **Deployment**
 The application is deployed on Vercel with:
