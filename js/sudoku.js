@@ -51,10 +51,9 @@ class SudokuEngine {
         this.initializeAudioContext();
         this.createSudokuInterface();
 
-        // INSTANT LOADING: Generate fallback puzzles immediately before any async operations
+        // NO FALLBACK PUZZLES - All puzzles come from API/database
         if (!this.dailyPuzzles) {
-            debugLog('⚡ Generating instant fallback puzzles...');
-            this.generateFallbackPuzzles();
+            debugLog('⚡ Will load puzzles from API...');
         }
 
         // Setup automatic daily refresh system
@@ -451,10 +450,9 @@ class SudokuEngine {
 
     async loadDailyPuzzles() {
         try {
-            // INSTANT LOADING: Always ensure fallback puzzles are available immediately
+            // NO INSTANT FALLBACK - Puzzles must come from API/database
             if (!this.dailyPuzzles) {
-                debugLog('⚡ Loading fallback puzzles instantly...');
-                this.generateFallbackPuzzles();
+                debugLog('⚡ No puzzles loaded yet, will fetch from API...');
             }
 
             // Enhanced priority-based puzzle loading for instant performance
@@ -588,14 +586,8 @@ class SudokuEngine {
             };
         }
 
-        // If no cached puzzles, generate fallback immediately
-        this.generateFallbackPuzzles();
-        debugLog(`✅ Generated fallback puzzles, using ${difficulty}`);
-
-        return {
-            puzzle: this.dailyPuzzles[difficulty].puzzle.map(row => [...row]),
-            solution: this.dailyPuzzles[difficulty].solution.map(row => [...row])
-        };
+        // NO FALLBACK - Throw error if no puzzles available
+        throw new Error('No puzzles available - must load from API first');
     }
 
     // Keep the slow generation as a separate method for special use cases
@@ -613,12 +605,7 @@ class SudokuEngine {
         debugLog(`Puzzle generation took ${endTime - startTime}ms`);
 
         if (!success) {
-            console.warn('Failed to generate solution, using fallback');
-            this.generateFallbackPuzzles();
-            return {
-                puzzle: this.dailyPuzzles[difficulty].puzzle.map(row => [...row]),
-                solution: this.dailyPuzzles[difficulty].solution.map(row => [...row])
-            };
+            throw new Error('Failed to generate puzzle solution - no fallback available');
         }
 
         // Remove numbers based on difficulty
@@ -801,8 +788,7 @@ class SudokuEngine {
 
     loadPuzzle(difficulty) {
         if (!this.dailyPuzzles || !this.dailyPuzzles[difficulty]) {
-            // Generate fallback puzzles if not loaded
-            this.generateFallbackPuzzles();
+            throw new Error('Puzzles not loaded - must load from API before starting game');
         }
 
         const puzzleData = this.dailyPuzzles[difficulty];
@@ -2533,10 +2519,10 @@ class SudokuEngine {
                 // CRITICAL FIX: Ensure puzzles are loaded before restoring game state
                 const savedDifficulty = gameState.difficulty || this.currentDifficulty;
 
-                // If puzzles aren't loaded yet, load them now
+                // If puzzles aren't loaded yet, show error
                 if (!this.dailyPuzzles) {
-                    debugLog('⚠️ Puzzles not loaded during game state restore - loading fallback puzzles');
-                    this.generateFallbackPuzzles();
+                    console.error('⚠️ Puzzles not loaded during game state restore - cannot continue');
+                    throw new Error('Puzzles must be loaded from API before restoring game state');
                 }
 
                 // CRITICAL FIX: Only change currentDifficulty if user didn't explicitly select a difficulty
@@ -3251,10 +3237,21 @@ class SudokuEngine {
                 debugLog('🔄 Trying force refresh...');
                 return await this.loadDailyPuzzles(true);
             } else {
-                debugLog('🔄 Using fallback puzzles...');
-                this.generateFallbackPuzzles();
-                this.lastPuzzleDate = new Date().toISOString().split('T')[0];
-                return false;
+                // NO FALLBACK - Show error to user
+                const gameStatus = document.getElementById('gameStatus');
+                if (gameStatus) {
+                    gameStatus.innerHTML = `
+                        <div class="status-message error">
+                            <h3>Unable to Load Today's Puzzles</h3>
+                            <p>Today's puzzles are still being generated or there's a connection issue.</p>
+                            <p>Please try refreshing the page in a few minutes.</p>
+                            <button onclick="location.reload()" style="margin-top: 10px; padding: 10px 20px; cursor: pointer;">
+                                Refresh Page
+                            </button>
+                        </div>
+                    `;
+                }
+                throw error; // Re-throw to prevent game from starting with bad data
             }
         }
     }
@@ -3319,69 +3316,8 @@ class SudokuEngine {
         return clueCount;
     }
 
-    generateFallbackPuzzles() {
-        // Base solution - all puzzles use this same solution
-        const baseSolution = [
-            [5,3,4,6,7,8,9,1,2],
-            [6,7,2,1,9,5,3,4,8],
-            [1,9,8,3,4,2,5,6,7],
-            [8,5,9,7,6,1,4,2,3],
-            [4,2,6,8,5,3,7,9,1],
-            [7,1,3,9,2,4,8,5,6],
-            [9,6,1,5,3,7,2,8,4],
-            [2,8,7,4,1,9,6,3,5],
-            [3,4,5,2,8,6,1,7,9]
-        ];
-
-        // Fallback puzzles with CORRECT clue counts matching API targets:
-        // Easy: 42 clues (39 empty cells)
-        // Medium: 24 clues (57 empty cells)
-        // Hard: 18 clues (63 empty cells)
-        this.dailyPuzzles = {
-            easy: {
-                puzzle: [
-                    [5,3,0,6,0,8,0,1,0],
-                    [6,0,2,1,9,5,3,4,0],
-                    [0,0,8,3,0,0,5,0,7],
-                    [8,5,0,7,0,0,0,2,0],
-                    [4,2,0,0,0,0,7,9,1],
-                    [0,1,0,0,0,4,0,5,6],
-                    [9,6,1,0,0,0,0,0,0],
-                    [2,0,0,4,1,0,0,0,0],
-                    [0,0,5,2,8,6,1,7,9]
-                ],
-                solution: baseSolution
-            },
-            medium: {
-                puzzle: [
-                    [0,3,4,6,7,0,0,1,0],
-                    [6,0,0,1,0,0,0,0,0],
-                    [0,0,8,0,0,0,0,0,7],
-                    [8,0,0,0,0,0,0,0,3],
-                    [0,0,0,8,0,0,0,0,0],
-                    [0,0,0,0,0,0,8,0,0],
-                    [9,0,0,5,0,0,2,0,4],
-                    [0,0,0,0,0,0,0,3,5],
-                    [3,4,0,0,0,0,1,7,9]
-                ],
-                solution: baseSolution
-            },
-            hard: {
-                puzzle: [
-                    [5,0,0,0,0,0,0,0,0],
-                    [6,0,0,0,0,0,3,0,0],
-                    [1,0,0,3,0,0,0,6,0],
-                    [8,5,0,0,0,0,0,0,0],
-                    [4,0,0,0,5,0,0,0,0],
-                    [0,0,3,0,0,0,8,0,0],
-                    [0,6,0,0,3,0,0,8,0],
-                    [0,0,0,4,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,7,9]
-                ],
-                solution: baseSolution
-            }
-        };
-    }
+    // REMOVED: generateFallbackPuzzles() - NO MORE HARDCODED PUZZLES
+    // All puzzles now come from pre-generated database via API
 
     undo() {
         if (this.moveHistory.length === 0) {

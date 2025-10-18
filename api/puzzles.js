@@ -179,9 +179,9 @@ function generateCompleteSolution(seed) {
 // ═══════════════════════════════════════════════
 
 const CLUE_COUNTS = {
-  easy: 50,    // 31 empty cells - very achievable for unique solutions
-  medium: 40,  // 41 empty cells - balanced for unique solutions
-  hard: 35     // 46 empty cells - still challenging but achievable
+  easy: 42,    // 39 empty cells - PERFECT, do not change
+  medium: 25,  // 56 empty cells - was 24, now 25 per user feedback
+  hard: 19     // 62 empty cells - was 18, now 19 per user feedback
 };
 
 const CANDIDATE_ATTEMPTS = {
@@ -667,14 +667,197 @@ function countSolutions(puzzle, maxSolutions = 2) {
 }
 
 // ═══════════════════════════════════════════════
-// DIFFICULTY VALIDATION FUNCTIONS
+// GAMEPLAY-DRIVEN VALIDATION HELPERS
+// ═══════════════════════════════════════════════
+
+// Simulate solving step by step to track gameplay experience
+function simulateSolveWithGameplayTracking(puzzle) {
+  const grid = deepCopy(puzzle);
+  const steps = [];
+  let moveCount = 0;
+  const maxMoves = 81;
+
+  while (countFilledCells(grid) < 81 && moveCount < maxMoves) {
+    const candidates = getAllCandidates(grid);
+
+    // Count immediate naked singles (cells with only 1 candidate)
+    let immediateNakedSingles = 0;
+    let nakedSinglesMade = 0;
+
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0 && candidates[row][col].length === 1) {
+          immediateNakedSingles++;
+        }
+      }
+    }
+
+    // Apply all available naked singles in this iteration
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0 && candidates[row][col].length === 1) {
+          grid[row][col] = candidates[row][col][0];
+          nakedSinglesMade++;
+          moveCount++;
+        }
+      }
+    }
+
+    // Calculate total candidates and empty cells for this step
+    let totalCandidates = 0;
+    let emptyCells = 0;
+    const newCandidates = getAllCandidates(grid);
+
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0) {
+          emptyCells++;
+          totalCandidates += newCandidates[row][col].length;
+        }
+      }
+    }
+
+    steps.push({
+      moveNumber: moveCount,
+      immediateNakedSingles,
+      nakedSinglesMade,
+      totalCandidates,
+      emptyCells,
+      avgCandidatesPerCell: emptyCells > 0 ? totalCandidates / emptyCells : 0,
+      requiresCandidateAnalysis: immediateNakedSingles === 0 && emptyCells > 0
+    });
+
+    // If no progress, puzzle might need advanced techniques or be stuck
+    if (nakedSinglesMade === 0) {
+      break;
+    }
+  }
+
+  return {
+    steps,
+    completed: countFilledCells(grid) === 81,
+    totalMoves: moveCount
+  };
+}
+
+// Check if puzzle requires candidate tracking
+function requiresCandidates(puzzle) {
+  const result = simulateSolveWithGameplayTracking(puzzle);
+
+  // If completed, check if it required looking at multiple candidates
+  if (!result.completed) return true; // Couldn't solve with just naked singles
+
+  // Count how many times player needed to analyze candidates
+  // (cells where there were no immediate naked singles)
+  const forcedCandidateMoments = result.steps.filter(step =>
+    step.requiresCandidateAnalysis && step.emptyCells > 0
+  ).length;
+
+  return forcedCandidateMoments > 0;
+}
+
+// Check if puzzle requires candidate ELIMINATION techniques
+function requiresCandidateElimination(puzzle) {
+  const grid = deepCopy(puzzle);
+  let usedElimination = false;
+
+  // Try to solve with only naked singles
+  let changed = true;
+  while (changed && countFilledCells(grid) < 81) {
+    changed = false;
+    const candidates = getAllCandidates(grid);
+
+    // Apply naked singles
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0 && candidates[row][col].length === 1) {
+          grid[row][col] = candidates[row][col][0];
+          changed = true;
+        }
+      }
+    }
+  }
+
+  // If not completed, it requires more than naked singles
+  if (countFilledCells(grid) < 81) {
+    // Check if puzzle has high candidate density (indicator of elimination need)
+    const candidates = getAllCandidates(grid);
+    let totalCandidates = 0;
+    let emptyCells = 0;
+
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0) {
+          emptyCells++;
+          totalCandidates += candidates[row][col].length;
+        }
+      }
+    }
+
+    const avgCandidates = emptyCells > 0 ? totalCandidates / emptyCells : 0;
+
+    // High candidate density suggests elimination is needed
+    usedElimination = avgCandidates >= 3.5;
+  }
+
+  return usedElimination;
+}
+
+// Check smooth progression (how many moves are available at each step)
+function checkSmoothProgression(puzzle) {
+  const result = simulateSolveWithGameplayTracking(puzzle);
+
+  if (result.steps.length === 0) {
+    return {
+      minAvailableMoves: 0,
+      maxAvailableMoves: 0,
+      maxImmediateNakedSingles: 0
+    };
+  }
+
+  const nakedSingles = result.steps.map(s => s.immediateNakedSingles);
+
+  return {
+    minAvailableMoves: Math.min(...nakedSingles),
+    maxAvailableMoves: Math.max(...nakedSingles),
+    maxImmediateNakedSingles: Math.max(...nakedSingles)
+  };
+}
+
+// Count forced candidate moments
+function countForcedCandidateMoments(puzzle) {
+  const result = simulateSolveWithGameplayTracking(puzzle);
+  return result.steps.filter(step => step.requiresCandidateAnalysis).length;
+}
+
+// Calculate average candidates per cell in first N moves
+function calculateAverageCandidates(puzzle, firstMoves = 20) {
+  const result = simulateSolveWithGameplayTracking(puzzle);
+  const relevantSteps = result.steps.slice(0, firstMoves);
+
+  if (relevantSteps.length === 0) return 0;
+
+  const avgCandidates = relevantSteps.map(step => step.avgCandidatesPerCell);
+  return avgCandidates.reduce((a, b) => a + b, 0) / avgCandidates.length;
+}
+
+// Count naked singles in first N moves
+function countNakedSinglesInFirstMoves(puzzle, firstMoves = 20) {
+  const result = simulateSolveWithGameplayTracking(puzzle);
+  const relevantSteps = result.steps.slice(0, firstMoves);
+
+  return relevantSteps.reduce((sum, step) => sum + step.nakedSinglesMade, 0);
+}
+
+// ═══════════════════════════════════════════════
+// DIFFICULTY VALIDATION FUNCTIONS - GAMEPLAY-DRIVEN
 // ═══════════════════════════════════════════════
 
 function validateEasy(puzzle, solution) {
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.easy;
 
-  console.log(`\nEASY VALIDATION:`);
+  console.log(`\nEASY VALIDATION (Gameplay-Driven):`);
   console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
 
   // ========================================
@@ -707,24 +890,47 @@ function validateEasy(puzzle, solution) {
 
   console.log(`  ✓ Unique solution verified`);
 
-  // Now check technique requirements
-  const stats = solvePuzzleWithTracking(puzzle);
+  // GAMEPLAY-DRIVEN VALIDATION
+  // Easy: "Playable without candidates, challenging but not too much, fun"
 
-  console.log(`  Naked Singles: ${stats.nakedSingles} (need 10+)`);
-  console.log(`  Hidden Techniques: ${stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads} (max 5)`);
-  console.log(`  Complexity: ${stats.complexityScore} (max 50)`);
-  console.log(`  Solvable: ${stats.solvable}`);
+  // 1. Must NOT require candidates
+  const needsCandidates = requiresCandidates(puzzle);
+  console.log(`  Requires candidates: ${needsCandidates ? 'YES ❌' : 'NO ✓'}`);
+
+  // 2. Check smooth progression (1-3 obvious moves available)
+  const progression = checkSmoothProgression(puzzle);
+  console.log(`  Progression: min=${progression.minAvailableMoves}, max=${progression.maxAvailableMoves}`);
+
+  // 3. Count naked singles
+  const stats = solvePuzzleWithTracking(puzzle);
+  console.log(`  Naked Singles: ${stats.nakedSingles} (need 15+)`);
+
+  // 4. Hidden techniques should be minimal
+  const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
+  console.log(`  Hidden Techniques: ${hiddenTechniques} (max 2)`);
+
+  // 5. No bottlenecks
+  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 0)`);
 
   const valid =
     clueCount === targetClues &&
-    stats.nakedSingles >= 10 &&  // Relaxed from 15
-    (stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads) <= 5 &&  // Relaxed from 2
-    stats.complexityScore < 50 &&  // Relaxed from 35
+    !needsCandidates &&  // CRITICAL: Must be solvable without candidates
+    progression.minAvailableMoves >= 1 &&  // Always have moves available
+    progression.maxAvailableMoves <= 3 &&  // Not too many options
+    stats.nakedSingles >= 15 &&  // Plenty of obvious moves
+    hiddenTechniques <= 2 &&  // Minimal complexity
+    stats.bottlenecks === 0 &&  // No difficult decision points
     stats.solvable;
+
+  console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
   return {
     valid,
-    stats,
+    stats: {
+      ...stats,
+      needsCandidates,
+      progression
+    },
     clueCount,
     targetClues
   };
@@ -734,7 +940,7 @@ function validateMedium(puzzle, solution) {
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.medium;
 
-  console.log(`\nMEDIUM VALIDATION:`);
+  console.log(`\nMEDIUM VALIDATION (Gameplay-Driven):`);
   console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
 
   // ========================================
@@ -767,22 +973,54 @@ function validateMedium(puzzle, solution) {
 
   console.log(`  ✓ Unique solution verified`);
 
-  // Now check technique requirements
+  // GAMEPLAY-DRIVEN VALIDATION
+  // Medium: "Needs candidates, forces thinking, can't see next move immediately"
+
+  // 1. MUST require candidate tracking
+  const needsCandidates = requiresCandidates(puzzle);
+  console.log(`  Requires candidates: ${needsCandidates ? 'YES ✓' : 'NO ❌'}`);
+
+  // 2. Max 2 naked singles available at any point (forces pause)
+  const progression = checkSmoothProgression(puzzle);
+  console.log(`  Max immediate naked singles: ${progression.maxImmediateNakedSingles} (max 2)`);
+
+  // 3. Must have moments where player must mark candidates
+  const forcedCandidateMoments = countForcedCandidateMoments(puzzle);
+  console.log(`  Forced candidate moments: ${forcedCandidateMoments} (need 5+)`);
+
+  // 4. Require hidden techniques
   const stats = solvePuzzleWithTracking(puzzle);
   const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
+  console.log(`  Hidden Techniques: ${hiddenTechniques} (need 3-5)`);
 
-  console.log(`  Hidden Techniques: ${hiddenTechniques} (need 1-5)`);
-  console.log(`  Complexity: ${stats.complexityScore} (need 35-70)`);
-  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 0-2)`);
-  console.log(`  Solvable: ${stats.solvable}`);
+  // 5. Require bottlenecks (pause and think moments)
+  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 1-2)`);
+
+  // 6. Should NOT require candidate elimination (only tracking)
+  const needsElimination = requiresCandidateElimination(puzzle);
+  console.log(`  Requires elimination: ${needsElimination ? 'YES ❌' : 'NO ✓'}`);
 
   const valid =
     clueCount === targetClues &&
+    needsCandidates &&  // CRITICAL: Must require candidates
+    progression.maxImmediateNakedSingles <= 2 &&  // Can't see next moves immediately
+    forcedCandidateMoments >= 5 &&  // Must track candidates multiple times
+    hiddenTechniques >= 3 && hiddenTechniques <= 5 &&  // Need pattern recognition
+    stats.bottlenecks >= 1 && stats.bottlenecks <= 2 &&  // Pause and think moments
+    !needsElimination &&  // Should not need elimination
     stats.solvable;
+
+  console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
   return {
     valid,
-    stats,
+    stats: {
+      ...stats,
+      needsCandidates,
+      needsElimination,
+      forcedCandidateMoments,
+      progression
+    },
     clueCount,
     targetClues
   };
@@ -792,7 +1030,7 @@ function validateHard(puzzle, solution) {
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.hard;
 
-  console.log(`\nHARD VALIDATION:`);
+  console.log(`\nHARD VALIDATION (Gameplay-Driven):`);
   console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
 
   // ========================================
@@ -825,23 +1063,54 @@ function validateHard(puzzle, solution) {
 
   console.log(`  ✓ Unique solution verified`);
 
-  // Now check technique requirements
-  const stats = solvePuzzleWithTracking(puzzle);
+  // GAMEPLAY-DRIVEN VALIDATION
+  // Hard: "Requires candidates, MUST eliminate candidates to progress"
 
-  console.log(`  Hidden Pairs: ${stats.hiddenPairs} (need 0+)`);
-  console.log(`  Hidden Triples: ${stats.hiddenTriples} (need 0+)`);
-  console.log(`  Hidden Quads: ${stats.hiddenQuads} (need 0+)`);
-  console.log(`  Complexity: ${stats.complexityScore} (need 70+)`);
-  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 2+)`);
-  console.log(`  Solvable: ${stats.solvable}`);
+  // 1. MUST require candidate elimination
+  const needsElimination = requiresCandidateElimination(puzzle);
+  console.log(`  Requires elimination: ${needsElimination ? 'YES ✓' : 'NO ❌'}`);
+
+  // 2. High candidate density early
+  const avgCandidates = calculateAverageCandidates(puzzle, 20);
+  console.log(`  Avg candidates per cell (first 20): ${avgCandidates.toFixed(2)} (need 4+)`);
+
+  // 3. Require elimination techniques at least 3 times
+  const stats = solvePuzzleWithTracking(puzzle);
+  const eliminationTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
+  console.log(`  Elimination techniques: ${eliminationTechniques} (need 3+)`);
+
+  // 4. Very few naked singles early
+  const nakedSinglesEarly = countNakedSinglesInFirstMoves(puzzle, 20);
+  console.log(`  Naked singles in first 20 moves: ${nakedSinglesEarly} (max 3)`);
+
+  // 5. Require hidden techniques
+  const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
+  console.log(`  Hidden Techniques: ${hiddenTechniques} (need 4-6)`);
+
+  // 6. Multiple bottlenecks
+  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 2-4)`);
 
   const valid =
     clueCount === targetClues &&
+    needsElimination &&  // CRITICAL: Must require elimination
+    avgCandidates >= 4 &&  // High complexity early on
+    eliminationTechniques >= 3 &&  // Multiple elimination moves needed
+    nakedSinglesEarly <= 3 &&  // Not too many easy moves at start
+    hiddenTechniques >= 4 && hiddenTechniques <= 6 &&  // Complex pattern recognition
+    stats.bottlenecks >= 2 && stats.bottlenecks <= 4 &&  // Multiple challenge points
     stats.solvable;
+
+  console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
   return {
     valid,
-    stats,
+    stats: {
+      ...stats,
+      needsElimination,
+      avgCandidates,
+      eliminationTechniques,
+      nakedSinglesEarly
+    },
     clueCount,
     targetClues
   };
