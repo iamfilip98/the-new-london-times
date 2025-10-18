@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cache Clearing - The New London Times</title>
+</head>
+<body>
+    <h1>Clearing all cached data...</h1>
+    <p id="status">Please wait...</p>
+
+    <script>
+        // Clear ALL localStorage
+        localStorage.clear();
+
+        // Clear ALL sessionStorage
+        sessionStorage.clear();
+
+        // Clear ALL IndexedDB databases
+        if ('indexedDB' in window) {
+            indexedDB.databases().then(dbs => {
+                dbs.forEach(db => {
+                    indexedDB.deleteDatabase(db.name);
+                });
+            });
+        }
+
+        // Clear service worker caches
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => {
+                    caches.delete(name);
+                });
+            });
+        }
+
+        document.getElementById('status').innerHTML = `
+            <p style="color: green; font-size: 20px; font-weight: bold;">✓ All caches cleared!</p>
+            <p>Redirecting to main page in 2 seconds...</p>
+        `;
+
+        setTimeout(() => {
+            window.location.href = '/index.html';
+        }, 2000);
+    </script>
+</body>
+</html>
