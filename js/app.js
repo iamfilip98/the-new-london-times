@@ -1516,11 +1516,11 @@ class SudokuChampionship {
                     this.todayProgressCache.data[player][difficulty]) {
                     gameData = this.todayProgressCache.data[player][difficulty];
                 } else {
-                    // Fallback to localStorage
+                    // Fallback to sessionStorage (session-only cache, no stale data)
                     const key = `completed_${player}_${today}_${difficulty}`;
-                    const localData = localStorage.getItem(key);
-                    if (localData) {
-                        gameData = JSON.parse(localData);
+                    const sessionData = sessionStorage.getItem(key);
+                    if (sessionData) {
+                        gameData = JSON.parse(sessionData);
                     }
                 }
 

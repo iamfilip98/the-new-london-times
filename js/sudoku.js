@@ -2461,11 +2461,11 @@ class SudokuEngine {
             lastSaved: Date.now()
         };
 
-        // Save to localStorage for immediate access
+        // Save to sessionStorage for session-only caching (faster loading, no stale data)
         const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
-        localStorage.setItem(key, JSON.stringify(gameState));
+        sessionStorage.setItem(key, JSON.stringify(gameState));
 
-        // Also save to server for persistence across devices
+        // Also save to server for persistence across sessions
         try {
             await fetch('/api/puzzles', {
                 method: 'POST',
@@ -2505,13 +2505,13 @@ class SudokuEngine {
                 }
             }
 
-            // Fallback to localStorage if server fails
+            // Fallback to sessionStorage if server fails (session-only cache)
             if (!gameState) {
                 const key = `sudoku_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
-                const savedState = localStorage.getItem(key);
+                const savedState = sessionStorage.getItem(key);
                 if (savedState) {
                     gameState = JSON.parse(savedState);
-                    debugLog('Loaded game state from localStorage');
+                    debugLog('Loaded game state from sessionStorage');
                 }
             }
 
@@ -2645,11 +2645,11 @@ class SudokuEngine {
                 timestamp: Date.now()
             };
 
-            // Store in localStorage for immediate access (backwards compatibility)
+            // Store in sessionStorage for session-only caching (prevents stale data)
             const key = `completed_${currentPlayer}_${this.getTodayDateString()}_${this.currentDifficulty}`;
-            localStorage.setItem(key, JSON.stringify(completedGame));
+            sessionStorage.setItem(key, JSON.stringify(completedGame));
 
-            // Also save to database for cross-browser sync
+            // Save to database as the source of truth
             await this.saveGameToDatabase(completedGame);
 
             // Integrate with existing analytics system
@@ -2687,7 +2687,7 @@ class SudokuEngine {
 
         ['easy', 'medium', 'hard'].forEach(difficulty => {
             const key = `completed_${currentPlayer}_${today}_${difficulty}`;
-            const gameData = localStorage.getItem(key);
+            const gameData = sessionStorage.getItem(key);
             if (gameData) {
                 completed.push(JSON.parse(gameData));
             }
@@ -2751,13 +2751,19 @@ class SudokuEngine {
         const opponent = currentPlayer === 'faidao' ? 'filip' : 'faidao';
         const completed = [];
 
-        ['easy', 'medium', 'hard'].forEach(difficulty => {
-            const key = `completed_${opponent}_${date}_${difficulty}`;
-            const gameData = localStorage.getItem(key);
-            if (gameData) {
-                completed.push(JSON.parse(gameData));
-            }
-        });
+        // NOTE: We can't see opponent data from sessionStorage (different sessions)
+        // This function should now load from the database instead
+        // For now, return null to force database loading
+        return null;
+
+        // OLD CODE - kept for reference but not used:
+        // ['easy', 'medium', 'hard'].forEach(difficulty => {
+        //     const key = `completed_${opponent}_${date}_${difficulty}`;
+        //     const gameData = sessionStorage.getItem(key);
+        //     if (gameData) {
+        //         completed.push(JSON.parse(gameData));
+        //     }
+        // });
 
         if (completed.length > 0) {
             return this.convertToAnalyticsFormat(completed, date, opponent);
