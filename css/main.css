@@ -6593,15 +6593,15 @@ select:focus-visible,
         flex: 0 0 auto;
         justify-content: center;
         margin-top: 0;
-        gap: 0.25rem;
-        min-width: 90px;
-        max-width: 100px;
+        gap: 0.5rem;          /* Increased from 0.25rem for better touch spacing */
+        min-width: auto;      /* Remove constraint to allow proper sizing */
+        max-width: none;      /* Remove 100px limit that was squeezing buttons */
     }
 
     .icon-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+        width: 48px;          /* Increased from 40px to meet Material Design minimum */
+        height: 48px;         /* Increased from 40px to meet Material Design minimum */
+        font-size: 1.1rem;    /* Increased from 1rem for better icon visibility */
     }
 
 
