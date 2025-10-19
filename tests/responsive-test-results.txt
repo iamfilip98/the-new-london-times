@@ -1,0 +1,233 @@
+
+Running 14 tests using 1 worker
+
+[Small Desktop (1024x768)] Body width: 1024px, Window width: 1024px
+  ✓   1 tests/responsive.spec.js:29:7 › Responsive Design Audit › Small Desktop (1024x768) › should load auth page without horizontal scroll (1.8s)
+  ✘   2 tests/responsive.spec.js:40:7 › Responsive Design Audit › Small Desktop (1024x768) › should have visible and clickable auth buttons (5.5s)
+[Laptop (1366x768)] Body width: 1366px, Window width: 1366px
+  ✓   3 tests/responsive.spec.js:29:7 › Responsive Design Audit › Laptop (1366x768) › should load auth page without horizontal scroll (665ms)
+  ✘   4 tests/responsive.spec.js:40:7 › Responsive Design Audit › Laptop (1366x768) › should have visible and clickable auth buttons (5.6s)
+[Tablet Portrait (768x1024)] Body width: 768px, Window width: 768px
+  ✓   5 tests/responsive.spec.js:29:7 › Responsive Design Audit › Tablet Portrait (768x1024) › should load auth page without horizontal scroll (551ms)
+  ✘   6 tests/responsive.spec.js:40:7 › Responsive Design Audit › Tablet Portrait (768x1024) › should have visible and clickable auth buttons (5.5s)
+[iPhone SE (375x667)] Body width: 375px, Window width: 375px
+  ✓   7 tests/responsive.spec.js:29:7 › Responsive Design Audit › iPhone SE (375x667) › should load auth page without horizontal scroll (436ms)
+  ✘   8 tests/responsive.spec.js:40:7 › Responsive Design Audit › iPhone SE (375x667) › should have visible and clickable auth buttons (5.4s)
+[iPhone XR (414x896)] Body width: 414px, Window width: 414px
+  ✓   9 tests/responsive.spec.js:29:7 › Responsive Design Audit › iPhone XR (414x896) › should load auth page without horizontal scroll (478ms)
+  ✘  10 tests/responsive.spec.js:40:7 › Responsive Design Audit › iPhone XR (414x896) › should have visible and clickable auth buttons (5.4s)
+Small Desktop Viewport Info: {
+  "innerWidth": 1024,
+  "innerHeight": 768,
+  "scrollWidth": 1317,
+  "scrollHeight": 1350,
+  "hasHorizontalScroll": true,
+  "hasVerticalScroll": true
+}
+❌ ISSUE: Horizontal scrollbar detected on small desktop!
+  ✓  11 tests/responsive.spec.js:65:5 › Responsive Design Audit › Sudoku Game Page › Small Desktop (1024x768) - Game elements visibility (2.3s)
+[Small Desktop (1024x768)] No sudoku grid found
+[Laptop (1366x768)] No sudoku grid found
+[Tablet Portrait (768x1024)] No sudoku grid found
+[iPhone SE (375x667)] No sudoku grid found
+[iPhone XR (414x896)] No sudoku grid found
+
+=== SUDOKU GRID SIZES SUMMARY ===
+{}
+  ✓  12 tests/responsive.spec.js:106:5 › Responsive Design Audit › Sudoku Game Page › Check Sudoku grid size on different viewports (8.6s)
+[Small Desktop (1024x768)] Nav visible: true, Links count: 7
+[Laptop (1366x768)] Nav visible: true, Links count: 7
+[Tablet Portrait (768x1024)] Nav visible: true, Links count: 7
+[iPhone SE (375x667)] Nav visible: true, Links count: 7
+[iPhone XR (414x896)] Nav visible: true, Links count: 7
+  ✓  13 tests/responsive.spec.js:166:5 › Responsive Design Audit › Navigation Bar › Navigation should be accessible on all viewports (3.8s)
+
+[Small Desktop (1024x768)] Overflow check:
+  ✅ .dashboard-header fits (960px)
+  ✅ .win-streaks-section fits (960px)
+  ✅ .sudoku-game-selection fits (960px)
+  ✅ .battle-results fits (960px)
+  ✅ .today-progress fits (960px)
+
+[Laptop (1366x768)] Overflow check:
+  ✅ .dashboard-header fits (1302px)
+  ✅ .win-streaks-section fits (1302px)
+  ✅ .sudoku-game-selection fits (1302px)
+  ✅ .battle-results fits (1302px)
+  ✅ .today-progress fits (1302px)
+
+[Tablet Portrait (768x1024)] Overflow check:
+  ✅ .dashboard-header fits (736px)
+  ✅ .win-streaks-section fits (0px)
+  ✅ .sudoku-game-selection fits (736px)
+  ✅ .battle-results fits (736px)
+  ✅ .today-progress fits (736px)
+
+[iPhone SE (375x667)] Overflow check:
+  ✅ .dashboard-header fits (359px)
+  ✅ .win-streaks-section fits (0px)
+  ✅ .sudoku-game-selection fits (359px)
+  ✅ .battle-results fits (359px)
+  ✅ .today-progress fits (359px)
+
+[iPhone XR (414x896)] Overflow check:
+  ✅ .dashboard-header fits (398px)
+  ✅ .win-streaks-section fits (0px)
+  ✅ .sudoku-game-selection fits (398px)
+  ✅ .battle-results fits (398px)
+  ✅ .today-progress fits (398px)
+  ✓  14 tests/responsive.spec.js:194:5 › Responsive Design Audit › Content Overflow Detection › Detect horizontal overflow on dashboard (3.6s)
+
+
+  1) tests/responsive.spec.js:40:7 › Responsive Design Audit › Small Desktop (1024x768) › should have visible and clickable auth buttons 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('button:has-text("Faidao")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('button:has-text("Faidao")')[22m
+
+
+      44 |         const filipBtn = page.locator('button:has-text("Filip")');
+      45 |
+    > 46 |         await expect(faidaoBtn).toBeVisible();
+         |                                 ^
+      47 |         await expect(filipBtn).toBeVisible();
+      48 |
+      49 |         const faidaoBBox = await faidaoBtn.boundingBox();
+        at /Users/filip/Desktop/work/the-new-london-times/tests/responsive.spec.js:46:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/responsive-Responsive-Desi-e906c--and-clickable-auth-buttons/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/responsive-Responsive-Desi-e906c--and-clickable-auth-buttons/error-context.md
+
+  2) tests/responsive.spec.js:40:7 › Responsive Design Audit › Laptop (1366x768) › should have visible and clickable auth buttons 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('button:has-text("Faidao")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('button:has-text("Faidao")')[22m
+
+
+      44 |         const filipBtn = page.locator('button:has-text("Filip")');
+      45 |
+    > 46 |         await expect(faidaoBtn).toBeVisible();
+         |                                 ^
+      47 |         await expect(filipBtn).toBeVisible();
+      48 |
+      49 |         const faidaoBBox = await faidaoBtn.boundingBox();
+        at /Users/filip/Desktop/work/the-new-london-times/tests/responsive.spec.js:46:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/responsive-Responsive-Desi-7f49c--and-clickable-auth-buttons/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/responsive-Responsive-Desi-7f49c--and-clickable-auth-buttons/error-context.md
+
+  3) tests/responsive.spec.js:40:7 › Responsive Design Audit › Tablet Portrait (768x1024) › should have visible and clickable auth buttons 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('button:has-text("Faidao")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('button:has-text("Faidao")')[22m
+
+
+      44 |         const filipBtn = page.locator('button:has-text("Filip")');
+      45 |
+    > 46 |         await expect(faidaoBtn).toBeVisible();
+         |                                 ^
+      47 |         await expect(filipBtn).toBeVisible();
+      48 |
+      49 |         const faidaoBBox = await faidaoBtn.boundingBox();
+        at /Users/filip/Desktop/work/the-new-london-times/tests/responsive.spec.js:46:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/responsive-Responsive-Desi-54542--and-clickable-auth-buttons/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/responsive-Responsive-Desi-54542--and-clickable-auth-buttons/error-context.md
+
+  4) tests/responsive.spec.js:40:7 › Responsive Design Audit › iPhone SE (375x667) › should have visible and clickable auth buttons 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('button:has-text("Faidao")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('button:has-text("Faidao")')[22m
+
+
+      44 |         const filipBtn = page.locator('button:has-text("Filip")');
+      45 |
+    > 46 |         await expect(faidaoBtn).toBeVisible();
+         |                                 ^
+      47 |         await expect(filipBtn).toBeVisible();
+      48 |
+      49 |         const faidaoBBox = await faidaoBtn.boundingBox();
+        at /Users/filip/Desktop/work/the-new-london-times/tests/responsive.spec.js:46:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/responsive-Responsive-Desi-b9be6--and-clickable-auth-buttons/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/responsive-Responsive-Desi-b9be6--and-clickable-auth-buttons/error-context.md
+
+  5) tests/responsive.spec.js:40:7 › Responsive Design Audit › iPhone XR (414x896) › should have visible and clickable auth buttons 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('button:has-text("Faidao")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('button:has-text("Faidao")')[22m
+
+
+      44 |         const filipBtn = page.locator('button:has-text("Filip")');
+      45 |
+    > 46 |         await expect(faidaoBtn).toBeVisible();
+         |                                 ^
+      47 |         await expect(filipBtn).toBeVisible();
+      48 |
+      49 |         const faidaoBBox = await faidaoBtn.boundingBox();
+        at /Users/filip/Desktop/work/the-new-london-times/tests/responsive.spec.js:46:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/responsive-Responsive-Desi-10250--and-clickable-auth-buttons/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/responsive-Responsive-Desi-10250--and-clickable-auth-buttons/error-context.md
+
+  5 failed
+    tests/responsive.spec.js:40:7 › Responsive Design Audit › Small Desktop (1024x768) › should have visible and clickable auth buttons 
+    tests/responsive.spec.js:40:7 › Responsive Design Audit › Laptop (1366x768) › should have visible and clickable auth buttons 
+    tests/responsive.spec.js:40:7 › Responsive Design Audit › Tablet Portrait (768x1024) › should have visible and clickable auth buttons 
+    tests/responsive.spec.js:40:7 › Responsive Design Audit › iPhone SE (375x667) › should have visible and clickable auth buttons 
+    tests/responsive.spec.js:40:7 › Responsive Design Audit › iPhone XR (414x896) › should have visible and clickable auth buttons 
+  9 passed (57.1s)

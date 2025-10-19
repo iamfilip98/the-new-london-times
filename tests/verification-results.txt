@@ -1,0 +1,15 @@
+
+Running 1 test using 1 worker
+
+Small Desktop Viewport Info: {
+  "innerWidth": 1024,
+  "innerHeight": 768,
+  "scrollWidth": 1317,
+  "scrollHeight": 1178,
+  "hasHorizontalScroll": true,
+  "hasVerticalScroll": true
+}
+❌ ISSUE: Horizontal scrollbar detected on small desktop!
+  ✓  1 tests/responsive.spec.js:65:5 › Responsive Design Audit › Sudoku Game Page › Small Desktop (1024x768) - Game elements visibility (2.5s)
+
+  1 passed (3.6s)

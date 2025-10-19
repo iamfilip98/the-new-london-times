@@ -12,7 +12,9 @@
     "pg": "^8.11.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "@playwright/test": "^1.56.1",
+    "nodemon": "^3.0.1",
+    "playwright": "^1.56.1"
   },
   "engines": {
     "node": ">=18.0.0"
