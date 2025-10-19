@@ -4901,7 +4901,7 @@ select:focus-visible,
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
-    padding: 0.75rem 1.5rem;  /* Compact vertical, generous horizontal */
+    padding: 0.5rem 1.5rem;  /* Minimal vertical, generous horizontal */
     border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -6537,7 +6537,7 @@ select:focus-visible,
         grid-template-columns: auto 1fr auto;  /* Timer | Stats | Controls */
         gap: 0.75rem;
         align-items: center;
-        padding: 0.5rem 0.75rem;  /* Compact vertical, moderate horizontal */
+        padding: 0.25rem 0.75rem;  /* Minimal vertical padding */
         margin-top: 1rem;
     }
 
@@ -6879,7 +6879,7 @@ select:focus-visible,
 /* Additional optimizations for game-info-panel to prevent button overflow */
 @media (max-width: 380px) {
     .game-info-panel {
-        padding: 0.4rem 0.5rem;   /* Very compact vertical */
+        padding: 0.2rem 0.5rem;   /* Minimal vertical padding */
         gap: 0.6rem;              /* Slightly tighter gaps */
     }
 
