@@ -1,6 +1,7 @@
 require('dotenv').config({ path: '.env.local' });
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
+const { validateSaveGameRequest, validateDate } = require('./_validation');
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_PRISMA_URL,
@@ -156,8 +157,11 @@ module.exports = async function handler(req, res) {
       case 'GET':
         const { date } = req.query;
 
-        if (!date) {
-          return res.status(400).json({ error: 'Date parameter is required' });
+        // Validate date parameter
+        try {
+          validateDate(date);
+        } catch (error) {
+          return res.status(400).json({ error: error.message });
         }
 
         const progress = await getTodayProgress(date);
@@ -166,9 +170,11 @@ module.exports = async function handler(req, res) {
       case 'POST':
         const { player, date: gameDate, difficulty, ...gameData } = req.body;
 
-        // Validate required fields
-        if (!player || !gameDate || !difficulty) {
-          return res.status(400).json({ error: 'Player, date, and difficulty are required' });
+        // Comprehensive validation
+        try {
+          validateSaveGameRequest({ player, date: gameDate, difficulty, ...gameData });
+        } catch (error) {
+          return res.status(400).json({ error: error.message });
         }
 
         await saveGame(player, gameDate, difficulty, gameData);

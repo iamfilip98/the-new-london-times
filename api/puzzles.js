@@ -69,6 +69,26 @@ async function initPuzzleDatabase() {
       )
     `;
 
+    // Create fallback_puzzles table for emergency backup puzzles
+    await sql`
+      CREATE TABLE IF NOT EXISTS fallback_puzzles (
+        id SERIAL PRIMARY KEY,
+        difficulty VARCHAR(10) NOT NULL,
+        puzzle TEXT NOT NULL,
+        solution TEXT NOT NULL,
+        quality_score INTEGER DEFAULT 5,
+        times_used INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW(),
+        last_used TIMESTAMP NULL
+      )
+    `;
+
+    // Create index for faster fallback queries
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_fallback_difficulty
+      ON fallback_puzzles(difficulty, quality_score DESC, times_used ASC)
+    `;
+
     return true;
   } catch (error) {
     console.error('Failed to initialize puzzle database:', error);
@@ -1416,6 +1436,65 @@ async function generateDailyPuzzles(date, forceSeed = null) {
 // DATABASE FUNCTIONS
 // ═══════════════════════════════════════════════
 
+/**
+ * Get fallback puzzle from backup pool
+ * Used when daily puzzle generation fails or puzzles missing
+ */
+async function getFallbackPuzzle(difficulty) {
+  try {
+    console.log(`\n[FALLBACK] Retrieving fallback ${difficulty} puzzle from pool...`);
+
+    // Get least-used fallback puzzle of this difficulty
+    const result = await sql`
+      SELECT * FROM fallback_puzzles
+      WHERE difficulty = ${difficulty}
+      ORDER BY times_used ASC, quality_score DESC
+      LIMIT 1
+    `;
+
+    if (result.rows.length === 0) {
+      console.error(`[FALLBACK] ❌ No fallback ${difficulty} puzzles available!`);
+      console.error(`[FALLBACK] Run generate-fallback-puzzles.js endpoint to create backup puzzles`);
+      throw new Error(`No fallback ${difficulty} puzzles available in database`);
+    }
+
+    const fallbackRow = result.rows[0];
+
+    // Update usage count and last_used timestamp
+    await sql`
+      UPDATE fallback_puzzles
+      SET times_used = ${fallbackRow.times_used + 1},
+          last_used = NOW()
+      WHERE id = ${fallbackRow.id}
+    `;
+
+    console.log(`[FALLBACK] ✓ Using fallback ${difficulty} puzzle (used ${fallbackRow.times_used} times before)`);
+
+    return {
+      puzzle: JSON.parse(fallbackRow.puzzle),
+      solution: JSON.parse(fallbackRow.solution),
+      isFallback: true
+    };
+
+  } catch (error) {
+    console.error(`[FALLBACK] Failed to get fallback ${difficulty} puzzle:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Get ALL fallback puzzles at once (for all 3 difficulties)
+ */
+async function getAllFallbackPuzzles() {
+  console.log('\n[FALLBACK] ⚠ Using emergency fallback puzzles for all difficulties');
+
+  const easy = await getFallbackPuzzle('easy');
+  const medium = await getFallbackPuzzle('medium');
+  const hard = await getFallbackPuzzle('hard');
+
+  return { easy, medium, hard };
+}
+
 async function getDailyPuzzles(date) {
   try {
     const result = await sql`
@@ -1423,23 +1502,45 @@ async function getDailyPuzzles(date) {
     `;
 
     if (result.rows.length === 0) {
-      // Generate puzzles if they don't exist
-      return await generateDailyPuzzles(date);
+      console.log(`\n[PUZZLES] No puzzles found for ${date} in database`);
+      console.log(`[PUZZLES] Attempting to use fallback puzzles...`);
+
+      // Try to use fallback puzzles instead of generating on-demand
+      try {
+        const fallbackPuzzles = await getAllFallbackPuzzles();
+        console.log(`[PUZZLES] ✓ Fallback puzzles loaded successfully for ${date}`);
+
+        // Inform user that fallback is being used
+        return {
+          ...fallbackPuzzles,
+          usingFallback: true,
+          fallbackDate: date
+        };
+      } catch (fallbackError) {
+        console.error(`[PUZZLES] ❌ Fallback system failed:`, fallbackError);
+        console.log(`[PUZZLES] Last resort: Generating puzzles on-demand (slow)...`);
+
+        // Last resort: Generate on-demand
+        return await generateDailyPuzzles(date);
+      }
     }
 
     const row = result.rows[0];
     return {
       easy: {
         puzzle: stringToGrid(row.easy_puzzle),
-        solution: stringToGrid(row.easy_solution)
+        solution: stringToGrid(row.easy_solution),
+        isFallback: false
       },
       medium: {
         puzzle: stringToGrid(row.medium_puzzle),
-        solution: stringToGrid(row.medium_solution)
+        solution: stringToGrid(row.medium_solution),
+        isFallback: false
       },
       hard: {
         puzzle: stringToGrid(row.hard_puzzle),
-        solution: stringToGrid(row.hard_solution)
+        solution: stringToGrid(row.hard_solution),
+        isFallback: false
       }
     };
 

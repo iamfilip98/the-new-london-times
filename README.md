@@ -140,19 +140,28 @@ The puzzle generation system uses advanced techniques:
 - **Performance Optimized**: Intelligent caching, background loading, efficient DOM manipulation
 
 ### **Backend Infrastructure**
-- **Vercel Serverless**: Scalable serverless API endpoints
-- **PostgreSQL**: Robust database with connection pooling
+- **Vercel Serverless**: Scalable serverless API endpoints with CRON jobs
+- **PostgreSQL**: Robust database with connection pooling and optimized indexes
 - **RESTful API**: Clean endpoints for puzzles, games, entries, achievements, statistics
-- **Data Persistence**: Comprehensive data storage with backup capabilities
-- **Security**: Environment-based configuration and secure connection handling
+- **Pre-Generation System**: Puzzles generated at 11 PM daily for instant next-day loading
+- **Fallback System**: Emergency backup puzzles ensure zero downtime
+- **Input Validation**: Comprehensive validation module prevents injection attacks
+- **Data Persistence**: Comprehensive data storage with automatic backups
+- **Security**: Environment-based configuration, admin keys, and secure connection handling
 
 ### **Database Schema**
 ```sql
 -- Daily puzzle storage with consistent generation
 daily_puzzles: (date, easy_puzzle, medium_puzzle, hard_puzzle, solutions)
 
+-- Emergency backup puzzles for system resilience
+fallback_puzzles: (difficulty, puzzle, solution, quality_score, times_used, last_used)
+
 -- Individual game progress tracking
 game_states: (player, date, difficulty, current_state, timer, hints, errors)
+
+-- Individual game completions
+individual_games: (player, date, difficulty, time, errors, score, hints, completed_at)
 
 -- Competition entries and results
 entries: (date, player_data, scores, times, errors, dnf_status)
@@ -160,16 +169,29 @@ entries: (date, player_data, scores, times, errors, dnf_status)
 -- Achievement system
 achievements: (player, achievement_id, unlocked_at, entry_date)
 
+-- Streak tracking
+streaks: (player, current_streak, best_streak, updated_at)
+
 -- Statistical data and streaks
 stats: (type, data) -- Flexible JSON storage for various statistics
 ```
 
 ### **API Endpoints**
-- `GET /api/puzzles?date=YYYY-MM-DD` - Daily puzzle retrieval
+**Public Endpoints:**
+- `GET /api/puzzles?date=YYYY-MM-DD` - Daily puzzle retrieval (with fallback system)
 - `GET /api/games?date=YYYY-MM-DD` - Game progress tracking
+- `POST /api/games` - Save game completion
 - `GET /api/entries` - Competition entry management
 - `GET /api/achievements` - Achievement system
 - `GET /api/stats?type=all` - Comprehensive statistics
+
+**Admin Endpoints:** (Require authentication headers)
+- `POST /api/generate-fallback-puzzles` - Generate emergency backup puzzles
+- `POST /api/cron-verify-puzzles` - Verify tomorrow's puzzles exist
+
+**Scheduled Jobs:** (Automatic via Vercel CRON)
+- `POST /api/generate-tomorrow` - Daily at 11:00 PM UTC
+- `POST /api/cron-verify-puzzles` - Daily at 11:55 PM UTC
 
 ## 🎮 How to Play
 
@@ -208,11 +230,17 @@ the-new-london-times/
 │   ├── challenges.js       # Challenge system (600+ lines)
 │   └── themes.js           # Theme management (400+ lines)
 ├── api/
-│   ├── puzzles.js          # Puzzle generation API (800+ lines)
-│   ├── games.js            # Game state management (400+ lines)
-│   ├── entries.js          # Competition entries API (300+ lines)
-│   ├── achievements.js     # Achievement tracking API (200+ lines)
-│   └── stats.js            # Statistics API (200+ lines)
+│   ├── puzzles.js                  # Puzzle generation API (1600+ lines)
+│   ├── generate-fallback-puzzles.js # Admin: Generate backup puzzles
+│   ├── generate-tomorrow.js        # CRON: Pre-generate tomorrow's puzzles
+│   ├── cron-verify-puzzles.js      # CRON: Verify puzzle availability
+│   ├── games.js                    # Game state management (200+ lines)
+│   ├── entries.js                  # Competition entries API (300+ lines)
+│   ├── achievements.js             # Achievement tracking API (200+ lines)
+│   ├── stats.js                    # Statistics API (200+ lines)
+│   ├── init-db.js                  # Database initialization
+│   ├── clear-all.js                # Database cleanup utilities
+│   └── _validation.js              # Input validation module
 ├── package.json            # Project dependencies
 ├── vercel.json             # Deployment configuration
 └── .env.local             # Environment configuration
