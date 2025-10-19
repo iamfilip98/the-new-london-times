@@ -191,11 +191,11 @@ class SudokuEngine {
                     </div>
                     <div class="stats-section">
                         <div class="stat-item">
-                            <div class="stat-label">Errors</div>
+                            <div class="stat-label">Error</div>
                             <span class="errors-count" id="errorsCount">0</span>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Hints</div>
+                            <div class="stat-label">Hint</div>
                             <span class="hints-count" id="hintsCount">0</span>
                         </div>
                     </div>
