@@ -3382,8 +3382,8 @@ body {
 }
 
 .stats-section .stat-item {
-    width: 116.2px;
-    height: 116.2px;
+    width: auto;        /* Remove hardcoded width - let content dictate */
+    height: auto;       /* Remove hardcoded height - let content dictate */
     display: flex;
     flex-direction: column;
     align-items: center;
