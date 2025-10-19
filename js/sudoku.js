@@ -235,10 +235,6 @@ class SudokuEngine {
                         <i class="fas fa-pencil-alt"></i>
                         <span>Notes</span>
                     </button>
-                    <button class="action-btn erase-btn" id="eraseBtn" title="Erase selected cell">
-                        <i class="fas fa-eraser"></i>
-                        <span>Erase</span>
-                    </button>
                     <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
                         <i class="fas fa-eye"></i>
                         <span>Show All</span>
@@ -351,7 +347,6 @@ class SudokuEngine {
 
         // Other action buttons
         document.getElementById('hintBtn')?.addEventListener('click', async () => await this.getHint());
-        document.getElementById('eraseBtn')?.addEventListener('click', async () => await this.eraseSelectedCell());
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
@@ -2938,12 +2933,6 @@ class SudokuEngine {
             month: 'long',
             day: 'numeric'
         });
-    }
-
-    async eraseSelectedCell() {
-        if (this.selectedCell) {
-            await this.inputNumber(0);
-        }
     }
 
     showSettings() {
