@@ -4056,7 +4056,6 @@ select:focus-visible,
 
 /* Fix additional blue text readability issues */
 .nav-link:hover i,
-.pause-btn:hover,
 .difficulty-btn:hover,
 .action-btn:hover,
 .completion-notification-overlay.persistent .completion-time,
@@ -4064,6 +4063,7 @@ select:focus-visible,
 .page-title h2 {
     color: var(--text-primary) !important;
 }
+/* Note: Removed .pause-btn:hover from here to allow proper game control styling */
 
 /* Fix footer hover that uses blue on blue background */
 .footer-link:hover {
@@ -6602,8 +6602,29 @@ select:focus-visible,
         width: 48px;          /* Increased from 40px to meet Material Design minimum */
         height: 48px;         /* Increased from 40px to meet Material Design minimum */
         font-size: 1.1rem;    /* Increased from 1rem for better icon visibility */
+
+        /* Clean, consistent styling for mobile */
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
     }
 
+    /* Clean mobile button states (override desktop hover states) */
+    .icon-btn:active {
+        transform: scale(0.95);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Remove individual section backgrounds for clean appearance */
+    .timer-section,
+    .stat-item {
+        background: none !important;
+        border-radius: 0;
+        box-shadow: none;
+    }
 
 
     /* Responsive Sudoku grid - fit screen with quality */
