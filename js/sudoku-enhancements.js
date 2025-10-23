@@ -99,34 +99,17 @@ class SudokuEnhancements {
                 return;
             }
 
-            // 🎯 NEW: Ctrl+Z for undo, Ctrl+Y or Ctrl+Shift+Z for redo
-            if (e.ctrlKey || e.metaKey) {
-                if (e.key.toLowerCase() === 'z') {
-                    e.preventDefault();
-                    if (e.shiftKey) {
-                        // Ctrl+Shift+Z = Redo
-                        if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
-                            this.game.redo();
-                        }
-                    } else {
-                        // Ctrl+Z = Undo
-                        if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
-                            this.game.undo();
-                        }
-                    }
-                    return;
-                } else if (e.key.toLowerCase() === 'y') {
-                    // Ctrl+Y = Redo
-                    e.preventDefault();
-                    if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
-                        this.game.redo();
-                    }
-                    return;
+            // Ctrl+Z for undo
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
+                    this.game.undo();
                 }
+                return;
             }
 
             // Prevent default for our shortcuts
-            const shortcuts = ['h', 'p', 'u', 'c', 'r'];
+            const shortcuts = ['h', 'p', 'u', 'c'];
             if (shortcuts.includes(e.key.toLowerCase()) || e.key === 'Escape') {
                 e.preventDefault();
             }
@@ -154,12 +137,6 @@ class SudokuEnhancements {
                     // Toggle candidate mode
                     if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
                         document.getElementById('candidateModeBtn')?.click();
-                    }
-                    break;
-                case 'r':
-                    // Redo (if available)
-                    if (this.game.redo && this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
-                        this.game.redo();
                     }
                     break;
                 case 'escape':

@@ -26,10 +26,7 @@ class SudokuEngine {
         this.candidateMode = false;
         this.showAllCandidates = false;
         this.gamePaused = false;
-        // 🎯 NEW: Enhanced undo/redo system
-        this.moveHistory = [];  // Undo stack (max 50 moves)
-        this.redoHistory = [];  // Redo stack
-        this.maxHistorySize = 50;  // Max undo/redo history
+        this.moveHistory = [];
         this.autoSaveInterval = null;
         this.explicitlySelectedDifficulty = false; // Track if user explicitly selected difficulty
         this.lastPuzzleDate = null; // Track puzzle date for auto-refresh
@@ -325,10 +322,6 @@ class SudokuEngine {
                             <i class="fas fa-undo-alt"></i>
                             <span>Undo</span>
                         </button>
-                        <button class="redo-btn" id="redoBtn" title="Redo last undone move" disabled>
-                            <i class="fas fa-redo-alt"></i>
-                            <span>Redo</span>
-                        </button>
                     </div>
                 </div>
             `;
@@ -342,10 +335,6 @@ class SudokuEngine {
                     <button class="undo-btn" id="undoBtn" title="Undo last move">
                         <i class="fas fa-undo-alt"></i>
                         <span>Undo</span>
-                    </button>
-                    <button class="redo-btn" id="redoBtn" title="Redo last undone move" disabled>
-                        <i class="fas fa-redo-alt"></i>
-                        <span>Redo</span>
                     </button>
                 </div>
             `;
@@ -439,15 +428,6 @@ class SudokuEngine {
         if (undoBtn) {
             undoBtn.addEventListener('click', () => this.undo());
         }
-
-        // 🎯 NEW: Redo button
-        const redoBtn = document.getElementById('redoBtn');
-        if (redoBtn) {
-            redoBtn.addEventListener('click', () => this.redo());
-        }
-
-        // Initialize button states
-        this.updateUndoRedoButtons();
     }
 
     changeDifficulty(difficulty) {
@@ -1077,9 +1057,6 @@ class SudokuEngine {
             moveType = 'candidate';
         }
 
-        // 🎯 NEW: Clear redo history when new move is made
-        this.redoHistory = [];
-
         // Add move to history
         this.moveHistory.push({
             row,
@@ -1094,14 +1071,6 @@ class SudokuEngine {
             candidateNumber: this.candidateMode ? number : null,
             timestamp: Date.now()
         });
-
-        // 🎯 NEW: Limit history to 50 moves (remove oldest)
-        if (this.moveHistory.length > this.maxHistorySize) {
-            this.moveHistory.shift();
-        }
-
-        // Update undo/redo button states
-        this.updateUndoRedoButtons();
 
         if (number === 0) {
             // Erase
@@ -3536,23 +3505,6 @@ class SudokuEngine {
         const lastMove = this.moveHistory.pop();
         const { row, col, previousValue, newValue, previousCandidates, previousManualCandidates, previousRemovedCandidates, previousLocked, moveType, candidateNumber } = lastMove;
 
-        // 🎯 NEW: Save current state to redo stack before undoing
-        this.redoHistory.push({
-            row,
-            col,
-            currentValue: this.playerGrid[row][col],
-            currentCandidates: new Set(this.candidates[row][col]),
-            currentManualCandidates: new Set(this.manualCandidates[row][col]),
-            currentRemovedCandidates: new Set(this.removedCandidates[row][col]),
-            currentLocked: this.lockedGrid[row][col],
-            originalMove: lastMove  // Store the original move for redo
-        });
-
-        // 🎯 NEW: Limit redo history to 50 moves
-        if (this.redoHistory.length > this.maxHistorySize) {
-            this.redoHistory.shift();
-        }
-
         // Clear any existing conflict highlights before undoing
         document.querySelectorAll('.sudoku-cell.conflict').forEach(cell => {
             cell.classList.remove('conflict');
@@ -3609,90 +3561,8 @@ class SudokuEngine {
         this.selectedCell = { row, col };
         this.updateDisplay();
 
-        // 🎯 NEW: Update undo/redo button states
-        this.updateUndoRedoButtons();
-
         document.getElementById('gameStatus').innerHTML =
             '<div class="status-message">Move undone</div>';
-    }
-
-    // 🎯 NEW: Redo functionality
-    redo() {
-        if (this.redoHistory.length === 0) {
-            document.getElementById('gameStatus').innerHTML =
-                '<div class="status-message">No moves to redo</div>';
-            return;
-        }
-
-        const redoMove = this.redoHistory.pop();
-        const { row, col, currentValue, currentCandidates, currentManualCandidates, currentRemovedCandidates, currentLocked, originalMove } = redoMove;
-
-        // Restore the state that was undone
-        this.playerGrid[row][col] = currentValue;
-        this.candidates[row][col] = new Set(currentCandidates);
-        this.manualCandidates[row][col] = new Set(currentManualCandidates);
-        this.removedCandidates[row][col] = new Set(currentRemovedCandidates);
-        this.lockedGrid[row][col] = currentLocked;
-
-        // Update all candidates if in show all mode
-        if (this.showAllCandidates) {
-            // Save the restored candidates for this cell
-            const restoredCandidates = new Set(this.candidates[row][col]);
-            const restoredManualCandidates = new Set(this.manualCandidates[row][col]);
-            const restoredRemovedCandidates = new Set(this.removedCandidates[row][col]);
-
-            // Update all other cells
-            this.updateAllCandidates();
-
-            // Restore this specific cell's candidates after the update
-            this.candidates[row][col] = restoredCandidates;
-            this.manualCandidates[row][col] = restoredManualCandidates;
-            this.removedCandidates[row][col] = restoredRemovedCandidates;
-        }
-
-        // Push the original move back to undo history
-        this.moveHistory.push(originalMove);
-
-        // Limit undo history
-        if (this.moveHistory.length > this.maxHistorySize) {
-            this.moveHistory.shift();
-        }
-
-        // Select the cell that was just redone
-        this.selectedCell = { row, col };
-        this.updateDisplay();
-
-        // Update undo/redo button states
-        this.updateUndoRedoButtons();
-
-        document.getElementById('gameStatus').innerHTML =
-            '<div class="status-message">Move redone</div>';
-    }
-
-    // 🎯 NEW: Update undo/redo button states
-    updateUndoRedoButtons() {
-        const undoBtn = document.getElementById('undoBtn');
-        const redoBtn = document.getElementById('redoBtn');
-
-        if (undoBtn) {
-            if (this.moveHistory.length > 0) {
-                undoBtn.disabled = false;
-                undoBtn.title = `Undo last move (${this.moveHistory.length} moves available)`;
-            } else {
-                undoBtn.disabled = true;
-                undoBtn.title = 'No moves to undo';
-            }
-        }
-
-        if (redoBtn) {
-            if (this.redoHistory.length > 0) {
-                redoBtn.disabled = false;
-                redoBtn.title = `Redo last undone move (${this.redoHistory.length} moves available)`;
-            } else {
-                redoBtn.disabled = true;
-                redoBtn.title = 'No moves to redo';
-            }
-        }
     }
 
     checkThemeAchievements() {
