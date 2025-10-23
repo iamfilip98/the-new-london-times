@@ -99,6 +99,32 @@ class SudokuEnhancements {
                 return;
             }
 
+            // 🎯 NEW: Ctrl+Z for undo, Ctrl+Y or Ctrl+Shift+Z for redo
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        // Ctrl+Shift+Z = Redo
+                        if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
+                            this.game.redo();
+                        }
+                    } else {
+                        // Ctrl+Z = Undo
+                        if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
+                            this.game.undo();
+                        }
+                    }
+                    return;
+                } else if (e.key.toLowerCase() === 'y') {
+                    // Ctrl+Y = Redo
+                    e.preventDefault();
+                    if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
+                        this.game.redo();
+                    }
+                    return;
+                }
+            }
+
             // Prevent default for our shortcuts
             const shortcuts = ['h', 'p', 'u', 'c', 'r'];
             if (shortcuts.includes(e.key.toLowerCase()) || e.key === 'Escape') {

@@ -13,15 +13,23 @@ class SudokuEngine {
         this.timerInterval = null;
         this.hints = 0;
         this.errors = 0;
+        // Progressive hint tracking (3-level system)
+        this.hintLevel1Count = 0;  // Direction hints ("Check row 3")
+        this.hintLevel2Count = 0;  // Location hints ("Cell R3C4")
+        this.hintLevel3Count = 0;  // Answer reveals ("Answer is 7")
         this.currentHintCell = null; // Track which cell is being hinted
-        this.hintState = 'none'; // 'none', 'pointing', 'revealed'
+        this.hintState = 'none'; // 'none', 'direction', 'location', 'revealed'
+        this.hintTimePenalty = 0; // Cumulative time penalty from hints
         this.currentDifficulty = 'easy';
         this.gameStarted = false;
         this.gameCompleted = false;
         this.candidateMode = false;
         this.showAllCandidates = false;
         this.gamePaused = false;
-        this.moveHistory = [];
+        // 🎯 NEW: Enhanced undo/redo system
+        this.moveHistory = [];  // Undo stack (max 50 moves)
+        this.redoHistory = [];  // Redo stack
+        this.maxHistorySize = 50;  // Max undo/redo history
         this.autoSaveInterval = null;
         this.explicitlySelectedDifficulty = false; // Track if user explicitly selected difficulty
         this.lastPuzzleDate = null; // Track puzzle date for auto-refresh
@@ -317,6 +325,10 @@ class SudokuEngine {
                             <i class="fas fa-undo-alt"></i>
                             <span>Undo</span>
                         </button>
+                        <button class="redo-btn" id="redoBtn" title="Redo last undone move" disabled>
+                            <i class="fas fa-redo-alt"></i>
+                            <span>Redo</span>
+                        </button>
                     </div>
                 </div>
             `;
@@ -330,6 +342,10 @@ class SudokuEngine {
                     <button class="undo-btn" id="undoBtn" title="Undo last move">
                         <i class="fas fa-undo-alt"></i>
                         <span>Undo</span>
+                    </button>
+                    <button class="redo-btn" id="redoBtn" title="Redo last undone move" disabled>
+                        <i class="fas fa-redo-alt"></i>
+                        <span>Redo</span>
                     </button>
                 </div>
             `;
@@ -423,6 +439,15 @@ class SudokuEngine {
         if (undoBtn) {
             undoBtn.addEventListener('click', () => this.undo());
         }
+
+        // 🎯 NEW: Redo button
+        const redoBtn = document.getElementById('redoBtn');
+        if (redoBtn) {
+            redoBtn.addEventListener('click', () => this.redo());
+        }
+
+        // Initialize button states
+        this.updateUndoRedoButtons();
     }
 
     changeDifficulty(difficulty) {
@@ -834,6 +859,11 @@ class SudokuEngine {
         document.getElementById('timerDisplay').textContent = this.formatTime(this.timer);
         this.hints = 0;
         this.errors = 0;
+        // 🎯 NEW: Reset progressive hint tracking
+        this.hintLevel1Count = 0;
+        this.hintLevel2Count = 0;
+        this.hintLevel3Count = 0;
+        this.hintTimePenalty = 0;
         this.currentHintCell = null;
         this.hintState = 'none';
         this.gameStarted = true;
@@ -879,7 +909,7 @@ class SudokuEngine {
                 const candidatesDiv = cell.querySelector('.cell-candidates');
 
                 // Clear existing classes
-                cell.classList.remove('given', 'user-input', 'error', 'selected', 'highlighted', 'same-number');
+                cell.classList.remove('given', 'user-input', 'error', 'error-flash', 'selected', 'highlighted', 'same-number');
 
                 if (this.playerGrid[row][col] !== 0) {
                     valueDiv.textContent = this.playerGrid[row][col];
@@ -1047,6 +1077,10 @@ class SudokuEngine {
             moveType = 'candidate';
         }
 
+        // 🎯 NEW: Clear redo history when new move is made
+        this.redoHistory = [];
+
+        // Add move to history
         this.moveHistory.push({
             row,
             col,
@@ -1060,6 +1094,14 @@ class SudokuEngine {
             candidateNumber: this.candidateMode ? number : null,
             timestamp: Date.now()
         });
+
+        // 🎯 NEW: Limit history to 50 moves (remove oldest)
+        if (this.moveHistory.length > this.maxHistorySize) {
+            this.moveHistory.shift();
+        }
+
+        // Update undo/redo button states
+        this.updateUndoRedoButtons();
 
         if (number === 0) {
             // Erase
@@ -1411,22 +1453,57 @@ class SudokuEngine {
 
         const statusDiv = document.getElementById('gameStatus');
 
-        // Progressive hint system
+        // 🎯 NEW: 3-Stage Progressive Hint System (Option A - Fractional Penalties)
         if (this.hintState === 'none') {
-            // First click: point to the next cell to solve
+            // 🔍 LEVEL 1: Direction Hint - "Check row 3"
             const hintCell = this.findBestHint();
 
             if (hintCell) {
                 const { row, col, value, technique } = hintCell;
                 this.currentHintCell = { row, col, value, technique };
-                this.hintState = 'pointing';
-                this.hints++;
+                this.hintState = 'direction';
+
+                // Track Level 1 hint (fractional penalty)
+                this.hintLevel1Count++;
+                this.hintTimePenalty += 2; // 2 seconds penalty
+                this.hints++; // Keep total hint count for display
+
+                // Determine hint direction (row/col/box)
+                const hintDirection = this.getHintDirection(row, col);
+
+                // Show direction message (no cell highlighting yet)
+                statusDiv.innerHTML = `
+                    <div class="hint-message direction">
+                        <div class="hint-header">
+                            <i class="fas fa-compass"></i>
+                            <strong>Level 1 Hint: Direction</strong>
+                        </div>
+                        <div class="hint-body">
+                            ${hintDirection} - Try looking for a ${technique}.
+                        </div>
+                        <div class="hint-penalty">
+                            Penalty: 2 seconds | Click again for cell location (+3s) | Or solve it yourself!
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = '<div class="status-message">No hints available right now.</div>';
+            }
+        } else if (this.hintState === 'direction') {
+            // 📍 LEVEL 2: Location Hint - "Cell R3C4 needs attention"
+            if (this.currentHintCell) {
+                const { row, col, value, technique } = this.currentHintCell;
+                this.hintState = 'location';
+
+                // Track Level 2 hint (fractional penalty)
+                this.hintLevel2Count++;
+                this.hintTimePenalty += 3; // +3 seconds penalty (total 5s)
 
                 // Clear any existing hint visual indicators
                 this.clearHintIndicators();
 
                 // Add visual indication to the pointed cell
-                this.addHintIndicator(row, col, 'pointing');
+                this.addHintIndicator(row, col, 'location');
 
                 // Select the pointed cell
                 this.selectCell(row, col);
@@ -1438,29 +1515,31 @@ class SudokuEngine {
                     if (cell) this.enhancements.animateHintGlow(cell);
                 }
 
-                // Show pointing message
+                // Show location message
                 statusDiv.innerHTML = `
-                    <div class="hint-message pointing">
+                    <div class="hint-message location">
                         <div class="hint-header">
-                            <i class="fas fa-search"></i>
-                            <strong>Hint: Focus Here</strong>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong>Level 2 Hint: Location</strong>
                         </div>
                         <div class="hint-body">
-                            Look at cell R${row + 1}C${col + 1}. This is the next cell you should solve using ${technique}.
+                            Focus on cell R${row + 1}C${col + 1}. Use ${technique} to solve it.
                         </div>
                         <div class="hint-penalty">
-                            Penalty: 5 seconds | Click hint again to reveal the answer (+10 more seconds)
+                            Total penalty: 5 seconds (2+3) | Click again to reveal answer (+10s)
                         </div>
                     </div>
                 `;
-            } else {
-                statusDiv.innerHTML = '<div class="status-message">No hints available right now.</div>';
             }
-        } else if (this.hintState === 'pointing') {
-            // Second click: reveal the cell value
+        } else if (this.hintState === 'location') {
+            // 💡 LEVEL 3: Answer Reveal - "The answer is 7"
             if (this.currentHintCell) {
                 const { row, col, value, technique } = this.currentHintCell;
                 this.hintState = 'revealed';
+
+                // Track Level 3 hint (full penalty)
+                this.hintLevel3Count++;
+                this.hintTimePenalty += 10; // +10 seconds penalty (total 15s)
 
                 // Place the value
                 this.playerGrid[row][col] = value;
@@ -1484,13 +1563,13 @@ class SudokuEngine {
                     <div class="hint-message revealed">
                         <div class="hint-header">
                             <i class="fas fa-lightbulb"></i>
-                            <strong>${technique}</strong>
+                            <strong>Level 3 Hint: Answer Revealed</strong>
                         </div>
                         <div class="hint-body">
-                            Cell R${row + 1}C${col + 1} = ${value}
+                            Cell R${row + 1}C${col + 1} = ${value} (${technique})
                         </div>
                         <div class="hint-penalty">
-                            Total penalty: 15 seconds (5 + 10)
+                            Total penalty: 15 seconds (2+3+10)
                         </div>
                     </div>
                 `;
@@ -1517,7 +1596,10 @@ class SudokuEngine {
                     box-shadow: var(--box-shadow);
                     animation: hintAppear 0.4s ease-out;
                 }
-                .hint-message.pointing {
+                .hint-message.direction {
+                    background: linear-gradient(135deg, #9C27B0, #673AB7);
+                }
+                .hint-message.location {
                     background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
                 }
                 .hint-message.revealed {
@@ -1547,7 +1629,7 @@ class SudokuEngine {
                     border-radius: 4px;
                     display: inline-block;
                 }
-                .cell.hint-pointing {
+                .cell.hint-location {
                     background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(255, 193, 7, 0.3)) !important;
                     border: 2px solid var(--accent-orange) !important;
                     animation: hintPulse 1.5s infinite;
@@ -1569,11 +1651,32 @@ class SudokuEngine {
         }
     }
 
+    getHintDirection(row, col) {
+        // Generate a hint direction message based on cell location
+        const boxRow = Math.floor(row / 3);
+        const boxCol = Math.floor(col / 3);
+        const boxNames = [
+            ['top-left box', 'top-middle box', 'top-right box'],
+            ['middle-left box', 'center box', 'middle-right box'],
+            ['bottom-left box', 'bottom-middle box', 'bottom-right box']
+        ];
+
+        // Randomly choose between row/col/box hint
+        const hintType = Math.random();
+        if (hintType < 0.33) {
+            return `Check row ${row + 1}`;
+        } else if (hintType < 0.66) {
+            return `Check column ${col + 1}`;
+        } else {
+            return `Check the ${boxNames[boxRow][boxCol]}`;
+        }
+    }
+
     clearHintIndicators() {
         // Remove hint indicators from all cells
         const cells = document.querySelectorAll('.cell');
         cells.forEach(cell => {
-            cell.classList.remove('hint-pointing', 'hint-revealed');
+            cell.classList.remove('hint-location', 'hint-revealed');
         });
     }
 
@@ -1915,13 +2018,26 @@ class SudokuEngine {
         const errorPenalty = this.errors * 0.12;
         score *= (1 - Math.min(errorPenalty, 0.60));
 
-        // HINT PENALTY (gentle - encouraging use when stuck)
+        // 🎯 NEW: FRACTIONAL HINT PENALTY (Option A - Progressive System)
+        // Calculate effective hints using weighted fractional values
+        const effectiveHints =
+            (this.hintLevel1Count * 0.3) +   // Level 1 (Direction) = 0.3 hints each
+            (this.hintLevel2Count * 0.6) +   // Level 2 (Location) = 0.6 hints each
+            (this.hintLevel3Count * 1.0);    // Level 3 (Answer) = 1.0 hints each
+
+        // Progressive penalty calculation based on effective hints
         let hintPenalty = 0;
-        if (this.hints === 1) hintPenalty = 0.03;      // 3%
-        else if (this.hints === 2) hintPenalty = 0.06; // 6%
-        else if (this.hints === 3) hintPenalty = 0.10; // 10%
-        else if (this.hints === 4) hintPenalty = 0.15; // 15%
-        else if (this.hints >= 5) hintPenalty = 0.20;  // 20% cap
+        if (effectiveHints <= 1) {
+            hintPenalty = effectiveHints * 0.03;  // 1-3% for first effective hint
+        } else if (effectiveHints <= 2) {
+            hintPenalty = 0.03 + ((effectiveHints - 1) * 0.03);  // 3-6%
+        } else if (effectiveHints <= 3) {
+            hintPenalty = 0.06 + ((effectiveHints - 2) * 0.04);  // 6-10%
+        } else if (effectiveHints <= 4) {
+            hintPenalty = 0.10 + ((effectiveHints - 3) * 0.05);  // 10-15%
+        } else {
+            hintPenalty = Math.min(0.20, 0.15 + ((effectiveHints - 4) * 0.05));  // 15-20% cap
+        }
 
         score *= (1 - hintPenalty);
 
@@ -2519,6 +2635,11 @@ class SudokuEngine {
             timer: this.timer,
             hints: this.hints,
             errors: this.errors,
+            // 🎯 NEW: Progressive hint tracking
+            hintLevel1Count: this.hintLevel1Count || 0,
+            hintLevel2Count: this.hintLevel2Count || 0,
+            hintLevel3Count: this.hintLevel3Count || 0,
+            hintTimePenalty: this.hintTimePenalty || 0,
             currentHintCell: this.currentHintCell,
             hintState: this.hintState,
             difficulty: this.currentDifficulty,
@@ -2637,6 +2758,11 @@ class SudokuEngine {
                 this.timer = gameState.timer || 0;
                 this.hints = gameState.hints || 0;
                 this.errors = gameState.errors || 0;
+                // 🎯 NEW: Restore progressive hint tracking
+                this.hintLevel1Count = gameState.hintLevel1Count || 0;
+                this.hintLevel2Count = gameState.hintLevel2Count || 0;
+                this.hintLevel3Count = gameState.hintLevel3Count || 0;
+                this.hintTimePenalty = gameState.hintTimePenalty || 0;
                 this.currentHintCell = gameState.currentHintCell || null;
                 this.hintState = gameState.hintState || 'none';
                 this.gameStarted = gameState.gameStarted || false;
@@ -2711,6 +2837,11 @@ class SudokuEngine {
                 time: this.timer,
                 hints: this.hints,
                 errors: this.errors,
+                // 🎯 NEW: Progressive hint tracking data
+                hintLevel1Count: this.hintLevel1Count || 0,
+                hintLevel2Count: this.hintLevel2Count || 0,
+                hintLevel3Count: this.hintLevel3Count || 0,
+                hintTimePenalty: this.hintTimePenalty || 0,
                 score: score,
                 completed: true,
                 timestamp: Date.now()
@@ -3240,6 +3371,11 @@ class SudokuEngine {
         this.timer = 0;
         this.hints = 0;
         this.errors = 0;
+        // 🎯 NEW: Reset progressive hint tracking
+        this.hintLevel1Count = 0;
+        this.hintLevel2Count = 0;
+        this.hintLevel3Count = 0;
+        this.hintTimePenalty = 0;
         this.currentHintCell = null;
         this.hintState = 'none';
     }
@@ -3400,6 +3536,23 @@ class SudokuEngine {
         const lastMove = this.moveHistory.pop();
         const { row, col, previousValue, newValue, previousCandidates, previousManualCandidates, previousRemovedCandidates, previousLocked, moveType, candidateNumber } = lastMove;
 
+        // 🎯 NEW: Save current state to redo stack before undoing
+        this.redoHistory.push({
+            row,
+            col,
+            currentValue: this.playerGrid[row][col],
+            currentCandidates: new Set(this.candidates[row][col]),
+            currentManualCandidates: new Set(this.manualCandidates[row][col]),
+            currentRemovedCandidates: new Set(this.removedCandidates[row][col]),
+            currentLocked: this.lockedGrid[row][col],
+            originalMove: lastMove  // Store the original move for redo
+        });
+
+        // 🎯 NEW: Limit redo history to 50 moves
+        if (this.redoHistory.length > this.maxHistorySize) {
+            this.redoHistory.shift();
+        }
+
         // Clear any existing conflict highlights before undoing
         document.querySelectorAll('.sudoku-cell.conflict').forEach(cell => {
             cell.classList.remove('conflict');
@@ -3456,8 +3609,94 @@ class SudokuEngine {
         this.selectedCell = { row, col };
         this.updateDisplay();
 
+        // 🎯 NEW: Update undo/redo button states
+        this.updateUndoRedoButtons();
+
         document.getElementById('gameStatus').innerHTML =
             '<div class="status-message">Move undone</div>';
+    }
+
+    // 🎯 NEW: Redo functionality
+    redo() {
+        if (this.redoHistory.length === 0) {
+            document.getElementById('gameStatus').innerHTML =
+                '<div class="status-message">No moves to redo</div>';
+            return;
+        }
+
+        const redoMove = this.redoHistory.pop();
+        const { row, col, currentValue, currentCandidates, currentManualCandidates, currentRemovedCandidates, currentLocked, originalMove } = redoMove;
+
+        // Restore the state that was undone
+        this.playerGrid[row][col] = currentValue;
+        this.candidates[row][col] = new Set(currentCandidates);
+        this.manualCandidates[row][col] = new Set(currentManualCandidates);
+        this.removedCandidates[row][col] = new Set(currentRemovedCandidates);
+        this.lockedGrid[row][col] = currentLocked;
+
+        // Update all candidates if in show all mode
+        if (this.showAllCandidates) {
+            // Save the restored candidates for this cell
+            const restoredCandidates = new Set(this.candidates[row][col]);
+            const restoredManualCandidates = new Set(this.manualCandidates[row][col]);
+            const restoredRemovedCandidates = new Set(this.removedCandidates[row][col]);
+
+            // Update all other cells
+            this.updateAllCandidates();
+
+            // Restore this specific cell's candidates after the update
+            this.candidates[row][col] = restoredCandidates;
+            this.manualCandidates[row][col] = restoredManualCandidates;
+            this.removedCandidates[row][col] = restoredRemovedCandidates;
+        }
+
+        // Push the original move back to undo history
+        this.moveHistory.push(originalMove);
+
+        // Limit undo history
+        if (this.moveHistory.length > this.maxHistorySize) {
+            this.moveHistory.shift();
+        }
+
+        // Select the cell that was just redone
+        this.selectedCell = { row, col };
+        this.updateDisplay();
+
+        // Update undo/redo button states
+        this.updateUndoRedoButtons();
+
+        document.getElementById('gameStatus').innerHTML =
+            '<div class="status-message">Move redone</div>';
+    }
+
+    // 🎯 NEW: Update undo/redo button states
+    updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+
+        if (undoBtn) {
+            if (this.moveHistory.length > 0) {
+                undoBtn.disabled = false;
+                undoBtn.classList.remove('disabled');
+                undoBtn.title = `Undo last move (${this.moveHistory.length} moves available)`;
+            } else {
+                undoBtn.disabled = true;
+                undoBtn.classList.add('disabled');
+                undoBtn.title = 'No moves to undo';
+            }
+        }
+
+        if (redoBtn) {
+            if (this.redoHistory.length > 0) {
+                redoBtn.disabled = false;
+                redoBtn.classList.remove('disabled');
+                redoBtn.title = `Redo last undone move (${this.redoHistory.length} moves available)`;
+            } else {
+                redoBtn.disabled = true;
+                redoBtn.classList.add('disabled');
+                redoBtn.title = 'No moves to redo';
+            }
+        }
     }
 
     checkThemeAchievements() {
@@ -3944,6 +4183,11 @@ class SudokuEngine {
         this.timer = 0;
         this.hints = 0;
         this.errors = 0;
+        // 🎯 NEW: Reset progressive hint tracking
+        this.hintLevel1Count = 0;
+        this.hintLevel2Count = 0;
+        this.hintLevel3Count = 0;
+        this.hintTimePenalty = 0;
         this.currentHintCell = null;
         this.hintState = 'none';
         this.gameStarted = false;
