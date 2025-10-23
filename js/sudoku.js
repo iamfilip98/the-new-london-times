@@ -3677,11 +3677,9 @@ class SudokuEngine {
         if (undoBtn) {
             if (this.moveHistory.length > 0) {
                 undoBtn.disabled = false;
-                undoBtn.classList.remove('disabled');
                 undoBtn.title = `Undo last move (${this.moveHistory.length} moves available)`;
             } else {
                 undoBtn.disabled = true;
-                undoBtn.classList.add('disabled');
                 undoBtn.title = 'No moves to undo';
             }
         }
@@ -3689,11 +3687,9 @@ class SudokuEngine {
         if (redoBtn) {
             if (this.redoHistory.length > 0) {
                 redoBtn.disabled = false;
-                redoBtn.classList.remove('disabled');
                 redoBtn.title = `Redo last undone move (${this.redoHistory.length} moves available)`;
             } else {
                 redoBtn.disabled = true;
-                redoBtn.classList.add('disabled');
                 redoBtn.title = 'No moves to redo';
             }
         }
