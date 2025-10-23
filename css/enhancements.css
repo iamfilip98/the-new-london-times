@@ -1,0 +1,311 @@
+/* ===================================
+   PHASE 4: UX ENHANCEMENTS - CSS
+   =================================== */
+
+/* Toast Notification System */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 250px;
+    max-width: 400px;
+    pointer-events: auto;
+}
+
+.toast-show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-width: 24px;
+    text-align: center;
+}
+
+.toast-message {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.toast-success {
+    border-left: 4px solid var(--accent-green, #2ecc71);
+}
+
+.toast-success .toast-icon {
+    color: var(--accent-green, #2ecc71);
+}
+
+.toast-error {
+    border-left: 4px solid var(--accent-red, #e74c3c);
+}
+
+.toast-error .toast-icon {
+    color: var(--accent-red, #e74c3c);
+}
+
+.toast-warning {
+    border-left: 4px solid var(--accent-orange, #f39c12);
+}
+
+.toast-warning .toast-icon {
+    color: var(--accent-orange, #f39c12);
+}
+
+.toast-info {
+    border-left: 4px solid var(--accent-blue, #3498db);
+}
+
+.toast-info .toast-icon {
+    color: var(--accent-blue, #3498db);
+}
+
+/* Cell Fill Animation */
+@keyframes cellFill {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.cell-fill-animation {
+    animation: cellFill 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cell Error Shake Animation */
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.cell-error-shake {
+    animation: errorShake 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(231, 76, 60, 0.2) !important;
+}
+
+/* Cell Hint Glow Animation */
+@keyframes hintGlow {
+    0%, 100% {
+        box-shadow: 0 0 0 rgba(255, 165, 0, 0);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), inset 0 0 20px rgba(255, 165, 0, 0.3);
+    }
+}
+
+.cell-hint-glow {
+    animation: hintGlow 0.6s ease-in-out 3;
+    background: rgba(255, 165, 0, 0.1) !important;
+}
+
+/* Confetti Animation */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    z-index: 9999;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+}
+
+@keyframes confettiFall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Progress Bar */
+.progress-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+    border-radius: 2px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+}
+
+.progress-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Recovery Modal */
+.recovery-modal .modal-content {
+    text-align: center;
+    padding: 2rem;
+}
+
+.recovery-modal h2 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.recovery-modal p {
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.recovery-modal .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.recovery-modal .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.recovery-modal .btn-primary {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+}
+
+.recovery-modal .btn-primary:hover {
+    background: var(--accent-blue-hover, #2980b9);
+    transform: translateY(-2px);
+}
+
+.recovery-modal .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.recovery-modal .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Keyboard Shortcuts Help */
+.keyboard-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.shortcut-key {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.shortcut-description {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Mobile: Adjust toast position */
+@media (max-width: 768px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .toast {
+        min-width: unset;
+        max-width: unset;
+    }
+
+    .progress-text {
+        font-size: 0.7rem;
+    }
+}
+
+/* Completion Celebration Overlay */
+.celebration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9998;
+}
+
+/* Smooth transitions for all enhancements */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced cell highlighting on hover */
+.sudoku-cell:hover:not(.locked) {
+    background: rgba(74, 144, 226, 0.1);
+    transform: scale(1.02);
+    transition: all 0.15s ease;
+}
+
+/* Success pulse animation for completed sections */
+@keyframes successPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.section-complete {
+    animation: successPulse 0.5s ease-in-out 2;
+}

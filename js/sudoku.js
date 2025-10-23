@@ -94,6 +94,27 @@ class SudokuEngine {
             debugLog('No explicit difficulty selection, loading saved game state');
             this.loadGameStateInBackground(null);
         }
+
+        // Initialize UX enhancements
+        if (typeof SudokuEnhancements !== 'undefined') {
+            this.enhancements = new SudokuEnhancements(this);
+            debugLog('✅ UX Enhancements initialized');
+
+            // Check for unfinished game and offer recovery
+            const unfinishedGame = this.enhancements.checkForUnfinishedGame();
+            if (unfinishedGame && !selectedDifficulty) {
+                // Only show recovery prompt if user didn't explicitly select a difficulty
+                const shouldResume = await this.enhancements.showRecoveryPrompt(unfinishedGame);
+                if (!shouldResume) {
+                    // User chose to start fresh - clear the saved game
+                    const currentPlayer = sessionStorage.getItem('currentPlayer');
+                    if (currentPlayer) {
+                        const saveKey = `sudoku_save_${currentPlayer}`;
+                        localStorage.removeItem(saveKey);
+                    }
+                }
+            }
+        }
     }
 
     // 🚀 PERFORMANCE: Background loading for ratings (non-blocking)
@@ -240,6 +261,12 @@ class SudokuEngine {
                         <span>Show All</span>
                     </button>
                 </div>
+
+                <!-- Progress Indicator -->
+                <div class="progress-container" style="display: none;" id="progressContainer">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-text" id="progress-text" style="display: none;"></div>
 
                 <!-- Game Status -->
                 <div class="game-status" id="gameStatus">
@@ -1078,6 +1105,11 @@ class SudokuEngine {
                 this.errors++;
                 // Provide immediate feedback for errors
                 this.showErrorFeedback(row, col);
+                // Trigger error shake animation
+                if (this.enhancements) {
+                    const cell = document.querySelector(`.sudoku-cell[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) this.enhancements.animateCellError(cell);
+                }
             } else {
                 // Lock the cell when correct number is entered
                 this.lockedGrid[row][col] = true;
@@ -1123,8 +1155,24 @@ class SudokuEngine {
         this.updateDisplay();
         this.playSound('place');
 
+        // Trigger cell fill animation for number placements
+        if (this.enhancements && number !== 0 && !this.candidateMode) {
+            const cell = document.querySelector(`.sudoku-cell[data-row="${row}"][data-col="${col}"]`);
+            if (cell) this.enhancements.animateCellFill(cell);
+        }
+
         // Check if all 9 instances of a number have been placed
         this.checkAllNineComplete(number);
+
+        // Update progress indicator
+        if (this.enhancements && this.gameStarted && !this.gameCompleted) {
+            const progressInfo = this.enhancements.updateProgressIndicator();
+            // Show progress elements if game started
+            const progressContainer = document.getElementById('progressContainer');
+            const progressText = document.getElementById('progress-text');
+            if (progressContainer) progressContainer.style.display = 'block';
+            if (progressText) progressText.style.display = 'block';
+        }
 
         await this.checkCompletion();
     }
@@ -1383,6 +1431,12 @@ class SudokuEngine {
                 // Select the pointed cell
                 this.selectCell(row, col);
                 this.updateDisplay();
+
+                // Trigger hint glow animation
+                if (this.enhancements) {
+                    const cell = document.querySelector(`.sudoku-cell[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) this.enhancements.animateHintGlow(cell);
+                }
 
                 // Show pointing message
                 statusDiv.innerHTML = `
@@ -1795,6 +1849,11 @@ class SudokuEngine {
 
             // Save the completed state to prevent the game from appearing unfinished when reloaded
             await this.saveGameState();
+
+            // Trigger completion celebration
+            if (this.enhancements) {
+                this.enhancements.showCompletionCelebration();
+            }
 
             // Show completion notification overlay
             this.showCompletionNotification();
