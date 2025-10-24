@@ -6,7 +6,7 @@ This section contains essential workflow rules. Add new rules, but never delete 
 ## Critical Rules
 1. **README is Source of Truth**: Every code change MUST be reflected in README.md
 2. **Update README with Every Change**: Algorithm, scoring, features, API - document everything
-3. **No Hardcoding Ever**: No hardcoded values, puzzles, or fallbacks - everything from database or config
+3. **No Hardcoding**: All puzzles come from pre-generated database, zero fallbacks
 4. **Gameplay-Driven Validation**: Validation must match actual gameplay experience
 5. **Pre-Generation Pattern**: Never generate puzzles on-demand for users
 6. **Git Workflow**: After making code changes, commit with a meaningful message and push to git
