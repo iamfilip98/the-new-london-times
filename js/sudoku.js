@@ -3111,85 +3111,10 @@ class SudokuEngine {
         modal.innerHTML = `
             <div class="settings-content">
                 <div class="settings-header">
-                    <h3>Game Settings</h3>
+                    <h3>Settings</h3>
                     <button class="close-btn" onclick="this.closest('.settings-modal').remove()">&times;</button>
                 </div>
                 <div class="settings-body">
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="autoCheckErrors" ${this.autoCheckErrors ? 'checked' : ''}>
-                            Highlight errors automatically
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="showTimer" ${this.showTimer !== false ? 'checked' : ''}>
-                            Show timer
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label>Sound Effects</label>
-                        <select id="soundLevel">
-                            <option value="off" ${this.soundLevel === 'off' ? 'selected' : ''}>Off</option>
-                            <option value="low" ${this.soundLevel === 'low' ? 'selected' : ''}>Low</option>
-                            <option value="medium" ${this.soundLevel === 'medium' || !this.soundLevel ? 'selected' : ''}>Medium</option>
-                            <option value="high" ${this.soundLevel === 'high' ? 'selected' : ''}>High</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <label>Number Input Sound</label>
-                        <select id="inputSoundType">
-                            <option value="classic" ${this.inputSoundType === 'classic' || !this.inputSoundType ? 'selected' : ''}>Classic</option>
-                            <option value="bubble" ${this.inputSoundType === 'bubble' ? 'selected' : ''}>Bubble</option>
-                            <option value="click" ${this.inputSoundType === 'click' ? 'selected' : ''}>Click</option>
-                            <option value="soft" ${this.inputSoundType === 'soft' ? 'selected' : ''}>Soft</option>
-                            <option value="piano" ${this.inputSoundType === 'piano' ? 'selected' : ''}>Piano</option>
-                            <option value="chime" ${this.inputSoundType === 'chime' ? 'selected' : ''}>Chime</option>
-                            <option value="beep" ${this.inputSoundType === 'beep' ? 'selected' : ''}>Beep</option>
-                            <option value="pop" ${this.inputSoundType === 'pop' ? 'selected' : ''}>Pop</option>
-                            <option value="wood" ${this.inputSoundType === 'wood' ? 'selected' : ''}>Wood</option>
-                            <option value="digital" ${this.inputSoundType === 'digital' ? 'selected' : ''}>Digital</option>
-                        </select>
-                    </div>
-                    <div class="setting-item sound-controls-section">
-                        <label class="sound-controls-title">Individual Sound Controls</label>
-                        <div class="sound-toggles-grid">
-                            <div class="sound-toggles-column">
-                                <div class="sound-toggle">
-                                    <label>
-                                        <input type="checkbox" id="inputSoundEnabled" ${this.soundSettings.inputSound ? 'checked' : ''}>
-                                        Number Placement
-                                    </label>
-                                </div>
-                                <div class="sound-toggle">
-                                    <label>
-                                        <input type="checkbox" id="errorSoundEnabled" ${this.soundSettings.errorSound ? 'checked' : ''}>
-                                        Error Feedback
-                                    </label>
-                                </div>
-                                <div class="sound-toggle">
-                                    <label>
-                                        <input type="checkbox" id="completionSoundEnabled" ${this.soundSettings.completionSound ? 'checked' : ''}>
-                                        Puzzle Completion
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="sound-toggles-column">
-                                <div class="sound-toggle">
-                                    <label>
-                                        <input type="checkbox" id="hintSoundEnabled" ${this.soundSettings.hintSound ? 'checked' : ''}>
-                                        Hint Sounds
-                                    </label>
-                                </div>
-                                <div class="sound-toggle">
-                                    <label>
-                                        <input type="checkbox" id="allNineCompleteSoundEnabled" ${this.soundSettings.allNineCompleteSound ? 'checked' : ''}>
-                                        Number Completion Ding
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     ${(() => {
                         debugLog('Settings modal debug:', {
                             gameStarted: this.gameStarted,
@@ -3199,17 +3124,90 @@ class SudokuEngine {
                         });
                         return this.gameStarted && !this.gameCompleted;
                     })() ? `
-                    <div class="setting-item restart-section">
-                        <hr>
-                        <button class="btn-secondary restart-btn" onclick="window.sudokuEngine.restartPuzzleWithConfirmation(); this.closest('.settings-modal').remove();">
-                            🔄 Restart Current Puzzle
+                    <div class="restart-section-top">
+                        <button class="btn-restart" onclick="window.sudokuEngine.restartPuzzleWithConfirmation(); this.closest('.settings-modal').remove();">
+                            <i class="fas fa-redo"></i> Restart Puzzle
                         </button>
-                        <small>This will clear your progress and start the puzzle fresh</small>
                     </div>
                     ` : ''}
+
+                    <div class="settings-grid">
+                        <div class="setting-item-compact">
+                            <label>
+                                <input type="checkbox" id="autoCheckErrors" ${this.autoCheckErrors ? 'checked' : ''}>
+                                <span>Auto-check errors</span>
+                            </label>
+                        </div>
+                        <div class="setting-item-compact">
+                            <label>
+                                <input type="checkbox" id="showTimer" ${this.showTimer !== false ? 'checked' : ''}>
+                                <span>Show timer</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="setting-item-compact">
+                            <label>Sound Level</label>
+                            <select id="soundLevel" class="compact-select">
+                                <option value="off" ${this.soundLevel === 'off' ? 'selected' : ''}>Off</option>
+                                <option value="low" ${this.soundLevel === 'low' ? 'selected' : ''}>Low</option>
+                                <option value="medium" ${this.soundLevel === 'medium' || !this.soundLevel ? 'selected' : ''}>Medium</option>
+                                <option value="high" ${this.soundLevel === 'high' ? 'selected' : ''}>High</option>
+                            </select>
+                        </div>
+                        <div class="setting-item-compact">
+                            <label>Input Sound</label>
+                            <select id="inputSoundType" class="compact-select">
+                                <option value="classic" ${this.inputSoundType === 'classic' || !this.inputSoundType ? 'selected' : ''}>Classic</option>
+                                <option value="bubble" ${this.inputSoundType === 'bubble' ? 'selected' : ''}>Bubble</option>
+                                <option value="click" ${this.inputSoundType === 'click' ? 'selected' : ''}>Click</option>
+                                <option value="soft" ${this.inputSoundType === 'soft' ? 'selected' : ''}>Soft</option>
+                                <option value="piano" ${this.inputSoundType === 'piano' ? 'selected' : ''}>Piano</option>
+                                <option value="chime" ${this.inputSoundType === 'chime' ? 'selected' : ''}>Chime</option>
+                                <option value="beep" ${this.inputSoundType === 'beep' ? 'selected' : ''}>Beep</option>
+                                <option value="pop" ${this.inputSoundType === 'pop' ? 'selected' : ''}>Pop</option>
+                                <option value="wood" ${this.inputSoundType === 'wood' ? 'selected' : ''}>Wood</option>
+                                <option value="digital" ${this.inputSoundType === 'digital' ? 'selected' : ''}>Digital</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="sound-toggles-compact">
+                        <div class="sound-toggle-compact">
+                            <label>
+                                <input type="checkbox" id="inputSoundEnabled" ${this.soundSettings.inputSound ? 'checked' : ''}>
+                                <span>Placement</span>
+                            </label>
+                        </div>
+                        <div class="sound-toggle-compact">
+                            <label>
+                                <input type="checkbox" id="errorSoundEnabled" ${this.soundSettings.errorSound ? 'checked' : ''}>
+                                <span>Errors</span>
+                            </label>
+                        </div>
+                        <div class="sound-toggle-compact">
+                            <label>
+                                <input type="checkbox" id="hintSoundEnabled" ${this.soundSettings.hintSound ? 'checked' : ''}>
+                                <span>Hints</span>
+                            </label>
+                        </div>
+                        <div class="sound-toggle-compact">
+                            <label>
+                                <input type="checkbox" id="completionSoundEnabled" ${this.soundSettings.completionSound ? 'checked' : ''}>
+                                <span>Complete</span>
+                            </label>
+                        </div>
+                        <div class="sound-toggle-compact">
+                            <label>
+                                <input type="checkbox" id="allNineCompleteSoundEnabled" ${this.soundSettings.allNineCompleteSound ? 'checked' : ''}>
+                                <span>Number Done</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="settings-footer">
-                    <button class="btn-primary" onclick="window.sudokuEngine.saveSettings(); this.closest('.settings-modal').remove();">Save Settings</button>
+                    <button class="btn-primary" onclick="window.sudokuEngine.saveSettings(); this.closest('.settings-modal').remove();">Save</button>
                 </div>
             </div>
         `;

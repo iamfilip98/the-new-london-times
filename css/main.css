@@ -6148,8 +6148,191 @@ select:focus-visible,
     cursor: pointer;
 }
 
+/* ===== COMPACT SETTINGS LAYOUT ===== */
+.settings-content {
+    max-height: 90vh !important;
+    overflow-y: auto;
+}
+
+.settings-body {
+    padding: 1rem !important;
+}
+
+/* Restart button at top */
+.restart-section-top {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-restart {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(245, 87, 108, 0.2), rgba(255, 107, 53, 0.2));
+    border: 2px solid rgba(245, 87, 108, 0.4);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.btn-restart:hover {
+    background: linear-gradient(135deg, rgba(245, 87, 108, 0.3), rgba(255, 107, 53, 0.3));
+    border-color: rgba(245, 87, 108, 0.6);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 2-column grid for checkboxes */
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+/* 2-column row for dropdowns */
+.settings-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+/* Compact setting items */
+.setting-item-compact {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.65rem 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.setting-item-compact:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.setting-item-compact label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.setting-item-compact input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent-purple);
+    cursor: pointer;
+}
+
+.compact-select {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-top: 0.4rem;
+}
+
+.compact-select:hover {
+    border-color: rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(102, 126, 234, 0.1));
+}
+
+.compact-select:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Compact sound toggles - 3 columns on desktop, wrap on mobile */
+.sound-toggles-compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.6rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sound-toggle-compact {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.sound-toggle-compact:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.sound-toggle-compact label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.sound-toggle-compact input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--accent-purple);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.sound-toggle-compact span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Compact footer */
+.settings-footer {
+    padding: 0.75rem 1rem !important;
+}
+
+.settings-footer .btn-primary {
+    width: 100%;
+    padding: 0.75rem !important;
+    font-size: 0.95rem !important;
+}
+
 /* Mobile optimizations for settings modal */
 @media (max-width: 768px) {
+    /* Stack columns on mobile */
+    .settings-grid,
+    .settings-row {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+
+    .sound-toggles-compact {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .settings-content, .stats-content {
         width: 95%;
         max-height: 90vh;
