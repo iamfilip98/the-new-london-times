@@ -6,6 +6,7 @@
 3. **No Hardcoding**: All puzzles come from pre-generated database, zero fallbacks
 4. **Gameplay-Driven Validation**: Validation must match actual gameplay experience
 5. **Pre-Generation Pattern**: Never generate puzzles on-demand for users
+6. **Git Workflow**: After making code changes, commit with a meaningful message and push to git
 
 ## Clue Counts - Single Source of Truth
 
