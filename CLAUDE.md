@@ -10,9 +10,10 @@ This section contains essential workflow rules. Add new rules, but never delete 
 4. **Gameplay-Driven Validation**: Validation must match actual gameplay experience
 5. **Pre-Generation Pattern**: Never generate puzzles on-demand for users
 6. **Git Workflow**: After making code changes, commit with a meaningful message and push to git
-7. **Test Visual Changes**: Use Playwright to test and verify any visual changes before committing
+7. **Efficient Testing**: For complex features, use Playwright tests. For simple CSS/visual fixes, verify with grep/manual inspection. If server/test setup fails once, STOP - don't debug infrastructure, just verify the code fix is correct and commit
 8. **Root Cause Analysis**: Always seek the root cause of issues - don't just fix symptoms
 9. **Rule Protection**: Never remove or modify existing Critical Rules without explicit user approval - only add new ones
+10. **Token Efficiency**: Don't waste tokens debugging test infrastructure. If automated testing fails, fall back to code inspection and move on
 
 ## Clue Counts - Single Source of Truth
 
