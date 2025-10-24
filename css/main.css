@@ -5010,6 +5010,12 @@ select:focus-visible,
     aspect-ratio: 1 / 1;
     box-shadow: var(--shadow-md);
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .sudoku-cell {
@@ -5028,6 +5034,11 @@ select:focus-visible,
     margin: 0;
     box-sizing: border-box;
     user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* NYT 3x3 box alternating backgrounds */
