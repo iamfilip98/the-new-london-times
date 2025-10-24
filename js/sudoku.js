@@ -1566,11 +1566,13 @@ class SudokuEngine {
                 .hint-message {
                     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
                     color: white;
-                    padding: 1rem;
-                    border-radius: var(--border-radius);
-                    margin: 1rem 0;
+                    padding: 0.6rem 0.9rem;
+                    border-radius: 10px;
+                    margin: 0.3rem 0;
                     box-shadow: var(--box-shadow);
                     animation: hintAppear 0.4s ease-out;
+                    max-height: 65px;
+                    overflow: hidden;
                 }
                 .hint-message.direction {
                     background: linear-gradient(135deg, #9C27B0, #673AB7);
@@ -1587,21 +1589,22 @@ class SudokuEngine {
                 .hint-header {
                     display: flex;
                     align-items: center;
-                    gap: 0.5rem;
-                    font-size: 1.1rem;
-                    margin-bottom: 0.5rem;
+                    gap: 0.4rem;
+                    font-size: 0.95rem;
+                    margin-bottom: 0.35rem;
                 }
                 .hint-body {
-                    font-size: 0.95rem;
-                    margin-bottom: 0.5rem;
-                    opacity: 0.9;
+                    font-size: 0.85rem;
+                    margin-bottom: 0.35rem;
+                    opacity: 0.95;
+                    line-height: 1.3;
                 }
                 .hint-penalty {
                     font-family: 'Orbitron', monospace;
                     font-weight: 600;
-                    font-size: 0.85rem;
+                    font-size: 0.75rem;
                     background: rgba(0, 0, 0, 0.2);
-                    padding: 0.25rem 0.5rem;
+                    padding: 0.2rem 0.4rem;
                     border-radius: 4px;
                     display: inline-block;
                 }
