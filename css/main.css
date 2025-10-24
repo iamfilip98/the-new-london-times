@@ -4785,6 +4785,7 @@ select:focus-visible,
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-variant-numeric: tabular-nums;
 }
 
 .game-controls {
@@ -5151,7 +5152,7 @@ select:focus-visible,
 .cell-value {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 3.2rem;
-    font-weight: 600;
+    font-weight: 400;
     color: #000000;
     line-height: 1;
     text-align: center;
@@ -5188,7 +5189,7 @@ select:focus-visible,
     align-items: center;
     justify-content: center;
     line-height: 1;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 /* 3x3 Candidates Grid Layout */
@@ -5218,7 +5219,7 @@ select:focus-visible,
 .candidate-cell {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 0.99rem;
-    font-weight: 600;
+    font-weight: 400;
     color: #000000;
     display: flex;
     align-items: center;
