@@ -4881,20 +4881,22 @@ select:focus-visible,
 
     /* Desktop sidebar: 3x3 number grid + undo */
     .sudoku-controls-sidebar .number-input-desktop {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr) auto;
-        gap: 0.5rem;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-rows: repeat(3, 1fr) auto !important;
+        gap: 0.5rem !important;
     }
 
     .sudoku-controls-sidebar .number-input-desktop .undo-btn {
-        grid-column: 1 / -1;
+        grid-column: 1 / -1 !important;
     }
 
     /* Desktop grid sizing - ensure square */
     .sudoku-grid {
         width: min(100%, calc(100vh - 200px), 700px) !important;
         height: min(100%, calc(100vh - 200px), 700px) !important;
+        max-width: min(100%, calc(100vh - 200px), 700px) !important;
+        max-height: min(100%, calc(100vh - 200px), 700px) !important;
     }
 }
 
