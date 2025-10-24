@@ -252,19 +252,29 @@ class SudokuEngine {
                     </div>
                 </div>
 
-                <!-- Number Input Rows -->
-                ${this.generateNumberInputHTML()}
+                <!-- Desktop Sidebar: Controls (hidden on mobile, shows as sidebar on desktop) -->
+                <div class="sudoku-controls-sidebar">
+                    <!-- Game Status in Sidebar -->
+                    <div class="game-status" id="gameStatus">
+                        <div class="status-message">
+                            Ready to play! Select a difficulty to start.
+                        </div>
+                    </div>
 
-                <!-- Action Buttons Row -->
-                <div class="action-buttons">
-                    <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
-                        <i class="fas fa-pencil-alt"></i>
-                        <span>Notes</span>
-                    </button>
-                    <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
-                        <i class="fas fa-eye"></i>
-                        <span>Show All</span>
-                    </button>
+                    <!-- Number Input in Sidebar -->
+                    ${this.generateNumberInputHTML()}
+
+                    <!-- Action Buttons in Sidebar -->
+                    <div class="action-buttons">
+                        <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
+                            <i class="fas fa-pencil-alt"></i>
+                            <span>Notes</span>
+                        </button>
+                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
+                            <i class="fas fa-eye"></i>
+                            <span>Show All</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Progress Indicator -->
@@ -272,13 +282,6 @@ class SudokuEngine {
                     <div class="progress-bar" id="progress-bar"></div>
                 </div>
                 <div class="progress-text" id="progress-text" style="display: none;"></div>
-
-                <!-- Game Status -->
-                <div class="game-status" id="gameStatus">
-                    <div class="status-message">
-                        Ready to play! Select a difficulty to start.
-                    </div>
-                </div>
             </div>
         `;
     }
