@@ -4788,6 +4788,11 @@ select:focus-visible,
     font-variant-numeric: tabular-nums;
 }
 
+.timer-display {
+    min-width: 4.5ch;  /* Prevents layout shift (fits "99:59") */
+    text-align: center;
+}
+
 .game-controls {
     display: flex;
     gap: 1rem;
@@ -6853,6 +6858,7 @@ select:focus-visible,
         font-weight: 700;
         line-height: 1;
         order: 1;  /* Time on top */
+        min-width: 4.5ch;  /* Prevents layout shift */
     }
 
     /* Stats: Flexible center, vertically aligned with timer */
@@ -7203,6 +7209,7 @@ select:focus-visible,
 
     .timer-display {
         font-size: 1rem;          /* Slightly smaller time */
+        min-width: 4.5ch;         /* Prevents layout shift */
     }
 
     .stats-section {
