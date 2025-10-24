@@ -1,12 +1,18 @@
 # Development Guidelines for Claude
 
+⚠️ **DO NOT REMOVE THE CRITICAL RULES SECTION** ⚠️
+This section contains essential workflow rules. Add new rules, but never delete existing ones without explicit user approval.
+
 ## Critical Rules
 1. **README is Source of Truth**: Every code change MUST be reflected in README.md
 2. **Update README with Every Change**: Algorithm, scoring, features, API - document everything
-3. **No Hardcoding**: All puzzles come from pre-generated database, zero fallbacks
+3. **No Hardcoding Ever**: No hardcoded values, puzzles, or fallbacks - everything from database or config
 4. **Gameplay-Driven Validation**: Validation must match actual gameplay experience
 5. **Pre-Generation Pattern**: Never generate puzzles on-demand for users
 6. **Git Workflow**: After making code changes, commit with a meaningful message and push to git
+7. **Test Visual Changes**: Use Playwright to test and verify any visual changes before committing
+8. **Root Cause Analysis**: Always seek the root cause of issues - don't just fix symptoms
+9. **Rule Protection**: Never remove or modify existing Critical Rules without explicit user approval - only add new ones
 
 ## Clue Counts - Single Source of Truth
 
