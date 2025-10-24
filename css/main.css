@@ -5114,7 +5114,7 @@ select:focus-visible,
 .candidate-num {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 1.32rem;
-    color: #666666;
+    color: #555555;
     display: flex;
     align-items: center;
     justify-content: center;
