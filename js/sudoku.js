@@ -1418,9 +1418,11 @@ class SudokuEngine {
     }
 
     async getHint() {
+        console.log('🔍 getHint called. gameStarted:', this.gameStarted, 'gameCompleted:', this.gameCompleted, 'gamePaused:', this.gamePaused);
         if (!this.gameStarted || this.gameCompleted || this.gamePaused) return;
 
         const statusDiv = document.getElementById('gameStatus');
+        console.log('📍 statusDiv found:', !!statusDiv, 'current hintState:', this.hintState);
 
         // 🎯 NEW: 3-Stage Progressive Hint System (Option A - Fractional Penalties)
         if (this.hintState === 'none') {
@@ -1429,6 +1431,7 @@ class SudokuEngine {
 
             if (hintCell) {
                 const { row, col, value, technique } = hintCell;
+                console.log('💡 Found hint cell:', { row, col, value, technique });
                 this.currentHintCell = { row, col, value, technique };
                 this.hintState = 'direction';
 
@@ -1439,6 +1442,7 @@ class SudokuEngine {
 
                 // Determine hint direction (row/col/box)
                 const hintDirection = this.getHintDirection(row, col);
+                console.log('🧭 Hint direction:', hintDirection);
 
                 // Show direction message (no cell highlighting yet)
                 statusDiv.innerHTML = `
@@ -1455,7 +1459,10 @@ class SudokuEngine {
                         </div>
                     </div>
                 `;
+                console.log('✅ Level 1 hint message set in statusDiv');
+                console.log('📊 statusDiv display style:', window.getComputedStyle(statusDiv).display);
             } else {
+                console.log('❌ No hint cell found');
                 statusDiv.innerHTML = '<div class="status-message">No hints available right now.</div>';
             }
         } else if (this.hintState === 'direction') {
