@@ -6977,14 +6977,15 @@ select:focus-visible,
     }
 
     .candidate-num {
-        font-size: 0.6rem !important;
-        font-weight: 200 !important;
+        font-size: 0.85rem !important;
+        font-weight: 400 !important;
+        color: #333333 !important;
     }
 
     .candidate-cell {
-        font-size: 0.6rem !important;
-        font-weight: 200 !important;
-        color: #000000 !important;
+        font-size: 0.85rem !important;
+        font-weight: 400 !important;
+        color: #333333 !important;
     }
 
     /* Number input buttons */
@@ -7084,7 +7085,7 @@ select:focus-visible,
     .sudoku-grid {
         width: min(calc(100vw - 20px), calc(100vh - 220px));
         height: min(calc(100vw - 20px), calc(100vh - 220px));
-        border-width: 1px;
+        border: 4px solid #000000 !important;
         aspect-ratio: 1;
     }
 
@@ -7406,15 +7407,16 @@ select:focus-visible,
     }
 
     .candidate-num {
-        font-size: 0.4rem !important;
-        font-weight: 100 !important;
+        font-size: 0.75rem !important;
+        font-weight: 400 !important;
+        color: #333333 !important;
     }
 
     /* Mobile responsiveness for 3x3 candidate grid */
     .candidate-cell {
-        font-size: 0.4rem !important;
-        font-weight: 100 !important;
-        color: #000000 !important;
+        font-size: 0.75rem !important;
+        font-weight: 400 !important;
+        color: #333333 !important;
     }
 
     .number-btn {
