@@ -5244,7 +5244,6 @@ select:focus-visible,
 
 .sudoku-cell.given .cell-value {
     color: #000000;
-    font-weight: 700;
 }
 
 .sudoku-cell.user-input {
@@ -7091,8 +7090,7 @@ select:focus-visible,
     .sudoku-grid-container {
         width: 100%;
         max-width: calc(100vw - 20px);
-        padding: 0 10px;
-        padding-bottom: 1rem;
+        padding: 0.5rem 10px 1rem 10px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -7106,31 +7104,31 @@ select:focus-visible,
         max-height: min(100%, calc(100vw - 40px), 600px);
         width: 100%;
         height: auto;
-        border: 4px solid #000000;
+        border: 3px solid #000000;
         aspect-ratio: 1 / 1;
         box-shadow: var(--shadow-md);
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 
     .sudoku-cell {
         border-width: 0.5px;
     }
 
-    /* Ensure thick 3x3 box borders match outer border on mobile */
+    /* Thinner 3x3 box borders for clean mobile appearance */
     .sudoku-cell.right-thick {
-        border-right-width: 4px;
+        border-right-width: 2px;
     }
 
     .sudoku-cell.bottom-thick {
-        border-bottom-width: 4px;
+        border-bottom-width: 2px;
     }
 
     .sudoku-cell.left-thick {
-        border-left-width: 4px;
+        border-left-width: 2px;
     }
 
     .sudoku-cell.top-thick {
-        border-top-width: 4px;
+        border-top-width: 2px;
     }
 
     .cell-value {
