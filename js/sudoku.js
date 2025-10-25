@@ -276,12 +276,6 @@ class SudokuEngine {
                         </button>
                     </div>
                 </div>
-
-                <!-- Progress Indicator -->
-                <div class="progress-container" style="display: none;" id="progressContainer">
-                    <div class="progress-bar" id="progress-bar"></div>
-                </div>
-                <div class="progress-text" id="progress-text" style="display: none;"></div>
             </div>
         `;
     }

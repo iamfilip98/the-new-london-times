@@ -146,31 +146,6 @@
     }
 }
 
-/* Progress Bar */
-.progress-container {
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    overflow: hidden;
-    margin: 10px 0;
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
-    border-radius: 2px;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0%;
-}
-
-.progress-text {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    text-align: center;
-    margin-top: 5px;
-}
-
 /* Recovery Modal */
 .recovery-modal .modal-content {
     text-align: center;
