@@ -4268,20 +4268,8 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
-        // Start fresh medium puzzle
-        this.currentDifficulty = 'medium';
-
-        // Update UI
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        const mediumBtn = document.querySelector('[data-difficulty="medium"]');
-        if (mediumBtn) {
-            mediumBtn.classList.add('active');
-        }
-
-        // Load the puzzle (will check if already completed)
-        this.loadPuzzle('medium');
+        // Use navigateToDifficulty to properly load saved state or fresh puzzle
+        this.navigateToDifficulty('medium');
     }
 
     navigateToHard() {
@@ -4298,20 +4286,8 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
-        // Start fresh hard puzzle
-        this.currentDifficulty = 'hard';
-
-        // Update UI
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        const hardBtn = document.querySelector('[data-difficulty="hard"]');
-        if (hardBtn) {
-            hardBtn.classList.add('active');
-        }
-
-        // Load the puzzle (will check if already completed)
-        this.loadPuzzle('hard');
+        // Use navigateToDifficulty to properly load saved state or fresh puzzle
+        this.navigateToDifficulty('hard');
     }
 
     // New method to handle navigation that preserves completed state
