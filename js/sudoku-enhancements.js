@@ -117,8 +117,13 @@ class SudokuEnhancements {
             // Check for ? key (Shift+/)
             if (e.key === '?') {
                 e.preventDefault();
-                // Open settings with shortcuts tab
-                if (this.game) {
+                // Check if settings modal is already open
+                const existingModal = document.querySelector('.settings-modal');
+                if (existingModal) {
+                    // Close it instead of opening another
+                    existingModal.remove();
+                } else if (this.game) {
+                    // Open settings with shortcuts tab
                     this.game.showSettings('shortcuts');
                 }
                 return;
