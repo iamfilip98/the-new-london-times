@@ -434,14 +434,17 @@ class SudokuChampionship {
     }
 
     isEntryComplete(entry) {
-        return ['faidao', 'filip'].every(player =>
-            ['easy', 'medium', 'hard'].every(difficulty =>
-                entry[player] &&
-                entry[player].dnf &&
-                entry[player].times &&
-                (entry[player].dnf[difficulty] || entry[player].times[difficulty] !== null)
-            )
-        );
+        return ['faidao', 'filip'].every(player => {
+            if (!entry[player] || !entry[player].times) return false;
+
+            return ['easy', 'medium', 'hard'].every(difficulty => {
+                const time = entry[player].times[difficulty];
+                const dnf = entry[player].dnf?.[difficulty] || false;
+
+                // Complete if either DNF'd or has a time
+                return dnf || time !== null;
+            });
+        });
     }
 
 
