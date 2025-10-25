@@ -5082,40 +5082,6 @@ select:focus-visible,
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Difficulty indication via thin top border on container */
-.sudoku-grid-container[data-difficulty="easy"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: #4CAF50;
-    z-index: 10;
-}
-
-.sudoku-grid-container[data-difficulty="medium"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: #FF9800;
-    z-index: 10;
-}
-
-.sudoku-grid-container[data-difficulty="hard"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: #F44336;
-    z-index: 10;
-}
-
 .sudoku-cell {
     background: #ffffff;
     display: flex;
