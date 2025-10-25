@@ -5082,35 +5082,38 @@ select:focus-visible,
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Difficulty-based backglow - prominent and colorful */
-.sudoku-grid[data-difficulty="easy"] {
-    box-shadow:
-        0 0 30px rgba(76, 175, 80, 0.8),
-        0 0 60px rgba(76, 175, 80, 0.6),
-        0 0 90px rgba(76, 175, 80, 0.4),
-        0 0 120px rgba(76, 175, 80, 0.3),
-        var(--shadow-md);
-    border: 4px solid rgba(76, 175, 80, 0.5) !important;
+/* Difficulty indication via thin top border on container */
+.sudoku-grid-container[data-difficulty="easy"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #4CAF50;
+    z-index: 10;
 }
 
-.sudoku-grid[data-difficulty="medium"] {
-    box-shadow:
-        0 0 30px rgba(255, 152, 0, 0.8),
-        0 0 60px rgba(255, 152, 0, 0.6),
-        0 0 90px rgba(255, 152, 0, 0.4),
-        0 0 120px rgba(255, 152, 0, 0.3),
-        var(--shadow-md);
-    border: 4px solid rgba(255, 152, 0, 0.5) !important;
+.sudoku-grid-container[data-difficulty="medium"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #FF9800;
+    z-index: 10;
 }
 
-.sudoku-grid[data-difficulty="hard"] {
-    box-shadow:
-        0 0 30px rgba(244, 67, 54, 0.8),
-        0 0 60px rgba(244, 67, 54, 0.6),
-        0 0 90px rgba(244, 67, 54, 0.4),
-        0 0 120px rgba(244, 67, 54, 0.3),
-        var(--shadow-md);
-    border: 4px solid rgba(244, 67, 54, 0.5) !important;
+.sudoku-grid-container[data-difficulty="hard"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #F44336;
+    z-index: 10;
 }
 
 .sudoku-cell {
@@ -7166,7 +7169,6 @@ select:focus-visible,
 
     .cell-value {
         font-size: min(2.2rem, 6vw);
-        font-weight: 700;
     }
 
     .candidate-num {
@@ -7287,7 +7289,6 @@ select:focus-visible,
 
     .cell-value {
         font-size: min(2.4rem, 7.5vw);
-        font-weight: 600;
     }
 
     .number-buttons {
@@ -7603,7 +7604,6 @@ select:focus-visible,
 
     .cell-value {
         font-size: 2.8rem;
-        font-weight: 600;
     }
 
     .candidate-num {
