@@ -7246,9 +7246,9 @@ select:focus-visible,
         max-height: min(calc(100vw - 20px), 500px);
         width: 100%;
         height: auto;
-        border: 4px solid #000000 !important;
+        border: 3px solid #000000 !important;
         aspect-ratio: 1;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 
     .cell-value {
@@ -7431,8 +7431,7 @@ select:focus-visible,
 /* Landscape orientation for mobile */
 @media (max-width: 768px) and (orientation: landscape) {
     .sudoku-grid-container {
-        padding: 0 10px;
-        padding-bottom: 1rem;
+        padding: 0.5rem 10px 1rem 10px;
     }
 
     .sudoku-grid {
@@ -7440,10 +7439,10 @@ select:focus-visible,
         max-height: min(70vh, calc(100vw - 40px), 500px);
         width: 100%;
         height: auto;
-        border: 4px solid #000000;
+        border: 3px solid #000000;
         aspect-ratio: 1;
         box-shadow: var(--shadow-md);
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 
     .main-content {
@@ -7561,7 +7560,7 @@ select:focus-visible,
     .sudoku-grid {
         width: min(320px, calc(100vw - 50px));
         height: min(320px, calc(100vw - 50px));
-        border: 4px solid #000000;
+        border: 3px solid #000000;
         aspect-ratio: 1;
         box-shadow: var(--shadow-md);
     }
