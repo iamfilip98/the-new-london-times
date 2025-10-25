@@ -240,7 +240,7 @@ class SudokuEngine {
 
                 <!-- Sudoku Grid -->
                 <div class="sudoku-grid-container">
-                    <div class="sudoku-grid" id="sudokuGrid">
+                    <div class="sudoku-grid" id="sudokuGrid" data-difficulty="easy">
                         ${this.generateGridHTML()}
                     </div>
                     <!-- Paused Overlay - moved inside grid container -->
@@ -456,6 +456,12 @@ class SudokuEngine {
             btn.classList.remove('active');
         });
         document.querySelector(`[data-difficulty="${difficulty}"]`).classList.add('active');
+
+        // Update grid difficulty attribute for styling
+        const grid = document.getElementById('sudokuGrid');
+        if (grid) {
+            grid.setAttribute('data-difficulty', difficulty);
+        }
 
         // Load puzzle for this difficulty
         this.loadPuzzle(difficulty);

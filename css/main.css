@@ -232,7 +232,7 @@ body {
     justify-content: space-between;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 2000;
     box-shadow: var(--shadow-glass);
     transition: var(--transition);
     overflow: visible;
@@ -5082,6 +5082,31 @@ select:focus-visible,
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Difficulty-based backglow */
+.sudoku-grid[data-difficulty="easy"] {
+    box-shadow:
+        0 0 20px rgba(76, 175, 80, 0.3),
+        0 0 40px rgba(76, 175, 80, 0.2),
+        0 0 60px rgba(76, 175, 80, 0.1),
+        var(--shadow-md);
+}
+
+.sudoku-grid[data-difficulty="medium"] {
+    box-shadow:
+        0 0 20px rgba(255, 152, 0, 0.3),
+        0 0 40px rgba(255, 152, 0, 0.2),
+        0 0 60px rgba(255, 152, 0, 0.1),
+        var(--shadow-md);
+}
+
+.sudoku-grid[data-difficulty="hard"] {
+    box-shadow:
+        0 0 20px rgba(244, 67, 54, 0.3),
+        0 0 40px rgba(244, 67, 54, 0.2),
+        0 0 60px rgba(244, 67, 54, 0.1),
+        var(--shadow-md);
+}
+
 .sudoku-cell {
     background: #ffffff;
     display: flex;
@@ -6858,7 +6883,7 @@ select:focus-visible,
         top: 0;
         left: 0;
         right: 0;
-        z-index: 1000;
+        z-index: 2000;
         backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         transform: translateY(0);
