@@ -109,12 +109,16 @@ class SudokuEnhancements {
             }
 
             // Prevent default for our shortcuts
-            const shortcuts = ['h', 'p', 'u', 'c'];
-            if (shortcuts.includes(e.key.toLowerCase()) || e.key === 'Escape') {
+            const shortcuts = ['h', 'p', 'u', 'c', '?'];
+            if (shortcuts.includes(e.key.toLowerCase()) || e.key === 'Escape' || e.key === '?') {
                 e.preventDefault();
             }
 
             switch (e.key.toLowerCase()) {
+                case '?':
+                    // Show keyboard shortcuts guide
+                    this.showKeyboardShortcutsGuide();
+                    break;
                 case 'h':
                     // Hint
                     if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
@@ -347,6 +351,119 @@ class SudokuEnhancements {
             return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
         }
         return `${Math.round(hours)} hour${Math.round(hours) !== 1 ? 's' : ''} ago`;
+    }
+
+    showKeyboardShortcutsGuide() {
+        // Check if modal already exists
+        if (document.querySelector('.shortcuts-guide-modal')) {
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal show shortcuts-guide-modal';
+        modal.innerHTML = `
+            <div class="modal-content shortcuts-guide-content">
+                <div class="shortcuts-guide-header">
+                    <h2>⌨️ Keyboard Shortcuts</h2>
+                    <button class="close-btn" id="closeShortcutsGuide">×</button>
+                </div>
+                <div class="shortcuts-guide-body">
+                    <div class="shortcuts-section">
+                        <h3>Game Controls</h3>
+                        <div class="shortcuts-grid">
+                            <div class="shortcut-item">
+                                <kbd>1-9</kbd>
+                                <span>Place number</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>Delete</kbd> / <kbd>Backspace</kbd>
+                                <span>Clear cell</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>Space</kbd> / <kbd>C</kbd>
+                                <span>Toggle notes mode</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>Arrow Keys</kbd>
+                                <span>Navigate grid</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>Esc</kbd>
+                                <span>Deselect / Close modals</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shortcuts-section">
+                        <h3>Game Features</h3>
+                        <div class="shortcuts-grid">
+                            <div class="shortcut-item">
+                                <kbd>H</kbd>
+                                <span>Progressive hint (2s/5s/15s)</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>P</kbd>
+                                <span>Pause / Resume</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>U</kbd> / <kbd>Ctrl+Z</kbd>
+                                <span>Undo last move</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>R</kbd> / <kbd>Ctrl+Y</kbd>
+                                <span>Redo last move</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>Ctrl+Shift+Z</kbd>
+                                <span>Redo (alternative)</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>?</kbd>
+                                <span>Show this guide</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shortcuts-section mobile-only">
+                        <h3>Mobile Gestures</h3>
+                        <div class="shortcuts-grid">
+                            <div class="shortcut-item">
+                                <span class="gesture-icon">👉</span>
+                                <span><strong>Swipe Right:</strong> Undo</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="gesture-icon">📳</span>
+                                <span><strong>Haptic:</strong> Error feedback</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shortcuts-note">
+                        <p><strong>Platform Note:</strong> Use <kbd>Cmd</kbd> (⌘) instead of <kbd>Ctrl</kbd> on macOS</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Close on button click
+        document.getElementById('closeShortcutsGuide').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Close on background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+
+        // Close on Escape key
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
     }
 
     async showRecoveryPrompt(gameInfo) {

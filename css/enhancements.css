@@ -309,3 +309,215 @@
 .section-complete {
     animation: successPulse 0.5s ease-in-out 2;
 }
+
+/* ===================================
+   KEYBOARD SHORTCUTS GUIDE MODAL
+   =================================== */
+
+.shortcuts-guide-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    padding: 20px;
+    opacity: 0;
+    animation: fadeIn 0.2s ease forwards;
+}
+
+.shortcuts-guide-content {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.shortcuts-guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shortcuts-guide-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.shortcuts-guide-header .close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.shortcuts-guide-header .close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.shortcuts-guide-body {
+    padding: 24px 28px;
+}
+
+.shortcuts-section {
+    margin-bottom: 28px;
+}
+
+.shortcuts-section:last-child {
+    margin-bottom: 0;
+}
+
+.shortcuts-section h3 {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    margin: 0 0 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+}
+
+.shortcut-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.shortcut-item kbd {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
+    min-width: fit-content;
+    text-align: center;
+}
+
+.shortcut-item span {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.gesture-icon {
+    font-size: 1.5rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.shortcuts-note {
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(102, 126, 234, 0.1);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 8px;
+}
+
+.shortcuts-note p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.shortcuts-note kbd {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.85rem;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .shortcuts-guide-content {
+        max-width: 100%;
+        max-height: 90vh;
+        margin: 10px;
+    }
+
+    .shortcuts-guide-header {
+        padding: 20px 20px 12px;
+    }
+
+    .shortcuts-guide-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .shortcuts-guide-body {
+        padding: 20px;
+    }
+
+    .shortcuts-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .shortcut-item {
+        padding: 12px;
+    }
+
+    .shortcuts-section.mobile-only {
+        display: block;
+    }
+}
+
+@media (min-width: 769px) {
+    .shortcuts-section.mobile-only {
+        display: none;
+    }
+}

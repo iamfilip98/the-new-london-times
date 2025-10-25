@@ -629,12 +629,6 @@ class SudokuChampionship {
         return records;
     }
 
-    async saveEntry() {
-        // This method is no longer used since manual input is disabled
-        // Sudoku games now automatically save through the Sudoku engine
-        return;
-    }
-
     async updateStreaks() {
         if (this.entries.length === 0) {
             // If no entries exist, streaks should be 0
@@ -728,21 +722,6 @@ class SudokuChampionship {
         });
 
         this.saveRecords();
-    }
-
-    clearEntry() {
-        // This method is no longer used since manual input is disabled
-        return;
-    }
-
-    checkExistingEntry() {
-        // This method is no longer used since manual input is disabled
-        return;
-    }
-
-    loadEntry(entry) {
-        // This method is no longer used since manual input is disabled
-        return;
     }
 
     async updateDashboard() {
@@ -893,11 +872,6 @@ class SudokuChampionship {
                 </div>
             `;
         }).join('');
-    }
-
-    editEntry(date) {
-        // Entry editing is disabled since manual input is removed
-        return;
     }
 
     async deleteEntry(date) {

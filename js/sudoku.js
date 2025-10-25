@@ -872,7 +872,7 @@ class SudokuEngine {
         }
 
         this.updateDisplay();
-        this.updateGrid();  // Reset timer display to --:-- for new games
+        this.updateDisplay();  // Reset timer display to --:-- for new games
         this.updateCandidateModeUI();
         this.updateShowAllCandidatesUI();
         this.startTimer();
@@ -949,12 +949,6 @@ class SudokuEngine {
 
         // Update number button states
         this.updateNumberButtons();
-    }
-
-    updateGrid() {
-        // This method was being called but never defined, causing JavaScript errors
-        // Simply call updateDisplay to refresh the grid display
-        this.updateDisplay();
     }
 
     updateNumberButtons() {
@@ -1363,7 +1357,7 @@ class SudokuEngine {
             }
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game paused. Click Resume to continue.</div>';
-            this.updateGrid();  // Ensure timer shows --:-- when paused
+            this.updateDisplay();  // Ensure timer shows --:-- when paused
         } else {
             this.startTimer();
             pauseBtn.querySelector('i').className = 'fas fa-pause';
@@ -1380,7 +1374,7 @@ class SudokuEngine {
             }
             document.getElementById('gameStatus').innerHTML =
                 '<div class="status-message">Game resumed!</div>';
-            this.updateGrid();  // Ensure timer shows --:-- when resumed
+            this.updateDisplay();  // Ensure timer shows --:-- when resumed
         }
     }
 
@@ -2760,7 +2754,7 @@ class SudokuEngine {
                         '<div class="status-message success">Puzzle completed! Well done!</div>';
 
                     // Update grid to show final time for completed puzzles
-                    this.updateGrid();
+                    this.updateDisplay();
 
                     // Show completion notification overlay for previously completed games
                     setTimeout(() => {
@@ -2771,7 +2765,7 @@ class SudokuEngine {
                     if (this.gamePaused) {
                         // Game was paused - update UI but don't start timer
                         this.updatePauseUI();
-                        this.updateGrid();  // Ensure timer shows --:-- for paused games
+                        this.updateDisplay();  // Ensure timer shows --:-- for paused games
                         // Show overlay
                         const pausedOverlay = document.getElementById('pausedOverlay');
                         if (pausedOverlay) {
@@ -2784,7 +2778,7 @@ class SudokuEngine {
                         if (!this.timerInterval) {
                             this.startTimer();
                         }
-                        this.updateGrid();  // Ensure timer shows --:-- for active games
+                        this.updateDisplay();  // Ensure timer shows --:-- for active games
                     }
                 }
 
@@ -2937,21 +2931,7 @@ class SudokuEngine {
 
         // NOTE: We can't see opponent data from sessionStorage (different sessions)
         // This function should now load from the database instead
-        // For now, return null to force database loading
-        return null;
-
-        // OLD CODE - kept for reference but not used:
-        // ['easy', 'medium', 'hard'].forEach(difficulty => {
-        //     const key = `completed_${opponent}_${date}_${difficulty}`;
-        //     const gameData = sessionStorage.getItem(key);
-        //     if (gameData) {
-        //         completed.push(JSON.parse(gameData));
-        //     }
-        // });
-
-        if (completed.length > 0) {
-            return this.convertToAnalyticsFormat(completed, date, opponent);
-        }
+        // Return null to force database loading
         return null;
     }
 

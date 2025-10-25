@@ -84,7 +84,8 @@ function generatePuzzle(solution, difficulty, seed) {
 **Key Game Features:**
 - **Smart Input System**: Intuitive number placement with candidate notes
 - **Error Detection**: Real-time validation with visual feedback
-- **Hint System**: Two-stage hints (5s + 10s time penalties)
+- **Hint System**: Three-stage progressive hints (Direction→Location→Answer: 2s/5s/15s penalties)
+- **Undo/Redo System**: 50-move history with Ctrl+Z/Ctrl+Y shortcuts
 - **Timer Integration**: Precise timing with pause/resume functionality
 - **Auto-Save**: Automatic game state persistence every 30 seconds
 - **Completion Detection**: Automatic puzzle validation and scoring
@@ -104,15 +105,16 @@ let score = timeRatio <= 1.0 ? baseScore * (2 - timeRatio) :
 // Error penalty: harsh 12% per error (max 60%)
 score *= (1 - Math.min(errors * 0.12, 0.60));
 
-// Hint penalty: gentle 3-20% based on count
-score *= (1 - hintPenalty); // 1H: 3%, 2H: 6%, 3H: 10%, 4H: 15%, 5+H: 20%
+// Hint penalty: fractional weighting (L1: 0.3, L2: 0.6, L3: 1.0)
+// Progressive: 1-3% (≤1 hint), 3-6% (≤2), 6-10% (≤3), 10-15% (≤4), 15-20% (5+)
+score *= (1 - hintPenalty);
 ```
 
 **Scoring Features:**
 - **Linear Time Scaling**: Predictable score ranges, rewards speed proportionally
 - **Target-Based**: 4min (Easy), 5.5min (Medium), 9min (Hard) for base score
 - **Harsh Error Penalties**: 12% per error (max 60%) - accuracy is critical!
-- **Gentle Hint Penalties**: 3-20% based on count - encourages strategic use
+- **Smart Hint Penalties**: Fractional weighting (Direction: 0.3, Location: 0.6, Answer: 1.0) encourages minimal help
 - **Winner Bonuses**: 30% bonus per difficulty level at daily summary (not individual puzzles)
 - **Score Ranges**: Easy 250-2000, Medium 500-4000, Hard 1000-8000 points
 - **Real-Time Updates**: Live score calculations and comparisons
@@ -213,15 +215,19 @@ stats: (type, data) -- Flexible JSON storage for various statistics
 ### **Game Interface**
 - **Grid Interaction**: Click cells to select, enter numbers 1-9
 - **Candidate Notes**: Use small numbers to track possibilities (Spacebar or C to toggle)
-- **Hints**: Get help with 5-second and 10-second time penalties (H key)
+- **Hints**: Three-stage progressive system (Direction→Location→Answer: 2s/5s/15s penalties) (H key)
+- **Undo/Redo**: 50-move history for both undo and redo operations
 - **Timer**: Track your solving time with pause/resume capability (P key)
 - **Auto-Save**: Game automatically saves progress every 30 seconds
 - **Keyboard Shortcuts**:
   - **Numbers 1-9**: Place numbers
   - **Spacebar or C**: Toggle candidate mode
-  - **H**: Get hint
+  - **H**: Get progressive hint (Direction→Location→Answer)
   - **P**: Pause/Resume
-  - **U**: Undo
+  - **U or Ctrl+Z**: Undo last move
+  - **R or Ctrl+Y**: Redo last undone move
+  - **Ctrl+Shift+Z**: Redo (alternative)
+  - **?**: Show keyboard shortcuts guide
   - **Esc**: Close modals/deselect cell
   - **Arrow keys**: Navigate grid
   - **Delete/Backspace**: Clear cell
@@ -240,6 +246,37 @@ stats: (type, data) -- Flexible JSON storage for various statistics
 - **Real-Time Updates**: See when your opponent completes puzzles
 - **Streak Tracking**: Build win streaks and break your opponent's runs
 - **Achievement Hunting**: Unlock 120+ achievements across multiple categories
+
+## ⌨️ Complete Keyboard Shortcuts Reference
+
+### **Game Controls**
+| Shortcut | Action | Description |
+|----------|--------|-------------|
+| **1-9** | Place Number | Enter a number in the selected cell |
+| **Delete/Backspace** | Clear Cell | Remove number or candidates from selected cell |
+| **Spacebar/C** | Toggle Mode | Switch between number and candidate mode |
+| **Arrow Keys** | Navigate | Move selection between cells |
+| **Esc** | Deselect/Close | Clear cell selection or close open modals |
+
+### **Game Features**
+| Shortcut | Action | Description |
+|----------|--------|-------------|
+| **H** | Progressive Hint | Get hint (Direction→Location→Answer: 2s/5s/15s) |
+| **P** | Pause/Resume | Toggle game timer |
+| **U** or **Ctrl+Z** (Cmd+Z on Mac) | Undo | Revert last move (50-move history) |
+| **R** or **Ctrl+Y** (Cmd+Y on Mac) | Redo | Restore last undone move (50-move history) |
+| **Ctrl+Shift+Z** (Cmd+Shift+Z on Mac) | Redo (Alt) | Alternative redo shortcut |
+
+### **Mobile Gestures**
+| Gesture | Action | Description |
+|---------|--------|-------------|
+| **Swipe Right** | Undo | Revert last move |
+| **Haptic Feedback** | Error Alert | Vibrates when incorrect number is placed (if supported) |
+
+### **Cross-Platform Compatibility**
+- **Windows/Linux**: Use `Ctrl` key for shortcuts
+- **macOS**: Use `Cmd` (⌘) key for shortcuts
+- All keyboard shortcuts work seamlessly across platforms
 
 ## 🏗 Project Structure
 
