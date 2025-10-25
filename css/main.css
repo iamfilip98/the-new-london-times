@@ -6939,6 +6939,8 @@ select:focus-visible,
         padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0.5rem));
         max-width: 100%;
         min-height: 0;
+        height: auto;
+        max-height: none;
         display: grid;
         grid-template-rows: auto minmax(0, 1fr) auto;
         grid-template-areas:
@@ -6955,8 +6957,6 @@ select:focus-visible,
 
     .sudoku-grid-container {
         grid-area: grid;
-        margin-top: 1rem;
-        padding-top: 0.5rem;
     }
 
     .sudoku-controls-sidebar {
@@ -6972,7 +6972,6 @@ select:focus-visible,
         gap: 0.75rem;
         align-items: center;
         padding: 0.35rem 0.75rem;  /* Minimal but present vertical padding */
-        margin-top: 1rem;
     }
 
     /* Timer: Compact, vertically centered */
