@@ -232,10 +232,7 @@ class SudokuEngine {
                         <button class="icon-btn pause-btn" id="pauseBtn" title="Pause game (P)">
                             <i class="fas fa-pause"></i>
                         </button>
-                        <button class="icon-btn help-btn" id="helpBtn" title="Keyboard shortcuts (?)">
-                            <i class="fas fa-keyboard"></i>
-                        </button>
-                        <button class="icon-btn settings-btn" id="settingsBtn" title="Game settings">
+                        <button class="icon-btn settings-btn" id="settingsBtn" title="Settings (?)">
                             <i class="fas fa-cog"></i>
                         </button>
                     </div>
@@ -388,11 +385,6 @@ class SudokuEngine {
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
-        document.getElementById('helpBtn')?.addEventListener('click', () => {
-            if (this.enhancements) {
-                this.enhancements.showKeyboardShortcutsGuide();
-            }
-        });
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
         document.getElementById('pausedLabel')?.addEventListener('click', () => this.togglePause());
 
@@ -3095,17 +3087,25 @@ class SudokuEngine {
         });
     }
 
-    showSettings() {
-        // Create settings modal
+    showSettings(initialTab = 'settings') {
+        // Create settings modal with tabs
         const modal = document.createElement('div');
         modal.className = 'settings-modal';
         modal.innerHTML = `
             <div class="settings-content">
                 <div class="settings-header">
-                    <h3>Settings</h3>
+                    <div class="settings-tabs">
+                        <button class="settings-tab ${initialTab === 'settings' ? 'active' : ''}" data-tab="settings">
+                            <i class="fas fa-cog"></i> Settings
+                        </button>
+                        <button class="settings-tab ${initialTab === 'shortcuts' ? 'active' : ''}" data-tab="shortcuts">
+                            <i class="fas fa-keyboard"></i> Shortcuts
+                        </button>
+                    </div>
                     <button class="close-btn" onclick="this.closest('.settings-modal').remove()">&times;</button>
                 </div>
                 <div class="settings-body">
+                    <div class="settings-tab-content" data-content="settings" style="display: ${initialTab === 'settings' ? 'block' : 'none'}">
                     ${(() => {
                         debugLog('Settings modal debug:', {
                             gameStarted: this.gameStarted,
@@ -3196,13 +3196,60 @@ class SudokuEngine {
                             </label>
                         </div>
                     </div>
+                    </div>
+
+                    <div class="settings-tab-content shortcuts-guide-tab" data-content="shortcuts" style="display: ${initialTab === 'shortcuts' ? 'block' : 'none'}">
+                        <div class="shortcuts-section">
+                            <h4>Game Controls</h4>
+                            <div class="shortcuts-list">
+                                <div class="shortcut-item"><kbd>1-9</kbd><span>Place number</span></div>
+                                <div class="shortcut-item"><kbd>Delete</kbd> / <kbd>Backspace</kbd><span>Clear cell</span></div>
+                                <div class="shortcut-item"><kbd>Space</kbd> / <kbd>C</kbd><span>Toggle notes mode</span></div>
+                                <div class="shortcut-item"><kbd>Arrow Keys</kbd><span>Navigate grid</span></div>
+                                <div class="shortcut-item"><kbd>Esc</kbd><span>Deselect / Close</span></div>
+                            </div>
+                        </div>
+                        <div class="shortcuts-section">
+                            <h4>Game Features</h4>
+                            <div class="shortcuts-list">
+                                <div class="shortcut-item"><kbd>H</kbd><span>Progressive hint (2s/5s/15s)</span></div>
+                                <div class="shortcut-item"><kbd>P</kbd><span>Pause / Resume</span></div>
+                                <div class="shortcut-item"><kbd>U</kbd> / <kbd>Ctrl+Z</kbd><span>Undo</span></div>
+                                <div class="shortcut-item"><kbd>R</kbd> / <kbd>Ctrl+Y</kbd><span>Redo</span></div>
+                                <div class="shortcut-item"><kbd>Ctrl+Shift+Z</kbd><span>Redo (alt)</span></div>
+                                <div class="shortcut-item"><kbd>?</kbd><span>Show shortcuts</span></div>
+                            </div>
+                        </div>
+                        <div class="shortcuts-note">
+                            <p><strong>Platform Note:</strong> Use <kbd>Cmd</kbd> (⌘) instead of <kbd>Ctrl</kbd> on macOS</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="settings-footer">
-                    <button class="btn-primary" onclick="window.sudokuEngine.saveSettings(); this.closest('.settings-modal').remove();">Save</button>
+                    <button class="btn-primary" onclick="this.closest('.settings-modal').remove();">Close</button>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
+
+        // Tab switching logic
+        const tabs = modal.querySelectorAll('.settings-tab');
+        const contents = modal.querySelectorAll('.settings-tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Show corresponding content
+                contents.forEach(content => {
+                    content.style.display = content.dataset.content === tabName ? 'block' : 'none';
+                });
+            });
+        });
 
         // Close modal on backdrop click
         modal.addEventListener('click', (e) => {

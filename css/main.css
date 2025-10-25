@@ -4835,11 +4835,6 @@ select:focus-visible,
     background: rgba(74, 144, 226, 0.1);
 }
 
-.help-btn:hover {
-    color: var(--accent-color);
-    background: rgba(102, 126, 234, 0.1);
-}
-
 
 /* Sudoku Game Styles - Desktop Sidebar Layout */
 .sudoku-game {
@@ -5974,6 +5969,126 @@ select:focus-visible,
     margin: 0;
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
+}
+
+/* Settings Tabs */
+.settings-tabs {
+    display: flex;
+    gap: 0;
+    flex: 1;
+    width: 100%;
+    order: 3;
+    margin-top: 1rem;
+}
+
+.settings-tab {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.settings-tab:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-tab.active {
+    color: white;
+    border-bottom-color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.settings-tab i {
+    font-size: 0.9rem;
+}
+
+.settings-header {
+    flex-wrap: wrap;
+}
+
+.settings-header .close-btn {
+    order: 2;
+}
+
+/* Shortcuts in Settings */
+.shortcuts-guide-tab .shortcuts-section {
+    margin-bottom: 1.5rem;
+}
+
+.shortcuts-guide-tab .shortcuts-section h4 {
+    color: var(--accent-color);
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.shortcuts-guide-tab .shortcuts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.shortcuts-guide-tab .shortcut-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shortcuts-guide-tab .shortcut-item kbd {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.shortcuts-guide-tab .shortcut-item span {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.shortcuts-guide-tab .shortcuts-note {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 8px;
+}
+
+.shortcuts-guide-tab .shortcuts-note p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.shortcuts-guide-tab .shortcuts-note kbd {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.85rem;
 }
 
 .close-btn {
