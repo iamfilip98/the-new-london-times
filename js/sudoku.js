@@ -1116,7 +1116,7 @@ class SudokuEngine {
                 // Lock the cell when correct number is entered
                 this.lockedGrid[row][col] = true;
                 // Check if user solved the hinted cell manually
-                if (this.hintState === 'pointing' && this.currentHintCell &&
+                if ((this.hintState === 'direction' || this.hintState === 'location') && this.currentHintCell &&
                     this.currentHintCell.row === row && this.currentHintCell.col === col) {
                     // User solved the hinted cell manually - reset hint state
                     this.currentHintCell = null;
@@ -1562,8 +1562,6 @@ class SudokuEngine {
                     margin: 0.3rem 0;
                     box-shadow: var(--box-shadow);
                     animation: hintAppear 0.4s ease-out;
-                    max-height: 65px;
-                    overflow: hidden;
                 }
                 .hint-message.direction {
                     background: linear-gradient(135deg, #9C27B0, #673AB7);

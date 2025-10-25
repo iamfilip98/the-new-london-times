@@ -6774,8 +6774,7 @@ select:focus-visible,
     position: relative;
     z-index: 1000;
     min-height: 0;
-    max-height: 70px;
-    overflow: hidden;
+    max-height: none;
 }
 
 .status-message {
