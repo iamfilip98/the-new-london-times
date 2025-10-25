@@ -1223,6 +1223,19 @@ class SudokuEngine {
     }
 
     generateAllCandidates() {
+        // Create a grid with only confirmed-correct values (initial clues + locked cells)
+        const validGrid = Array(9).fill().map(() => Array(9).fill(0));
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                // Include initial clues OR locked (confirmed correct) cells
+                if (this.initialGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.initialGrid[r][c];
+                } else if (this.lockedGrid[r][c] && this.playerGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.playerGrid[r][c];
+                }
+            }
+        }
+
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
@@ -1232,9 +1245,9 @@ class SudokuEngine {
                     // Clear and regenerate all candidates
                     this.candidates[row][col].clear();
 
-                    // Add valid auto-generated candidates
+                    // Add valid auto-generated candidates (based on VALID grid, not playerGrid with errors)
                     for (let num = 1; num <= 9; num++) {
-                        if (this.isValidMove(this.playerGrid, row, col, num)) {
+                        if (this.isValidMove(validGrid, row, col, num)) {
                             this.candidates[row][col].add(num);
                         }
                     }
@@ -1249,15 +1262,28 @@ class SudokuEngine {
     }
 
     clearGeneratedCandidates() {
+        // Create a grid with only confirmed-correct values (initial clues + locked cells)
+        const validGrid = Array(9).fill().map(() => Array(9).fill(0));
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                // Include initial clues OR locked (confirmed correct) cells
+                if (this.initialGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.initialGrid[r][c];
+                } else if (this.lockedGrid[r][c] && this.playerGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.playerGrid[r][c];
+                }
+            }
+        }
+
         // This would ideally track which candidates were user-entered vs generated
         // For now, we'll keep user-entered candidates and only clear if they're invalid
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (this.playerGrid[row][col] === 0) {
-                    // Keep only valid user-entered candidates
+                    // Keep only valid user-entered candidates (based on VALID grid, not playerGrid with errors)
                     const toRemove = [];
                     this.candidates[row][col].forEach(num => {
-                        if (!this.isValidMove(this.playerGrid, row, col, num)) {
+                        if (!this.isValidMove(validGrid, row, col, num)) {
                             toRemove.push(num);
                         }
                     });
@@ -1284,6 +1310,19 @@ class SudokuEngine {
     }
 
     updateAllCandidates() {
+        // Create a grid with only confirmed-correct values (initial clues + locked cells)
+        const validGrid = Array(9).fill().map(() => Array(9).fill(0));
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                // Include initial clues OR locked (confirmed correct) cells
+                if (this.initialGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.initialGrid[r][c];
+                } else if (this.lockedGrid[r][c] && this.playerGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.playerGrid[r][c];
+                }
+            }
+        }
+
         // Update candidates for all empty cells
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
@@ -1295,9 +1334,9 @@ class SudokuEngine {
                         const removedCands = this.removedCandidates[row][col];
                         const autoCands = new Set();
 
-                        // Generate auto candidates, but exclude explicitly removed ones
+                        // Generate auto candidates based on VALID grid (not playerGrid with errors)
                         for (let num = 1; num <= 9; num++) {
-                            if (this.isValidMove(this.playerGrid, row, col, num) && !removedCands.has(num)) {
+                            if (this.isValidMove(validGrid, row, col, num) && !removedCands.has(num)) {
                                 autoCands.add(num);
                             }
                         }
@@ -1818,9 +1857,22 @@ class SudokuEngine {
     }
 
     getPossibleValues(row, col) {
+        // Create a grid with only confirmed-correct values (initial clues + locked cells)
+        const validGrid = Array(9).fill().map(() => Array(9).fill(0));
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                // Include initial clues OR locked (confirmed correct) cells
+                if (this.initialGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.initialGrid[r][c];
+                } else if (this.lockedGrid[r][c] && this.playerGrid[r][c] !== 0) {
+                    validGrid[r][c] = this.playerGrid[r][c];
+                }
+            }
+        }
+
         const possible = [];
         for (let num = 1; num <= 9; num++) {
-            if (this.isValidMove(this.playerGrid, row, col, num)) {
+            if (this.isValidMove(validGrid, row, col, num)) {
                 possible.push(num);
             }
         }

@@ -5157,8 +5157,8 @@ select:focus-visible,
 /* Accurate NYT typography */
 .cell-value {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    font-size: 3.2rem;
-    font-weight: 600;
+    font-size: 3rem;
+    font-weight: 500;
     color: #000000;
     line-height: 1;
     text-align: center;
