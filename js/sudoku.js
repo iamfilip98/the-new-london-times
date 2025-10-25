@@ -1996,7 +1996,7 @@ class SudokuEngine {
             // Check for theme-specific achievements
             const themeAchievements = this.checkThemeAchievements();
 
-            document.getElementById('gameStatus').innerHTML = '';
+            document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
             this.saveCompletedGame(score);
         }
     }
@@ -3997,7 +3997,7 @@ class SudokuEngine {
 
     showStats() {
         // Close completion modal
-        document.getElementById('gameStatus').innerHTML = '';
+        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
         // Show comprehensive stats
         const modal = document.createElement('div');
@@ -4100,7 +4100,7 @@ class SudokuEngine {
     startNewGame() {
         // Close any modals
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
-        document.getElementById('gameStatus').innerHTML = '';
+        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
         // Navigate back to dashboard
         const navLinks = document.querySelectorAll('.nav-link');
@@ -4261,7 +4261,7 @@ class SudokuEngine {
 
         // Close any modals and clear game status
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
-        document.getElementById('gameStatus').innerHTML = '';
+        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
         // Start fresh medium puzzle
         this.currentDifficulty = 'medium';
@@ -4291,7 +4291,7 @@ class SudokuEngine {
 
         // Close any modals and clear game status
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
-        document.getElementById('gameStatus').innerHTML = '';
+        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
         // Start fresh hard puzzle
         this.currentDifficulty = 'hard';
@@ -4384,7 +4384,7 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         const gameStatus = document.getElementById('gameStatus');
         if (gameStatus) {
-            gameStatus.innerHTML = '';
+            gameStatus.innerHTML = '<div class="status-message hidden">&nbsp;</div>';
         }
 
         // Navigate to dashboard page

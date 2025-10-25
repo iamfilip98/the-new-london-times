@@ -6798,8 +6798,9 @@ select:focus-visible,
     display: block;
     position: relative;
     z-index: 1000;
-    min-height: 0;
+    min-height: 60px; /* Fixed height - never collapses */
     max-height: none;
+    height: auto; /* Allow growth for longer messages */
 }
 
 .status-message {
@@ -6821,6 +6822,13 @@ select:focus-visible,
 
 .status-message.success {
     display: none;
+}
+
+.status-message.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    /* Still takes up space to prevent layout shift */
 }
 
 .status-message.hint {
