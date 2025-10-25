@@ -6983,14 +6983,14 @@ select:focus-visible,
     }
 
     .candidate-num {
-        font-size: 0.85rem !important;
-        font-weight: 400 !important;
+        font-size: 0.6rem !important;
+        font-weight: 200 !important;
         color: #333333 !important;
     }
 
     .candidate-cell {
-        font-size: 0.85rem !important;
-        font-weight: 400 !important;
+        font-size: 0.6rem !important;
+        font-weight: 200 !important;
         color: #333333 !important;
     }
 
@@ -7414,15 +7414,15 @@ select:focus-visible,
     }
 
     .candidate-num {
-        font-size: 0.75rem !important;
-        font-weight: 400 !important;
+        font-size: 0.4rem !important;
+        font-weight: 100 !important;
         color: #333333 !important;
     }
 
     /* Mobile responsiveness for 3x3 candidate grid */
     .candidate-cell {
-        font-size: 0.75rem !important;
-        font-weight: 400 !important;
+        font-size: 0.4rem !important;
+        font-weight: 100 !important;
         color: #333333 !important;
     }
 
