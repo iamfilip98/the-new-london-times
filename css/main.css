@@ -5082,29 +5082,35 @@ select:focus-visible,
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Difficulty-based backglow */
+/* Difficulty-based backglow - prominent and colorful */
 .sudoku-grid[data-difficulty="easy"] {
     box-shadow:
-        0 0 20px rgba(76, 175, 80, 0.3),
-        0 0 40px rgba(76, 175, 80, 0.2),
-        0 0 60px rgba(76, 175, 80, 0.1),
+        0 0 30px rgba(76, 175, 80, 0.8),
+        0 0 60px rgba(76, 175, 80, 0.6),
+        0 0 90px rgba(76, 175, 80, 0.4),
+        0 0 120px rgba(76, 175, 80, 0.3),
         var(--shadow-md);
+    border: 4px solid rgba(76, 175, 80, 0.5) !important;
 }
 
 .sudoku-grid[data-difficulty="medium"] {
     box-shadow:
-        0 0 20px rgba(255, 152, 0, 0.3),
-        0 0 40px rgba(255, 152, 0, 0.2),
-        0 0 60px rgba(255, 152, 0, 0.1),
+        0 0 30px rgba(255, 152, 0, 0.8),
+        0 0 60px rgba(255, 152, 0, 0.6),
+        0 0 90px rgba(255, 152, 0, 0.4),
+        0 0 120px rgba(255, 152, 0, 0.3),
         var(--shadow-md);
+    border: 4px solid rgba(255, 152, 0, 0.5) !important;
 }
 
 .sudoku-grid[data-difficulty="hard"] {
     box-shadow:
-        0 0 20px rgba(244, 67, 54, 0.3),
-        0 0 40px rgba(244, 67, 54, 0.2),
-        0 0 60px rgba(244, 67, 54, 0.1),
+        0 0 30px rgba(244, 67, 54, 0.8),
+        0 0 60px rgba(244, 67, 54, 0.6),
+        0 0 90px rgba(244, 67, 54, 0.4),
+        0 0 120px rgba(244, 67, 54, 0.3),
         var(--shadow-md);
+    border: 4px solid rgba(244, 67, 54, 0.5) !important;
 }
 
 .sudoku-cell {
@@ -6962,16 +6968,17 @@ select:focus-visible,
     .sudoku-game {
         gap: 0.4rem;
         padding: 0.5rem;
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0.5rem));
         max-width: 100%;
-        height: calc(100vh - 100px);
-        max-height: calc(100vh - 100px);
+        min-height: 0;
         display: grid;
         grid-template-rows: auto minmax(0, 1fr) auto;
         grid-template-areas:
             "header"
             "grid"
             "sidebar";
-        overflow: hidden;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .game-info-panel {
@@ -7115,24 +7122,25 @@ select:focus-visible,
     .sudoku-grid-container {
         width: 100%;
         max-width: calc(100vw - 20px);
-        height: 100%;
-        max-height: 100%;
         padding: 0 10px;
+        padding-bottom: 1rem;
         display: flex;
         justify-content: center;
-        overflow: hidden;
+        align-items: center;
         margin: 0 auto;
         box-sizing: border-box;
+        flex-shrink: 0;
     }
 
     .sudoku-grid {
-        max-width: min(100%, calc(100vw - 40px), calc(100vh - 450px));
-        max-height: min(100%, calc(100vw - 40px), calc(100vh - 450px));
+        max-width: min(100%, calc(100vw - 40px), 600px);
+        max-height: min(100%, calc(100vw - 40px), 600px);
         width: 100%;
-        height: 100%;
+        height: auto;
         border: 4px solid #000000;
         aspect-ratio: 1 / 1;
         box-shadow: var(--shadow-md);
+        margin-bottom: 1rem;
     }
 
     .sudoku-cell {
@@ -7268,10 +7276,13 @@ select:focus-visible,
     }
 
     .sudoku-grid {
-        width: min(calc(100vw - 20px), calc(100vh - 350px));
-        height: min(calc(100vw - 20px), calc(100vh - 350px));
+        max-width: min(calc(100vw - 20px), 500px);
+        max-height: min(calc(100vw - 20px), 500px);
+        width: 100%;
+        height: auto;
         border: 4px solid #000000 !important;
         aspect-ratio: 1;
+        margin-bottom: 1rem;
     }
 
     .cell-value {
@@ -7455,16 +7466,19 @@ select:focus-visible,
 /* Landscape orientation for mobile */
 @media (max-width: 768px) and (orientation: landscape) {
     .sudoku-grid-container {
-        max-height: calc(100vh - 150px);
         padding: 0 10px;
+        padding-bottom: 1rem;
     }
 
     .sudoku-grid {
-        width: min(calc(100vh - 220px), calc(100vw - 40px));
-        height: min(calc(100vh - 220px), calc(100vw - 40px));
+        max-width: min(70vh, calc(100vw - 40px), 500px);
+        max-height: min(70vh, calc(100vw - 40px), 500px);
+        width: 100%;
+        height: auto;
         border: 4px solid #000000;
         aspect-ratio: 1;
         box-shadow: var(--shadow-md);
+        margin-bottom: 1rem;
     }
 
     .main-content {
