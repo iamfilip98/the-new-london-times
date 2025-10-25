@@ -226,11 +226,14 @@ class SudokuEngine {
                         </div>
                     </div>
                     <div class="game-controls">
-                        <button class="icon-btn hint-btn" id="hintBtn" title="Get a hint">
+                        <button class="icon-btn hint-btn" id="hintBtn" title="Get a hint (H)">
                             <i class="fas fa-lightbulb"></i>
                         </button>
-                        <button class="icon-btn pause-btn" id="pauseBtn" title="Pause game">
+                        <button class="icon-btn pause-btn" id="pauseBtn" title="Pause game (P)">
                             <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="icon-btn help-btn" id="helpBtn" title="Keyboard shortcuts (?)">
+                            <i class="fas fa-keyboard"></i>
                         </button>
                         <button class="icon-btn settings-btn" id="settingsBtn" title="Game settings">
                             <i class="fas fa-cog"></i>
@@ -385,6 +388,11 @@ class SudokuEngine {
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
+        document.getElementById('helpBtn')?.addEventListener('click', () => {
+            if (this.enhancements) {
+                this.enhancements.showKeyboardShortcutsGuide();
+            }
+        });
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
         document.getElementById('pausedLabel')?.addEventListener('click', () => this.togglePause());
 

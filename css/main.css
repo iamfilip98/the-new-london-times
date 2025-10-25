@@ -4835,6 +4835,11 @@ select:focus-visible,
     background: rgba(74, 144, 226, 0.1);
 }
 
+.help-btn:hover {
+    color: var(--accent-color);
+    background: rgba(102, 126, 234, 0.1);
+}
+
 
 /* Sudoku Game Styles - Desktop Sidebar Layout */
 .sudoku-game {
