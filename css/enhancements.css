@@ -264,12 +264,12 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Enhanced cell highlighting on hover */
-.sudoku-cell:hover:not(.locked) {
+/* Enhanced cell highlighting on hover - removed to prevent black border showing */
+/* .sudoku-cell:hover:not(.locked) {
     background: rgba(74, 144, 226, 0.1);
     transform: scale(1.02);
     transition: all 0.15s ease;
-}
+} */
 
 /* Success pulse animation for completed sections */
 @keyframes successPulse {
