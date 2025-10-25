@@ -1558,10 +1558,11 @@ class SudokuEngine {
                 this.candidates[row][col].clear();
                 this.removedCandidates[row][col].clear();
 
-                // Update candidates
-                if (this.showAllCandidates) {
-                    this.updateAllCandidates();
-                }
+                // Lock the cell since hints provide correct answers
+                this.lockedGrid[row][col] = true;
+
+                // Update candidates for all cells (remove the placed number from candidates in same row/col/box)
+                this.updateAllCandidates();
 
                 // Update visual indicator
                 this.clearHintIndicators();
