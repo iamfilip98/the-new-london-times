@@ -772,6 +772,70 @@
                 </div>
             </div>
 
+            <!-- Security & Privacy Section -->
+            <div class="faq-section">
+                <h2 class="section-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Security & Privacy
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-lock"></i>
+                        Is my account secure?
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely! We implement industry-standard security measures:
+                        <ul>
+                            <li><strong>Password Encryption:</strong> All passwords are hashed using bcrypt (2^10 rounds = 1,024 hashing iterations)</li>
+                            <li><strong>No Plaintext Storage:</strong> Passwords are never stored in readable form</li>
+                            <li><strong>Database-Backed Auth:</strong> Secure PostgreSQL authentication system</li>
+                            <li><strong>API-Based Login:</strong> All authentication happens server-side with secure validation</li>
+                            <li><strong>Session Security:</strong> Authentication expires when you close the browser for your protection</li>
+                            <li><strong>Environment Variables:</strong> Sensitive configuration stored securely, never in code</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-user-shield"></i>
+                        How can I change my password?
+                    </div>
+                    <div class="faq-answer">
+                        Passwords are managed securely by the system administrator through environment variables. If you need to change your password, contact the system administrator who can update it using the secure initialization system. This ensures maximum security and prevents unauthorized password changes.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-database"></i>
+                        What data do you store?
+                    </div>
+                    <div class="faq-answer">
+                        We store only essential game data:
+                        <ul>
+                            <li><strong>User Accounts:</strong> Username, encrypted password hash, display name</li>
+                            <li><strong>Game Progress:</strong> Puzzle completions, times, scores, errors, hints used</li>
+                            <li><strong>Achievements:</strong> Unlocked achievements and timestamps</li>
+                            <li><strong>Statistics:</strong> Win/loss records, streaks, performance metrics</li>
+                            <li><strong>Game States:</strong> Auto-saved puzzle progress for resume functionality</li>
+                        </ul>
+                        <p><strong>Privacy Note:</strong> No personal information, email addresses, or tracking cookies are collected. Your data is used solely for game functionality and competition tracking.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-code"></i>
+                        Is the code open source?
+                    </div>
+                    <div class="faq-answer">
+                        The application code is available on GitHub under the MIT License. You can review the security implementation, contribute improvements, or deploy your own instance. All security best practices are documented in the SECURITY.md file in the repository.
+                    </div>
+                </div>
+            </div>
+
             <!-- Navigation & Pages Section -->
             <div class="faq-section">
                 <h2 class="section-title">

@@ -5,6 +5,52 @@
 
 A sophisticated full-stack web application that transforms daily Sudoku solving into an epic championship battle between **Faidao "The Queen"** and **Filip "The Champion"**. This isn't just another puzzle game—it's a comprehensive competitive platform featuring real Sudoku gameplay, intelligent puzzle generation, advanced analytics, achievement systems, and live battle tracking.
 
+## 📸 Screenshots
+
+### 🔐 Secure Login
+![Login Page](screenshots/01-login-page.png)
+*Database-backed authentication with bcrypt password hashing*
+
+### 🏠 Dashboard
+![Dashboard](screenshots/02-dashboard.png)
+*Live battle status, win streaks, and real-time progress tracking*
+
+### 📊 Analytics & Performance
+![Analytics](screenshots/03-analytics.png)
+*Interactive charts showing score trends, time analysis, and performance metrics*
+
+### 🏆 Leaderboards
+![Leaderboards](screenshots/04-leaderboards.png)
+*Monthly/weekly rankings, fastest times, and perfect games*
+
+### ⭐ Achievements
+![Achievements](screenshots/05-achievements.png)
+*120+ achievements across 14 categories with progress tracking*
+
+### 🎮 Sudoku Game Interface
+![Sudoku](screenshots/07-sudoku-page.png)
+*Professional NYT-style interface with candidate notes and hints*
+
+### 📱 Mobile Optimized
+<table>
+<tr>
+<td width="50%">
+<img src="screenshots/08-mobile-dashboard.png" alt="Mobile Dashboard" />
+<p align="center"><em>Mobile Dashboard</em></p>
+</td>
+<td width="50%">
+<img src="screenshots/09-mobile-faq.png" alt="Mobile FAQ" />
+<p align="center"><em>Mobile FAQ</em></p>
+</td>
+</tr>
+</table>
+
+*Touch-optimized interface with gesture support*
+
+### 💻 Wide Screen Support
+![Wide Dashboard](screenshots/10-wide-dashboard.png)
+*Responsive design adapts to all screen sizes (375px to 2560px+)*
+
 ## 🌟 What Makes This Special
 
 ### 🎮 **Real Sudoku Gameplay Engine**
