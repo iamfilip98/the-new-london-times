@@ -1,5 +1,18 @@
-const { sql } = require('@vercel/postgres');
+require('dotenv').config({ path: '.env.local' });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
+
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_PRISMA_URL,
+  ssl: {
+    rejectUnauthorized: false,
+    checkServerIdentity: () => undefined
+  },
+  max: 3,
+  idleTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000
+});
 
 module.exports = async function handler(req, res) {
   // Handle CORS
@@ -31,11 +44,10 @@ module.exports = async function handler(req, res) {
     }
 
     // Query user from database
-    const result = await sql`
-      SELECT id, username, password_hash, display_name, avatar
-      FROM users
-      WHERE username = ${username}
-    `;
+    const result = await pool.query(
+      'SELECT id, username, password_hash, display_name, avatar FROM users WHERE username = $1',
+      [username]
+    );
 
     if (result.rows.length === 0) {
       res.status(401).json({
