@@ -34,6 +34,10 @@ module.exports = async function handler(req, res) {
       };
     }
 
+    // Show env var details (partially obscured for security)
+    const faidaoEnv = process.env.FAIDAO_PASSWORD || 'NOT_SET';
+    const filipEnv = process.env.FILIP_PASSWORD || 'NOT_SET';
+
     res.status(200).json({
       success: true,
       userCount: users.rows.length,
@@ -43,6 +47,18 @@ module.exports = async function handler(req, res) {
         POSTGRES_PRISMA_URL: !!process.env.POSTGRES_PRISMA_URL,
         FAIDAO_PASSWORD: !!process.env.FAIDAO_PASSWORD,
         FILIP_PASSWORD: !!process.env.FILIP_PASSWORD
+      },
+      envVarDetails: {
+        faidao: {
+          length: faidaoEnv.length,
+          startsWithSudoku: faidaoEnv.startsWith('sudoku'),
+          value: faidaoEnv // Temporarily show full value to debug
+        },
+        filip: {
+          length: filipEnv.length,
+          startsWithSudoku: filipEnv.startsWith('sudoku'),
+          value: filipEnv // Temporarily show full value to debug
+        }
       }
     });
   } catch (error) {
