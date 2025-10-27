@@ -1612,6 +1612,10 @@ class SudokuEngine {
                     margin: 0.3rem 0;
                     box-shadow: var(--box-shadow);
                     animation: hintAppear 0.4s ease-out;
+                    min-height: 100px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
                 }
                 .hint-message.direction {
                     background: linear-gradient(135deg, #9C27B0, #673AB7);
