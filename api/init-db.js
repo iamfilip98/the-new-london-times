@@ -1,6 +1,7 @@
 require('dotenv').config({ path: '.env.local' });
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
+const bcrypt = require('bcryptjs');
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_PRISMA_URL,
@@ -31,6 +32,38 @@ module.exports = async function handler(req, res) {
 
     // Test connection
     await pool.query('SELECT NOW()');
+
+    // Create users table for authentication
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        display_name VARCHAR(100) NOT NULL,
+        avatar VARCHAR(100),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Initialize users with passwords from environment variables
+    const faidaoPassword = process.env.FAIDAO_PASSWORD || 'sudoku2024';
+    const filipPassword = process.env.FILIP_PASSWORD || 'sudoku2024';
+
+    const faidaoHash = await bcrypt.hash(faidaoPassword, 10);
+    const filipHash = await bcrypt.hash(filipPassword, 10);
+
+    await pool.query(`
+      INSERT INTO users (username, password_hash, display_name, avatar)
+      VALUES
+        ('faidao', $1, 'Faidao - The Queen', NULL),
+        ('filip', $2, 'Filip - The Champion', NULL)
+      ON CONFLICT (username)
+      DO UPDATE SET
+        password_hash = EXCLUDED.password_hash,
+        display_name = EXCLUDED.display_name,
+        updated_at = NOW()
+    `, [faidaoHash, filipHash]);
 
     // Create entries table
     await pool.query(`
@@ -77,8 +110,9 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Database initialized successfully',
-      tables: ['entries', 'achievements', 'streaks']
+      message: 'Database and users initialized successfully',
+      tables: ['users', 'entries', 'achievements', 'streaks'],
+      users: ['faidao', 'filip']
     });
 
   } catch (error) {
