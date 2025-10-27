@@ -47,8 +47,9 @@ module.exports = async function handler(req, res) {
     `);
 
     // Initialize users with passwords from environment variables
-    const faidaoPassword = process.env.FAIDAO_PASSWORD || 'sudoku2024';
-    const filipPassword = process.env.FILIP_PASSWORD || 'sudoku2024';
+    // Trim to remove any trailing newlines or whitespace from env vars
+    const faidaoPassword = (process.env.FAIDAO_PASSWORD || 'sudoku2024').trim();
+    const filipPassword = (process.env.FILIP_PASSWORD || 'sudoku2024').trim();
 
     const faidaoHash = await bcrypt.hash(faidaoPassword, 10);
     const filipHash = await bcrypt.hash(filipPassword, 10);
