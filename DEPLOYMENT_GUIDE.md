@@ -4,13 +4,16 @@
 
 Your competitive analytics dashboard has been transformed into a full Sudoku gaming platform! Here's everything you need to know.
 
-### 🔐 Login Credentials
-- **Faidao**: Username `faidao`, Password `sudoku2024`
-- **Filip**: Username `filip`, Password `sudoku2024`
+### 🔐 Secure Authentication
+- **Authentication System**: Database-backed with bcrypt password hashing
+- **User Accounts**: `faidao` (The Queen) and `filip` (The Champion)
+- **Security**: Passwords stored securely, never hardcoded in code
+- **Setup**: Run `node init-users.js` to initialize user accounts
+- **Custom Passwords**: Set via environment variables `FAIDAO_PASSWORD` and `FILIP_PASSWORD`
 
 ### 🎯 Direct Access
 - **Live Website**: https://the-new-london-times.vercel.app/index.html
-- **Authentication**: Enter password `sudoku2024` when prompted
+- **Login**: Select your player and enter your password
 
 ---
 
@@ -19,7 +22,7 @@ Your competitive analytics dashboard has been transformed into a full Sudoku gam
 ### 1. **Login Process**
 1. Visit the website
 2. Select your player (Faidao or Filip)
-3. Enter password: `sudoku2024`
+3. Enter your password
 4. You'll be redirected to the dashboard
 
 ### 2. **Playing Sudoku**

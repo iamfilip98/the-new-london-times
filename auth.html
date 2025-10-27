@@ -144,29 +144,57 @@
     </div>
 
     <script>
-        // Authentication credentials
-        const validCredentials = {
-            'faidao': 'sudoku2024',
-            'filip': 'sudoku2024'
-        };
-
-        document.getElementById('authForm').addEventListener('submit', function(e) {
+        // Secure API-based authentication
+        document.getElementById('authForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const player = document.getElementById('playerSelect').value;
             const password = document.getElementById('passwordInput').value;
             const errorDiv = document.getElementById('authError');
+            const submitButton = document.querySelector('.auth-button');
 
-            if (player && validCredentials[player] && password === validCredentials[player]) {
-                // Store authentication and player identity in session
-                sessionStorage.setItem('sudokuAuth', 'authenticated');
-                sessionStorage.setItem('currentPlayer', player);
-                // Redirect to main app
-                window.location.href = 'index.html';
-            } else {
+            // Disable submit button during authentication
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+            try {
+                // Call authentication API
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: player, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Store authentication and player identity in session
+                    sessionStorage.setItem('sudokuAuth', 'authenticated');
+                    sessionStorage.setItem('currentPlayer', result.player);
+                    sessionStorage.setItem('displayName', result.displayName);
+                    if (result.avatar) {
+                        sessionStorage.setItem('avatar', result.avatar);
+                    }
+                    // Redirect to main app
+                    window.location.href = 'index.html';
+                } else {
+                    // Show error
+                    errorDiv.style.display = 'block';
+                    document.getElementById('passwordInput').value = '';
+                    document.getElementById('passwordInput').focus();
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<i class="fas fa-gamepad"></i> Enter Battle Arena';
+                }
+            } catch (error) {
+                console.error('Authentication error:', error);
+                errorDiv.textContent = 'Authentication failed. Please try again.';
                 errorDiv.style.display = 'block';
                 document.getElementById('passwordInput').value = '';
                 document.getElementById('passwordInput').focus();
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-gamepad"></i> Enter Battle Arena';
             }
         });
 

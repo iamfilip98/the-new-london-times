@@ -1,9 +1,11 @@
 # Sudoku Championship Setup Guide
 
-## 🔐 Password Protection
+## 🔐 Secure Authentication System
 - **Login URL**: Visit `auth.html` first
-- **Password**: `sudoku2024`
-- **Hint**: "It's the champion's favorite puzzle 🧩"
+- **Authentication**: Database-backed with bcrypt password hashing
+- **Setup Users**: Run `node init-users.js` to create user accounts
+- **Environment Variables**: Set `FAIDAO_PASSWORD` and `FILIP_PASSWORD` for custom passwords
+- **Default Passwords**: Available during initial setup (should be changed in production)
 
 ## 📊 GitHub Data Persistence
 
@@ -113,9 +115,9 @@ The app now accepts both formats:
 
 1. Visit your deployed URL
 2. You'll be redirected to `auth.html`
-3. Enter password: `sudoku2024`
+3. Select your player and enter your password
 4. Start competing and tracking achievements!
-5. Data automatically syncs to GitHub in production
+5. Data automatically syncs to database in production
 
 ## 🛠️ Customization
 

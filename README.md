@@ -158,10 +158,24 @@ The puzzle generation system uses advanced techniques:
 - **Fallback System**: Emergency backup puzzles ensure zero downtime
 - **Input Validation**: Comprehensive validation module prevents injection attacks
 - **Data Persistence**: Comprehensive data storage with automatic backups
-- **Security**: Environment-based configuration, admin keys, and secure connection handling
+- **Secure Authentication**: Database-backed user system with bcrypt password hashing
+
+### **🔐 Security System (2025 Update)**
+- **Database-Backed Authentication**: All user credentials stored securely in PostgreSQL
+- **bcrypt Password Hashing**: Industry-standard hashing with cost factor 10 (2^10 = 1,024 rounds)
+- **No Hardcoded Credentials**: Zero plaintext passwords in codebase or documentation
+- **API-Based Login**: Secure `/api/auth` endpoint for authentication
+- **Environment Variables**: All sensitive configuration via environment variables
+- **Session Management**: sessionStorage-based authentication (no persistent tokens)
+- **Secure Password Management**: Passwords configurable via `FAIDAO_PASSWORD` and `FILIP_PASSWORD` env vars
+- **Git Security**: .env files properly gitignored, no secrets committed to repository
+- **Security Documentation**: Comprehensive SECURITY.md with best practices and maintenance guidelines
 
 ### **Database Schema**
 ```sql
+-- User authentication (2025 Security Update)
+users: (id, username, password_hash, display_name, avatar, created_at, updated_at)
+
 -- Daily puzzle storage with consistent generation
 daily_puzzles: (date, easy_puzzle, medium_puzzle, hard_puzzle, solutions)
 
@@ -188,6 +202,9 @@ stats: (type, data) -- Flexible JSON storage for various statistics
 ```
 
 ### **API Endpoints**
+**Authentication:**
+- `POST /api/auth` - Secure user authentication with bcrypt password verification
+
 **Public Endpoints:**
 - `GET /api/puzzles?date=YYYY-MM-DD` - Daily puzzle retrieval (with fallback system)
 - `GET /api/games?date=YYYY-MM-DD` - Game progress tracking
@@ -390,9 +407,37 @@ node generate_today.js
 ### **Deployment**
 The application is deployed on Vercel with:
 - **Serverless Functions**: API endpoints for database operations
-- **PostgreSQL Integration**: Neon database for production data
+- **PostgreSQL Integration**: Supabase/Neon database for production data
 - **Environment Variables**: Secure configuration management
 - **Automatic Deployment**: Git-based deployment pipeline
+- **Security Setup**: Automated user initialization with bcrypt password hashing
+
+**Initial Deployment Steps:**
+1. **Set Environment Variables** in Vercel dashboard:
+   ```
+   POSTGRES_URL=your_database_connection_string
+   FAIDAO_PASSWORD=secure_password_for_faidao
+   FILIP_PASSWORD=secure_password_for_filip
+   CRON_SECRET=your_cron_secret_key
+   ```
+
+2. **Initialize Database** (automatically creates users table):
+   ```bash
+   npm run init-users
+   ```
+   This creates users with bcrypt-hashed passwords from environment variables.
+
+3. **Deploy**: Push to GitHub - Vercel automatically deploys
+
+4. **Access**: Visit your Vercel URL and login with your secure credentials
+
+**Security Best Practices:**
+- Never commit `.env.local` or `.env` files
+- Rotate passwords quarterly
+- Use strong passwords (16+ characters, mixed case, numbers, symbols)
+- Monitor access logs for suspicious activity
+- Keep dependencies updated with `npm audit fix`
+- Review SECURITY.md for comprehensive security guidelines
 
 ## 🏆 Achievement Showcase
 

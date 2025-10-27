@@ -1,13 +1,17 @@
 {
   "name": "the-new-london-times",
   "version": "1.0.0",
-  "description": "The New London Times - Sudoku Championship website with database storage",
+  "type": "module",
+  "description": "The New London Times - Sudoku Championship website with database storage and secure authentication",
   "main": "index.html",
   "scripts": {
     "start": "echo 'This is a Vercel serverless project. Use vercel dev for local development.'",
-    "dev": "echo 'Use vercel dev for local development or open index.html directly in browser.'"
+    "dev": "echo 'Use vercel dev for local development or open index.html directly in browser.'",
+    "init-users": "node init-users.js"
   },
   "dependencies": {
+    "@vercel/postgres": "^0.10.0",
+    "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.2",
     "pg": "^8.11.3"
   },
