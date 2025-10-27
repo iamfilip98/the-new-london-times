@@ -1,4 +1,5 @@
-const { authenticateUser } = require('../lib/db.js');
+const { sql } = require('@vercel/postgres');
+const bcrypt = require('bcryptjs');
 
 module.exports = async function handler(req, res) {
   // Handle CORS
@@ -29,10 +30,25 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    // Authenticate user
-    const user = await authenticateUser(username, password);
+    // Query user from database
+    const result = await sql`
+      SELECT id, username, password_hash, display_name, avatar
+      FROM users
+      WHERE username = ${username}
+    `;
 
-    if (!user) {
+    if (result.rows.length === 0) {
+      res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
+      return;
+    }
+
+    const user = result.rows[0];
+    const isValid = await bcrypt.compare(password, user.password_hash);
+
+    if (!isValid) {
       res.status(401).json({
         success: false,
         error: 'Invalid credentials'
@@ -44,7 +60,7 @@ module.exports = async function handler(req, res) {
     res.status(200).json({
       success: true,
       player: user.username,
-      displayName: user.displayName,
+      displayName: user.display_name,
       avatar: user.avatar
     });
 
