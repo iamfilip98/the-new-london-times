@@ -1,6 +1,6 @@
-import { authenticateUser } from '../lib/db.js';
+const { authenticateUser } = require('../lib/db.js');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');

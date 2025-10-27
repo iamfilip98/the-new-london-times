@@ -1,8 +1,8 @@
 // Consolidated admin endpoint for Vercel Hobby plan (max 12 functions)
-import { sql } from '@vercel/postgres';
-import { generatePuzzle, solvePuzzle } from '../lib/sudoku-generator.js';
+const { sql } = require('@vercel/postgres');
+const { generatePuzzle, solvePuzzle } = require('../lib/sudoku-generator.js');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
