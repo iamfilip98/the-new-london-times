@@ -100,6 +100,11 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // ⚡ PERFORMANCE: Add caching headers for GET requests
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=5, stale-while-revalidate=10');
+  }
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }

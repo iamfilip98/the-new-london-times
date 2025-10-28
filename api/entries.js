@@ -48,6 +48,12 @@ async function initDatabase() {
       )
     `;
 
+    // ⚡ PERFORMANCE: Add index for date queries
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_entries_date
+      ON entries(date)
+    `;
+
     // Create achievements table
     await sql`
       CREATE TABLE IF NOT EXISTS achievements (
@@ -59,6 +65,17 @@ async function initDatabase() {
         created_at TIMESTAMP DEFAULT NOW(),
         UNIQUE(achievement_id, player, unlocked_at)
       )
+    `;
+
+    // ⚡ PERFORMANCE: Add indexes for achievement queries
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_achievements_player
+      ON achievements(player)
+    `;
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_achievements_player_id
+      ON achievements(achievement_id, player)
     `;
 
     // Create streaks table
@@ -318,6 +335,11 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // ⚡ PERFORMANCE: Add caching headers for GET requests
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=10, stale-while-revalidate=20');
+  }
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
