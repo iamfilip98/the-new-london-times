@@ -9,11 +9,69 @@ This section contains essential workflow rules. Add new rules, but never delete 
 3. **No Hardcoding**: All puzzles come from pre-generated database, zero fallbacks
 4. **Gameplay-Driven Validation**: Validation must match actual gameplay experience
 5. **Pre-Generation Pattern**: Never generate puzzles on-demand for users
-6. **Git Workflow**: After making code changes, commit with a meaningful message and push to git
+6. **Professional Git Workflow**: Follow branch-based development workflow (see Git Workflow section below)
 7. **Efficient Testing**: For complex features, use Playwright tests. For simple CSS/visual fixes, verify with grep/manual inspection. If server/test setup fails once, STOP - don't debug infrastructure, just verify the code fix is correct and commit
 8. **Root Cause Analysis**: Always seek the root cause of issues - don't just fix symptoms
 9. **Rule Protection**: Never remove or modify existing Critical Rules without explicit user approval - only add new ones
 10. **Token Efficiency**: Don't waste tokens debugging test infrastructure. If automated testing fails, fall back to code inspection and move on
+
+## Git Workflow - Professional Branch Strategy
+
+This project follows a professional multi-person development workflow. **NEVER push directly to `main`**.
+
+### Branch Structure
+- **`main`**: Production-ready code only. Protected branch.
+- **`develop`**: Integration branch for features. All feature branches merge here first.
+- **`feat/*`**: Feature branches (e.g., `feat/performance-optimization`)
+- **`fix/*`**: Bug fix branches (e.g., `fix/authentication-bug`)
+- **`chore/*`**: Maintenance branches (e.g., `chore/code-cleanup`)
+- **`docs/*`**: Documentation branches (e.g., `docs/phase5-readme-update`)
+
+### Workflow Process
+1. **Create Feature Branch**: Branch from `develop`
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feat/your-feature-name
+   ```
+
+2. **Develop & Test**: Make changes, commit frequently with meaningful messages
+   ```bash
+   git add .
+   git commit -m "feat: add feature description"
+   ```
+
+3. **Push & Create PR**: Push to remote and create Pull Request to `develop`
+   ```bash
+   git push -u origin feat/your-feature-name
+   gh pr create --base develop --title "Feature: Description" --body "Details..."
+   ```
+
+4. **Merge to Develop**: After review/testing, merge PR to `develop`
+   ```bash
+   gh pr merge --merge
+   ```
+
+5. **Merge to Main**: Periodically merge `develop` to `main` for production releases
+   ```bash
+   git checkout main
+   git merge develop
+   git push origin main
+   ```
+
+### Commit Message Convention
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `refactor:` - Code refactoring
+- `chore:` - Maintenance tasks
+- `docs:` - Documentation updates
+- `test:` - Test additions/modifications
+- `perf:` - Performance improvements
+
+### Testing Requirements
+- All changes must be tested before creating PR
+- Use appropriate testing method (Playwright, manual, code inspection)
+- Document test results in PR description
 
 ## Clue Counts - Single Source of Truth
 

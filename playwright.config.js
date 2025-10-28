@@ -103,8 +103,8 @@ module.exports = defineConfig({
   // Test output directories
   outputDir: 'test-results/artifacts',
 
-  // Web server configuration for local testing
-  webServer: process.env.CI ? undefined : {
+  // Web server configuration for testing
+  webServer: {
     command: 'python3 -m http.server 8000',
     port: 8000,
     timeout: 120 * 1000,
