@@ -52,6 +52,12 @@ async function initPuzzleDatabase() {
       )
     `;
 
+    // ⚡ PERFORMANCE: Add index for date queries on daily_puzzles
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_daily_puzzles_date
+      ON daily_puzzles(date)
+    `;
+
     // Create game_states table for individual player progress
     await sql`
       CREATE TABLE IF NOT EXISTS game_states (
@@ -67,6 +73,17 @@ async function initPuzzleDatabase() {
         last_updated TIMESTAMP DEFAULT NOW(),
         UNIQUE(player, date, difficulty)
       )
+    `;
+
+    // ⚡ PERFORMANCE: Add indexes for faster game_states queries
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_game_states_player_date
+      ON game_states(player, date, difficulty)
+    `;
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_game_states_date
+      ON game_states(date)
     `;
 
     // Create fallback_puzzles table for emergency backup puzzles
@@ -1619,6 +1636,11 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // ⚡ PERFORMANCE: Add caching headers for GET requests (short cache for puzzles)
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+  }
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();

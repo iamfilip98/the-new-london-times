@@ -55,6 +55,22 @@ async function initDatabase() {
       )
     `;
 
+    // ⚡ PERFORMANCE: Add indexes for frequently queried columns
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_games_player_date
+      ON individual_games(player, date)
+    `;
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_games_date
+      ON individual_games(date)
+    `;
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_games_player_difficulty
+      ON individual_games(player, difficulty)
+    `;
+
     return true;
   } catch (error) {
     console.error('Failed to initialize games database:', error);
@@ -147,6 +163,11 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // ⚡ PERFORMANCE: Add caching headers for GET requests
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'public, max-age=5, stale-while-revalidate=10');
+  }
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
