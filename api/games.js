@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '.env.local' });
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
-const { validateSaveGameRequest, validateDate } = require('./_validation');
+const { validateSaveGameRequest, validateDate } = require('../lib/validation');
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_PRISMA_URL,
