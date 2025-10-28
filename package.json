@@ -6,7 +6,22 @@
   "scripts": {
     "start": "echo 'This is a Vercel serverless project. Use vercel dev for local development.'",
     "dev": "echo 'Use vercel dev for local development or open index.html directly in browser.'",
-    "init-users": "node init-users.js"
+    "init-users": "node init-users.js",
+    "test": "playwright test",
+    "test:visual": "playwright test tests/visual",
+    "test:e2e": "playwright test tests/e2e",
+    "test:accessibility": "playwright test tests/accessibility",
+    "test:performance": "playwright test tests/performance",
+    "test:api": "playwright test tests/api",
+    "test:chromium": "playwright test --project=chromium-desktop",
+    "test:firefox": "playwright test --project=firefox-desktop",
+    "test:webkit": "playwright test --project=webkit-desktop",
+    "test:mobile": "playwright test --project=mobile-chrome --project=mobile-safari",
+    "test:critical": "playwright test --project=chromium-desktop --project=mobile-chrome tests/visual tests/e2e",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report test-results/html-report",
+    "test:install": "playwright install --with-deps"
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
