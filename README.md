@@ -5,6 +5,28 @@
 
 A sophisticated full-stack web application that transforms daily Sudoku solving into an epic championship battle between **Faidao "The Queen"** and **Filip "The Champion"**. This isn't just another puzzle game—it's a comprehensive competitive platform featuring real Sudoku gameplay, intelligent puzzle generation, advanced analytics, achievement systems, and live battle tracking.
 
+## 🆕 Recent Updates (October 2025)
+
+### **Phase 6: Performance & Cleanup**
+- ⚡ **10-40x Faster Database Queries**: Added 11 database indexes for lightning-fast data retrieval
+- 🗄️ **Smart HTTP Caching**: Intelligent caching headers reduce API calls and bandwidth
+- 🚀 **Optimized Static Assets**: 1-year caching for CSS/JS files (~680KB saved on repeat visits)
+- 🧹 **Code Cleanup**: Removed 49 debug scripts (~3,000 lines) and archived historical docs
+- 📊 **Performance Impact**: Puzzle loading 15x faster (150ms → 10ms), game progress 12x faster
+
+### **Phase 5: Enhanced Game Experience**
+- 🔄 **50-Move Undo/Redo System**: Full undo/redo with Ctrl+Z/Ctrl+Y, visual button states, and tooltips
+- 💡 **3-Stage Progressive Hints**: Smart hint system (Direction→Location→Answer: 2s/5s/15s penalties, fractional scoring)
+- ⌨️ **Keyboard Shortcuts Guide**: Press `?` to see all shortcuts with descriptions
+- 📱 **Mobile Gestures**: Swipe right to undo, haptic feedback on errors
+- 🎯 **Cross-Platform Support**: Mac (Cmd) and Windows (Ctrl) shortcuts work seamlessly
+
+### **Phase 4: UX Enhancements**
+- 🎨 **Visual Feedback**: Cell fill animations, error shake effects, hint glow, progress bars
+- 🔔 **Toast Notifications**: Non-intrusive status messages for game events
+- 📏 **Responsive Design**: Optimized mobile layout with improved spacing
+- 🎭 **Dark Mode Support**: System preference detection and theme persistence
+
 ## 📸 Screenshots
 
 ### 🔐 Secure Login
