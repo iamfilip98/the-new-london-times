@@ -17,12 +17,15 @@
 4. [Database Architecture Evolution](#database-architecture-evolution)
 5. [Feature Expansion Masterplan](#feature-expansion-masterplan)
 6. [Monetization Strategy](#monetization-strategy)
-7. [Social & Competitive Systems](#social--competitive-systems)
-8. [Educational Content Platform](#educational-content-platform)
-9. [Analytics & Data Surveillance](#analytics--data-surveillance)
-10. [Phased Rollout Roadmap](#phased-rollout-roadmap)
-11. [Implementation Details](#implementation-details)
-12. [Cost Analysis & Scaling](#cost-analysis--scaling)
+7. [Advanced Revenue Strategies](#-advanced-revenue-strategies)
+   - [Rewarded Video Ads](#watch-ad-to-unlock---rewarded-video-ads)
+   - [Additional Revenue Streams](#additional-revenue-streams-to-consider)
+8. [Social & Competitive Systems](#social--competitive-systems)
+9. [Educational Content Platform](#educational-content-platform)
+10. [Analytics & Data Surveillance](#analytics--data-surveillance)
+11. [Phased Rollout Roadmap](#phased-rollout-roadmap)
+12. [Implementation Details](#implementation-details)
+13. [Cost Analysis & Scaling](#cost-analysis--scaling)
 
 ---
 
@@ -1039,6 +1042,1178 @@ const tokenPacks = [
 - Exclude competitors' ads (Chess.com, NYT, etc.)
 
 **Expected CPM**: $1-5 depending on audience (puzzle players are valuable demographic)
+
+---
+
+## 📺 Advanced Revenue Strategies
+
+### "Watch Ad to Unlock" - Rewarded Video Ads
+
+#### Overview
+
+**Concept**: Users watch 15-30 second video ads to unlock premium content/features without paying cash.
+
+**Common Implementations**:
+- Watch ad → unlock 1 premium puzzle
+- Watch ad → get 25-50 tokens
+- Watch ad → unlock daily hint
+- Watch ad → continue playing after daily limit
+
+---
+
+#### ✅ Pros - Why It Works
+
+**1. Significantly Higher Revenue (10-50x CPM)**
+- Rewarded video CPM: **$5-15** (vs banner ads $1-3)
+- Users willingly engage = higher completion rates = premium CPMs
+- Industry data shows 10-50x better revenue per impression
+
+**2. User-Friendly Monetization**
+- Gives free users a "payment" option (time instead of money)
+- Feels less annoying than forced interstitial ads
+- Users appreciate the choice: "I can't afford Premium, but I can watch an ad"
+- Perceived as fair exchange
+
+**3. Increases Engagement Metrics**
+- Users return daily to watch ads for rewards
+- Builds habit loop (similar to Candy Crush, Duolingo)
+- Can significantly boost DAU (Daily Active Users)
+- Creates additional touchpoints
+
+**4. Premium Conversion Driver**
+- After watching 10+ ads: "Tired of ads? Get Premium for $4.99/mo"
+- Creates intentional friction that premium solves
+- Shows tangible value of premium (skip all this hassle!)
+- Social proof: "12,847 users upgraded to skip ads"
+
+**5. Industry-Proven Success**
+- **Candy Crush**: Watch ad → extra lives (massive revenue driver)
+- **Duolingo**: Watch ad → skip lesson (very effective at driving both engagement and premium)
+- **Mobile games**: 70%+ of top F2P games use rewarded video ads
+- Billion-dollar revenue model
+
+---
+
+#### ❌ Cons - Potential Issues
+
+**1. Can Cannibalize Premium Subscriptions**
+- If too generous: "Why pay $4.99 when I can just watch ads?"
+- Need careful balance: ads = limited access, premium = unlimited
+- Risk of training users to expect everything for free + ads
+
+**2. Ad Inventory & Technical Issues**
+- Not all users will have ads available (geography, ad blockers, low fill rates)
+- Need fallback for users without ads ("Sorry, no ads available. Try Premium!")
+- Ad loading delays can hurt UX (2-5 second wait for ad to load)
+
+**3. User Experience Concerns**
+- Can feel manipulative if overused ("dark pattern")
+- May annoy power users who want seamless experience
+- Must feel genuinely optional, not coerced
+- Poor implementation damages brand
+
+**4. Technical Implementation Complexity**
+- Need video ad provider integration (Google AdMob, Unity Ads, etc.)
+- Must track "ad watched to completion" vs "user skipped/closed early"
+- Handle edge cases: ad fails to load, user has no internet, etc.
+- Cross-browser compatibility (especially Safari on iOS)
+
+---
+
+#### 🎯 Recommendation: YES - With Strategic Implementation
+
+**Verdict**: Absolutely implement rewarded video ads, but follow F2P best practices carefully.
+
+---
+
+#### Strategic Implementation Guide
+
+##### What to Unlock With Ads (Best Practices)
+
+**✅ GOOD: Consumable Rewards (One-Time Use)**
+```javascript
+rewardedAdRewards = {
+  "Watch ad → Get 25 tokens": "✅ Excellent - consumable, must watch again tomorrow",
+  "Watch ad → 1 extra daily puzzle": "✅ Great - limited daily (max 3 ads)",
+  "Watch ad → Unlock 1 past daily puzzle": "✅ Good - creates FOMO, limited use",
+  "Watch ad → 3 hints for current puzzle": "✅ Good - helps stuck users",
+  "Watch ad → Resume after daily limit": "✅ Good - lets users continue playing"
+}
+```
+
+**❌ BAD: Permanent Unlocks (Competes with Premium)**
+```javascript
+badRewards = {
+  "Watch ad → Unlock Killer Sudoku forever": "❌ Terrible - should be Premium exclusive",
+  "Watch ad → Remove ads permanently": "❌ Catastrophic - destroys all ad revenue",
+  "Watch ad → Unlock all achievements": "❌ Bad - destroys progression system",
+  "Watch ad → Unlimited puzzles for 24h": "❌ Bad - too generous, kills Premium value"
+}
+```
+
+---
+
+##### Recommended Implementation Tiers
+
+**Tier 1: Daily Puzzle Limits (Free Users)**
+```javascript
+freeUserLimits = {
+  dailyPuzzles: 3,
+  unlockOptions: [
+    {
+      method: "Premium Subscription",
+      cost: "$4.99/mo",
+      benefit: "Unlimited puzzles forever"
+    },
+    {
+      method: "Watch Video Ad",
+      cost: "30 seconds",
+      benefit: "Get 1 more puzzle",
+      dailyCap: 3  // Max 6 total puzzles/day (3 free + 3 from ads)
+    },
+    {
+      method: "Spend Tokens",
+      cost: "10 tokens",
+      benefit: "Get 1 more puzzle",
+      dailyCap: null  // Unlimited if you have tokens
+    }
+  ]
+}
+
+// Strategy: 6 puzzles/day feels generous but still incentivizes Premium
+// User must watch 3 ads daily (annoying) → many will convert to Premium
+```
+
+**Tier 2: Token Economy**
+```javascript
+tokenRewards = {
+  watchAdReward: 25,
+  adCooldown: "4 hours",  // Prevents spam, encourages return visits
+  maxAdsPerDay: 6,        // 6 ads × 25 tokens = 150 tokens/day max
+
+  comparison: {
+    freeUserGrind: "150 tokens/day × 7 days = 1,050 tokens/week (must watch 42 ads)",
+    premiumUserPassive: "50 tokens/week just for daily login (no ads)",
+    premiumUserWithLogin: "350 tokens/week with 7-day streak (no ads)"
+  }
+}
+
+// Strategy: Free users CAN grind tokens, but it's tedious
+// Watching 6 ads/day is annoying → converts to Premium
+// Premium users get tokens passively (better value)
+```
+
+**Tier 3: Past Daily Unlocks (FOMO)**
+```javascript
+unlockPastDaily = {
+  options: [
+    {
+      method: "Premium Subscription",
+      benefit: "Unlimited access to ALL past dailies"
+    },
+    {
+      method: "Spend 10 Tokens",
+      benefit: "Unlock 1 past daily permanently"
+    },
+    {
+      method: "Watch 1 Video Ad",
+      benefit: "Unlock 1 past daily permanently",
+      dailyCap: 2  // Max 2 past dailies unlockable via ads per day
+    }
+  ]
+}
+
+// Strategy: Creates FOMO - "I missed yesterday's puzzle!"
+// Motivates daily logins to avoid missing puzzles
+// Ads provide escape valve for occasional misses
+```
+
+**Tier 4: Hints System**
+```javascript
+hintSystem = {
+  free: {
+    hintsPerPuzzle: 3,
+    penalty: "Time penalties (2s, 5s, 15s per hint level)"
+  },
+  premium: {
+    hintsPerPuzzle: "Unlimited",
+    penalty: "Same time penalties (fair competition)"
+  },
+  adUnlock: {
+    watchAd: "Get 3 extra hints for this puzzle",
+    cap: "Once per puzzle",
+    useCase: "I'm really stuck and used all 3 hints!"
+  }
+}
+
+// Strategy: Helps stuck users, doesn't break game balance
+// Premium still benefits (unlimited), but everyone has access
+```
+
+---
+
+#### 📊 Expected Financial Impact
+
+**Revenue Increase Calculation**:
+
+```javascript
+// Assumptions
+const users = {
+  total: 50000,
+  free: 45000,  // 90%
+  premium: 5000  // 10%
+}
+
+const adEngagement = {
+  percentWhoWatchAds: 0.40,  // 40% of free users engage with rewarded ads
+  averageAdsPerDay: 2,        // Conservative (can watch up to 6)
+  daysPerMonth: 30
+}
+
+const adRevenue = {
+  rewardedVideoCPM: 10,  // $10 per 1000 views (conservative, can be $5-15)
+  bannerAdCPM: 1.5       // $1.50 per 1000 views
+}
+
+// Calculate Rewarded Video Revenue
+const monthlyRewardedAdViews =
+  users.free *
+  adEngagement.percentWhoWatchAds *
+  adEngagement.averageAdsPerDay *
+  adEngagement.daysPerMonth;
+
+// = 45,000 × 0.40 × 2 × 30 = 1,080,000 ad views/month
+
+const monthlyRewardedAdRevenue =
+  (monthlyRewardedAdViews / 1000) * adRevenue.rewardedVideoCPM;
+
+// = 1,080 × $10 = $10,800/month from rewarded video
+
+// Compare to banner ads (same impressions)
+const monthlyBannerRevenue =
+  (monthlyRewardedAdViews / 1000) * adRevenue.bannerAdCPM;
+
+// = 1,080 × $1.50 = $1,620/month from banners
+
+// NET GAIN by using rewarded video instead of banners
+const netGain = monthlyRewardedAdRevenue - monthlyBannerRevenue;
+// = $10,800 - $1,620 = $9,180/month additional revenue
+// = $110,160/year additional revenue just from rewarded video! 🤑
+```
+
+**More Optimistic Scenario** (higher engagement):
+```javascript
+// 50% of free users watch 3 ads/day at $12 CPM
+const optimisticRevenue =
+  (45000 × 0.50 × 3 × 30 / 1000) * 12 = $24,300/month
+// = $291,600/year from rewarded video ads alone! 🚀
+```
+
+**Engagement Impact**:
+- Users log in more frequently (to watch ads for tokens)
+- Higher DAU/MAU ratio (40-60% typical, can push to 60-80%)
+- Longer session times (completing extra puzzles unlocked via ads)
+- Better retention (invested time watching ads = sunk cost)
+
+**Premium Conversion Impact**:
+- Creates intentional friction (watching ads is tedious)
+- Social proof ("12,847 users upgraded to skip ads")
+- Exit intent: "Leaving? Get Premium and never watch ads again!"
+- Estimated lift: +2-5% conversion rate increase
+
+---
+
+#### 🚀 Implementation Plan
+
+**Phase 1: Basic Rewarded Video Integration**
+
+```javascript
+// Use Google AdMob (best for web + mobile)
+import { RewardedAd } from '@google-adsense/rewarded-video';
+
+async function showRewardedAd(rewardType) {
+  try {
+    // Initialize ad
+    const ad = new RewardedAd('ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY');
+
+    // Load ad (async, may take 2-5 seconds)
+    showLoadingSpinner('Loading ad...');
+    await ad.load();
+    hideLoadingSpinner();
+
+    // Show ad to user (full-screen video)
+    await ad.show();
+
+    // User watched full ad to completion
+    // Grant reward based on type
+    if (rewardType === 'tokens') {
+      await grantTokens(userId, 25);
+      showToast('🎉 You earned 25 tokens! 💎', 'success');
+      trackEvent('rewarded_ad_completed', { reward: 'tokens', value: 25 });
+
+    } else if (rewardType === 'puzzle') {
+      await incrementDailyPuzzleLimit(userId, 1);
+      showToast('🎮 Unlocked 1 extra puzzle!', 'success');
+      trackEvent('rewarded_ad_completed', { reward: 'puzzle', value: 1 });
+
+    } else if (rewardType === 'past_daily') {
+      const date = getPendingUnlockDate();
+      await unlockPastDaily(userId, date);
+      showToast(`📅 Unlocked ${date} puzzle!`, 'success');
+      trackEvent('rewarded_ad_completed', { reward: 'past_daily', date });
+    }
+
+    // Track revenue (estimated)
+    trackRevenue('ad_rewarded_video', 0.012);  // ~$0.012 per ad view
+
+  } catch (error) {
+    // Ad failed to load or user closed early
+    if (error.code === 'AD_NOT_LOADED') {
+      showToast('😢 No ads available right now. Try again later!', 'info');
+      // Upsell Premium
+      setTimeout(() => {
+        showModal('premium-upsell', {
+          message: 'Tired of waiting for ads? Get Premium for unlimited access!',
+          cta: 'Upgrade Now'
+        });
+      }, 2000);
+
+    } else if (error.code === 'USER_CANCELLED') {
+      // User closed ad before completion - no reward
+      showToast('Ad cancelled. Watch the full ad to earn rewards!', 'warning');
+      trackEvent('rewarded_ad_cancelled', { rewardType });
+
+    } else {
+      // Unknown error
+      console.error('Rewarded ad error:', error);
+      showToast('Something went wrong. Please try again!', 'error');
+    }
+  }
+}
+
+// Rate limiting - prevent spam
+async function canWatchAdForReward(rewardType) {
+  const today = getTodayDateString();
+  const userAdHistory = await getAdHistory(userId, today);
+
+  // Check daily caps
+  if (rewardType === 'tokens' && userAdHistory.tokenAds >= 6) {
+    return {
+      allowed: false,
+      reason: "You've reached the daily limit for token ads (6/day)."
+    };
+  }
+
+  if (rewardType === 'puzzle' && userAdHistory.puzzleAds >= 3) {
+    return {
+      allowed: false,
+      reason: "You've unlocked the maximum extra puzzles today (3/day)."
+    };
+  }
+
+  // Check cooldown (4 hours between token ads)
+  if (rewardType === 'tokens') {
+    const lastTokenAd = userAdHistory.lastTokenAdTimestamp;
+    const hoursSinceLastAd = (Date.now() - lastTokenAd) / (1000 * 60 * 60);
+
+    if (hoursSinceLastAd < 4) {
+      const hoursRemaining = Math.ceil(4 - hoursSinceLastAd);
+      return {
+        allowed: false,
+        reason: `Token ads available in ${hoursRemaining} hour(s).`
+      };
+    }
+  }
+
+  return { allowed: true };
+}
+```
+
+**Phase 2: Strategic Ad Placement (When to Show)**
+
+```javascript
+// Define opportune moments to offer rewarded ads
+const rewardedAdOpportunities = {
+
+  dailyLimitReached: {
+    trigger: "User completes 3rd daily puzzle",
+    message: "🎮 Daily limit reached (3/3 puzzles)\n\nWatch a quick ad to unlock 1 more puzzle?",
+    cta: "Watch Ad",
+    rewardType: "puzzle",
+    alternativeCTA: "Get Unlimited (Premium)"
+  },
+
+  outOfTokens: {
+    trigger: "User tries to spend tokens but has < 10",
+    message: "💎 Not enough tokens!\n\nWatch an ad to earn 25 tokens?",
+    cta: "Watch Ad",
+    rewardType: "tokens",
+    alternativeCTA: "Buy Token Pack"
+  },
+
+  premiumFeatureLocked: {
+    trigger: "User clicks locked variant (e.g., Killer Sudoku)",
+    message: "🔒 Killer Sudoku is a Premium feature\n\nWatch an ad for 1-time access?",
+    cta: "Watch Ad (1 puzzle)",
+    rewardType: "variant_unlock",
+    alternativeCTA: "Get Premium ($4.99/mo)"
+  },
+
+  missedDailyPuzzle: {
+    trigger: "User opens app and sees missed yesterday's puzzle",
+    message: "📅 You missed yesterday's puzzle!\n\nWatch an ad to unlock it?",
+    cta: "Watch Ad",
+    rewardType: "past_daily",
+    alternativeCTA: "Get Premium (All Past Puzzles)"
+  },
+
+  stuckOnPuzzle: {
+    trigger: "User used all 3 hints and hasn't made progress in 5 min",
+    message: "😓 Still stuck?\n\nWatch an ad for 3 more hints?",
+    cta: "Watch Ad",
+    rewardType: "hints",
+    alternativeCTA: "Get Premium (Unlimited Hints)"
+  }
+};
+
+// Smart offering logic
+function showRewardedAdOffer(opportunity) {
+  const modal = createModal({
+    title: opportunity.message,
+    buttons: [
+      {
+        text: opportunity.cta,
+        style: 'primary',
+        onClick: () => showRewardedAd(opportunity.rewardType)
+      },
+      {
+        text: opportunity.alternativeCTA,
+        style: 'secondary',
+        onClick: () => navigateTo('/pricing')
+      },
+      {
+        text: 'Maybe Later',
+        style: 'text',
+        onClick: () => closeModal()
+      }
+    ]
+  });
+
+  modal.show();
+  trackEvent('rewarded_ad_offer_shown', { opportunity: opportunity.trigger });
+}
+```
+
+**Phase 3: A/B Testing & Optimization**
+
+```javascript
+// Test different reward amounts
+const tokenRewardTest = {
+  name: 'rewarded_ad_token_amount',
+  variants: {
+    a: { tokens: 20, hypothesis: "Lower reward, less cannibalization" },
+    b: { tokens: 25, hypothesis: "Control - current amount" },
+    c: { tokens: 30, hypothesis: "Higher reward, more engagement" }
+  },
+  metrics: [
+    'ad_watch_rate',
+    'premium_conversion_rate',
+    'total_revenue_per_user'
+  ],
+  duration: '2_weeks'
+};
+
+// Test ad placement timing
+const placementTest = {
+  name: 'rewarded_ad_placement_timing',
+  variants: {
+    a: { timing: 'immediate', show: "Immediately when limit reached" },
+    b: { timing: 'delayed_5s', show: "5 seconds after limit reached" },
+    c: { timing: 'next_visit', show: "On next app open (FOMO)" }
+  },
+  hypothesis: "Delayed or FOMO-driven offers convert better",
+  metrics: ['ad_watch_rate', 'premium_conversion_rate']
+};
+
+// Implement with PostHog feature flags
+async function getRewardedAdConfig(userId) {
+  const tokenAmount = await posthog.getFeatureFlag('rewarded_ad_token_amount', userId);
+  const timing = await posthog.getFeatureFlag('rewarded_ad_placement_timing', userId);
+
+  return {
+    tokenReward: tokenAmount === 'a' ? 20 : tokenAmount === 'c' ? 30 : 25,
+    placementTiming: timing || 'immediate'
+  };
+}
+```
+
+---
+
+### Additional Revenue Streams to Consider
+
+Beyond the core monetization model (subscriptions, microtransactions, ads), here are **8 additional revenue sources** worth exploring:
+
+---
+
+#### 1. 🎯 Sponsored Puzzles (Brand Partnerships)
+
+**Concept**: Brands sponsor custom-themed puzzles with subtle branding
+
+**Example Implementation**:
+```javascript
+sponsoredPuzzle = {
+  title: "Coca-Cola Summer Refresh Challenge",
+  description: "Solve this special puzzle and win 100 tokens!",
+
+  branding: {
+    background: "Red gradient (Coca-Cola colors)",
+    splashScreen: "Small Coca-Cola logo (non-intrusive)",
+    completionMessage: "Refreshing! You earned the 'Coca-Cola Champion' badge 🥤"
+  },
+
+  duration: "1 week feature (7 days)",
+
+  pricing: {
+    reach_10k: "$1,000",
+    reach_50k: "$5,000",
+    reach_100k: "$10,000",
+    reach_500k: "$25,000"
+  },
+
+  userExperience: {
+    optional: true,  // Not forced
+    rewards: "Generous (100 tokens + exclusive badge)",
+    feedbackFromBeta: "Users loved extra content + free rewards"
+  }
+}
+```
+
+**Revenue Potential**:
+- 2 sponsored puzzles/month × $5,000 avg = **$10,000/month** ($120K/year)
+- At 500K users: 4 sponsors/month × $15,000 = **$60,000/month** ($720K/year)
+
+**Pros**:
+- ✅ High margin (just design 1 puzzle + branding)
+- ✅ Non-intrusive (users enjoy new content + free rewards)
+- ✅ Premium users still participate (gets special content, not ads)
+- ✅ Brands love engagement metrics (track completions, share rates)
+
+**Cons**:
+- ❌ Need sales team to pitch brands (or partnership manager)
+- ❌ Only works at scale (minimum 50K+ users for brand interest)
+- ❌ Seasonal fluctuations (Q4 busy, Q1 slow)
+
+**When to Implement**: Phase 9 (Growth) - Year 2+, after reaching 50K+ users
+
+---
+
+#### 2. 🏫 B2B Licensing (Schools & Corporate)
+
+**Concept**: Sell white-label platform to schools/companies for team building & education
+
+**Package Tiers**:
+
+```javascript
+educationPackage = {
+  name: "Sudoku for Schools",
+  pricing: "$500/year per school (up to 50 students)",
+
+  features: [
+    "Teacher dashboard (track student progress)",
+    "Educational tutorials built-in (all 24 lessons)",
+    "Classroom competitions (custom leagues)",
+    "Progress reports (PDF exports for parents)",
+    "No ads, kid-safe environment",
+    "White-label option (+$200/year)"
+  ],
+
+  targetMarket: [
+    "Middle schools (math enrichment)",
+    "High schools (logic & reasoning)",
+    "After-school programs",
+    "Homeschool co-ops"
+  ]
+}
+
+corporatePackage = {
+  name: "Sudoku Team Building",
+  pricing: "$1,000/year per company (up to 100 employees)",
+
+  features: [
+    "Company-wide leaderboards",
+    "Team challenges (department vs department)",
+    "Weekly tournaments with prizes",
+    "Analytics dashboard (engagement metrics)",
+    "No ads, professional environment",
+    "Custom branding (company logo)"
+  ],
+
+  targetMarket: [
+    "Tech companies (brain breaks)",
+    "Consulting firms (team bonding)",
+    "Remote-first companies (virtual engagement)",
+    "Corporate wellness programs"
+  ]
+}
+
+enterprisePackage = {
+  name: "White-Label Sudoku Platform",
+  pricing: "$10,000/year + $5,000 setup fee",
+
+  features: [
+    "Fully white-labeled (your brand)",
+    "Custom domain (puzzles.yourcompany.com)",
+    "API access (integrate with your systems)",
+    "Dedicated support",
+    "Unlimited users",
+    "Custom features upon request"
+  ],
+
+  targetMarket: [
+    "Puzzle publishers (newspapers, magazines)",
+    "Brain training companies (Lumosity, Peak)",
+    "Educational platforms (Khan Academy, Coursera)"
+  ]
+}
+```
+
+**Revenue Potential**:
+- 100 schools × $500 = **$50,000/year**
+- 50 companies × $1,000 = **$50,000/year**
+- 5 enterprise clients × $10,000 = **$50,000/year**
+- **Total: $150,000/year B2B revenue**
+
+**Pros**:
+- ✅ High-value contracts (B2B pays more than B2C)
+- ✅ Recurring annual revenue (predictable)
+- ✅ Great for brand credibility ("Used by Harvard, Google, etc.")
+- ✅ Lower churn than B2C (schools/companies commit for full year)
+
+**Cons**:
+- ❌ Long sales cycle (3-6 months to close deals)
+- ❌ Need dedicated sales/account management
+- ❌ Custom feature requests (support overhead)
+- ❌ Legal complexity (contracts, SLAs, data privacy)
+
+**When to Implement**: Phase 9 (Growth) - Year 2+, after product is proven
+
+---
+
+#### 3. 🔗 Affiliate Revenue (Amazon, Udemy)
+
+**Concept**: Recommend puzzle books, courses, brain training tools and earn commission
+
+**Implementation**:
+```javascript
+affiliateRecommendations = {
+
+  placement: "Sidebar widget on Analytics page, Footer on all pages",
+
+  products: [
+    {
+      title: "The Big Book of Sudoku Puzzles",
+      price: "$14.99",
+      affiliate: "Amazon Associates",
+      commission: "4%",
+      earnings: "$0.60 per sale"
+    },
+    {
+      title: "Sudoku Mastery Online Course",
+      price: "$29.99",
+      affiliate: "Udemy",
+      commission: "10%",
+      earnings: "$3.00 per sale"
+    },
+    {
+      title: "Lumosity Brain Training (1-year)",
+      price: "$59.99",
+      affiliate: "Impact",
+      commission: "15%",
+      earnings: "$9.00 per sale"
+    }
+  ],
+
+  strategy: {
+    targeting: "Show after user completes 10+ puzzles (engaged users)",
+    messaging: "Want to improve further? Check out these resources...",
+    disclosure: "Clear 'Affiliate Link' disclosure (FTC compliant)"
+  }
+}
+```
+
+**Revenue Potential**:
+- 50,000 users × 1% click × 2% convert × $20 avg purchase × 5% commission
+- = **$100/month** ($1,200/year)
+
+**Pros**:
+- ✅ Passive income (set and forget)
+- ✅ Easy implementation (just add links)
+- ✅ Adds value to users (relevant recommendations)
+
+**Cons**:
+- ❌ Very low revenue (not worth much effort)
+- ❌ Can feel spammy if overused
+- ❌ Amazon Associates has strict terms (can ban for violations)
+
+**When to Implement**: Phase 6 (Polish) - Low effort, nice-to-have
+
+---
+
+#### 4. 📊 Anonymous Data Insights Sales
+
+**Concept**: Sell aggregated, anonymized puzzle-solving data to researchers/companies
+
+**Use Cases**:
+
+```javascript
+dataProducts = {
+
+  academicResearch: {
+    product: "Puzzle-solving behavior dataset",
+    description: "1M+ Sudoku games, anonymized solve times, difficulty progression",
+    buyers: "Universities (cognitive science, psychology, AI research)",
+    pricing: "$5,000 one-time",
+    useCase: "Studying human problem-solving patterns"
+  },
+
+  gameStudios: {
+    product: "Puzzle difficulty calibration insights",
+    description: "What makes puzzles feel 'easy' vs 'hard'? Completion rates by clue count",
+    buyers: "Game developers building puzzle games",
+    pricing: "$10,000 one-time or $2,000/month subscription",
+    useCase: "Improving their own puzzle generation algorithms"
+  },
+
+  adNetworks: {
+    product: "Puzzle player demographics & engagement",
+    description: "Who plays Sudoku? When? For how long? What else do they like?",
+    buyers: "Ad networks, market research firms",
+    pricing: "$5,000/month subscription",
+    useCase: "Better ad targeting for puzzle game audience"
+  }
+}
+```
+
+**Revenue Potential**:
+- 5 data customers × $2,000/month avg = **$10,000/month** ($120K/year)
+
+**Pros**:
+- ✅ High margin (data already collected)
+- ✅ Passive income (automated exports)
+- ✅ Helps research (contribute to science)
+
+**Cons**:
+- ❌ Privacy concerns (must be 100% anonymized, GDPR compliant)
+- ❌ Ethical considerations (users may not like this)
+- ❌ Requires legal review (privacy policies, terms)
+- ❌ Potential PR risk if done wrong
+
+**When to Implement**: Phase 9 (Growth) - Only if legal/ethical review passes
+
+**Recommendation**: Proceed cautiously, prioritize user trust
+
+---
+
+#### 5. 🎁 Premium Puzzle Packs (DLC Model)
+
+**Concept**: Sell themed puzzle collections (like video game DLC)
+
+**Example Packs**:
+
+```javascript
+puzzlePacks = [
+  {
+    name: "Extreme Challenge Pack",
+    description: "100 brutal Expert-level Sudoku puzzles for masochists",
+    difficulty: "Expert+",
+    price: "$4.99 one-time",
+    content: [
+      "100 unique Expert puzzles (24-26 clues)",
+      "Exclusive 'Extreme Solver' badge",
+      "Exclusive dark red theme",
+      "Leaderboard for pack completion times"
+    ],
+    targetAudience: "Power users, completionists"
+  },
+
+  {
+    name: "Zen Relaxation Pack",
+    description: "200 easy, meditative puzzles with calming music",
+    difficulty: "Easy+",
+    price: "$2.99 one-time",
+    content: [
+      "200 peaceful Easy puzzles (42-44 clues)",
+      "Exclusive 'Zen Master' badge",
+      "Exclusive pastel green theme",
+      "Calming background music (optional)",
+      "No timer pressure (pure relaxation)"
+    ],
+    targetAudience: "Casual players, stress relief"
+  },
+
+  {
+    name: "Speed Demon Pack",
+    description: "50 puzzles optimized for speedrunning & leaderboards",
+    difficulty: "Medium",
+    price: "$3.99 one-time",
+    content: [
+      "50 Medium puzzles (verified solvable in under 4 minutes)",
+      "'Speed Demon' badge + frame",
+      "Global leaderboard (fastest times)",
+      "Ghost mode (race against your best time)",
+      "Speedrun tutorial (advanced techniques)"
+    ],
+    targetAudience: "Competitive players"
+  },
+
+  {
+    name: "Holiday Special Pack",
+    description: "Seasonal puzzles for Christmas, Halloween, Valentine's, etc.",
+    difficulty: "All",
+    price: "$1.99 one-time",
+    content: [
+      "25 themed puzzles (festive backgrounds)",
+      "Holiday badge collection (6 badges)",
+      "Limited availability (seasonal only)",
+      "FOMO element (only available Nov-Dec)"
+    ],
+    targetAudience: "Everyone (seasonal FOMO)"
+  }
+]
+```
+
+**Monetization Strategy**:
+```javascript
+packStrategy = {
+  pricing: "$1.99 - $4.99 per pack",
+  bundles: "Buy 3 packs, get 1 free ($14.99 for 4 packs)",
+  premiumBenefit: "Premium members get 1 free pack/month",
+  marketing: "New pack every 6-8 weeks (content drip)"
+}
+```
+
+**Revenue Potential**:
+- 5% of users buy 1 pack/year:
+  - 50,000 × 5% × $3.50 avg = **$8,750/year**
+- At 500K users: **$87,500/year**
+
+**Pros**:
+- ✅ Generates hype (limited-time packs)
+- ✅ Appeals to different player types (casual, hardcore, competitive)
+- ✅ Premium users get free packs (retention benefit)
+- ✅ One-time purchases (complement subscriptions)
+
+**Cons**:
+- ❌ Need to create quality curated content (time investment)
+- ❌ One-time revenue (not recurring)
+- ❌ Can fragment user base (who has which packs?)
+
+**When to Implement**: Phase 5 (Education) or Phase 6 (Polish)
+
+---
+
+#### 6. 🛍️ Merchandise (Print-on-Demand)
+
+**Concept**: Sell physical Sudoku merchandise via Printful (zero inventory)
+
+**Products**:
+
+```javascript
+merchProducts = {
+  apparel: [
+    "T-shirts: 'Sudoku Grandmaster' ($19.99)",
+    "Hoodies: 'I Solve Puzzles, What's Your Superpower?' ($34.99)",
+    "Hats: Logo embroidered ($14.99)"
+  ],
+
+  accessories: [
+    "Mugs: 'Fueled by Sudoku & Coffee' ($12.99)",
+    "Stickers: Achievement badge stickers ($2.99 pack)",
+    "Posters: Inspirational Sudoku quotes ($9.99)",
+    "Phone cases: Custom designs ($19.99)"
+  ],
+
+  puzzleProducts: [
+    "Branded Sudoku notebooks: 500 puzzles ($12.99)",
+    "Deluxe puzzle sets: Physical boards + markers ($24.99)",
+    "Magnetic travel Sudoku ($16.99)"
+  ]
+}
+```
+
+**Platform**: Printful (handles production, shipping, returns)
+
+**Revenue Model**:
+- You set retail price
+- Printful charges base cost + shipping
+- You keep margin (typically 20-40%)
+
+**Revenue Potential**:
+- 2% of users buy merch:
+  - 50,000 × 2% × $18 avg × 30% margin = **$5,400/year**
+
+**Pros**:
+- ✅ Zero inventory risk (print-on-demand)
+- ✅ Brand building (walking billboards)
+- ✅ Passive income (Printful handles fulfillment)
+- ✅ Easy setup (Shopify + Printful integration)
+
+**Cons**:
+- ❌ Low margins (20-40% after Printful fees)
+- ❌ Low volume (most users won't buy)
+- ❌ Customer service overhead (shipping issues, returns)
+
+**When to Implement**: Phase 8 (Public Launch) or Phase 9 (Growth)
+
+---
+
+#### 7. 🏆 Paid Tournaments (Esports Model)
+
+**Concept**: Host competitive Sudoku tournaments with entry fees & prize pools
+
+**Tournament Structure**:
+
+```javascript
+monthlyTournament = {
+  name: "Speed Championship",
+  frequency: "Monthly",
+  entryFee: "$5",
+
+  prizePool: {
+    distribution: "80% to winners, 20% to platform",
+
+    example_100_participants: {
+      totalFees: "$500",
+      prizePool: "$400",
+      prizes: {
+        first: "$200",
+        second: "$120",
+        third: "$80",
+        "4th-10th": "$0 (glory only)"
+      },
+      platformRevenue: "$100"
+    }
+  },
+
+  format: {
+    qualification: "Top 100 daily players qualify (free)",
+    finals: "3 Sudoku puzzles, fastest combined time wins",
+    antiCheat: "Recorded sessions, manual review, IP tracking"
+  }
+}
+
+annualChampionship = {
+  name: "World Sudoku Championship",
+  frequency: "Annual",
+  entryFee: "$25",
+
+  prizePool: {
+    totalPrizes: "$10,000",
+    sponsors: "Attract puzzle companies to sponsor",
+
+    distribution: {
+      first: "$5,000",
+      second: "$2,500",
+      third: "$1,250",
+      "4th-10th": "$125 each"
+    }
+  },
+
+  format: {
+    multiRound: "Qualifiers → Semifinals → Finals (over 1 month)",
+    spectating: "Live-streamed on Twitch/YouTube",
+    commentary: "Host commentators explaining strategies"
+  }
+}
+```
+
+**Revenue Potential**:
+- 10 monthly tournaments × 100 participants × $5 × 20% = **$1,000/month** ($12K/year)
+- 1 annual championship × 500 participants × $25 × 20% = **$2,500/year**
+- **Total: $14,500/year from tournaments**
+
+**Pros**:
+- ✅ Creates excitement & community
+- ✅ Rewards top players
+- ✅ Content for marketing (highlight reels, winners)
+- ✅ Esports legitimacy (Sudoku competitions exist!)
+
+**Cons**:
+- ❌ Legal complexity (gambling laws vary by country/state)
+- ❌ Need robust anti-cheat measures (or risk fraud)
+- ❌ Moderation overhead (disputes, rule enforcement)
+- ❌ May alienate casual players (too competitive)
+
+**Legal Considerations**:
+- Skill-based competitions generally legal (vs gambling/lottery)
+- Must comply with local laws (some states/countries ban paid entry)
+- Terms must clearly state "skill-based, not gambling"
+
+**When to Implement**: Phase 9 (Growth) - After legal review, once community is established
+
+---
+
+#### 8. 🔌 API Access for Developers (B2D - Business-to-Developer)
+
+**Concept**: Sell API access to Sudoku puzzle generation/solving for other developers
+
+**Use Cases**:
+
+```javascript
+apiUseCases = {
+
+  whiteLabel: {
+    customer: "Other apps/websites need Sudoku content",
+    example: "Brain training app wants to add Sudoku section",
+    pricing: "$99/mo (50K puzzles/month)",
+    valueProposition: "Don't build your own generator, use ours"
+  },
+
+  education: {
+    customer: "Educational platforms (Khan Academy, Coursera, etc.)",
+    example: "Math teaching platform wants Sudoku for logic practice",
+    pricing: "$49/mo (25K puzzles/month)",
+    valueProposition: "Quality puzzles with verified difficulty"
+  },
+
+  research: {
+    customer: "AI/ML researchers training puzzle-solving algorithms",
+    example: "University building AI Sudoku solver",
+    pricing: "$29/mo (unlimited puzzles)",
+    valueProposition: "Unlimited diverse puzzles for training data"
+  },
+
+  newspapers: {
+    customer: "Local newspapers need daily Sudoku puzzles",
+    example: "Small-town newspaper wants daily puzzle",
+    pricing: "$199/mo (daily puzzle delivery + print-optimized)",
+    valueProposition: "Turnkey solution, no puzzle creation needed"
+  }
+}
+```
+
+**API Pricing Tiers**:
+
+```javascript
+apiPricing = {
+
+  hobby: {
+    price: "$0/month",
+    limits: "1,000 requests/month",
+    features: ["Basic puzzles", "3 difficulty levels", "Community support"]
+  },
+
+  startup: {
+    price: "$29/month",
+    limits: "50,000 requests/month",
+    features: ["All variants", "Custom difficulty", "Email support", "99.5% uptime SLA"]
+  },
+
+  business: {
+    price: "$99/month",
+    limits: "500,000 requests/month",
+    features: ["All startup features", "Priority support", "99.9% uptime SLA", "Webhooks"]
+  },
+
+  enterprise: {
+    price: "$499/month",
+    limits: "Unlimited",
+    features: ["All business features", "Dedicated account manager", "Custom SLA", "White-label"]
+  }
+}
+```
+
+**Revenue Potential**:
+- 50 API customers × $60 avg/month = **$3,000/month** ($36K/year)
+- At scale: 200 customers × $75 avg = **$15,000/month** ($180K/year)
+
+**Pros**:
+- ✅ Recurring B2B revenue (MRR)
+- ✅ Leverages existing tech (puzzle generation already built)
+- ✅ Passive income (automated, minimal support)
+- ✅ Expands reach (your puzzles on other platforms)
+
+**Cons**:
+- ❌ Technical support overhead (developers have high expectations)
+- ❌ Need robust API documentation (time investment)
+- ❌ Uptime requirements (99.9% SLA = expensive infrastructure)
+- ❌ Versioning complexity (breaking changes affect customers)
+
+**When to Implement**: Phase 9 (Growth) - After puzzle generation is bulletproof
+
+---
+
+## 📊 Revenue Streams Comparison & Prioritization
+
+| Revenue Stream | Setup Effort | Ongoing Effort | Potential (50K users) | Potential (500K users) | Priority | Phase |
+|----------------|--------------|----------------|----------------------|------------------------|----------|-------|
+| **Premium Subscriptions** | High | Medium | $50K/mo | $400K/mo | 🔥 Tier 1 | Phase 2 |
+| **Microtransactions** | High | Low | $10K/mo | $50K/mo | 🔥 Tier 1 | Phase 2 |
+| **Rewarded Video Ads** | Medium | Low | $10-24K/mo | $60-150K/mo | 🔥 Tier 1 | Phase 2 |
+| **Banner Ads** | Low | Low | $5K/mo | $40K/mo | 🔥 Tier 1 | Phase 2 |
+| **Sponsored Puzzles** | Medium | Medium | $5-10K/mo | $40-60K/mo | ⭐ Tier 2 | Phase 9 |
+| **Puzzle Packs** | Medium | Low | $730/mo | $7.3K/mo | ⭐ Tier 2 | Phase 5 |
+| **B2B Licensing** | High | Medium | $12.5K/mo | $40K/mo | ⭐ Tier 2 | Phase 9 |
+| **Tournaments** | Medium | High | $1K/mo | $5K/mo | ⚡ Tier 3 | Phase 9 |
+| **API Access** | High | Low | $3K/mo | $15K/mo | ⚡ Tier 3 | Phase 9 |
+| **Merchandise** | Low | Low | $450/mo | $2K/mo | 💡 Tier 4 | Phase 8 |
+| **Affiliate Revenue** | Low | Low | $100/mo | $500/mo | 💡 Tier 4 | Phase 6 |
+| **Data Insights** | Medium | Low | $5-10K/mo | $20-40K/mo | ⚠️ Review | Phase 9 |
+
+---
+
+## 🎯 Final Recommendations
+
+### Implement Immediately (Phase 2 - Monetization)
+1. ✅ **Premium Subscriptions** - Core recurring revenue
+2. ✅ **Microtransactions** (tokens, themes) - High margin impulse purchases
+3. ✅ **Rewarded Video Ads** - Highest ROI for free user monetization
+4. ✅ **Banner Ads** - Easy baseline revenue
+
+### Implement Mid-Term (Phases 5-6)
+5. ✅ **Puzzle Packs** - Content variety, one-time purchases
+6. ✅ **Affiliate Links** - Low effort passive income
+
+### Implement Long-Term (Phases 8-9, Year 2+)
+7. ✅ **Sponsored Puzzles** - After reaching 50K+ users
+8. ✅ **B2B Licensing** - Once product is proven & polished
+9. ✅ **Tournaments** - Once community is strong (legal review required)
+10. ✅ **API Access** - Once puzzle generation is bulletproof
+11. ✅ **Merchandise** - Brand building at scale
+
+### Consider Carefully (Ethical/Legal Review Required)
+12. ⚠️ **Data Insights** - Only if anonymized, legal, and ethical
+
+---
+
+## 💰 Combined Revenue Projection
+
+**At 50,000 Users** (Conservative):
+- Premium subscriptions: $50,000/mo
+- Microtransactions: $10,000/mo
+- Rewarded video ads: $15,000/mo
+- Banner ads: $5,000/mo
+- Puzzle packs: $730/mo
+- **Total: ~$80,700/mo = $968K/year**
+
+**At 500,000 Users** (Optimistic):
+- Premium subscriptions: $400,000/mo
+- Microtransactions: $50,000/mo
+- Rewarded video ads: $100,000/mo
+- Banner ads: $40,000/mo
+- Sponsored puzzles: $50,000/mo
+- B2B licensing: $40,000/mo
+- Puzzle packs: $7,300/mo
+- API access: $15,000/mo
+- Tournaments: $5,000/mo
+- **Total: ~$707K/mo = $8.5M/year ARR** 🚀
+
+---
+
+**Infrastructure costs at 500K users**: ~$15K/year
+**Profit margin**: 99.8%
+
+This is a **goldmine** if executed well. 💎
 
 ---
 
