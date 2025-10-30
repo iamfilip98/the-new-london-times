@@ -278,6 +278,116 @@ class AchievementsManager {
                 rarity: 'legendary'
             },
 
+            // PERFECT PLAY BONUS ACHIEVEMENTS (12) - New Scoring System
+            {
+                id: 'flawless_victory_easy',
+                title: 'Flawless Victory (Easy)',
+                description: 'Complete Easy with 0 errors and 0 hints (1.5x bonus)',
+                icon: 'fas fa-trophy',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus', difficulty: 'easy', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'flawless_victory_medium',
+                title: 'Flawless Victory (Medium)',
+                description: 'Complete Medium with 0 errors and 0 hints (1.5x bonus)',
+                icon: 'fas fa-trophy',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus', difficulty: 'medium', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'flawless_victory_hard',
+                title: 'Flawless Victory (Hard)',
+                description: 'Complete Hard with 0 errors and 0 hints (1.5x bonus)',
+                icon: 'fas fa-trophy',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus', difficulty: 'hard', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'perfect_strategy_easy',
+                title: 'Perfect Strategy (Easy)',
+                description: 'Complete Easy with 0 errors using only Level 1 hints (1.35x bonus)',
+                icon: 'fas fa-brain',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus', difficulty: 'easy', value: 1 },
+                rarity: 'common'
+            },
+            {
+                id: 'perfect_strategy_medium',
+                title: 'Perfect Strategy (Medium)',
+                description: 'Complete Medium with 0 errors using only Level 1 hints (1.35x bonus)',
+                icon: 'fas fa-brain',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus', difficulty: 'medium', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'perfect_strategy_hard',
+                title: 'Perfect Strategy (Hard)',
+                description: 'Complete Hard with 0 errors using only Level 1 hints (1.35x bonus)',
+                icon: 'fas fa-brain',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus', difficulty: 'hard', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'perfect_game_easy',
+                title: 'Perfect Game (Easy)',
+                description: 'Score 2000+ points on Easy (2x base score milestone)',
+                icon: 'fas fa-medal',
+                type: 'perfect_game',
+                requirement: { type: 'score_milestone', difficulty: 'easy', value: 2000 },
+                rarity: 'epic'
+            },
+            {
+                id: 'perfect_game_medium',
+                title: 'Perfect Game (Medium)',
+                description: 'Score 3000+ points on Medium (2x base score milestone)',
+                icon: 'fas fa-medal',
+                type: 'perfect_game',
+                requirement: { type: 'score_milestone', difficulty: 'medium', value: 3000 },
+                rarity: 'epic'
+            },
+            {
+                id: 'perfect_game_hard',
+                title: 'Perfect Game (Hard)',
+                description: 'Score 10000+ points on Hard (2x base score milestone)',
+                icon: 'fas fa-medal',
+                type: 'perfect_game',
+                requirement: { type: 'score_milestone', difficulty: 'hard', value: 10000 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'flawless_week',
+                title: 'Flawless Week',
+                description: 'Get 7 flawless victories in a row',
+                icon: 'fas fa-fire-alt',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_streak', value: 7 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'strategic_master',
+                title: 'Strategic Master',
+                description: 'Achieve 50 perfect strategy bonuses',
+                icon: 'fas fa-chess-king',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus_count', value: 50 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'flawless_master',
+                title: 'Flawless Master',
+                description: 'Achieve 100 flawless victories',
+                icon: 'fas fa-crown',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus_count', value: 100 },
+                rarity: 'legendary'
+            },
+
             // SCORE ACHIEVEMENTS (9)
             {
                 id: 'point_collector',
@@ -1427,7 +1537,14 @@ class AchievementsManager {
             case 'easy_medium_time_under':
             case 'old_puzzle_completion':
             case 'final_achievement':
-                // These achievement types are not yet implemented
+            case 'flawless_bonus':
+            case 'perfect_bonus':
+            case 'score_milestone':
+            case 'flawless_streak':
+            case 'perfect_bonus_count':
+            case 'flawless_bonus_count':
+                // These achievement types are not yet implemented or require new data tracking
+                // flawless_bonus, perfect_bonus, etc. will be implemented once individual_games table tracks bonus types
                 // They will be added as the underlying tracking systems are developed
                 return [];
 

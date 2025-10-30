@@ -1464,9 +1464,9 @@ class SudokuEngine {
         const statusDiv = document.getElementById('gameStatus');
         console.log('📍 statusDiv found:', !!statusDiv, 'current hintState:', this.hintState);
 
-        // 🎯 NEW: 3-Stage Progressive Hint System (Option A - Fractional Penalties)
+        // 🎯 NEW: 3-Stage Progressive Hint System with Improved Messages
         if (this.hintState === 'none') {
-            // 🔍 LEVEL 1: Direction Hint - "Check row 3"
+            // 🔍 LEVEL 1: Strategic Guidance - Educational and helpful
             const hintCell = this.findBestHint();
 
             if (hintCell) {
@@ -1475,50 +1475,53 @@ class SudokuEngine {
                 this.currentHintCell = { row, col, value, technique };
                 this.hintState = 'direction';
 
-                // Track Level 1 hint (fractional penalty)
+                // Track Level 1 hint (fractional penalty, keeps Perfect bonus!)
                 this.hintLevel1Count++;
                 this.hintTimePenalty += 2; // 2 seconds penalty
                 this.hints++; // Keep total hint count for display
 
-                // Determine hint direction (row/col/box)
+                // Determine hint direction and highlight area
                 const hintDirection = this.getHintDirection(row, col);
-                console.log('🧭 Hint direction:', hintDirection);
+                this.highlightHintArea(hintDirection);
 
-                // Show direction message (no cell highlighting yet)
+                // Get technique explanation
+                const techniqueInfo = this.getTechniqueExplanation(technique);
+
+                // Show improved Level 1 message
                 statusDiv.innerHTML = `
                     <div class="hint-message direction">
                         <div class="hint-header">
                             <i class="fas fa-compass"></i>
-                            <strong>Level 1 Hint: Direction</strong>
+                            <strong>Level 1: Strategic Guidance</strong>
                         </div>
                         <div class="hint-body">
-                            ${hintDirection} - Try looking for a ${technique}.
+                            <strong>🔍 Look at ${hintDirection.text}</strong><br>
+                            <em>${techniqueInfo.name}:</em> ${techniqueInfo.description}<br><br>
+                            ${hintDirection.cells.length} empty ${hintDirection.cells.length === 1 ? 'cell' : 'cells'} highlighted.
+                            Check each one and find which has the ${technique.includes('Hidden') ? 'number that must go there' : 'fewest options'}.
                         </div>
                         <div class="hint-penalty">
-                            Penalty: 2 seconds | Click again for cell location (+3s) | Or solve it yourself!
+                            💡 Penalty: 0.5% (keeps Perfect bonus!) | Click again for exact cell (+3%, breaks bonus)
                         </div>
                     </div>
                 `;
-                console.log('✅ Level 1 hint message set in statusDiv');
-                console.log('📊 statusDiv display style:', window.getComputedStyle(statusDiv).display);
+                console.log('✅ Level 1 hint message set with area highlighting');
             } else {
                 console.log('❌ No hint cell found');
                 statusDiv.innerHTML = '<div class="status-message">No hints available right now.</div>';
             }
         } else if (this.hintState === 'direction') {
-            // 📍 LEVEL 2: Location Hint - "Cell R3C4 needs attention"
+            // 📍 LEVEL 2: Specific Cell with Logic - Shows reasoning
             if (this.currentHintCell) {
                 const { row, col, value, technique } = this.currentHintCell;
                 this.hintState = 'location';
 
-                // Track Level 2 hint (fractional penalty)
+                // Track Level 2 hint (breaks Perfect/Flawless bonus!)
                 this.hintLevel2Count++;
                 this.hintTimePenalty += 3; // +3 seconds penalty (total 5s)
 
-                // Clear any existing hint visual indicators
+                // Clear area highlights, add cell highlight
                 this.clearHintIndicators();
-
-                // Add visual indication to the pointed cell
                 this.addHintIndicator(row, col, 'location');
 
                 // Select the pointed cell
@@ -1531,31 +1534,48 @@ class SudokuEngine {
                     if (cell) this.enhancements.animateHintGlow(cell);
                 }
 
-                // Show location message
+                // Get technique explanation and logic
+                const techniqueInfo = this.getTechniqueExplanation(technique);
+                const possibleValues = this.getPossibleValues(row, col);
+                const rowNumbers = Array.from({length: 9}, (_, i) => i + 1).filter(n => !this.isNumberInRow(row, n));
+
+                // Show improved Level 2 message with logic
                 statusDiv.innerHTML = `
                     <div class="hint-message location">
                         <div class="hint-header">
                             <i class="fas fa-map-marker-alt"></i>
-                            <strong>Level 2 Hint: Location</strong>
+                            <strong>Level 2: Specific Cell</strong>
                         </div>
                         <div class="hint-body">
-                            Focus on cell R${row + 1}C${col + 1}. Use ${technique} to solve it.
+                            <strong>🎯 Cell: Row ${row + 1}, Column ${col + 1}</strong><br><br>
+                            <em>${techniqueInfo.name}:</em> ${techniqueInfo.description}<br><br>
+                            ${techniqueInfo.detail}<br>
+                            This cell has ${possibleValues.length === 1 ? 'only 1 option' : `${possibleValues.length} options: ${possibleValues.join(', ')}`}.
+                            ${possibleValues.length === 1 ? 'Can you figure out which one?' : 'Check which numbers are already in this row, column, and box!'}
                         </div>
                         <div class="hint-penalty">
-                            Total penalty: 5 seconds (2+3) | Click again to reveal answer (+10s)
+                            ⚠️ Penalty: 3% + Lost Perfect/Flawless bonus | Click again to reveal answer (+10s)
                         </div>
                     </div>
                 `;
             }
         } else if (this.hintState === 'location') {
-            // 💡 LEVEL 3: Answer Reveal - "The answer is 7"
+            // 💡 LEVEL 3: Answer Reveal with Educational Reasoning
             if (this.currentHintCell) {
                 const { row, col, value, technique } = this.currentHintCell;
                 this.hintState = 'revealed';
 
-                // Track Level 3 hint (full penalty)
+                // Track Level 3 hint (breaks Perfect/Flawless bonus!)
                 this.hintLevel3Count++;
                 this.hintTimePenalty += 10; // +10 seconds penalty (total 15s)
+
+                // Get technique explanation
+                const techniqueInfo = this.getTechniqueExplanation(technique);
+
+                // Analyze why this is the answer
+                const possibleValues = this.getPossibleValues(row, col);
+                const rowMissing = Array.from({length: 9}, (_, i) => i + 1).filter(n => !this.isNumberInRow(row, n));
+                const colMissing = Array.from({length: 9}, (_, i) => i + 1).filter(n => !this.isNumberInColumn(col, n));
 
                 // Place the value
                 this.playerGrid[row][col] = value;
@@ -1565,7 +1585,7 @@ class SudokuEngine {
                 // Lock the cell since hints provide correct answers
                 this.lockedGrid[row][col] = true;
 
-                // Update candidates for all cells (remove the placed number from candidates in same row/col/box)
+                // Update candidates for all cells
                 this.updateAllCandidates();
 
                 // Update visual indicator
@@ -1575,18 +1595,25 @@ class SudokuEngine {
                 this.selectCell(row, col);
                 this.updateDisplay();
 
-                // Show reveal message
+                // Show educational reveal message
                 statusDiv.innerHTML = `
                     <div class="hint-message revealed">
                         <div class="hint-header">
                             <i class="fas fa-lightbulb"></i>
-                            <strong>Level 3 Hint: Answer Revealed</strong>
+                            <strong>Level 3: Answer Revealed</strong>
                         </div>
                         <div class="hint-body">
-                            Cell R${row + 1}C${col + 1} = ${value} (${technique})
+                            <strong>✅ Answer: ${value}</strong> (Row ${row + 1}, Column ${col + 1})<br><br>
+                            <em>${techniqueInfo.name}:</em> ${techniqueInfo.description}<br><br>
+                            <strong>Why ${value}?</strong><br>
+                            ${possibleValues.length === 1
+                                ? `This was the only number that fit after checking the row, column, and box.`
+                                : `Of the ${possibleValues.length} options (${possibleValues.join(', ')}), only ${value} is valid here.`
+                            }<br><br>
+                            💡 <strong>Learn the pattern:</strong> ${techniqueInfo.detail}
                         </div>
                         <div class="hint-penalty">
-                            Total penalty: 15 seconds (2+3+10)
+                            ⚠️ Total penalty: 3% + Lost Perfect/Flawless bonus + Time penalty (15s)
                         </div>
                     </div>
                 `;
@@ -1673,6 +1700,48 @@ class SudokuEngine {
         }
     }
 
+    getTechniqueExplanation(technique) {
+        // Translate technical terms into user-friendly explanations (jargon + plain English)
+        const explanations = {
+            'Naked Single': {
+                name: 'Naked Single',
+                description: 'When only one number can fit in a cell',
+                detail: 'This cell has only one valid option after checking its row, column, and box.'
+            },
+            'Hidden Single (Row)': {
+                name: 'Hidden Single (Row)',
+                description: 'When a number can only go in one cell within a row',
+                detail: 'This number must go here because all other cells in the row are blocked.'
+            },
+            'Hidden Single (Column)': {
+                name: 'Hidden Single (Column)',
+                description: 'When a number can only go in one cell within a column',
+                detail: 'This number must go here because all other cells in the column are blocked.'
+            },
+            'Hidden Single (Box)': {
+                name: 'Hidden Single (Box)',
+                description: 'When a number can only go in one cell within a 3×3 box',
+                detail: 'This number must go here because all other cells in the box are blocked.'
+            },
+            'Strategic Hint': {
+                name: 'Strategic Hint',
+                description: 'A cell with very few options',
+                detail: 'Try eliminating options based on the row, column, and box.'
+            },
+            'Solution Hint': {
+                name: 'Solution Hint',
+                description: 'The correct answer for this cell',
+                detail: 'This is the right number based on the solution.'
+            }
+        };
+
+        return explanations[technique] || {
+            name: technique,
+            description: 'A valid move',
+            detail: 'This is a correct next step.'
+        };
+    }
+
     getHintDirection(row, col) {
         // Generate a hint direction message based on cell location
         const boxRow = Math.floor(row / 3);
@@ -1686,19 +1755,69 @@ class SudokuEngine {
         // Randomly choose between row/col/box hint
         const hintType = Math.random();
         if (hintType < 0.33) {
-            return `Check row ${row + 1}`;
+            return {
+                area: 'row',
+                number: row + 1,
+                cells: this.getEmptyCellsInRow(row),
+                text: `row ${row + 1}`
+            };
         } else if (hintType < 0.66) {
-            return `Check column ${col + 1}`;
+            return {
+                area: 'column',
+                number: col + 1,
+                cells: this.getEmptyCellsInColumn(col),
+                text: `column ${col + 1}`
+            };
         } else {
-            return `Check the ${boxNames[boxRow][boxCol]}`;
+            return {
+                area: 'box',
+                boxRow,
+                boxCol,
+                cells: this.getEmptyCellsInBox(boxRow, boxCol),
+                text: `the ${boxNames[boxRow][boxCol]}`
+            };
         }
+    }
+
+    getEmptyCellsInRow(row) {
+        const cells = [];
+        for (let col = 0; col < 9; col++) {
+            if (this.playerGrid[row][col] === 0) {
+                cells.push({ row, col });
+            }
+        }
+        return cells;
+    }
+
+    getEmptyCellsInColumn(col) {
+        const cells = [];
+        for (let row = 0; row < 9; row++) {
+            if (this.playerGrid[row][col] === 0) {
+                cells.push({ row, col });
+            }
+        }
+        return cells;
+    }
+
+    getEmptyCellsInBox(boxRow, boxCol) {
+        const cells = [];
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                const row = boxRow * 3 + r;
+                const col = boxCol * 3 + c;
+                if (this.playerGrid[row][col] === 0) {
+                    cells.push({ row, col });
+                }
+            }
+        }
+        return cells;
     }
 
     clearHintIndicators() {
         // Remove hint indicators from all cells
-        const cells = document.querySelectorAll('.cell');
+        const cells = document.querySelectorAll('.sudoku-cell');
         cells.forEach(cell => {
-            cell.classList.remove('hint-location', 'hint-revealed');
+            cell.classList.remove('hint-location', 'hint-revealed', 'hint-area');
         });
     }
 
@@ -1708,6 +1827,18 @@ class SudokuEngine {
         if (cell) {
             cell.classList.add(`hint-${type}`);
         }
+    }
+
+    highlightHintArea(hintDirection) {
+        // Highlight the general area for Level 1 hints
+        this.clearHintIndicators();
+
+        hintDirection.cells.forEach(({ row, col }) => {
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            if (cell) {
+                cell.classList.add('hint-area');
+            }
+        });
     }
 
     findBestHint() {
@@ -2017,7 +2148,15 @@ class SudokuEngine {
 
     /**
      * Calculate final score for completed puzzle
-     * Uses linear time scaling with harsh error penalties and gentle hint penalties
+     * NEW SYSTEM: Rewards perfect play with multipliers, encourages strategic Level 1 hint usage
+     *
+     * Key Changes:
+     * - Flatter time curve (max 1.5x instead of 2x)
+     * - Error penalty increased to 15% (from 12%)
+     * - 🏆 FLAWLESS BONUS: 1.5x multiplier (0 errors, 0 hints)
+     * - ⭐ PERFECT BONUS: 1.35x multiplier (0 errors, Level 1 hints only)
+     * - Level 1 hints: 0.5% penalty each (minimal - encourages learning)
+     * - Any Level 2/3 hint breaks Perfect/Flawless bonus
      */
     calculateFinalScore() {
         const baseScores = {
@@ -2026,55 +2165,88 @@ class SudokuEngine {
             hard: 5000
         };
 
+        // 🎯 NEW TARGET TIMES: Based on 60-70th percentile of perfect play
         const targetTimes = {
-            easy: 210,    // 3:30 (adjusted for fewer clues)
-            medium: 180,  // 3:00 (adjusted for fewer clues)
-            hard: 435     // 7:15 (slightly reduced with 1 more clue)
+            easy: 150,    // 2:30 (down from 3:30)
+            medium: 150,  // 2:30 (down from 3:00)
+            hard: 270     // 4:30 (down from 7:15)
         };
 
-        // TIME SCORING (linear scaling)
         const baseScore = baseScores[this.currentDifficulty];
         const targetTime = targetTimes[this.currentDifficulty];
-        const timeRatio = this.timer / targetTime;
+        const actualTime = this.timer;
 
-        let score;
-        if (timeRatio <= 1.0) {
-            // Faster than target: scale from 2x down to 1x
-            score = baseScore * (2 - timeRatio);
-        } else if (timeRatio <= 2.0) {
-            // Slower than target: scale from 1x down to 0.5x
-            score = baseScore * (1.5 - (timeRatio * 0.5));
+        // ⏱️ TIME SCORING (flatter curve, max 1.5x)
+        let timeMultiplier;
+        if (actualTime <= targetTime) {
+            // Faster than target: scale from 1.5x down to 1.0x
+            // At time=0: multiplier = 1.5
+            // At time=target: multiplier = 1.0
+            const timeAdvantage = (targetTime - actualTime) / targetTime;
+            timeMultiplier = 1.0 + (timeAdvantage * 0.5);
         } else {
-            // Very slow: minimum 0.25x base score
-            score = baseScore * 0.25;
+            // Slower than target: scale from 1.0x down to 0.5x
+            // At time=target: multiplier = 1.0
+            // At time=2*target: multiplier = 0.5
+            const timeRatio = actualTime / targetTime;
+            if (timeRatio <= 2.0) {
+                timeMultiplier = 1.5 - (timeRatio * 0.5);
+            } else {
+                // Very slow: minimum 0.5x
+                timeMultiplier = 0.5;
+            }
         }
 
-        // ERROR PENALTY (harsh - 12% per error, max 60%)
-        const errorPenalty = this.errors * 0.12;
+        let score = baseScore * timeMultiplier;
+
+        // ❌ ERROR PENALTY (harsh - 15% per error, max 60%)
+        const errorPenalty = this.errors * 0.15;
         score *= (1 - Math.min(errorPenalty, 0.60));
 
-        // 🎯 NEW: FRACTIONAL HINT PENALTY (Option A - Progressive System)
-        // Calculate effective hints using weighted fractional values
-        const effectiveHints =
-            (this.hintLevel1Count * 0.3) +   // Level 1 (Direction) = 0.3 hints each
-            (this.hintLevel2Count * 0.6) +   // Level 2 (Location) = 0.6 hints each
-            (this.hintLevel3Count * 1.0);    // Level 3 (Answer) = 1.0 hints each
+        // 💡 HINT PENALTIES (different treatment for Level 1 vs Level 2/3)
+        const hasLevel1Only = this.hintLevel1Count > 0 && this.hintLevel2Count === 0 && this.hintLevel3Count === 0;
+        const hasNoHints = this.hintLevel1Count === 0 && this.hintLevel2Count === 0 && this.hintLevel3Count === 0;
+        const hasLevel2Or3 = this.hintLevel2Count > 0 || this.hintLevel3Count > 0;
 
-        // Progressive penalty calculation based on effective hints
-        let hintPenalty = 0;
-        if (effectiveHints <= 1) {
-            hintPenalty = effectiveHints * 0.03;  // 1-3% for first effective hint
-        } else if (effectiveHints <= 2) {
-            hintPenalty = 0.03 + ((effectiveHints - 1) * 0.03);  // 3-6%
-        } else if (effectiveHints <= 3) {
-            hintPenalty = 0.06 + ((effectiveHints - 2) * 0.04);  // 6-10%
-        } else if (effectiveHints <= 4) {
-            hintPenalty = 0.10 + ((effectiveHints - 3) * 0.05);  // 10-15%
-        } else {
-            hintPenalty = Math.min(0.20, 0.15 + ((effectiveHints - 4) * 0.05));  // 15-20% cap
+        // Level 1 hints: Small penalty (0.5% each)
+        if (this.hintLevel1Count > 0) {
+            const level1Penalty = this.hintLevel1Count * 0.005; // 0.5% per hint
+            score *= (1 - level1Penalty);
         }
 
-        score *= (1 - hintPenalty);
+        // Level 2/3 hints: Progressive penalty (breaks perfect/flawless bonus)
+        if (hasLevel2Or3) {
+            const effectiveHints =
+                (this.hintLevel2Count * 0.6) +   // Level 2 (Location) = 0.6 hints each
+                (this.hintLevel3Count * 1.0);    // Level 3 (Answer) = 1.0 hints each
+
+            let hintPenalty = 0;
+            if (effectiveHints <= 1) {
+                hintPenalty = effectiveHints * 0.03;  // 1-3%
+            } else if (effectiveHints <= 2) {
+                hintPenalty = 0.03 + ((effectiveHints - 1) * 0.03);  // 3-6%
+            } else if (effectiveHints <= 3) {
+                hintPenalty = 0.06 + ((effectiveHints - 2) * 0.04);  // 6-10%
+            } else if (effectiveHints <= 4) {
+                hintPenalty = 0.10 + ((effectiveHints - 3) * 0.05);  // 10-15%
+            } else {
+                hintPenalty = Math.min(0.20, 0.15 + ((effectiveHints - 4) * 0.05));  // 15-20% cap
+            }
+
+            score *= (1 - hintPenalty);
+        }
+
+        // 🎖️ PERFECT PLAY BONUS SYSTEM
+        if (this.errors === 0) {
+            if (hasNoHints) {
+                // 🏆 FLAWLESS PLAY: 1.5x multiplier (0 errors, 0 hints)
+                score *= 1.5;
+            } else if (hasLevel1Only) {
+                // ⭐ PERFECT PLAY: 1.35x multiplier (0 errors, Level 1 hints only)
+                score *= 1.35;
+            }
+            // If has Level 2/3 hints, no bonus (but already applied Level 1 tiny penalty)
+        }
 
         return Math.round(score);
     }
@@ -3271,12 +3443,55 @@ class SudokuEngine {
                         <div class="shortcuts-section">
                             <h4>Game Features</h4>
                             <div class="shortcuts-list">
-                                <div class="shortcut-item"><kbd>H</kbd><span>Progressive hint (2s/5s/15s)</span></div>
+                                <div class="shortcut-item"><kbd>H</kbd><span>Progressive hint (3 levels)</span></div>
                                 <div class="shortcut-item"><kbd>P</kbd><span>Pause / Resume</span></div>
                                 <div class="shortcut-item"><kbd>U</kbd> / <kbd>Ctrl+Z</kbd><span>Undo</span></div>
                                 <div class="shortcut-item"><kbd>R</kbd> / <kbd>Ctrl+Y</kbd><span>Redo</span></div>
                                 <div class="shortcut-item"><kbd>Ctrl+Shift+Z</kbd><span>Redo (alt)</span></div>
                                 <div class="shortcut-item"><kbd>?</kbd><span>Show shortcuts</span></div>
+                            </div>
+                        </div>
+                        <div class="shortcuts-section">
+                            <h4>💡 Hint System Explained</h4>
+                            <div class="shortcuts-list hint-explanation">
+                                <div class="hint-level">
+                                    <strong>Level 1: Strategic Guidance (0.5% penalty)</strong>
+                                    <p><em>Keeps Perfect Play bonus! (1.35x multiplier)</em></p>
+                                    <p>• Highlights the row/column/box to check<br>
+                                    • Explains the technique in plain English<br>
+                                    • Educational - helps you learn patterns<br>
+                                    • Use freely to improve your skills!</p>
+                                </div>
+                                <div class="hint-level">
+                                    <strong>Level 2: Specific Cell (3% penalty)</strong>
+                                    <p><em>Breaks Perfect/Flawless bonus!</em></p>
+                                    <p>• Shows exact cell location<br>
+                                    • Explains the logic and reasoning<br>
+                                    • You still need to find the answer<br>
+                                    • Major penalty - use as last resort</p>
+                                </div>
+                                <div class="hint-level">
+                                    <strong>Level 3: Answer Reveal (3% penalty)</strong>
+                                    <p><em>Breaks Perfect/Flawless bonus!</em></p>
+                                    <p>• Reveals the correct answer<br>
+                                    • Explains why it's correct<br>
+                                    • Teaches the pattern for next time<br>
+                                    • Locks the cell to prevent changes</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shortcuts-section">
+                            <h4>🧠 Sudoku Techniques</h4>
+                            <div class="shortcuts-list technique-explanation">
+                                <div class="technique-item">
+                                    <strong>Naked Single:</strong> When only one number can fit in a cell after checking its row, column, and box.
+                                </div>
+                                <div class="technique-item">
+                                    <strong>Hidden Single:</strong> When a number can only go in one cell within a row, column, or box.
+                                </div>
+                                <div class="technique-item">
+                                    <strong>Process of Elimination:</strong> Systematically check what numbers can't go in a cell to find what must go there.
+                                </div>
                             </div>
                         </div>
                         <div class="shortcuts-note">
@@ -4315,9 +4530,9 @@ class SudokuEngine {
         debugLog(`Attempting to load saved state for ${difficulty} difficulty`);
         await this.loadGameState();
 
-        // If no saved state was found, start a new game
-        if (!this.gameStarted) {
-            debugLog(`No saved state found for ${difficulty}, loading fresh puzzle`);
+        // If no saved state was found or the game is completed, start a new game
+        if (!this.gameStarted || this.gameCompleted) {
+            debugLog(`No saved state found or game completed for ${difficulty}, loading fresh puzzle`);
             this.loadPuzzle(difficulty);
         } else {
             debugLog(`Loaded saved state for ${difficulty}. Completed: ${this.gameCompleted}`);
