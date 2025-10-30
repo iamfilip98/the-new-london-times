@@ -7,6 +7,15 @@ A sophisticated full-stack web application that transforms daily Sudoku solving 
 
 ## 🆕 Recent Updates (October 2025)
 
+### **Phase 7: Enhanced Scoring System & Perfect Play** (October 30, 2025)
+- 🎖️ **Perfect Play Bonuses**: Flawless Victory (1.5x) & Perfect Strategy (1.35x) multipliers
+- ⚖️ **Balanced Scoring**: Flatter time curve (max 1.5x) rewards skill over pure speed
+- 🎯 **Realistic Targets**: New targets based on perfect play data (Easy/Medium: 2:30, Hard: 4:30)
+- 📈 **Harsher Errors**: 15% penalty per error (up from 12%) - first mistake is costly
+- 💡 **Level 1 Hints Encouraged**: Only 0.5% penalty - promotes strategic learning
+- 🏆 **12 New Achievements**: Flawless Victory, Perfect Strategy, and 2x Base Score milestones
+- 🔄 **Fresh Start**: All user data wiped for fair testing of new system
+
 ### **Phase 6: Performance & Cleanup**
 - ⚡ **10-40x Faster Database Queries**: Added 11 database indexes for lightning-fast data retrieval
 - 🗄️ **Smart HTTP Caching**: Intelligent caching headers reduce API calls and bandwidth
@@ -158,34 +167,43 @@ function generatePuzzle(solution, difficulty, seed) {
 - **Auto-Save**: Automatic game state persistence every 30 seconds
 - **Completion Detection**: Automatic puzzle validation and scoring
 
-### 🏆 **Competitive Scoring System**
+### 🏆 **Competitive Scoring System** (Updated October 2025)
 ```javascript
-// Linear time scaling with harsh error and gentle hint penalties
-const baseScores = { easy: 1000, medium: 2000, hard: 4000 };
-const targetTimes = { easy: 240, medium: 330, hard: 540 }; // seconds
-const timeRatio = timer / targetTime;
+// NEW: Rewards perfect play with multipliers, flatter time curve
+const baseScores = { easy: 1000, medium: 1500, hard: 5000 };
+const targetTimes = { easy: 150, medium: 150, hard: 270 }; // 2:30, 2:30, 4:30
 
-// Time scoring: 2x at instant, 1x at target, 0.5x at 2x target, 0.25x min
-let score = timeRatio <= 1.0 ? baseScore * (2 - timeRatio) :
-            timeRatio <= 2.0 ? baseScore * (1.5 - timeRatio * 0.5) :
-            baseScore * 0.25;
+// Time scoring: max 1.5x (flatter curve encourages balanced play)
+const timeMultiplier = actualTime <= targetTime ?
+    1.0 + ((targetTime - actualTime) / targetTime) * 0.5 : // 1.0x to 1.5x
+    timeRatio <= 2.0 ? 1.5 - (timeRatio * 0.5) :           // 1.0x to 0.5x
+    0.5;                                                     // minimum 0.5x
 
-// Error penalty: harsh 12% per error (max 60%)
-score *= (1 - Math.min(errors * 0.12, 0.60));
+let score = baseScore * timeMultiplier;
 
-// Hint penalty: fractional weighting (L1: 0.3, L2: 0.6, L3: 1.0)
-// Progressive: 1-3% (≤1 hint), 3-6% (≤2), 6-10% (≤3), 10-15% (≤4), 15-20% (5+)
-score *= (1 - hintPenalty);
+// Error penalty: HARSHER 15% per error (max 60%)
+score *= (1 - Math.min(errors * 0.15, 0.60));
+
+// Hint penalties: Level 1 = 0.5% each (encourages learning)
+// Level 2/3 = Progressive 3-20% (breaks Perfect bonus)
+if (level1HintsOnly) score *= (1 - level1Count * 0.005);
+else if (hasLevel2Or3) score *= (1 - progressiveHintPenalty);
+
+// 🎖️ PERFECT PLAY BONUSES (New!)
+if (errors === 0 && hintsLevel1Only) score *= 1.35;  // ⭐ Perfect Strategy
+if (errors === 0 && noHints) score *= 1.50;          // 🏆 Flawless Victory
 ```
 
-**Scoring Features:**
-- **Linear Time Scaling**: Predictable score ranges, rewards speed proportionally
-- **Target-Based**: 4min (Easy), 5.5min (Medium), 9min (Hard) for base score
-- **Harsh Error Penalties**: 12% per error (max 60%) - accuracy is critical!
-- **Smart Hint Penalties**: Fractional weighting (Direction: 0.3, Location: 0.6, Answer: 1.0) encourages minimal help
-- **Winner Bonuses**: 30% bonus per difficulty level at daily summary (not individual puzzles)
-- **Score Ranges**: Easy 250-2000, Medium 500-4000, Hard 1000-8000 points
-- **Real-Time Updates**: Live score calculations and comparisons
+**New Scoring Features:**
+- **🏆 Flawless Victory Bonus**: 1.5x multiplier for 0 errors, 0 hints (achieves up to 2.25x base!)
+- **⭐ Perfect Strategy Bonus**: 1.35x multiplier for 0 errors with Level 1 hints only
+- **Flatter Time Curve**: Max 1.5x (down from 2x) - less speed-focused, more balanced
+- **Adjusted Targets**: Easy 2:30, Medium 2:30, Hard 4:30 (based on perfect play data)
+- **Harsher Errors**: 15% per error (up from 12%) - makes first error very costly
+- **Level 1 Hints Encouraged**: Only 0.5% penalty - promotes strategic learning
+- **Strategic Depth**: Perfect play is now optimal strategy (hints for speed no longer worth it)
+- **Score Ranges**: Easy 500-2250, Medium 750-3375, Hard 2500-11250 points
+- **2x Base Milestone**: Achievable with perfect fast play (2000/3000/10000+ unlocks achievements)
 
 ### 🎲 **Intelligent Puzzle Algorithm**
 The puzzle generation system uses advanced techniques:
