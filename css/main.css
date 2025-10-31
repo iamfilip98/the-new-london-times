@@ -9198,73 +9198,17 @@ select:focus-visible,
     }
 }
 /* ===================================
-   Enhanced Empty States
+   Settings Panel Modal
    =================================== */
 
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    text-align: center;
-    min-height: 300px;
-}
-
-.empty-state-icon {
-    font-size: 4rem;
-    color: var(--accent-blue);
-    opacity: 0.6;
-    margin-bottom: 1.5rem;
-}
-
-.empty-state-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 0.75rem;
-}
-
-.empty-state-message {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    max-width: 400px;
-    line-height: 1.6;
-}
-
-.empty-state-cta {
-    padding: 0.875rem 1.75rem;
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.empty-state-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-/* ===================================
-   Keyboard Shortcuts Modal
-   =================================== */
-
-.shortcuts-modal {
+.settings-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
     display: none;
     align-items: center;
     justify-content: center;
@@ -9272,33 +9216,22 @@ select:focus-visible,
     padding: 1rem;
 }
 
-.shortcuts-modal.active {
+.settings-modal.active {
     display: flex;
 }
 
-.shortcuts-content {
+.settings-content {
     background: var(--darker-bg);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-xl);
-    max-width: 700px;
+    max-width: 600px;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
     animation: modalSlideIn 0.3s ease;
 }
 
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.shortcuts-header {
+.settings-header {
     padding: 2rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
@@ -9306,7 +9239,7 @@ select:focus-visible,
     align-items: center;
 }
 
-.shortcuts-title {
+.settings-title {
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -9315,7 +9248,7 @@ select:focus-visible,
     gap: 0.75rem;
 }
 
-.shortcuts-close {
+.settings-close {
     background: none;
     border: none;
     color: var(--text-secondary);
@@ -9330,107 +9263,269 @@ select:focus-visible,
     transition: all 0.2s ease;
 }
 
-.shortcuts-close:hover {
+.settings-close:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
 }
 
-.shortcuts-body {
+.settings-body {
     padding: 2rem;
 }
 
-.shortcuts-section {
-    margin-bottom: 2rem;
+.settings-section {
+    margin-bottom: 2.5rem;
 }
 
-.shortcuts-section:last-child {
+.settings-section:last-child {
     margin-bottom: 0;
 }
 
-.shortcuts-section-title {
+.settings-section-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--accent-blue);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-}
-
-.shortcuts-list {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.shortcut-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.shortcut-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.shortcut-description {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-}
-
-.shortcut-keys {
-    display: flex;
     gap: 0.5rem;
 }
 
-.key {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.875rem;
-    font-weight: 600;
+.settings-group {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.settings-group:last-child {
+    margin-bottom: 0;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.setting-item:first-child {
+    padding-top: 0;
+}
+
+.setting-label {
+    flex: 1;
+}
+
+.setting-name {
+    font-size: 1rem;
+    font-weight: 500;
     color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    min-width: 32px;
+    margin-bottom: 0.25rem;
+}
+
+.setting-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    border-radius: 34px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background: white;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: var(--primary-gradient);
+    border-color: transparent;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.toggle-switch input:focus + .toggle-slider {
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
+}
+
+/* Theme Grid */
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.theme-option {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
     text-align: center;
 }
 
-.key-plus {
-    color: var(--text-muted);
-    font-weight: 400;
+.theme-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.theme-option.active {
+    background: var(--primary-gradient);
+    border-color: transparent;
+    box-shadow: var(--shadow-lg);
+}
+
+.theme-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.theme-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.theme-description {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* Select Dropdown */
+.setting-select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.625rem 1rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+}
+
+.setting-select:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.setting-select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+}
+
+/* Save Button */
+.settings-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.settings-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.settings-btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.settings-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.settings-btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
 }
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .shortcuts-content {
+    .settings-content {
         max-height: 90vh;
     }
     
-    .shortcuts-header,
-    .shortcuts-body {
+    .settings-header,
+    .settings-body,
+    .settings-footer {
         padding: 1.5rem;
     }
     
-    .shortcuts-title {
+    .settings-title {
         font-size: 1.5rem;
     }
     
-    .shortcut-item {
+    .theme-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .setting-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: 1rem;
     }
     
-    .empty-state {
-        padding: 3rem 1.5rem;
-        min-height: 250px;
-    }
-    
-    .empty-state-icon {
-        font-size: 3rem;
+    .toggle-switch {
+        align-self: flex-end;
     }
 }
