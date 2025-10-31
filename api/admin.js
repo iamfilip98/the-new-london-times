@@ -66,7 +66,6 @@ async function handleClearAll(req, res) {
     // Reset streaks
     await sql`UPDATE streaks SET current_streak = 0, updated_at = NOW()`;
 
-    console.log('All data cleared successfully');
     res.status(200).json({
       success: true,
       message: 'All data cleared successfully',
@@ -95,7 +94,6 @@ async function handleClearOldPuzzles(req, res) {
       WHERE date < ${cutoffDate.toISOString().split('T')[0]}
     `;
 
-    console.log(`Cleared puzzles older than ${daysToKeep} days`);
     res.status(200).json({
       success: true,
       message: `Cleared puzzles older than ${daysToKeep} days`,

@@ -626,7 +626,6 @@ class SudokuEngine {
 
     // Keep the slow generation as a separate method for special use cases
     generatePuzzleFromScratch(difficulty) {
-        console.warn('🐌 Using slow puzzle generation - this may take several seconds');
 
         const puzzle = Array(9).fill().map(() => Array(9).fill(0));
         const solution = Array(9).fill().map(() => Array(9).fill(0));
@@ -711,7 +710,6 @@ class SudokuEngine {
     generateCompleteSolution(grid, iterations = 0) {
         // Add iteration limit to prevent infinite loops
         if (iterations > 10000) {
-            console.warn('Puzzle generation taking too long, using fallback');
             return false;
         }
 
@@ -1458,11 +1456,9 @@ class SudokuEngine {
     }
 
     async getHint() {
-        console.log('🔍 getHint called. gameStarted:', this.gameStarted, 'gameCompleted:', this.gameCompleted, 'gamePaused:', this.gamePaused);
         if (!this.gameStarted || this.gameCompleted || this.gamePaused) return;
 
         const statusDiv = document.getElementById('gameStatus');
-        console.log('📍 statusDiv found:', !!statusDiv, 'current hintState:', this.hintState);
 
         // 🎯 NEW: 3-Stage Progressive Hint System with Improved Messages
         if (this.hintState === 'none') {
@@ -1471,7 +1467,6 @@ class SudokuEngine {
 
             if (hintCell) {
                 const { row, col, value, technique } = hintCell;
-                console.log('💡 Found hint cell:', { row, col, value, technique });
                 this.currentHintCell = { row, col, value, technique };
                 this.hintState = 'direction';
 
@@ -1505,9 +1500,7 @@ class SudokuEngine {
                         </div>
                     </div>
                 `;
-                console.log('✅ Level 1 hint message set with area highlighting');
             } else {
-                console.log('❌ No hint cell found');
                 statusDiv.innerHTML = '<div class="status-message">No hints available right now.</div>';
             }
         } else if (this.hintState === 'direction') {
@@ -2560,23 +2553,15 @@ class SudokuEngine {
             const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
 
             if (ratings.length === 0) {
-                console.log('📊 No puzzle ratings to analyze yet.');
                 return null;
             }
 
-            console.log('📊 Analyzing', ratings.length, 'puzzle ratings...\n');
 
             // 1. Overall statistics
             const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
             const highRatedPuzzles = ratings.filter(r => r.rating >= 8);
             const lowRatedPuzzles = ratings.filter(r => r.rating <= 4);
 
-            console.log('=== OVERALL STATISTICS ===');
-            console.log('Average rating:', avgRating.toFixed(2));
-            console.log('Total puzzles rated:', ratings.length);
-            console.log('High-rated puzzles (≥8):', highRatedPuzzles.length);
-            console.log('Low-rated puzzles (≤4):', lowRatedPuzzles.length);
-            console.log('');
 
             // 2. Difficulty analysis
             const byDifficulty = {};
@@ -2594,65 +2579,42 @@ class SudokuEngine {
                 }
             });
 
-            console.log('=== DIFFICULTY ANALYSIS ===');
             Object.entries(byDifficulty).forEach(([diff, stats]) => {
-                console.log(`${diff.toUpperCase()}:`);
-                console.log('  Average rating:', stats.avgRating.toFixed(2));
-                console.log('  Average time:', Math.floor(stats.avgTime / 60) + 'm ' + (stats.avgTime % 60) + 's');
-                console.log('  Average errors:', stats.avgErrors.toFixed(1));
-                console.log('  Average hints:', stats.avgHints.toFixed(1));
-                console.log('');
             });
 
             // 3. Top patterns in high-rated puzzles
-            console.log('=== HIGH-RATED PUZZLES (Rating ≥ 8) ===');
             if (highRatedPuzzles.length > 0) {
                 const avgTimeHigh = highRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / highRatedPuzzles.length;
                 const avgErrorsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / highRatedPuzzles.length;
                 const avgHintsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / highRatedPuzzles.length;
 
-                console.log('Common characteristics:');
-                console.log('  Average time:', Math.floor(avgTimeHigh / 60) + 'm ' + (avgTimeHigh % 60) + 's');
-                console.log('  Average errors:', avgErrorsHigh.toFixed(1));
-                console.log('  Average hints:', avgHintsHigh.toFixed(1));
 
                 const diffBreakdown = {};
                 highRatedPuzzles.forEach(p => {
                     diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
                 });
-                console.log('  Difficulty breakdown:', diffBreakdown);
-                console.log('');
             }
 
             // 4. Low-rated puzzle analysis
-            console.log('=== LOW-RATED PUZZLES (Rating ≤ 4) ===');
             if (lowRatedPuzzles.length > 0) {
                 const avgTimeLow = lowRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / lowRatedPuzzles.length;
                 const avgErrorsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / lowRatedPuzzles.length;
                 const avgHintsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / lowRatedPuzzles.length;
 
-                console.log('Common characteristics:');
-                console.log('  Average time:', Math.floor(avgTimeLow / 60) + 'm ' + (avgTimeLow % 60) + 's');
-                console.log('  Average errors:', avgErrorsLow.toFixed(1));
-                console.log('  Average hints:', avgHintsLow.toFixed(1));
 
                 const diffBreakdown = {};
                 lowRatedPuzzles.forEach(p => {
                     diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
                 });
-                console.log('  Difficulty breakdown:', diffBreakdown);
-                console.log('');
             }
 
             // 5. Key insights and recommendations
-            console.log('=== KEY INSIGHTS & RECOMMENDATIONS ===');
 
             // Find best difficulty
             const bestDifficulty = Object.entries(byDifficulty)
                 .sort((a, b) => b[1].avgRating - a[1].avgRating)[0];
 
             if (bestDifficulty) {
-                console.log('✅ Best-rated difficulty:', bestDifficulty[0].toUpperCase(),
                     '(avg rating:', bestDifficulty[1].avgRating.toFixed(2) + ')');
             }
 
@@ -2663,8 +2625,6 @@ class SudokuEngine {
             );
 
             if (errorCorrelation < -0.3) {
-                console.log('⚠️  High error count correlates with low ratings');
-                console.log('   → Recommendation: Reduce puzzle difficulty or improve hints');
             }
 
             // Time correlation
@@ -2674,12 +2634,8 @@ class SudokuEngine {
             );
 
             if (timeCorrelation < -0.3) {
-                console.log('⏱️  Longer solve times correlate with low ratings');
-                console.log('   → Recommendation: Add more engaging patterns or reduce complexity');
             }
 
-            console.log('');
-            console.log('📋 Analysis complete! Use these insights to improve puzzle generation.');
 
             return {
                 overall: { avgRating, totalCount: ratings.length, highRated: highRatedPuzzles.length, lowRated: lowRatedPuzzles.length },
@@ -2726,7 +2682,6 @@ class SudokuEngine {
     startTimer() {
         // Prevent multiple timers by checking if already running
         if (this.timerInterval) {
-            console.warn('Timer already running, stopping existing timer first');
             this.stopTimer();
         }
 
@@ -4718,7 +4673,6 @@ window.refreshPuzzles = function(clearSavedGames = false) {
         }
         return window.sudokuEngine.forceRefreshPuzzles();
     } else {
-        console.warn('Sudoku engine not available. Try running this on the puzzle page.');
         return false;
     }
 };
@@ -4734,13 +4688,12 @@ window.sudokuDebug = false;
 // Helper function for conditional debug logging
 function debugLog(...args) {
     if (window.sudokuDebug) {
-        console.log(...args);
     }
 }
 
 // Convenience functions to enable/disable debug output
-window.enableDebug = () => { window.sudokuDebug = true; console.log('🔧 Debug output enabled'); };
-window.disableDebug = () => { window.sudokuDebug = false; console.log('🔇 Debug output disabled'); };
+window.enableDebug = () => { window.sudokuDebug = true; };
+window.disableDebug = () => { window.sudokuDebug = false; };
 
 // Master refresh function for development - clears EVERYTHING and forces new puzzles
 window.masterRefresh = async function(verbose = true) {
@@ -4770,7 +4723,6 @@ window.masterRefresh = async function(verbose = true) {
             try {
                 localStorage.removeItem(key);
             } catch (e) {
-                console.warn('Failed to remove key:', key, e);
             }
         });
 
@@ -4805,10 +4757,8 @@ window.masterRefresh = async function(verbose = true) {
                 const result = await cleanupResponse.json();
                 debugLog(`✅ Database cleanup complete - deleted ${result.deleted} puzzle entries`);
             } else {
-                console.warn('⚠️ Database cleanup failed, continuing...');
             }
         } catch (error) {
-            console.warn('⚠️ Database cleanup error:', error.message);
         }
 
         // Step 4: Force generate new puzzles with random seed
@@ -4846,7 +4796,6 @@ window.masterRefresh = async function(verbose = true) {
                 }
             }
         } catch (error) {
-            console.warn('⚠️ Puzzle generation error:', error.message);
         }
 
         // Step 5: Force reload current page data
@@ -5022,7 +4971,6 @@ window.debugPuzzleState = function(verbose = true) {
 
 // Global function to analyze puzzle ratings
 window.analyzePuzzleRatings = async function(useServer = true) {
-    console.log('🔍 Starting puzzle rating analysis...\n');
 
     let ratings = [];
 
@@ -5031,7 +4979,6 @@ window.analyzePuzzleRatings = async function(useServer = true) {
         try {
             const player = sessionStorage.getItem('currentPlayer');
             if (player) {
-                console.log('📡 Fetching ratings from server...');
                 const response = await fetch(`/api/ratings?player=${player}`);
                 if (response.ok) {
                     const result = await response.json();
@@ -5046,11 +4993,9 @@ window.analyzePuzzleRatings = async function(useServer = true) {
                         score: parseFloat(r.score),
                         player: r.player
                     }));
-                    console.log(`✅ Loaded ${ratings.length} ratings from server\n`);
                 }
             }
         } catch (error) {
-            console.warn('⚠️  Could not fetch from server, using local data');
         }
     }
 
@@ -5058,13 +5003,10 @@ window.analyzePuzzleRatings = async function(useServer = true) {
     if (ratings.length === 0) {
         ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
         if (ratings.length > 0) {
-            console.log(`📂 Using ${ratings.length} ratings from local storage\n`);
         }
     }
 
     if (ratings.length === 0) {
-        console.log('📊 No puzzle ratings found yet.');
-        console.log('💡 Complete some puzzles and rate them to see analysis!\n');
         return null;
     }
 
@@ -5073,12 +5015,6 @@ window.analyzePuzzleRatings = async function(useServer = true) {
     const highRatedPuzzles = ratings.filter(r => r.rating >= 8);
     const lowRatedPuzzles = ratings.filter(r => r.rating <= 4);
 
-    console.log('=== OVERALL STATISTICS ===');
-    console.log('Average rating:', avgRating.toFixed(2));
-    console.log('Total puzzles rated:', ratings.length);
-    console.log('High-rated puzzles (≥8):', highRatedPuzzles.length);
-    console.log('Low-rated puzzles (≤4):', lowRatedPuzzles.length);
-    console.log('');
 
     // Difficulty analysis
     const byDifficulty = {};
@@ -5096,54 +5032,33 @@ window.analyzePuzzleRatings = async function(useServer = true) {
         }
     });
 
-    console.log('=== DIFFICULTY ANALYSIS ===');
     Object.entries(byDifficulty).forEach(([diff, stats]) => {
-        console.log(`${diff.toUpperCase()}:`);
-        console.log('  Average rating:', stats.avgRating.toFixed(2));
-        console.log('  Average time:', Math.floor(stats.avgTime / 60) + 'm ' + (stats.avgTime % 60) + 's');
-        console.log('  Average errors:', stats.avgErrors.toFixed(1));
-        console.log('  Average hints:', stats.avgHints.toFixed(1));
-        console.log('');
     });
 
     // High-rated puzzle patterns
-    console.log('=== HIGH-RATED PUZZLES (Rating ≥ 8) ===');
     if (highRatedPuzzles.length > 0) {
         const avgTimeHigh = highRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / highRatedPuzzles.length;
         const avgErrorsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / highRatedPuzzles.length;
         const avgHintsHigh = highRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / highRatedPuzzles.length;
 
-        console.log('Common characteristics:');
-        console.log('  Average time:', Math.floor(avgTimeHigh / 60) + 'm ' + (avgTimeHigh % 60) + 's');
-        console.log('  Average errors:', avgErrorsHigh.toFixed(1));
-        console.log('  Average hints:', avgHintsHigh.toFixed(1));
 
         const diffBreakdown = {};
         highRatedPuzzles.forEach(p => {
             diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
         });
-        console.log('  Difficulty breakdown:', diffBreakdown);
-        console.log('');
     }
 
     // Low-rated puzzle patterns
-    console.log('=== LOW-RATED PUZZLES (Rating ≤ 4) ===');
     if (lowRatedPuzzles.length > 0) {
         const avgTimeLow = lowRatedPuzzles.reduce((sum, r) => sum + r.time, 0) / lowRatedPuzzles.length;
         const avgErrorsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.errors, 0) / lowRatedPuzzles.length;
         const avgHintsLow = lowRatedPuzzles.reduce((sum, r) => sum + r.hints, 0) / lowRatedPuzzles.length;
 
-        console.log('Common characteristics:');
-        console.log('  Average time:', Math.floor(avgTimeLow / 60) + 'm ' + (avgTimeLow % 60) + 's');
-        console.log('  Average errors:', avgErrorsLow.toFixed(1));
-        console.log('  Average hints:', avgHintsLow.toFixed(1));
 
         const diffBreakdown = {};
         lowRatedPuzzles.forEach(p => {
             diffBreakdown[p.difficulty] = (diffBreakdown[p.difficulty] || 0) + 1;
         });
-        console.log('  Difficulty breakdown:', diffBreakdown);
-        console.log('');
     }
 
     // Calculate correlation
@@ -5165,13 +5080,11 @@ window.analyzePuzzleRatings = async function(useServer = true) {
     };
 
     // Insights and recommendations
-    console.log('=== KEY INSIGHTS & RECOMMENDATIONS ===');
 
     const bestDifficulty = Object.entries(byDifficulty)
         .sort((a, b) => b[1].avgRating - a[1].avgRating)[0];
 
     if (bestDifficulty) {
-        console.log('✅ Best-rated difficulty:', bestDifficulty[0].toUpperCase(),
             '(avg rating:', bestDifficulty[1].avgRating.toFixed(2) + ')');
     }
 
@@ -5181,8 +5094,6 @@ window.analyzePuzzleRatings = async function(useServer = true) {
     );
 
     if (errorCorrelation < -0.3) {
-        console.log('⚠️  High error count correlates with low ratings');
-        console.log('   → Recommendation: Reduce puzzle difficulty or improve hints');
     }
 
     const timeCorrelation = calculateCorrelation(
@@ -5191,19 +5102,12 @@ window.analyzePuzzleRatings = async function(useServer = true) {
     );
 
     if (timeCorrelation < -0.3) {
-        console.log('⏱️  Longer solve times correlate with low ratings');
-        console.log('   → Recommendation: Add more engaging patterns or reduce complexity');
     }
 
-    console.log('');
-    console.log('📋 Analysis complete! Use these insights to improve puzzle generation.');
 
     // Check data collection progress
     const uniqueDates = [...new Set(ratings.map(r => r.date))];
-    console.log('');
-    console.log('📅 Data Collection Progress:', uniqueDates.length, 'days of data collected');
     if (uniqueDates.length < 7) {
-        console.log('💡 Continue collecting data for', 7 - uniqueDates.length, 'more days for best results.');
     }
 
     return {
@@ -5222,7 +5126,6 @@ window.analyzePuzzleRatings = async function(useServer = true) {
 // Helper function to view all ratings
 window.viewPuzzleRatings = function() {
     const ratings = JSON.parse(localStorage.getItem('puzzleRatings') || '[]');
-    console.log('📊 All Puzzle Ratings (' + ratings.length + ' total):');
     console.table(ratings.map(r => ({
         Date: r.date,
         Difficulty: r.difficulty,
@@ -5241,34 +5144,22 @@ window.clearPuzzleRatings = function() {
     if (confirm('Are you sure you want to clear all puzzle ratings? This cannot be undone.')) {
         localStorage.removeItem('puzzleRatings');
         localStorage.removeItem('puzzleAnalysisReady');
-        console.log('✅ All puzzle ratings have been cleared.');
     }
 };
 
 // Helper function to manually sync ratings
 window.syncRatings = async function() {
     if (window.sudokuEngine) {
-        console.log('🔄 Starting manual sync...');
         await window.sudokuEngine.syncPendingRatings();
     } else {
-        console.log('⚠️  Sudoku engine not available. Please navigate to the Sudoku page first.');
     }
 };
 
 // Helper function to load ratings from server
 window.loadServerRatings = async function() {
     if (window.sudokuEngine) {
-        console.log('📥 Loading ratings from server...');
         await window.sudokuEngine.loadRatingsFromServer();
     } else {
-        console.log('⚠️  Sudoku engine not available. Please navigate to the Sudoku page first.');
     }
 };
 
-console.log('📊 Puzzle Rating System Loaded!');
-console.log('Available commands:');
-console.log('  - analyzePuzzleRatings() - Analyze collected ratings (from server & local)');
-console.log('  - viewPuzzleRatings() - View all ratings in a table');
-console.log('  - syncRatings() - Manually sync pending ratings to server');
-console.log('  - loadServerRatings() - Pull latest ratings from server');
-console.log('  - clearPuzzleRatings() - Clear all ratings (with confirmation)');

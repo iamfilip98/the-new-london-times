@@ -24,11 +24,8 @@ const pool = new Pool({
 
 async function analyzeScoring() {
   try {
-    console.log('=== SCORING SYSTEM ANALYSIS ===');
-    console.log('Data from: October 7, 2025 to present\n');
 
     // First, identify outliers (likely testing games)
-    console.log('🔍 IDENTIFYING OUTLIERS (Testing Games)\n');
     const outliers = await pool.query(`
       SELECT
         difficulty,
@@ -62,7 +59,6 @@ async function analyzeScoring() {
     `);
 
     console.table(outliers.rows);
-    console.log(`Found ${outliers.rows.length} outlier games to exclude from analysis\n`);
 
     // Create a common WHERE clause for filtering outliers
     const cleanDataFilter = `
@@ -77,7 +73,6 @@ async function analyzeScoring() {
     `;
 
     // 1. Overall statistics by difficulty (CLEAN DATA ONLY)
-    console.log('📊 OVERALL STATISTICS BY DIFFICULTY (Clean Data)\n');
     const overallStats = await pool.query(`
       SELECT
         difficulty,
@@ -109,7 +104,6 @@ async function analyzeScoring() {
     console.table(overallStats.rows);
 
     // 2. Hint usage breakdown
-    console.log('\n💡 HINT USAGE BREAKDOWN (Clean Data)\n');
     const hintStats = await pool.query(`
       SELECT
         difficulty,
@@ -134,7 +128,6 @@ async function analyzeScoring() {
     console.table(hintStats.rows);
 
     // 3. Error patterns
-    console.log('\n❌ ERROR PATTERNS (Clean Data)\n');
     const errorStats = await pool.query(`
       SELECT
         difficulty,
@@ -159,8 +152,6 @@ async function analyzeScoring() {
     console.table(errorStats.rows);
 
     // 4. Time distribution vs target times
-    console.log('\n⏱️  TIME DISTRIBUTION VS TARGETS (Clean Data)\n');
-    console.log('Target Times: Easy=3.5min, Medium=3.0min, Hard=7.25min\n');
     const timeDistribution = await pool.query(`
       SELECT
         difficulty,
@@ -208,7 +199,6 @@ async function analyzeScoring() {
     console.table(timeDistribution.rows);
 
     // 5. Score distribution
-    console.log('\n🎯 SCORE DISTRIBUTION (Clean Data)\n');
     const scoreDistribution = await pool.query(`
       SELECT
         difficulty,
@@ -257,7 +247,6 @@ async function analyzeScoring() {
     console.table(scoreDistribution.rows);
 
     // 6. Correlation between hints/errors and score
-    console.log('\n🔗 CORRELATION ANALYSIS (Clean Data)\n');
     const correlationData = await pool.query(`
       SELECT
         difficulty,
@@ -278,10 +267,8 @@ async function analyzeScoring() {
     `);
 
     console.table(correlationData.rows);
-    console.log('Note: -1 = strong negative correlation, 0 = no correlation, 1 = strong positive correlation\n');
 
     // 7. Best and worst scores analysis
-    console.log('\n🏆 TOP 5 SCORES PER DIFFICULTY (Clean Data)\n');
     const topScores = await pool.query(`
       WITH ranked_scores AS (
         SELECT
@@ -306,7 +293,6 @@ async function analyzeScoring() {
     console.table(topScores.rows);
 
     // 8. Sample of low scores to understand patterns
-    console.log('\n📉 BOTTOM 5 SCORES PER DIFFICULTY (Clean Data)\n');
     const lowScores = await pool.query(`
       WITH ranked_scores AS (
         SELECT
@@ -331,7 +317,6 @@ async function analyzeScoring() {
     console.table(lowScores.rows);
 
     // 9. Daily patterns
-    console.log('\n📅 DAILY AVERAGE SCORES\n');
     const dailyStats = await pool.query(`
       SELECT
         difficulty,
