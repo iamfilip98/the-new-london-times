@@ -1864,6 +1864,125 @@ class SudokuChampionship {
     }
 }
 
+// UI Utility Functions
+class UIHelpers {
+    static showToast(message, type = 'info', title = null, duration = 5000) {
+        // Remove existing toasts
+        document.querySelectorAll('.toast').forEach(toast => toast.remove());
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        const icons = {
+            info: 'fa-info-circle',
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            warning: 'fa-exclamation-triangle'
+        };
+
+        const titles = {
+            info: title || 'Info',
+            success: title || 'Success',
+            error: title || 'Error',
+            warning: title || 'Warning'
+        };
+
+        toast.innerHTML = `
+            <i class="fas ${icons[type]} toast-icon"></i>
+            <div class="toast-content">
+                <div class="toast-title">${titles[type]}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <button class="toast-close" aria-label="Close notification">&times;</button>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Close button
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.remove();
+        });
+
+        // Auto remove after duration
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.remove();
+            }
+        }, duration);
+
+        return toast;
+    }
+
+    static showLoading(container, message = 'Loading...') {
+        if (typeof container === 'string') {
+            container = document.getElementById(container) || document.querySelector(container);
+        }
+
+        if (!container) return null;
+
+        container.innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">${message}</div>
+            </div>
+        `;
+
+        return container;
+    }
+
+    static showError(container, title = 'Something went wrong', message = 'Please try again later', onRetry = null) {
+        if (typeof container === 'string') {
+            container = document.getElementById(container) || document.querySelector(container);
+        }
+
+        if (!container) return null;
+
+        const retryButton = onRetry ? `
+            <div class="error-actions">
+                <button class="retry-btn" id="errorRetryBtn">
+                    <i class="fas fa-redo"></i> Try Again
+                </button>
+            </div>
+        ` : '';
+
+        container.innerHTML = `
+            <div class="error-container">
+                <i class="fas fa-exclamation-triangle error-icon"></i>
+                <div class="error-title">${title}</div>
+                <div class="error-message">${message}</div>
+                ${retryButton}
+            </div>
+        `;
+
+        if (onRetry) {
+            const btn = container.querySelector('#errorRetryBtn');
+            if (btn) {
+                btn.addEventListener('click', onRetry);
+            }
+        }
+
+        return container;
+    }
+
+    static showSkeletonCards(container, count = 3) {
+        if (typeof container === 'string') {
+            container = document.getElementById(container) || document.querySelector(container);
+        }
+
+        if (!container) return null;
+
+        const skeletons = Array.from({ length: count }, () =>
+            '<div class="skeleton skeleton-card"></div>'
+        ).join('');
+
+        container.innerHTML = skeletons;
+        return container;
+    }
+}
+
+// Make UI helpers globally available
+window.UIHelpers = UIHelpers;
+
 // Initialize the application
 const sudokuApp = new SudokuChampionship();
 
