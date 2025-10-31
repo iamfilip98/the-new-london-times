@@ -17,8 +17,8 @@ export async function waitForPageReady(page) {
  */
 export async function mockAuth(page, username = 'filip') {
   await page.addInitScript((user) => {
-    sessionStorage.setItem('currentUser', user);
-    sessionStorage.setItem('isAuthenticated', 'true');
+    sessionStorage.setItem('sudokuAuth', 'authenticated');
+    sessionStorage.setItem('currentPlayer', user);
   }, username);
 }
 
