@@ -55,10 +55,6 @@
                     <i class="fas fa-star"></i>
                     <span>Achievements</span>
                 </a>
-                <a href="#" class="nav-link" data-page="challenges" style="display: none;">
-                    <i class="fas fa-fire"></i>
-                    <span>Challenges</span>
-                </a>
                 <a href="#" class="nav-link" data-page="sudoku">
                     <i class="fas fa-puzzle-piece"></i>
                     <span>Play Sudoku</span>
@@ -93,6 +89,123 @@
                     <p id="achievementMessage"></p>
                 </div>
                 <button class="achievement-close">&times;</button>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Modal -->
+        <div class="shortcuts-modal" id="shortcutsModal">
+            <div class="shortcuts-content">
+                <div class="shortcuts-header">
+                    <h2 class="shortcuts-title">
+                        <i class="fas fa-keyboard"></i>
+                        Keyboard Shortcuts
+                    </h2>
+                    <button class="shortcuts-close" id="shortcutsClose" aria-label="Close keyboard shortcuts">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="shortcuts-body">
+                    <div class="shortcuts-section">
+                        <h3 class="shortcuts-section-title">Game Controls</h3>
+                        <div class="shortcuts-list">
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Enter number</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">1</span>
+                                    <span class="key-plus">-</span>
+                                    <span class="key">9</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Clear cell</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">0</span>
+                                    <span class="key-plus">or</span>
+                                    <span class="key">Delete</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Toggle pencil notes</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">C</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Get hint</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">H</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Pause game</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">P</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shortcuts-section">
+                        <h3 class="shortcuts-section-title">History</h3>
+                        <div class="shortcuts-list">
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Undo last move</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">Ctrl</span>
+                                    <span class="key-plus">+</span>
+                                    <span class="key">Z</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Undo (alternative)</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">U</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Redo move</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">Ctrl</span>
+                                    <span class="key-plus">+</span>
+                                    <span class="key">Y</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Redo (alternative)</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">R</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shortcuts-section">
+                        <h3 class="shortcuts-section-title">Navigation</h3>
+                        <div class="shortcuts-list">
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Move between cells</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">←</span>
+                                    <span class="key">→</span>
+                                    <span class="key">↑</span>
+                                    <span class="key">↓</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Navigate cells (alternative)</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">Tab</span>
+                                </div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-description">Show this help</span>
+                                <div class="shortcut-keys">
+                                    <span class="key">?</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1052,6 +1165,63 @@
                     setTimeout(updateFooterVisibility, 150);
                 });
             }
+        });
+
+        // Keyboard Shortcuts Modal Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('shortcutsModal');
+            const closeBtn = document.getElementById('shortcutsClose');
+
+            // Function to show modal
+            function showShortcuts() {
+                if (modal) {
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                }
+            }
+
+            // Function to hide modal
+            function hideShortcuts() {
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            }
+
+            // Close button
+            if (closeBtn) {
+                closeBtn.addEventListener('click', hideShortcuts);
+            }
+
+            // Click outside modal to close
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        hideShortcuts();
+                    }
+                });
+            }
+
+            // Keyboard shortcut to open (? key)
+            document.addEventListener('keydown', function(e) {
+                // Open with ? key (Shift + / on US keyboard)
+                if (e.key === '?' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                    // Don't trigger if user is typing in an input
+                    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                        e.preventDefault();
+                        showShortcuts();
+                    }
+                }
+
+                // Close with Escape key
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    hideShortcuts();
+                }
+            });
+
+            // Make functions globally available
+            window.showKeyboardShortcuts = showShortcuts;
+            window.hideKeyboardShortcuts = hideShortcuts;
         });
 
         // Test function to validate hint penalties
