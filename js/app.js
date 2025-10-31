@@ -54,7 +54,6 @@ class SudokuChampionship {
     initializeInMemoryStore() {
         if (this.inMemoryStore.initialized) return;
 
-        console.log('🧠 Initializing in-memory data store...');
 
         // Initialize in-memory storage
         this.inMemoryStore.todayProgress.clear();
@@ -63,7 +62,6 @@ class SudokuChampionship {
         this.inMemoryStore.notifications.clear();
 
         this.inMemoryStore.initialized = true;
-        console.log('✅ In-memory store initialized');
     }
 
     // Get data from in-memory store first, fallback to localStorage
@@ -84,7 +82,6 @@ class SudokuChampionship {
                     }
                     return parsed;
                 } catch (error) {
-                    console.warn('Failed to parse localStorage data:', error);
                     return null;
                 }
             }
@@ -104,7 +101,6 @@ class SudokuChampionship {
             try {
                 localStorage.setItem(key, JSON.stringify(data));
             } catch (error) {
-                console.warn('Failed to save to localStorage:', error);
             }
         }
     }
@@ -143,7 +139,6 @@ class SudokuChampionship {
     }
 
     async initialize() {
-        console.log('🚀 Initializing Sudoku Championship app...');
         const initStart = performance.now();
 
         // Scroll to top on page load/refresh
@@ -180,7 +175,6 @@ class SudokuChampionship {
         this.initializationComplete = true;
 
         const initEnd = performance.now();
-        console.log(`✅ App initialization completed in ${(initEnd - initStart).toFixed(1)}ms`);
     }
 
     initializeScoreDisplay() {
@@ -526,7 +520,6 @@ class SudokuChampionship {
             let entries, bulkData, achievements, challenges, todayGames;
 
             if (comprehensivePreload) {
-                console.log('🚀 Using comprehensive preloaded data for instant loading');
                 const preloadedData = JSON.parse(comprehensivePreload);
 
                 // Extract all preloaded data
@@ -560,7 +553,6 @@ class SudokuChampionship {
                 const preloadedBulkData = sessionStorage.getItem('preloadedBulkData');
 
                 if (preloadedEntries && preloadedBulkData) {
-                    console.log('📦 Using individual preloaded data');
                     entries = JSON.parse(preloadedEntries);
                     bulkData = JSON.parse(preloadedBulkData);
 
@@ -569,7 +561,6 @@ class SudokuChampionship {
                     sessionStorage.removeItem('preloadedBulkData');
                 } else {
                     // Load data from database - optimized with parallel loading
-                    console.log('🔄 Loading data from database (no preload available)');
                     [entries, bulkData] = await Promise.all([
                         this.loadFromStorage(),
                         this.loadBulkData()
@@ -752,7 +743,6 @@ class SudokuChampionship {
         completeEntries.forEach(entry => {
             // Safety check for scores property
             if (!entry.faidao?.scores || !entry.filip?.scores) {
-                console.warn('Entry missing scores:', entry);
                 return;
             }
 
@@ -834,7 +824,6 @@ class SudokuChampionship {
         historyContainer.innerHTML = recentEntries.map(entry => {
             // Check if entry has valid structure
             if (!entry.faidao || !entry.filip || !entry.faidao.scores || !entry.filip.scores) {
-                console.warn('Invalid entry structure:', entry);
                 return '';
             }
 
@@ -1381,7 +1370,6 @@ class SudokuChampionship {
         const players = ['faidao', 'filip'];
         const difficulties = ['easy', 'medium', 'hard'];
 
-        // console.log('🔄 updateTodayProgress called for date:', today);
 
         // Check cache first
         const now = Date.now();
@@ -1390,34 +1378,28 @@ class SudokuChampionship {
             this.todayProgressCache.date === today &&
             (now - this.todayProgressCache.lastUpdate) < this.todayProgressCache.duration) {
             // Use cached data
-            // console.log('✅ Using cached today progress data');
             const dbProgress = this.todayProgressCache.data;
             this.renderTodayProgress(dbProgress, players, difficulties, today);
             return;
         }
 
-        // console.log('🌐 Fetching today progress from API...');
         // Try to load progress from database first
         let dbProgress = null;
         try {
             const response = await fetch(`/api/games?date=${today}`);
             if (response.ok) {
                 dbProgress = await response.json();
-                // console.log('✅ Received today progress from API:', dbProgress);
 
                 // Update cache
                 this.todayProgressCache.data = dbProgress;
                 this.todayProgressCache.lastUpdate = now;
                 this.todayProgressCache.date = today;
             } else {
-                console.warn('⚠️ API response not OK:', response.status);
             }
         } catch (error) {
-            console.warn('Failed to load progress from database, falling back to localStorage:', error);
         }
 
         // Always render, even if dbProgress is null (will check localStorage fallback)
-        // console.log('🎨 Rendering today progress...');
         this.renderTodayProgress(dbProgress, players, difficulties, today);
     }
 
@@ -1427,13 +1409,11 @@ class SudokuChampionship {
             difficulties.forEach(difficulty => {
                 const progressElement = document.getElementById(`${player}-${difficulty}-progress`);
                 if (!progressElement) {
-                    console.warn(`Progress element not found: ${player}-${difficulty}-progress`);
                     return;
                 }
 
                 const statusElement = progressElement.querySelector('.progress-status');
                 if (!statusElement) {
-                    console.warn(`Status element not found for: ${player}-${difficulty}-progress`);
                     return;
                 }
 
@@ -1795,10 +1775,8 @@ class SudokuChampionship {
                 // Make puzzles globally available
                 window.preloadedPuzzles = this.puzzleCache.puzzles;
             } else {
-                console.warn('Failed to preload puzzles, will load when needed');
             }
         } catch (error) {
-            console.warn('Puzzle preloading failed:', error.message);
         } finally {
             this.puzzleCache.loading = false;
         }

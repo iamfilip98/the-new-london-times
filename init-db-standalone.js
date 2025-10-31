@@ -3,8 +3,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
 
 async function initializeDatabase() {
-    console.log('Initializing database...');
-    console.log('Using POSTGRES_URL:', process.env.POSTGRES_URL ? 'Set' : 'Not set');
 
     const pool = new Pool({
         connectionString: process.env.POSTGRES_PRISMA_URL,
@@ -19,12 +17,9 @@ async function initializeDatabase() {
 
     try {
         // Test connection first
-        console.log('Testing connection...');
         const timeResult = await pool.query('SELECT NOW() as current_time');
-        console.log('✅ Connection successful:', timeResult.rows[0].current_time);
 
         // Create entries table
-        console.log('Creating entries table...');
         await pool.query(`
             CREATE TABLE IF NOT EXISTS entries (
                 id SERIAL PRIMARY KEY,
@@ -34,10 +29,8 @@ async function initializeDatabase() {
                 updated_at TIMESTAMP DEFAULT NOW()
             )
         `);
-        console.log('✅ Entries table created/verified');
 
         // Create achievements table
-        console.log('Creating achievements table...');
         await pool.query(`
             CREATE TABLE IF NOT EXISTS achievements (
                 id SERIAL PRIMARY KEY,
@@ -49,10 +42,8 @@ async function initializeDatabase() {
                 UNIQUE(achievement_id, player, unlocked_at)
             )
         `);
-        console.log('✅ Achievements table created/verified');
 
         // Create streaks table
-        console.log('Creating streaks table...');
         await pool.query(`
             CREATE TABLE IF NOT EXISTS streaks (
                 id SERIAL PRIMARY KEY,
@@ -62,10 +53,8 @@ async function initializeDatabase() {
                 updated_at TIMESTAMP DEFAULT NOW()
             )
         `);
-        console.log('✅ Streaks table created/verified');
 
         // Create challenges table
-        console.log('Creating challenges table...');
         await pool.query(`
             CREATE TABLE IF NOT EXISTS challenges (
                 id SERIAL PRIMARY KEY,
@@ -75,19 +64,15 @@ async function initializeDatabase() {
                 updated_at TIMESTAMP DEFAULT NOW()
             )
         `);
-        console.log('✅ Challenges table created/verified');
 
         // Initialize default streak records
-        console.log('Initializing default streak records...');
         await pool.query(`
             INSERT INTO streaks (player, current_streak, best_streak)
             VALUES ('faidao', 0, 0), ('filip', 0, 0)
             ON CONFLICT (player) DO NOTHING
         `);
-        console.log('✅ Default streak records initialized');
 
         // Verify tables exist
-        console.log('Verifying tables...');
         const tableCheck = await pool.query(`
             SELECT table_name
             FROM information_schema.tables
@@ -95,9 +80,7 @@ async function initializeDatabase() {
             AND table_name IN ('entries', 'achievements', 'streaks', 'challenges')
             ORDER BY table_name
         `);
-        console.log('✅ Tables verified:', tableCheck.rows.map(row => row.table_name));
 
-        console.log('\n🎉 Database initialization completed successfully!');
 
     } catch (error) {
         console.error('❌ Database initialization failed:', error.message);
@@ -105,7 +88,6 @@ async function initializeDatabase() {
         process.exit(1);
     } finally {
         await pool.end();
-        console.log('Database connection closed');
     }
 }
 

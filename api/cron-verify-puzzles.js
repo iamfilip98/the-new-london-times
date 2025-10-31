@@ -68,10 +68,6 @@ module.exports = async function handler(req, res) {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowDate = tomorrow.toISOString().split('T')[0];
 
-  console.log('\n═══════════════════════════════════════════');
-  console.log('[11 PM VERIFY] PUZZLE VERIFICATION CHECK');
-  console.log('═══════════════════════════════════════════');
-  console.log(`[11 PM VERIFY] Checking puzzles for ${tomorrowDate}...`);
 
   try {
     // Check if puzzles exist for tomorrow
@@ -96,9 +92,6 @@ module.exports = async function handler(req, res) {
       }
 
       if (issues.length > 0) {
-        console.log(`[11 PM VERIFY] ⚠ Puzzles exist but have issues:`);
-        issues.forEach(issue => console.log(`  - ${issue}`));
-
         return res.status(200).json({
           success: true,
           status: 'exists_with_issues',
@@ -108,8 +101,6 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      console.log(`[11 PM VERIFY] ✓ Puzzles verified for ${tomorrowDate}`);
-      console.log(`[11 PM VERIFY]   Easy: ${row.easy_puzzle.replace(/0/g, '.').match(/.{9}/g).join('\n' + ' '.repeat(19))}`);
 
       return res.status(200).json({
         success: true,
@@ -120,8 +111,6 @@ module.exports = async function handler(req, res) {
     }
 
     // No puzzles found - check fallback system
-    console.log(`[11 PM VERIFY] ⚠ No puzzles found for ${tomorrowDate}`);
-    console.log(`[11 PM VERIFY] Checking fallback puzzle availability...`);
 
     const fallbackCount = await sql`
       SELECT difficulty, COUNT(*) as count
@@ -139,10 +128,6 @@ module.exports = async function handler(req, res) {
       fallbackStatus[row.difficulty] = parseInt(row.count);
     });
 
-    console.log(`[11 PM VERIFY] Fallback puzzle count:`);
-    console.log(`  Easy: ${fallbackStatus.easy}`);
-    console.log(`  Medium: ${fallbackStatus.medium}`);
-    console.log(`  Hard: ${fallbackStatus.hard}`);
 
     const allFallbacksAvailable =
       fallbackStatus.easy > 0 &&
@@ -150,7 +135,6 @@ module.exports = async function handler(req, res) {
       fallbackStatus.hard > 0;
 
     if (allFallbacksAvailable) {
-      console.log(`[11 PM VERIFY] ✓ Fallback system ready as backup`);
 
       return res.status(200).json({
         success: true,
@@ -161,7 +145,6 @@ module.exports = async function handler(req, res) {
         recommendation: 'Consider running generate-tomorrow endpoint manually'
       });
     } else {
-      console.log(`[11 PM VERIFY] ❌ CRITICAL: Missing puzzles AND insufficient fallbacks!`);
 
       return res.status(200).json({
         success: false,

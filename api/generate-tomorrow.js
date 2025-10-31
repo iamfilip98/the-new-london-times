@@ -72,10 +72,6 @@ module.exports = async function handler(req, res) {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowDate = tomorrow.toISOString().split('T')[0];
 
-  console.log(`\n${'═'.repeat(60)}`);
-  console.log(`[11 PM] SCHEDULED PUZZLE GENERATION`);
-  console.log(`[11 PM] Generating puzzles for ${tomorrowDate}...`);
-  console.log(`${'═'.repeat(60)}`);
 
   try {
     const startTime = Date.now();
@@ -86,8 +82,6 @@ module.exports = async function handler(req, res) {
     `;
 
     if (existing.rows.length > 0) {
-      console.log(`[11 PM] ⚠ Puzzles for ${tomorrowDate} already exist`);
-      console.log(`[11 PM] Skipping generation (delete first if you want to regenerate)`);
       return res.status(200).json({
         success: true,
         skipped: true,
@@ -139,7 +133,6 @@ module.exports = async function handler(req, res) {
     const duration = (Date.now() - startTime) / 1000;
 
     if (mockRes.statusCode === 200 && mockRes.data) {
-      console.log(`\n[11 PM] ✅ Generated puzzles for ${tomorrowDate} in ${duration.toFixed(2)}s`);
 
       // Extract stats from the generated puzzles
       const puzzles = mockRes.data;
@@ -155,9 +148,6 @@ module.exports = async function handler(req, res) {
         }
       };
 
-      console.log(`[11 PM]   Easy: ${stats.easy.clues} clues`);
-      console.log(`[11 PM]   Medium: ${stats.medium.clues} clues`);
-      console.log(`[11 PM]   Hard: ${stats.hard.clues} clues`);
 
       return res.status(200).json({
         success: true,

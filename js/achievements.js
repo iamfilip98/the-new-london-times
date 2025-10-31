@@ -278,6 +278,116 @@ class AchievementsManager {
                 rarity: 'legendary'
             },
 
+            // PERFECT PLAY BONUS ACHIEVEMENTS (12) - New Scoring System
+            {
+                id: 'flawless_victory_easy',
+                title: 'Flawless Victory (Easy)',
+                description: 'Complete Easy with 0 errors and 0 hints (1.5x bonus)',
+                icon: 'fas fa-trophy',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus', difficulty: 'easy', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'flawless_victory_medium',
+                title: 'Flawless Victory (Medium)',
+                description: 'Complete Medium with 0 errors and 0 hints (1.5x bonus)',
+                icon: 'fas fa-trophy',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus', difficulty: 'medium', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'flawless_victory_hard',
+                title: 'Flawless Victory (Hard)',
+                description: 'Complete Hard with 0 errors and 0 hints (1.5x bonus)',
+                icon: 'fas fa-trophy',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus', difficulty: 'hard', value: 1 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'perfect_strategy_easy',
+                title: 'Perfect Strategy (Easy)',
+                description: 'Complete Easy with 0 errors using only Level 1 hints (1.35x bonus)',
+                icon: 'fas fa-brain',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus', difficulty: 'easy', value: 1 },
+                rarity: 'common'
+            },
+            {
+                id: 'perfect_strategy_medium',
+                title: 'Perfect Strategy (Medium)',
+                description: 'Complete Medium with 0 errors using only Level 1 hints (1.35x bonus)',
+                icon: 'fas fa-brain',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus', difficulty: 'medium', value: 1 },
+                rarity: 'rare'
+            },
+            {
+                id: 'perfect_strategy_hard',
+                title: 'Perfect Strategy (Hard)',
+                description: 'Complete Hard with 0 errors using only Level 1 hints (1.35x bonus)',
+                icon: 'fas fa-brain',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus', difficulty: 'hard', value: 1 },
+                rarity: 'epic'
+            },
+            {
+                id: 'perfect_game_easy',
+                title: 'Perfect Game (Easy)',
+                description: 'Score 2000+ points on Easy (2x base score milestone)',
+                icon: 'fas fa-medal',
+                type: 'perfect_game',
+                requirement: { type: 'score_milestone', difficulty: 'easy', value: 2000 },
+                rarity: 'epic'
+            },
+            {
+                id: 'perfect_game_medium',
+                title: 'Perfect Game (Medium)',
+                description: 'Score 3000+ points on Medium (2x base score milestone)',
+                icon: 'fas fa-medal',
+                type: 'perfect_game',
+                requirement: { type: 'score_milestone', difficulty: 'medium', value: 3000 },
+                rarity: 'epic'
+            },
+            {
+                id: 'perfect_game_hard',
+                title: 'Perfect Game (Hard)',
+                description: 'Score 10000+ points on Hard (2x base score milestone)',
+                icon: 'fas fa-medal',
+                type: 'perfect_game',
+                requirement: { type: 'score_milestone', difficulty: 'hard', value: 10000 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'flawless_week',
+                title: 'Flawless Week',
+                description: 'Get 7 flawless victories in a row',
+                icon: 'fas fa-fire-alt',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_streak', value: 7 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'strategic_master',
+                title: 'Strategic Master',
+                description: 'Achieve 50 perfect strategy bonuses',
+                icon: 'fas fa-chess-king',
+                type: 'perfect_play',
+                requirement: { type: 'perfect_bonus_count', value: 50 },
+                rarity: 'legendary'
+            },
+            {
+                id: 'flawless_master',
+                title: 'Flawless Master',
+                description: 'Achieve 100 flawless victories',
+                icon: 'fas fa-crown',
+                type: 'flawless_play',
+                requirement: { type: 'flawless_bonus_count', value: 100 },
+                rarity: 'legendary'
+            },
+
             // SCORE ACHIEVEMENTS (9)
             {
                 id: 'point_collector',
@@ -1159,7 +1269,6 @@ class AchievementsManager {
 
             // Run automatic cleanup once per session to fix any inconsistencies
             if (this.needsInitialCleanup) {
-                //console.log('🔧 Running automatic achievement cleanup...');
                 await this.performAutomaticCleanup();
                 this.needsInitialCleanup = false;
             }
@@ -1176,11 +1285,9 @@ class AchievementsManager {
 
             // Extra safeguard: ensure we're working with database data only
             if (!Array.isArray(this.unlockedAchievements)) {
-                console.warn('Invalid achievements data from database, resetting to empty array');
                 this.unlockedAchievements = [];
             }
 
-            //console.log(`Loaded ${this.unlockedAchievements.length} achievements from database`);
         } catch (error) {
             console.error('Failed to refresh achievements:', error);
             // Reset to empty array if database fails to ensure clean state
@@ -1252,7 +1359,6 @@ class AchievementsManager {
 
                             // Conservative limit: no more achievements than total entries
                             if (existingCount >= allEntries.length) {
-                                console.warn(`🚫 Blocking ${achievement.id} for ${player}: already has ${existingCount} (max ${allEntries.length})`);
                                 shouldUnlock = false;
                             }
                         }
@@ -1272,9 +1378,7 @@ class AchievementsManager {
                         // Only add to truly new if it wasn't already in database
                         if (!wasAlreadyInDatabase) {
                             trulyNewAchievements.push({...achievement, player});
-                            console.log(`🆕 Brand new achievement: ${achievement.title} for ${player}`);
                         } else {
-                            console.log(`♻️ Re-awarded existing achievement: ${achievement.title} for ${player}`);
                         }
                     }
                 }
@@ -1427,7 +1531,14 @@ class AchievementsManager {
             case 'easy_medium_time_under':
             case 'old_puzzle_completion':
             case 'final_achievement':
-                // These achievement types are not yet implemented
+            case 'flawless_bonus':
+            case 'perfect_bonus':
+            case 'score_milestone':
+            case 'flawless_streak':
+            case 'perfect_bonus_count':
+            case 'flawless_bonus_count':
+                // These achievement types are not yet implemented or require new data tracking
+                // flawless_bonus, perfect_bonus, etc. will be implemented once individual_games table tracks bonus types
                 // They will be added as the underlying tracking systems are developed
                 return [];
 
@@ -1486,7 +1597,6 @@ class AchievementsManager {
 
             // Add debugging for speed achievements
             if (req.difficulty === 'easy' && req.value === 120) {
-                //console.log(`Speed Demon Easy check for ${player}: time=${time}s, dnf=${dnf}, qualifies=${qualifies} (need <${req.value}s)`);
             }
 
             return qualifies;
@@ -2073,12 +2183,10 @@ class AchievementsManager {
             if (!achievement) return;
 
             badge.addEventListener('click', () => {
-                console.log('Badge clicked!', achievement.id);
 
                 // Find the achievement definition
                 const achievementDef = this.achievementDefinitions.find(def => def.id === achievement.id);
                 if (!achievementDef) {
-                    console.log('Achievement definition not found for:', achievement.id);
                     return;
                 }
 
@@ -2100,10 +2208,8 @@ class AchievementsManager {
 
                 // Show popup if available
                 if (window.achievementPopup) {
-                    console.log('Showing popup for:', achievementData);
                     window.achievementPopup.showPopup(achievementData);
                 } else {
-                    console.log('Achievement popup not available');
                 }
             });
         });
@@ -2161,11 +2267,9 @@ class AchievementsManager {
     }
 
     async refreshAllAchievements() {
-        //console.log('🔄 Starting complete achievement refresh...');
 
         try {
             // Step 1: Clear all existing achievements from database
-            //console.log('🗑️ Clearing all existing achievements...');
             await fetch('/api/achievements', {
                 method: 'DELETE',
                 headers: {
@@ -2174,7 +2278,6 @@ class AchievementsManager {
             });
 
             // Step 2: Load all game entries and streaks
-            //console.log('📊 Loading game data...');
             const allEntries = await sudokuApp.loadFromStorage() || [];
             const streaks = await sudokuApp.loadStreaks() || {};
 
@@ -2182,7 +2285,6 @@ class AchievementsManager {
             this.unlockedAchievements = [];
 
             // Step 4: Process each game entry chronologically with proper validation
-            //console.log(`🎯 Processing ${allEntries.length} game entries...`);
             const sortedEntries = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let processedCount = 0;
@@ -2191,7 +2293,6 @@ class AchievementsManager {
             for (const entry of sortedEntries) {
                 // Skip if we've already processed this date
                 if (processedDates.has(entry.date)) {
-                    //console.log(`⚠️ Skipping duplicate entry for ${entry.date}`);
                     continue;
                 }
                 processedDates.add(entry.date);
@@ -2199,17 +2300,13 @@ class AchievementsManager {
                 // Get entries up to this point for context
                 const entriesUpToNow = sortedEntries.slice(0, sortedEntries.indexOf(entry) + 1);
 
-                //console.log(`Processing entry ${entry.date}...`);
 
                 // Check achievements for this entry with detailed logging
                 const newAchievements = await this.checkNewAchievementsClean(entry, entriesUpToNow, streaks);
 
                 processedCount++;
-                //console.log(`✅ Processed ${processedCount}/${sortedEntries.length} entries, awarded ${newAchievements.length} achievements`);
             }
 
-            //console.log('🎉 Achievement refresh completed!');
-            //console.log(`📈 Total achievements awarded: ${this.unlockedAchievements.length}`);
 
             // Update the UI
             await this.updateAchievements(allEntries, streaks, {});
@@ -2260,7 +2357,6 @@ class AchievementsManager {
                     if (shouldUnlock) {
                         await this.unlockAchievementClean(achievement, player, entry.date);
                         newlyUnlocked.push({...achievement, player});
-                        //console.log(`🏆 Unlocked: ${achievement.title} for ${player} on ${entry.date}`);
                     }
                 }
             }
@@ -2314,11 +2410,8 @@ class AchievementsManager {
             });
 
             if (excessiveAchievements.length > 0) {
-                //console.log(`⚠️ Found ${excessiveAchievements.length} achievement types with excessive counts. Running full refresh...`);
                 await this.refreshAllAchievements();
-                //console.log('✅ Automatic cleanup completed');
             } else {
-                //console.log('✅ Achievement counts look reasonable, no cleanup needed');
             }
 
         } catch (error) {
@@ -2372,7 +2465,6 @@ class AchievementsManager {
 
     // Comprehensive cleanup method to remove erroneously unlocked achievements
     async cleanupErroneousAchievements() {
-        console.log('🧹 Starting comprehensive achievement cleanup...');
 
         try {
             // Step 1: Clear all achievements from database
@@ -2382,18 +2474,15 @@ class AchievementsManager {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log('🗑️ Cleared all achievements from database');
 
             // Step 2: Refresh achievements to get clean data from database
             await this.refreshAllAchievements();
-            console.log('♻️ Regenerated all achievements based on game data');
 
             // Step 3: Update UI
             const allEntries = await sudokuApp.loadFromStorage() || [];
             const streaks = await sudokuApp.loadStreaks() || {};
             await this.updateAchievements(allEntries, streaks, {});
 
-            console.log('✅ Achievement cleanup completed successfully');
 
             return {
                 success: true,
@@ -2414,9 +2503,7 @@ window.achievementsManager = new AchievementsManager();
 
 // Add convenience function to console for easy cleanup
 window.cleanupAchievements = async function() {
-    console.log('🚀 Running achievement cleanup from console...');
     const result = await window.achievementsManager.cleanupErroneousAchievements();
-    console.log(result.success ? '✅ ' + result.message : '❌ ' + result.message);
     return result;
 };
 
@@ -2433,7 +2520,6 @@ class AchievementPopup {
 
     initializePopup() {
         if (!this.popup || !this.closeBtn) {
-            console.log('Popup elements not found:', {
                 popup: !!this.popup,
                 closeBtn: !!this.closeBtn
             });
@@ -2513,20 +2599,14 @@ class AchievementPopup {
 
 // Initialize popup manager after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing achievement popup...');
     window.achievementPopup = new AchievementPopup();
-    console.log('Achievement popup initialized:', !!window.achievementPopup);
 });
 
 // Add global refresh function for easy access
 window.refreshAchievements = async function() {
-    //console.log('🔄 Starting achievement refresh...');
     const result = await window.achievementsManager.refreshAllAchievements();
 
     if (result.success) {
-        //console.log('✅ Achievement refresh completed!');
-        //console.log(`📊 Processed ${result.processedEntries} game entries`);
-        //console.log(`🏆 Awarded ${result.totalAchievements} total achievements`);
         alert(`Achievement refresh completed!\n\nProcessed: ${result.processedEntries} game entries\nTotal achievements: ${result.totalAchievements}`);
     } else {
         console.error('❌ Achievement refresh failed:', result.error);

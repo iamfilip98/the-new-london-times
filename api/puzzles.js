@@ -124,16 +124,10 @@ async function cleanupOldPuzzles() {
    */
 
   try {
-    console.log('═══════════════════════════════════════════');
-    console.log('CLEANING UP OLD PUZZLES FROM DATABASE');
-    console.log('═══════════════════════════════════════════');
 
     // Delete ALL rows from daily_puzzles table
     const result = await sql`DELETE FROM daily_puzzles RETURNING date`;
 
-    console.log(`Deleted ${result.rows.length} puzzle entries from database`);
-    console.log('Database cleanup complete - fresh start ready');
-    console.log('═══════════════════════════════════════════');
 
     return { success: true, deleted: result.rows.length };
 
@@ -298,10 +292,6 @@ function removeCluesStrategically(solution, difficulty, seed) {
   const targetClues = CLUE_COUNTS[difficulty];
   const puzzle = deepCopy(solution);
 
-  console.log(`\n🧠 SMART CLUE REMOVAL (Industry Best Practice)`);
-  console.log(`   Starting with: 81 clues`);
-  console.log(`   Target: ${targetClues} clues`);
-  console.log(`   Need to remove: ${81 - targetClues} clues`);
 
   // Create list of all cell positions
   const allPositions = [];
@@ -359,7 +349,6 @@ function removeCluesStrategically(solution, difficulty, seed) {
         attemptedCells.add(symmetricKey);
 
         if (removedCount % 10 === 0) {
-          console.log(`   Progress: ${81 - removedCount} clues remaining (removed ${removedCount}/${targetRemovals})`);
         }
       } else {
         // Multiple solutions or no solution - restore both
@@ -382,7 +371,6 @@ function removeCluesStrategically(solution, difficulty, seed) {
         attemptedCells.add(cellKey);
 
         if (removedCount % 10 === 0) {
-          console.log(`   Progress: ${81 - removedCount} clues remaining (removed ${removedCount}/${targetRemovals})`);
         }
       } else {
         // Multiple solutions or no solution - restore it
@@ -393,10 +381,8 @@ function removeCluesStrategically(solution, difficulty, seed) {
   }
 
   const finalClues = countFilledCells(puzzle);
-  console.log(`   ✓ Final: ${finalClues} clues (target: ${targetClues})`);
 
   if (finalClues !== targetClues) {
-    console.log(`   ⚠ Warning: Could only remove to ${finalClues} clues (target was ${targetClues})`);
   }
 
   return puzzle;
@@ -986,18 +972,14 @@ function validateEasy(puzzle, solution) {
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.easy;
 
-  console.log(`\nEASY VALIDATION (Gameplay-Driven):`);
-  console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
 
   // ========================================
   // CRITICAL: Verify unique solution FIRST
   // ========================================
-  console.log(`  Checking unique solution...`);
 
   const solutionCount = countSolutions(puzzle);
 
   if (solutionCount === 0) {
-    console.log(`  ❌ No solutions found`);
     return {
       valid: false,
       stats: null,
@@ -1007,8 +989,6 @@ function validateEasy(puzzle, solution) {
   }
 
   if (solutionCount > 1) {
-    console.log(`  ❌ CRITICAL: Multiple solutions found (${solutionCount}+)`);
-    console.log(`  This puzzle is NOT logically solvable - REJECTED`);
     return {
       valid: false,
       stats: null,
@@ -1017,29 +997,23 @@ function validateEasy(puzzle, solution) {
     };
   }
 
-  console.log(`  ✓ Unique solution verified`);
 
   // GAMEPLAY-DRIVEN VALIDATION
   // Easy: "Playable without candidates, challenging but not too much, fun"
 
   // 1. Must NOT require candidates
   const needsCandidates = requiresCandidates(puzzle);
-  console.log(`  Requires candidates: ${needsCandidates ? 'YES ❌' : 'NO ✓'}`);
 
   // 2. Check smooth progression (1-3 obvious moves available)
   const progression = checkSmoothProgression(puzzle);
-  console.log(`  Progression: min=${progression.minAvailableMoves}, max=${progression.maxAvailableMoves}`);
 
   // 3. Count naked singles
   const stats = solvePuzzleWithTracking(puzzle);
-  console.log(`  Naked Singles: ${stats.nakedSingles} (need 15+)`);
 
   // 4. Hidden techniques should be minimal
   const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
-  console.log(`  Hidden Techniques: ${hiddenTechniques} (max 2)`);
 
   // 5. No bottlenecks
-  console.log(`  Bottlenecks: ${stats.bottlenecks} (need 0)`);
 
   const valid =
     clueCount === targetClues &&
@@ -1048,7 +1022,6 @@ function validateEasy(puzzle, solution) {
     hiddenTechniques <= 2 &&  // Minimal complexity
     stats.solvable;
 
-  console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
   return {
     valid,
@@ -1066,18 +1039,14 @@ function validateMedium(puzzle, solution) {
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.medium;
 
-  console.log(`\nMEDIUM VALIDATION (Gameplay-Driven):`);
-  console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
 
   // ========================================
   // CRITICAL: Verify unique solution FIRST
   // ========================================
-  console.log(`  Checking unique solution...`);
 
   const solutionCount = countSolutions(puzzle);
 
   if (solutionCount === 0) {
-    console.log(`  ❌ No solutions found`);
     return {
       valid: false,
       stats: null,
@@ -1087,8 +1056,6 @@ function validateMedium(puzzle, solution) {
   }
 
   if (solutionCount > 1) {
-    console.log(`  ❌ CRITICAL: Multiple solutions found (${solutionCount}+)`);
-    console.log(`  This puzzle is NOT logically solvable - REJECTED`);
     return {
       valid: false,
       stats: null,
@@ -1097,7 +1064,6 @@ function validateMedium(puzzle, solution) {
     };
   }
 
-  console.log(`  ✓ Unique solution verified`);
 
   // ========================================
   // GAMEPLAY-DRIVEN VALIDATION
@@ -1106,30 +1072,23 @@ function validateMedium(puzzle, solution) {
 
   // 1. MUST require candidate tracking
   const needsCandidates = requiresCandidates(puzzle);
-  console.log(`  Requires candidates: ${needsCandidates ? 'YES ✓' : 'NO ❌'}`);
 
   // 2. Check candidate density in early game (should be LOW-MODERATE - easier than hard)
   const avgCandidates = calculateAverageCandidates(puzzle, 20);
-  console.log(`  Avg candidates (first 20 moves): ${avgCandidates.toFixed(2)} (target: 2.5-3.3)`);
 
   // 3. Count naked singles in first 20 moves (should have MORE - easier progression)
   const nakedSinglesEarly = countNakedSinglesInFirstMoves(puzzle, 20);
-  console.log(`  Naked singles (first 20 moves): ${nakedSinglesEarly} (min 6, max 15)`);
 
   // 4. Max immediate naked singles at any point (should have some options)
   const progression = checkSmoothProgression(puzzle);
-  console.log(`  Max immediate naked singles: ${progression.maxImmediateNakedSingles} (min 2, max 4)`);
 
   // 5. Get full statistics
   const stats = solvePuzzleWithTracking(puzzle);
-  console.log(`  Total naked singles: ${stats.nakedSingles}`);
 
   // 6. Hidden techniques (informational only - not used for validation)
   const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
-  console.log(`  Hidden techniques: ${hiddenTechniques} (informational)`);
 
   // 7. Bottlenecks (informational - natural variation expected)
-  console.log(`  Bottlenecks: ${stats.bottlenecks} (natural variation expected)`);
 
   // ========================================
   // VALIDATION RULES - Ensure day-to-day consistency
@@ -1145,7 +1104,6 @@ function validateMedium(puzzle, solution) {
     progression.maxImmediateNakedSingles >= 2 &&  // Some immediate options
     progression.maxImmediateNakedSingles <= 4;    // Not too many
 
-  console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
   if (!valid) {
     const reasons = [];
@@ -1156,7 +1114,6 @@ function validateMedium(puzzle, solution) {
     if (nakedSinglesEarly > 15) reasons.push(`Too many naked singles early (${nakedSinglesEarly}) - too easy`);
     if (progression.maxImmediateNakedSingles < 2) reasons.push(`Too few immediate options (${progression.maxImmediateNakedSingles}) - gets stuck`);
     if (progression.maxImmediateNakedSingles > 4) reasons.push(`Too many immediate options (${progression.maxImmediateNakedSingles}) - too easy`);
-    console.log(`  Rejection reasons: ${reasons.join(', ')}`);
   }
 
   return {
@@ -1178,18 +1135,14 @@ function validateHard(puzzle, solution) {
   const clueCount = countFilledCells(puzzle);
   const targetClues = CLUE_COUNTS.hard;
 
-  console.log(`\nHARD VALIDATION (Gameplay-Driven):`);
-  console.log(`  Clues: ${clueCount} (target: ${targetClues})`);
 
   // ========================================
   // CRITICAL: Verify unique solution FIRST
   // ========================================
-  console.log(`  Checking unique solution...`);
 
   const solutionCount = countSolutions(puzzle);
 
   if (solutionCount === 0) {
-    console.log(`  ❌ No solutions found`);
     return {
       valid: false,
       stats: null,
@@ -1199,8 +1152,6 @@ function validateHard(puzzle, solution) {
   }
 
   if (solutionCount > 1) {
-    console.log(`  ❌ CRITICAL: Multiple solutions found (${solutionCount}+)`);
-    console.log(`  This puzzle is NOT logically solvable - REJECTED`);
     return {
       valid: false,
       stats: null,
@@ -1209,7 +1160,6 @@ function validateHard(puzzle, solution) {
     };
   }
 
-  console.log(`  ✓ Unique solution verified`);
 
   // ========================================
   // GAMEPLAY-DRIVEN VALIDATION
@@ -1218,26 +1168,20 @@ function validateHard(puzzle, solution) {
 
   // 1. MUST require candidate tracking (minimum requirement)
   const needsCandidates = requiresCandidates(puzzle);
-  console.log(`  Requires candidates: ${needsCandidates ? 'YES ✓' : 'NO ❌'}`);
 
   // 2. Check candidate density in early game (should be HIGH - harder than medium)
   const avgCandidates = calculateAverageCandidates(puzzle, 20);
-  console.log(`  Avg candidates (first 20 moves): ${avgCandidates.toFixed(2)} (target: 3.4-5.0)`);
 
   // 3. Count naked singles in first 20 moves (should be VERY FEW - forces candidate work)
   const nakedSinglesEarly = countNakedSinglesInFirstMoves(puzzle, 20);
-  console.log(`  Naked singles (first 20 moves): ${nakedSinglesEarly} (max 5)`);
 
   // 4. Get full statistics
   const stats = solvePuzzleWithTracking(puzzle);
-  console.log(`  Total naked singles: ${stats.nakedSingles} (max 12 total)`);
 
   // 5. Hidden techniques (informational only - not used for validation)
   const hiddenTechniques = stats.hiddenPairs + stats.hiddenTriples + stats.hiddenQuads;
-  console.log(`  Hidden techniques: ${hiddenTechniques} (informational)`);
 
   // 6. Bottlenecks (informational - natural variation expected)
-  console.log(`  Bottlenecks: ${stats.bottlenecks} (natural variation expected)`);
 
   // ========================================
   // VALIDATION RULES - Ensure day-to-day consistency
@@ -1253,7 +1197,6 @@ function validateHard(puzzle, solution) {
     nakedSinglesEarly <= 5 &&       // FEWER than medium's min (6) - forces more candidate work
     stats.nakedSingles <= 12;       // Fewer total easy moves
 
-  console.log(`  Valid: ${valid ? '✓' : '✗'}`);
 
   if (!valid) {
     const reasons = [];
@@ -1262,7 +1205,6 @@ function validateHard(puzzle, solution) {
     if (avgCandidates > 5.0) reasons.push(`Avg candidates too high (${avgCandidates.toFixed(2)}) - overwhelming`);
     if (nakedSinglesEarly > 5) reasons.push(`Too many naked singles early (${nakedSinglesEarly}) - too easy`);
     if (stats.nakedSingles > 12) reasons.push(`Too many total naked singles (${stats.nakedSingles}) - too easy`);
-    console.log(`  Rejection reasons: ${reasons.join(', ')}`);
   }
 
   return {
@@ -1297,28 +1239,20 @@ function validatePuzzle(puzzle, solution, difficulty) {
 // ═══════════════════════════════════════════════
 
 function generateDailyPuzzle(solution, difficulty, seed) {
-  console.log(`\n${'═'.repeat(50)}`);
-  console.log(`GENERATING ${difficulty.toUpperCase()} PUZZLE`);
-  console.log(`${'═'.repeat(50)}`);
 
   const maxAttempts = CANDIDATE_ATTEMPTS[difficulty];
   const targetClues = CLUE_COUNTS[difficulty];
 
-  console.log(`Target clues: ${targetClues}`);
-  console.log(`Max attempts: ${maxAttempts}`);
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    console.log(`\n--- Attempt ${attempt}/${maxAttempts} ---`);
 
     // Remove clues strategically
     const puzzle = removeCluesStrategically(solution, difficulty, seed + attempt);
 
     // Verify clue count immediately after removal
     const cluesAfterRemoval = countFilledCells(puzzle);
-    console.log(`Clues after removal: ${cluesAfterRemoval}`);
 
     if (cluesAfterRemoval !== targetClues) {
-      console.log(`⚠ Clue count: ${cluesAfterRemoval} (target: ${targetClues}) - trying next attempt`);
       continue;
     }
 
@@ -1328,8 +1262,6 @@ function generateDailyPuzzle(solution, difficulty, seed) {
     if (validation.valid) {
       // Final verification before returning
       const finalClues = countFilledCells(puzzle);
-      console.log(`\n✓ VALID ${difficulty.toUpperCase()} PUZZLE GENERATED!`);
-      console.log(`Final clue count: ${finalClues} (target: ${targetClues})`);
 
       if (finalClues !== targetClues) {
         console.error(`CRITICAL ERROR: Final clue count mismatch! Expected ${targetClues}, got ${finalClues}`);
@@ -1339,7 +1271,6 @@ function generateDailyPuzzle(solution, difficulty, seed) {
       return puzzle;
     }
 
-    console.log(`✗ Attempt ${attempt} failed validation`);
   }
 
   // If no valid puzzle found, throw error - NEVER return an unsolvable puzzle
@@ -1352,13 +1283,9 @@ function generateDailyPuzzle(solution, difficulty, seed) {
 
 async function generateDailyPuzzles(date, forceSeed = null) {
   try {
-    console.log(`\n${'═'.repeat(60)}`);
-    console.log(`GENERATING DAILY PUZZLES FOR ${date}`);
-    console.log(`${'═'.repeat(60)}`);
 
     // Use forceSeed if provided (for manual regeneration), otherwise use date-based seed
     const baseSeed = forceSeed !== null ? forceSeed : dateToSeed(date);
-    console.log(`Base Seed: ${baseSeed}${forceSeed !== null ? ' (forced)' : ' (date-based)'}`);
 
     // Try up to 10 different solution grids if needed
     const maxGridAttempts = 10;
@@ -1367,15 +1294,10 @@ async function generateDailyPuzzles(date, forceSeed = null) {
       const seed = baseSeed + (gridAttempt * 10000); // Use different seeds for different grids
 
       if (gridAttempt > 0) {
-        console.log(`\n${'═'.repeat(60)}`);
-        console.log(`TRYING NEW SOLUTION GRID (Attempt ${gridAttempt + 1}/${maxGridAttempts})`);
-        console.log(`${'═'.repeat(60)}`);
       }
 
       // Generate one solution for all difficulties
-      console.log(`\nGenerating complete solution...`);
       const solution = generateCompleteSolution(seed);
-      console.log(`Solution generated with ${countFilledCells(solution)} filled cells`);
 
       try {
         // Generate puzzles for each difficulty
@@ -1384,12 +1306,6 @@ async function generateDailyPuzzles(date, forceSeed = null) {
         const hardPuzzle = generateDailyPuzzle(solution, 'hard', seed + 3);
 
         // Final verification of all clue counts
-        console.log(`\n${'═'.repeat(60)}`);
-        console.log(`FINAL VERIFICATION`);
-        console.log(`${'═'.repeat(60)}`);
-        console.log(`Easy clues: ${countFilledCells(easyPuzzle)} (target: ${CLUE_COUNTS.easy})`);
-        console.log(`Medium clues: ${countFilledCells(mediumPuzzle)} (target: ${CLUE_COUNTS.medium})`);
-        console.log(`Hard clues: ${countFilledCells(hardPuzzle)} (target: ${CLUE_COUNTS.hard})`);
 
         // Save to database
         await sql`
@@ -1413,7 +1329,6 @@ async function generateDailyPuzzles(date, forceSeed = null) {
             created_at = NOW()
         `;
 
-        console.log(`\n✓ Puzzles saved to database for ${date}`);
 
         return {
           easy: {
@@ -1432,8 +1347,6 @@ async function generateDailyPuzzles(date, forceSeed = null) {
 
       } catch (error) {
         if (gridAttempt < maxGridAttempts - 1) {
-          console.log(`\n⚠ This solution grid didn't work: ${error.message}`);
-          console.log(`   Generating a new solution grid...`);
           continue;
         } else {
           throw error; // Re-throw on last attempt
@@ -1459,7 +1372,6 @@ async function generateDailyPuzzles(date, forceSeed = null) {
  */
 async function getFallbackPuzzle(difficulty) {
   try {
-    console.log(`\n[FALLBACK] Retrieving fallback ${difficulty} puzzle from pool...`);
 
     // Get least-used fallback puzzle of this difficulty
     const result = await sql`
@@ -1485,7 +1397,6 @@ async function getFallbackPuzzle(difficulty) {
       WHERE id = ${fallbackRow.id}
     `;
 
-    console.log(`[FALLBACK] ✓ Using fallback ${difficulty} puzzle (used ${fallbackRow.times_used} times before)`);
 
     return {
       puzzle: JSON.parse(fallbackRow.puzzle),
@@ -1503,7 +1414,6 @@ async function getFallbackPuzzle(difficulty) {
  * Get ALL fallback puzzles at once (for all 3 difficulties)
  */
 async function getAllFallbackPuzzles() {
-  console.log('\n[FALLBACK] ⚠ Using emergency fallback puzzles for all difficulties');
 
   const easy = await getFallbackPuzzle('easy');
   const medium = await getFallbackPuzzle('medium');
@@ -1519,13 +1429,10 @@ async function getDailyPuzzles(date) {
     `;
 
     if (result.rows.length === 0) {
-      console.log(`\n[PUZZLES] No puzzles found for ${date} in database`);
-      console.log(`[PUZZLES] Attempting to use fallback puzzles...`);
 
       // Try to use fallback puzzles instead of generating on-demand
       try {
         const fallbackPuzzles = await getAllFallbackPuzzles();
-        console.log(`[PUZZLES] ✓ Fallback puzzles loaded successfully for ${date}`);
 
         // Inform user that fallback is being used
         return {
@@ -1535,7 +1442,6 @@ async function getDailyPuzzles(date) {
         };
       } catch (fallbackError) {
         console.error(`[PUZZLES] ❌ Fallback system failed:`, fallbackError);
-        console.log(`[PUZZLES] Last resort: Generating puzzles on-demand (slow)...`);
 
         // Last resort: Generate on-demand
         return await generateDailyPuzzles(date);
@@ -1671,7 +1577,6 @@ module.exports = async function handler(req, res) {
         const { action, player, date, difficulty, state, forceSeed } = req.body;
 
         // Log the request for debugging
-        console.log('POST /api/puzzles', { action, date: date ? 'present' : 'missing', forceSeed: forceSeed ? 'present' : 'missing' });
 
         if (action === 'cleanup') {
           const result = await cleanupOldPuzzles();

@@ -377,7 +377,7 @@
                             <li><strong>Select Cells:</strong> Click any cell to select it</li>
                             <li><strong>Enter Numbers:</strong> Type 1-9 to place numbers in selected cells</li>
                             <li><strong>Candidate Notes:</strong> Use small numbers to track possibilities (Spacebar or C to toggle)</li>
-                            <li><strong>Get Hints:</strong> Click hint button or press H for help (gentle 3-20% penalty based on count)</li>
+                            <li><strong>Get Hints:</strong> Click hint button or press H for 3-level help (L1: 0.5%, L2/3: 3% + breaks bonuses)</li>
                             <li><strong>Pause/Resume:</strong> Use the pause button or press P to take breaks</li>
                             <li><strong>Auto-Save:</strong> Your progress is automatically saved every 30 seconds</li>
                             <li><strong>Auto-Pause:</strong> Game automatically pauses when you switch browser tabs</li>
@@ -396,7 +396,7 @@
                         <ul>
                             <li><strong>Numbers 1-9:</strong> Place numbers in selected cell</li>
                             <li><strong>Spacebar or C:</strong> Toggle candidate notes mode</li>
-                            <li><strong>H:</strong> Get hint (two-stage: point → reveal)</li>
+                            <li><strong>H:</strong> Get hint (3 levels: strategic guidance → specific cell → answer reveal)</li>
                             <li><strong>P:</strong> Pause or resume game</li>
                             <li><strong>U:</strong> Undo last move</li>
                             <li><strong>Esc:</strong> Close modals or deselect cell</li>
@@ -431,7 +431,7 @@
                     <div class="faq-answer">
                         Each day, both players compete by completing the same three Sudoku puzzles (Easy, Medium, Hard).
                         The player with the highest total score wins the day. Scores are calculated using linear time scaling,
-                        harsh error penalties (12% per error), and gentle hint penalties (3-20%). Winners of individual difficulty
+                        harsh error penalties (15% per error), and strategic hint penalties (0.5%-3%). Winners of individual difficulty
                         levels get a 30% bonus. Win streaks, achievements, and overall records are tracked automatically.
                     </div>
                 </div>
@@ -447,8 +447,8 @@
                 <div class="feature-grid">
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-brain"></i></div>
-                        <div class="feature-title">Smart Hints</div>
-                        <div class="feature-description">Two-stage hint system: first click points to the next solvable cell, second click reveals the answer. Gentle penalties (3-20% based on count) encourage strategic use when stuck.</div>
+                        <div class="feature-title">Smart 3-Level Hints</div>
+                        <div class="feature-description">Progressive hint system: Level 1 provides strategic guidance with visual highlighting (0.5%, keeps Perfect bonus); Level 2 shows specific cell (3%, breaks bonuses); Level 3 reveals answer with explanation (3%, breaks bonuses). Educational and strategic!</div>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-eye"></i></div>
@@ -458,7 +458,7 @@
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         <div class="feature-title">Error Detection</div>
-                        <div class="feature-description">Real-time validation highlights incorrect numbers immediately. Each error costs 12% of your score (max 60%) - accuracy is absolutely critical!</div>
+                        <div class="feature-description">Real-time validation highlights incorrect numbers immediately. Each error costs 15% of your score AND breaks Perfect Play bonuses (effective cost ~30-40%) - accuracy is absolutely critical!</div>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon"><i class="fas fa-save"></i></div>
@@ -491,26 +491,34 @@
                         How are scores calculated?
                     </div>
                     <div class="faq-answer">
-                        The new competitive scoring system uses linear time scaling with strategic penalties:
+                        <p><strong>🎖️ NEW SYSTEM (October 2025):</strong> Rewards perfect play with multipliers, encourages strategic hint usage!</p>
                         <div class="scoring-formula">
                             <div class="formula">
-                                Base Scores: Easy 1000, Medium 2000, Hard 4000<br>
-                                Target Times: Easy 4min, Medium 5.5min, Hard 9min<br>
-                                Time Ratio = Your Time ÷ Target Time
+                                <strong>Base Scores:</strong> Easy 1000, Medium 1500, Hard 5000<br>
+                                <strong>Target Times:</strong> Easy 2:30, Medium 2:30, Hard 4:30<br>
+                                <strong>Perfect Play Bonus:</strong> 1.5x (Flawless) or 1.35x (Perfect Strategy)
                             </div>
                         </div>
 
-                        <p><strong>Time Scoring (Linear):</strong></p>
+                        <p><strong>Time Scoring (Flatter Curve - Max 1.5x):</strong></p>
                         <ul>
-                            <li><strong>Faster than target (ratio ≤ 1.0):</strong> Score = Base × (2 - ratio) [2x at instant, 1x at target]</li>
-                            <li><strong>Slower than target (ratio 1.0-2.0):</strong> Score = Base × (1.5 - ratio × 0.5) [1x to 0.5x]</li>
-                            <li><strong>Very slow (ratio > 2.0):</strong> Score = Base × 0.25 [minimum 25%]</li>
+                            <li><strong>Faster than target:</strong> 1.0x to 1.5x (less speed-focused)</li>
+                            <li><strong>At target time:</strong> 1.0x base score</li>
+                            <li><strong>Slower than target:</strong> 1.0x down to 0.5x minimum</li>
                         </ul>
 
-                        <p><strong>Penalties Applied:</strong></p>
+                        <p><strong>Penalties:</strong></p>
                         <ul>
-                            <li><strong>Error Penalty (HARSH):</strong> 12% per error, max 60% - accuracy is absolutely critical!</li>
-                            <li><strong>Hint Penalty (GENTLE):</strong> 1H: 3%, 2H: 6%, 3H: 10%, 4H: 15%, 5+H: 20% cap - encourages strategic use when stuck</li>
+                            <li><strong>Error Penalty (VERY HARSH):</strong> 15% per error, max 60% + <strong>Breaks Perfect/Flawless bonus!</strong></li>
+                            <li><strong>Level 1 Hints (Strategic Guidance):</strong> 0.5% each - <strong>Keeps Perfect bonus! (1.35x)</strong></li>
+                            <li><strong>Level 2/3 Hints (Cell/Answer):</strong> 3% each + <strong>Breaks Perfect/Flawless bonus!</strong></li>
+                        </ul>
+
+                        <p><strong>🎖️ Perfect Play Bonuses (NEW!):</strong></p>
+                        <ul>
+                            <li><strong>🏆 Flawless Victory (1.5x):</strong> 0 errors, 0 hints - Achieves up to 2.25x base score!</li>
+                            <li><strong>⭐ Perfect Strategy (1.35x):</strong> 0 errors, Level 1 hints only - Strategic learning rewarded!</li>
+                            <li><strong>💡 Strategic Depth:</strong> Perfect play is now the optimal strategy - hints for speed no longer worth it!</li>
                         </ul>
 
                         <p><strong>Winner Bonuses:</strong></p>
@@ -528,50 +536,55 @@
                         What's a good score?
                     </div>
                     <div class="faq-answer">
-                        <p>With the new linear scoring system, here are benchmark scores:</p>
+                        <p>With the Perfect Play Bonus system (October 2025), here are benchmark scores:</p>
 
                         <p><strong>Individual Puzzle Scores:</strong></p>
                         <ul>
-                            <li><strong>Easy (range: 250-2000):</strong>
+                            <li><strong>Easy (range: 500-2250):</strong>
                                 <ul>
-                                    <li>1500+ (2min, 0E, 0H) - Exceptional</li>
-                                    <li>1000 (4min, 0E, 0H) - Target/Good</li>
-                                    <li>750 (6min, 0E, 0H) - Decent</li>
-                                    <li>500 (8min+, 0E, 0H) - Minimum</li>
+                                    <li>2000+ (1:30, 0E, 0H) - 🏆 Flawless Victory (2.25x base!)</li>
+                                    <li>1500 (2:30, 0E, 0H) - Target/Flawless (1.5x base)</li>
+                                    <li>1350 (2:30, 0E, L1 hints) - ⭐ Perfect Strategy (1.35x)</li>
+                                    <li>1000 (4min, 0E, 0H) - Good</li>
+                                    <li>750 (5min, 1E, 0H) - Decent</li>
                                 </ul>
                             </li>
-                            <li><strong>Medium (range: 500-4000):</strong>
+                            <li><strong>Medium (range: 750-3375):</strong>
                                 <ul>
-                                    <li>3000+ (3min, 0E, 0H) - Exceptional</li>
-                                    <li>2000 (5.5min, 0E, 0H) - Target/Good</li>
-                                    <li>1500 (8min, 0E, 0H) - Decent</li>
-                                    <li>1000 (11min+, 0E, 0H) - Minimum</li>
+                                    <li>3000+ (1:30, 0E, 0H) - 🏆 Flawless Victory (2.25x base!)</li>
+                                    <li>2250 (2:30, 0E, 0H) - Target/Flawless (1.5x base)</li>
+                                    <li>2000 (2:30, 0E, L1 hints) - ⭐ Perfect Strategy (1.35x)</li>
+                                    <li>1500 (4min, 0E, 0H) - Good</li>
+                                    <li>1200 (5min, 1E, 0H) - Decent</li>
                                 </ul>
                             </li>
-                            <li><strong>Hard (range: 1000-8000):</strong>
+                            <li><strong>Hard (range: 2500-11250):</strong>
                                 <ul>
-                                    <li>6000+ (5min, 0E, 0H) - Exceptional</li>
-                                    <li>4000 (9min, 0E, 0H) - Target/Good</li>
-                                    <li>3000 (13min, 0E, 0H) - Decent</li>
-                                    <li>2000 (18min+, 0E, 0H) - Minimum</li>
+                                    <li>10000+ (3min, 0E, 0H) - 🏆 Flawless Victory (2.25x base!)</li>
+                                    <li>7500 (4:30, 0E, 0H) - Target/Flawless (1.5x base)</li>
+                                    <li>6750 (4:30, 0E, L1 hints) - ⭐ Perfect Strategy (1.35x)</li>
+                                    <li>5000 (6min, 0E, 0H) - Good</li>
+                                    <li>4000 (7min, 1E, 0H) - Decent</li>
                                 </ul>
                             </li>
                         </ul>
 
                         <p><strong>Daily Total Scores (with 30% winner bonuses):</strong></p>
                         <ul>
-                            <li><strong>9000+:</strong> Champion level - exceptional speed and accuracy across all difficulties</li>
-                            <li><strong>7000+:</strong> Excellent - consistently fast with minimal errors</li>
-                            <li><strong>5000+:</strong> Very good - solid performance across the board</li>
-                            <li><strong>3500+:</strong> Good - meeting targets with room for improvement</li>
-                            <li><strong>2000+:</strong> Decent - completing all puzzles but slower times</li>
+                            <li><strong>15000+:</strong> Champion level - exceptional Flawless Victories across all difficulties</li>
+                            <li><strong>12000+:</strong> Elite - consistently perfect play with minimal hints</li>
+                            <li><strong>9000+:</strong> Excellent - hitting target times with Perfect Strategy bonuses</li>
+                            <li><strong>6000+:</strong> Very good - solid performance meeting targets</li>
+                            <li><strong>4000+:</strong> Good - completing all puzzles with room for improvement</li>
                         </ul>
 
                         <p><strong>Pro tips:</strong></p>
                         <ul>
-                            <li><strong>Accuracy is CRITICAL:</strong> Each error costs 12% of your score (5 errors = 60% penalty!)</li>
-                            <li><strong>Use hints strategically:</strong> Gentle penalties (3-20%) make them worthwhile when stuck</li>
-                            <li><strong>Aim for target times:</strong> 4min (Easy), 5.5min (Medium), 9min (Hard) for base score</li>
+                            <li><strong>Perfect play is optimal:</strong> Flawless (1.5x) or Perfect Strategy (1.35x) bonuses are game-changers!</li>
+                            <li><strong>Accuracy is CRITICAL:</strong> Each error costs 15% of your score AND breaks bonuses (5 errors = 75% penalty!)</li>
+                            <li><strong>Use Level 1 hints freely:</strong> Only 0.5% penalty, keeps Perfect Strategy bonus (1.35x)!</li>
+                            <li><strong>Level 2/3 hints break bonuses:</strong> 3% penalty + lose 1.35x/1.5x multiplier = ~30-40% effective cost</li>
+                            <li><strong>Aim for target times:</strong> 2:30 (Easy), 2:30 (Medium), 4:30 (Hard) for 1.5x time bonus</li>
                             <li><strong>Win individual difficulties:</strong> 30% bonus makes winning each difficulty valuable!</li>
                         </ul>
                     </div>
@@ -892,10 +905,10 @@
                         <ul>
                             <li><strong>Learn Techniques:</strong> Master naked singles, hidden singles, then progress to pairs and triples</li>
                             <li><strong>Use Candidate Notes:</strong> Track possible numbers to spot patterns</li>
-                            <li><strong>Prioritize Accuracy:</strong> Each error costs 12% of your score - avoid mistakes at all costs!</li>
+                            <li><strong>Prioritize Accuracy:</strong> Each error costs 15% of your score AND breaks bonuses - avoid mistakes at all costs!</li>
                             <li><strong>Practice Regularly:</strong> Consistency is key to improvement</li>
                             <li><strong>Analyze Your Errors:</strong> Use the analytics page to identify weak areas</li>
-                            <li><strong>Know Your Targets:</strong> Aim for 4min (Easy), 5.5min (Medium), 9min (Hard) for base scores</li>
+                            <li><strong>Know Your Targets:</strong> Aim for 2:30 (Easy), 2:30 (Medium), 4:30 (Hard) for 1.5x time bonus</li>
                         </ul>
                     </div>
                 </div>
@@ -907,11 +920,12 @@
                     </div>
                     <div class="faq-answer">
                         <ul>
-                            <li><strong>Minimize Errors:</strong> Each error costs 12% of your score (max 60%) - accuracy is absolutely critical!</li>
-                            <li><strong>Use Hints Strategically:</strong> Gentle penalties (3-20%) make them worthwhile when stuck</li>
-                            <li><strong>Beat Target Times:</strong> 4min (Easy), 5.5min (Medium), 9min (Hard) gets you base score</li>
+                            <li><strong>Aim for Perfect Play Bonuses:</strong> Flawless (1.5x) or Perfect Strategy (1.35x) multiply your final score dramatically!</li>
+                            <li><strong>Zero Errors = Game Changer:</strong> Each error costs 15% AND breaks bonuses (effective cost ~30-40%!)</li>
+                            <li><strong>Use Level 1 Hints Freely:</strong> Only 0.5% penalty, keeps Perfect Strategy bonus - educational and strategic!</li>
+                            <li><strong>Avoid Level 2/3 Hints:</strong> 3% penalty + loses bonuses = ~30-40% effective cost. Not worth it for speed!</li>
+                            <li><strong>Hit Target Times:</strong> 2:30 (Easy), 2:30 (Medium), 4:30 (Hard) gets you 1.5x time bonus</li>
                             <li><strong>Win Individual Difficulties:</strong> 30% bonus for winning each difficulty level is huge!</li>
-                            <li><strong>Focus on Speed AND Accuracy:</strong> Linear scoring rewards both proportionally</li>
                             <li><strong>Complete All Three:</strong> Daily victories require finishing all difficulties</li>
                         </ul>
                     </div>
