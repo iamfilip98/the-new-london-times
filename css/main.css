@@ -4379,6 +4379,7 @@ select:focus-visible,
 
 .dropdown-content {
     display: none;
+    flex-direction: column;
     position: absolute;
     top: calc(100% + 0.25rem);
     right: 0;
@@ -4397,7 +4398,7 @@ select:focus-visible,
 }
 
 .player-dropdown.active .dropdown-content {
-    display: block;
+    display: flex;
 }
 
 .dropdown-content a {
