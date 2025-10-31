@@ -1531,20 +1531,186 @@ class AchievementsManager {
             case 'easy_medium_time_under':
             case 'old_puzzle_completion':
             case 'final_achievement':
-            case 'flawless_bonus':
-            case 'perfect_bonus':
-            case 'score_milestone':
-            case 'flawless_streak':
-            case 'perfect_bonus_count':
-            case 'flawless_bonus_count':
                 // These achievement types are not yet implemented or require new data tracking
-                // flawless_bonus, perfect_bonus, etc. will be implemented once individual_games table tracks bonus types
-                // They will be added as the underlying tracking systems are developed
                 return [];
+
+            case 'flawless_bonus':
+                return this.checkFlawlessBonus(req, allEntries);
+
+            case 'perfect_bonus':
+                return this.checkPerfectBonus(req, allEntries);
+
+            case 'score_milestone':
+                return this.checkScoreMilestone(req, allEntries);
+
+            case 'flawless_streak':
+                return this.checkFlawlessStreak(req, allEntries);
+
+            case 'perfect_bonus_count':
+                return this.checkPerfectBonusCount(req, allEntries);
+
+            case 'flawless_bonus_count':
+                return this.checkFlawlessBonusCount(req, allEntries);
 
             default:
                 return [];
         }
+    }
+
+    async fetchPlayerGames(player) {
+        try {
+            const response = await fetch(`/api/games?all=true&player=${player}`);
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to fetch player games:', error);
+            return [];
+        }
+    }
+
+    // Check if player has achieved a flawless bonus (0 errors, 0 hints) for a specific difficulty
+    async checkFlawlessBonus(req, allEntries) {
+        const players = [];
+
+        for (const player of ['faidao', 'filip']) {
+            const games = await this.fetchPlayerGames(player);
+            const hasFlawless = games.some(game =>
+                game.bonusType === 'flawless' &&
+                (req.difficulty ? game.difficulty === req.difficulty : true)
+            );
+
+            if (hasFlawless) {
+                players.push(player);
+            }
+        }
+
+        return players;
+    }
+
+    // Check if player has achieved a perfect bonus (0 errors, Level 1 hints only) for a specific difficulty
+    async checkPerfectBonus(req, allEntries) {
+        const players = [];
+
+        for (const player of ['faidao', 'filip']) {
+            const games = await this.fetchPlayerGames(player);
+            const hasPerfect = games.some(game =>
+                game.bonusType === 'perfect' &&
+                (req.difficulty ? game.difficulty === req.difficulty : true)
+            );
+
+            if (hasPerfect) {
+                players.push(player);
+            }
+        }
+
+        return players;
+    }
+
+    // Check if player has achieved a score milestone for a specific difficulty
+    async checkScoreMilestone(req, allEntries) {
+        const players = [];
+
+        for (const player of ['faidao', 'filip']) {
+            const games = await this.fetchPlayerGames(player);
+            const hasMilestone = games.some(game =>
+                game.score >= req.value &&
+                game.difficulty === req.difficulty
+            );
+
+            if (hasMilestone) {
+                players.push(player);
+            }
+        }
+
+        return players;
+    }
+
+    // Check if player has a flawless streak of consecutive days
+    async checkFlawlessStreak(req, allEntries) {
+        const players = [];
+
+        for (const player of ['faidao', 'filip']) {
+            const games = await this.fetchPlayerGames(player);
+
+            // Group games by date and check for consecutive flawless days
+            const gamesByDate = {};
+            games.forEach(game => {
+                const dateStr = game.date.toString().split('T')[0];
+                if (!gamesByDate[dateStr]) gamesByDate[dateStr] = [];
+                gamesByDate[dateStr].push(game);
+            });
+
+            // Sort dates
+            const dates = Object.keys(gamesByDate).sort((a, b) => new Date(b) - new Date(a));
+
+            // Check for consecutive flawless days
+            let currentStreak = 0;
+            let maxStreak = 0;
+
+            for (let i = 0; i < dates.length; i++) {
+                const dateGames = gamesByDate[dates[i]];
+                const allFlawless = dateGames.length > 0 && dateGames.every(g => g.bonusType === 'flawless');
+
+                if (allFlawless) {
+                    // Check if this date is consecutive with the previous one
+                    if (i === 0) {
+                        currentStreak = 1;
+                    } else {
+                        const prevDate = new Date(dates[i - 1]);
+                        const currDate = new Date(dates[i]);
+                        const dayDiff = (prevDate - currDate) / (1000 * 60 * 60 * 24);
+
+                        if (dayDiff === 1) {
+                            currentStreak++;
+                        } else {
+                            currentStreak = 1;
+                        }
+                    }
+
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    currentStreak = 0;
+                }
+            }
+
+            if (maxStreak >= req.value) {
+                players.push(player);
+            }
+        }
+
+        return players;
+    }
+
+    // Check if player has achieved a certain number of perfect bonuses
+    async checkPerfectBonusCount(req, allEntries) {
+        const players = [];
+
+        for (const player of ['faidao', 'filip']) {
+            const games = await this.fetchPlayerGames(player);
+            const perfectCount = games.filter(game => game.bonusType === 'perfect').length;
+
+            if (perfectCount >= req.value) {
+                players.push(player);
+            }
+        }
+
+        return players;
+    }
+
+    // Check if player has achieved a certain number of flawless bonuses
+    async checkFlawlessBonusCount(req, allEntries) {
+        const players = [];
+
+        for (const player of ['faidao', 'filip']) {
+            const games = await this.fetchPlayerGames(player);
+            const flawlessCount = games.filter(game => game.bonusType === 'flawless').length;
+
+            if (flawlessCount >= req.value) {
+                players.push(player);
+            }
+        }
+
+        return players;
     }
 
     checkWinStreak(requiredStreak, streaks) {
