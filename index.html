@@ -38,33 +38,33 @@
                     </div>
                 </div>
             </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link active" data-page="dashboard">
-                    <i class="fas fa-home"></i>
+            <div class="nav-links" role="navigation" aria-label="Main navigation">
+                <a href="#" class="nav-link active" data-page="dashboard" aria-label="Dashboard" aria-current="page">
+                    <i class="fas fa-home" aria-hidden="true"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="nav-link" data-page="analytics">
-                    <i class="fas fa-chart-line"></i>
+                <a href="#" class="nav-link" data-page="analytics" aria-label="Analytics">
+                    <i class="fas fa-chart-line" aria-hidden="true"></i>
                     <span>Analytics</span>
                 </a>
-                <a href="#" class="nav-link" data-page="leaderboards">
-                    <i class="fas fa-medal"></i>
+                <a href="#" class="nav-link" data-page="leaderboards" aria-label="Leaderboards">
+                    <i class="fas fa-medal" aria-hidden="true"></i>
                     <span>Leaderboards</span>
                 </a>
-                <a href="#" class="nav-link" data-page="achievements">
-                    <i class="fas fa-star"></i>
+                <a href="#" class="nav-link" data-page="achievements" aria-label="Achievements">
+                    <i class="fas fa-star" aria-hidden="true"></i>
                     <span>Achievements</span>
                 </a>
-                <a href="#" class="nav-link" data-page="challenges" style="display: none;">
-                    <i class="fas fa-fire"></i>
+                <a href="#" class="nav-link" data-page="challenges" style="display: none;" aria-label="Challenges">
+                    <i class="fas fa-fire" aria-hidden="true"></i>
                     <span>Challenges</span>
                 </a>
-                <a href="#" class="nav-link" data-page="sudoku">
-                    <i class="fas fa-puzzle-piece"></i>
+                <a href="#" class="nav-link" data-page="sudoku" aria-label="Play Sudoku">
+                    <i class="fas fa-puzzle-piece" aria-hidden="true"></i>
                     <span>Play Sudoku</span>
                 </a>
-                <a href="#" class="nav-link mobile-logout" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
+                <a href="#" class="nav-link mobile-logout" onclick="logout()" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
                     <span>Logout</span>
                 </a>
             </div>
@@ -85,19 +85,19 @@
         </nav>
 
         <!-- Achievement Notification -->
-        <div class="achievement-notification" id="achievementNotification">
+        <div class="achievement-notification" id="achievementNotification" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="achievement-content">
-                <i class="fas fa-trophy achievement-icon"></i>
+                <i class="fas fa-trophy achievement-icon" aria-hidden="true"></i>
                 <div class="achievement-text">
                     <h3>Achievement Unlocked!</h3>
                     <p id="achievementMessage"></p>
                 </div>
-                <button class="achievement-close">&times;</button>
+                <button class="achievement-close" aria-label="Close achievement notification">&times;</button>
             </div>
         </div>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" role="main" aria-label="Main content">
             <!-- Dashboard Page -->
             <div class="page active" id="dashboard">
                 <div class="dashboard-header">
@@ -668,11 +668,11 @@
         </main>
 
         <!-- Footer -->
-        <footer class="app-footer" id="appFooter">
+        <footer class="app-footer" id="appFooter" role="contentinfo">
             <div class="footer-content">
                 <div class="footer-links">
-                    <a href="faq.html" class="footer-link">
-                        <i class="fas fa-question-circle"></i>
+                    <a href="faq.html" class="footer-link" aria-label="Frequently Asked Questions and Guide">
+                        <i class="fas fa-question-circle" aria-hidden="true"></i>
                         FAQ & Guide
                     </a>
                 </div>

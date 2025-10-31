@@ -193,17 +193,17 @@ class SudokuEngine {
                 <!-- Difficulty Selection - Hidden for daily puzzles -->
                 <div class="difficulty-selector" style="display: none;">
                     <h3>Choose Difficulty</h3>
-                    <div class="difficulty-buttons">
-                        <button class="difficulty-btn active" data-difficulty="easy">
-                            <i class="fas fa-seedling"></i>
+                    <div class="difficulty-buttons" role="group" aria-label="Difficulty selection">
+                        <button class="difficulty-btn active" data-difficulty="easy" aria-label="Select easy difficulty" aria-pressed="true">
+                            <i class="fas fa-seedling" aria-hidden="true"></i>
                             <span>Easy</span>
                         </button>
-                        <button class="difficulty-btn" data-difficulty="medium">
-                            <i class="fas fa-bolt"></i>
+                        <button class="difficulty-btn" data-difficulty="medium" aria-label="Select medium difficulty" aria-pressed="false">
+                            <i class="fas fa-bolt" aria-hidden="true"></i>
                             <span>Medium</span>
                         </button>
-                        <button class="difficulty-btn" data-difficulty="hard">
-                            <i class="fas fa-fire"></i>
+                        <button class="difficulty-btn" data-difficulty="hard" aria-label="Select hard difficulty" aria-pressed="false">
+                            <i class="fas fa-fire" aria-hidden="true"></i>
                             <span>Hard</span>
                         </button>
                     </div>
@@ -213,34 +213,34 @@ class SudokuEngine {
                 <div class="game-info-panel">
                     <div class="timer-section">
                         <div class="stat-label">Timer</div>
-                        <span class="timer-display" id="timerDisplay">0:00</span>
+                        <span class="timer-display" id="timerDisplay" aria-live="polite" aria-atomic="true">0:00</span>
                     </div>
                     <div class="stats-section">
                         <div class="stat-item">
                             <div class="stat-label">Error</div>
-                            <span class="errors-count" id="errorsCount">0</span>
+                            <span class="errors-count" id="errorsCount" aria-live="polite" aria-atomic="true">0</span>
                         </div>
                         <div class="stat-item">
                             <div class="stat-label">Hint</div>
-                            <span class="hints-count" id="hintsCount">0</span>
+                            <span class="hints-count" id="hintsCount" aria-live="polite" aria-atomic="true">0</span>
                         </div>
                     </div>
                     <div class="game-controls">
-                        <button class="icon-btn hint-btn" id="hintBtn" title="Get a hint (H)">
-                            <i class="fas fa-lightbulb"></i>
+                        <button class="icon-btn hint-btn" id="hintBtn" title="Get a hint (H)" aria-label="Get hint (press H key)">
+                            <i class="fas fa-lightbulb" aria-hidden="true"></i>
                         </button>
-                        <button class="icon-btn pause-btn" id="pauseBtn" title="Pause game (P)">
-                            <i class="fas fa-pause"></i>
+                        <button class="icon-btn pause-btn" id="pauseBtn" title="Pause game (P)" aria-label="Pause game (press P key)">
+                            <i class="fas fa-pause" aria-hidden="true"></i>
                         </button>
-                        <button class="icon-btn settings-btn" id="settingsBtn" title="Settings (?)">
-                            <i class="fas fa-cog"></i>
+                        <button class="icon-btn settings-btn" id="settingsBtn" title="Settings (?)" aria-label="Open settings">
+                            <i class="fas fa-cog" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- Sudoku Grid -->
                 <div class="sudoku-grid-container" data-difficulty="easy">
-                    <div class="sudoku-grid" id="sudokuGrid" data-difficulty="easy">
+                    <div class="sudoku-grid" id="sudokuGrid" data-difficulty="easy" role="grid" aria-label="Sudoku puzzle grid">
                         ${this.generateGridHTML()}
                     </div>
                     <!-- Paused Overlay - moved inside grid container -->
@@ -266,12 +266,12 @@ class SudokuEngine {
 
                     <!-- Action Buttons in Sidebar -->
                     <div class="action-buttons">
-                        <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode">
-                            <i class="fas fa-pencil-alt"></i>
+                        <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode" aria-label="Toggle pencil notes mode (press C key)">
+                            <i class="fas fa-pencil-alt" aria-hidden="true"></i>
                             <span>Notes</span>
                         </button>
-                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility">
-                            <i class="fas fa-eye"></i>
+                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility" aria-label="Toggle visibility of all pencil notes">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
                             <span>Show All</span>
                         </button>
                     </div>
@@ -289,7 +289,9 @@ class SudokuEngine {
                     <div class="sudoku-cell ${cellClass}"
                          data-row="${row}"
                          data-col="${col}"
-                         tabindex="0">
+                         tabindex="0"
+                         role="gridcell"
+                         aria-label="Row ${row + 1}, Column ${col + 1}">
                         <div class="cell-value"></div>
                         <div class="cell-candidates"></div>
                     </div>
@@ -308,15 +310,15 @@ class SudokuEngine {
                 <div class="number-input">
                     <div class="number-row-1">
                         ${Array.from({length: 5}, (_, i) =>
-                            `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
+                            `<button class="number-btn" data-number="${i + 1}" aria-label="Enter number ${i + 1} (press ${i + 1} key)">${i + 1}</button>`
                         ).join('')}
                     </div>
                     <div class="number-row-2">
                         ${Array.from({length: 4}, (_, i) =>
-                            `<button class="number-btn" data-number="${i + 6}">${i + 6}</button>`
+                            `<button class="number-btn" data-number="${i + 6}" aria-label="Enter number ${i + 6} (press ${i + 6} key)">${i + 6}</button>`
                         ).join('')}
-                        <button class="undo-btn" id="undoBtn" title="Undo last move">
-                            <i class="fas fa-undo-alt"></i>
+                        <button class="undo-btn" id="undoBtn" title="Undo last move" aria-label="Undo last move (press U or Ctrl+Z)">
+                            <i class="fas fa-undo-alt" aria-hidden="true"></i>
                             <span>Undo</span>
                         </button>
                     </div>
@@ -327,10 +329,10 @@ class SudokuEngine {
             return `
                 <div class="number-input number-input-desktop">
                     ${Array.from({length: 9}, (_, i) =>
-                        `<button class="number-btn" data-number="${i + 1}">${i + 1}</button>`
+                        `<button class="number-btn" data-number="${i + 1}" aria-label="Enter number ${i + 1} (press ${i + 1} key)">${i + 1}</button>`
                     ).join('')}
-                    <button class="undo-btn" id="undoBtn" title="Undo last move">
-                        <i class="fas fa-undo-alt"></i>
+                    <button class="undo-btn" id="undoBtn" title="Undo last move" aria-label="Undo last move (press U or Ctrl+Z)">
+                        <i class="fas fa-undo-alt" aria-hidden="true"></i>
                         <span>Undo</span>
                     </button>
                 </div>
