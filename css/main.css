@@ -8180,6 +8180,7 @@ select:focus-visible,
     opacity: 0;
     transition: var(--transition);
     z-index: 1;
+    pointer-events: none;
 }
 
 .difficulty-option:hover::before {
