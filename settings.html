@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Sudoku Championship</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .settings-header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4ECDC4, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .settings-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .settings-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .setting-item:first-child {
+            padding-top: 0;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            border-radius: 34px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 2px;
+            bottom: 2px;
+            background: white;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            border-color: transparent;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        .setting-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 150px;
+        }
+
+        .setting-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .setting-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Orbitron', monospace;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .save-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .settings-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .settings-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .toggle-switch,
+            .setting-select {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>
+                <i class="fas fa-cog"></i>
+                Settings
+            </h1>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Sound Settings -->
+        <div class="settings-section">
+            <h2>
+                <i class="fas fa-volume-up"></i>
+                Sound Effects
+            </h2>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-name">Number Input Sound</div>
+                    <div class="setting-description">Play sound when entering numbers in the grid</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="inputSound" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-name">Error Sound</div>
+                    <div class="setting-description">Play sound when an incorrect number is entered</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="errorSound" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-name">Completion Sound</div>
+                    <div class="setting-description">Play sound when puzzle is successfully completed</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="completionSound" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-name">Hint Sound</div>
+                    <div class="setting-description">Play sound when using the hint feature</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="hintSound" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Game Preferences -->
+        <div class="settings-section">
+            <h2>
+                <i class="fas fa-gamepad"></i>
+                Game Preferences
+            </h2>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-name">Auto-save Interval</div>
+                    <div class="setting-description">How often to automatically save your game progress</div>
+                </div>
+                <select class="setting-select" id="autoSave">
+                    <option value="15">15 seconds</option>
+                    <option value="30" selected>30 seconds</option>
+                    <option value="60">1 minute</option>
+                    <option value="120">2 minutes</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-name">Show Timer</div>
+                    <div class="setting-description">Display timer during gameplay</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="showTimer" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-name">Highlight Errors</div>
+                    <div class="setting-description">Automatically highlight incorrect entries in red</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="highlightErrors" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="settings-section">
+            <button class="save-btn" onclick="saveSettings()">
+                <i class="fas fa-save"></i>
+                Save Settings
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const auth = sessionStorage.getItem('sudokuAuth');
+        if (auth !== 'authenticated') {
+            window.location.href = 'auth.html';
+        }
+
+        // Load saved settings
+        function loadSettings() {
+            const saved = localStorage.getItem('sudokuSettings');
+            if (saved) {
+                try {
+                    const settings = JSON.parse(saved);
+
+                    // Sound settings
+                    if (settings.sounds) {
+                        document.getElementById('inputSound').checked = settings.sounds.input !== false;
+                        document.getElementById('errorSound').checked = settings.sounds.error !== false;
+                        document.getElementById('completionSound').checked = settings.sounds.completion !== false;
+                        document.getElementById('hintSound').checked = settings.sounds.hint !== false;
+                    }
+
+                    // Preferences
+                    if (settings.preferences) {
+                        document.getElementById('autoSave').value = settings.preferences.autoSaveInterval || 30;
+                        document.getElementById('showTimer').checked = settings.preferences.showTimer !== false;
+                        document.getElementById('highlightErrors').checked = settings.preferences.highlightErrors !== false;
+                    }
+                } catch (e) {
+                    console.error('Error loading settings:', e);
+                }
+            }
+        }
+
+        // Save settings
+        function saveSettings() {
+            const settings = {
+                sounds: {
+                    input: document.getElementById('inputSound').checked,
+                    error: document.getElementById('errorSound').checked,
+                    completion: document.getElementById('completionSound').checked,
+                    hint: document.getElementById('hintSound').checked
+                },
+                preferences: {
+                    autoSaveInterval: parseInt(document.getElementById('autoSave').value),
+                    showTimer: document.getElementById('showTimer').checked,
+                    highlightErrors: document.getElementById('highlightErrors').checked
+                }
+            };
+
+            localStorage.setItem('sudokuSettings', JSON.stringify(settings));
+
+            // Show success feedback
+            const btn = document.querySelector('.save-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Settings Saved!';
+            btn.style.background = 'linear-gradient(135deg, #44A08D, #093637)';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        // Load settings on page load
+        loadSettings();
+    </script>
+</body>
+</html>
