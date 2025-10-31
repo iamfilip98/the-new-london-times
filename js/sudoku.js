@@ -2993,6 +2993,19 @@ class SudokuEngine {
         if (!currentPlayer) return;
 
         try {
+            // Determine bonus type based on perfect play criteria
+            const hasLevel1Only = this.hintLevel1Count > 0 && this.hintLevel2Count === 0 && this.hintLevel3Count === 0;
+            const hasNoHints = this.hintLevel1Count === 0 && this.hintLevel2Count === 0 && this.hintLevel3Count === 0;
+
+            let bonusType = null;
+            if (this.errors === 0) {
+                if (hasNoHints) {
+                    bonusType = 'flawless';  // 🏆 FLAWLESS: 0 errors, 0 hints
+                } else if (hasLevel1Only) {
+                    bonusType = 'perfect';   // ⭐ PERFECT: 0 errors, Level 1 hints only
+                }
+            }
+
             // Save completed game data for integration with existing analytics
             const completedGame = {
                 date: this.getTodayDateString(),
@@ -3006,6 +3019,7 @@ class SudokuEngine {
                 hintLevel2Count: this.hintLevel2Count || 0,
                 hintLevel3Count: this.hintLevel3Count || 0,
                 hintTimePenalty: this.hintTimePenalty || 0,
+                bonusType: bonusType,
                 score: score,
                 completed: true,
                 timestamp: Date.now()

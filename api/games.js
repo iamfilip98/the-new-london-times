@@ -48,6 +48,10 @@ async function initDatabase() {
         errors INTEGER DEFAULT 0,
         score DECIMAL(10,2) DEFAULT 0,
         hints INTEGER DEFAULT 0,
+        hint_level1_count INTEGER DEFAULT 0,
+        hint_level2_count INTEGER DEFAULT 0,
+        hint_level3_count INTEGER DEFAULT 0,
+        bonus_type VARCHAR(20),
         completed_at TIMESTAMP DEFAULT NOW(),
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
@@ -80,17 +84,36 @@ async function initDatabase() {
 
 async function saveGame(player, date, difficulty, gameData) {
   try {
-    const { time, errors, score, hints } = gameData;
+    const {
+      time,
+      errors,
+      score,
+      hints,
+      hintLevel1Count,
+      hintLevel2Count,
+      hintLevel3Count,
+      bonusType
+    } = gameData;
 
     await sql`
-      INSERT INTO individual_games (player, date, difficulty, time, errors, score, hints)
-      VALUES (${player}, ${date}, ${difficulty}, ${time}, ${errors || 0}, ${score || 0}, ${hints || 0})
+      INSERT INTO individual_games (
+        player, date, difficulty, time, errors, score, hints,
+        hint_level1_count, hint_level2_count, hint_level3_count, bonus_type
+      )
+      VALUES (
+        ${player}, ${date}, ${difficulty}, ${time}, ${errors || 0}, ${score || 0}, ${hints || 0},
+        ${hintLevel1Count || 0}, ${hintLevel2Count || 0}, ${hintLevel3Count || 0}, ${bonusType || null}
+      )
       ON CONFLICT (player, date, difficulty)
       DO UPDATE SET
         time = ${time},
         errors = ${errors || 0},
         score = ${score || 0},
         hints = ${hints || 0},
+        hint_level1_count = ${hintLevel1Count || 0},
+        hint_level2_count = ${hintLevel2Count || 0},
+        hint_level3_count = ${hintLevel3Count || 0},
+        bonus_type = ${bonusType || null},
         updated_at = NOW()
     `;
 
@@ -104,7 +127,8 @@ async function saveGame(player, date, difficulty, gameData) {
 async function getGamesByDate(date) {
   try {
     const result = await sql`
-      SELECT player, difficulty, time, errors, score, hints, completed_at
+      SELECT player, difficulty, time, errors, score, hints, completed_at,
+             hint_level1_count, hint_level2_count, hint_level3_count, bonus_type
       FROM individual_games
       WHERE date = ${date}
       ORDER BY player, difficulty
@@ -120,7 +144,8 @@ async function getGamesByDate(date) {
 async function getTodayProgress(date) {
   try {
     const result = await sql`
-      SELECT player, difficulty, time, errors, score, hints
+      SELECT player, difficulty, time, errors, score, hints,
+             hint_level1_count, hint_level2_count, hint_level3_count, bonus_type
       FROM individual_games
       WHERE date = ${date}
       ORDER BY player, difficulty
@@ -138,7 +163,11 @@ async function getTodayProgress(date) {
           time: game.time,
           errors: game.errors,
           score: game.score,
-          hints: game.hints
+          hints: game.hints,
+          hintLevel1Count: game.hint_level1_count,
+          hintLevel2Count: game.hint_level2_count,
+          hintLevel3Count: game.hint_level3_count,
+          bonusType: game.bonus_type
         };
       }
     });
@@ -146,6 +175,46 @@ async function getTodayProgress(date) {
     return progress;
   } catch (error) {
     console.error('Failed to get today progress:', error);
+    throw error;
+  }
+}
+
+async function getAllGames(player) {
+  try {
+    let result;
+    if (player) {
+      result = await sql`
+        SELECT date, player, difficulty, time, errors, score, hints,
+               hint_level1_count, hint_level2_count, hint_level3_count, bonus_type, completed_at
+        FROM individual_games
+        WHERE player = ${player}
+        ORDER BY date DESC, difficulty
+      `;
+    } else {
+      result = await sql`
+        SELECT date, player, difficulty, time, errors, score, hints,
+               hint_level1_count, hint_level2_count, hint_level3_count, bonus_type, completed_at
+        FROM individual_games
+        ORDER BY date DESC, player, difficulty
+      `;
+    }
+
+    return result.rows.map(game => ({
+      date: game.date,
+      player: game.player,
+      difficulty: game.difficulty,
+      time: game.time,
+      errors: game.errors,
+      score: game.score,
+      hints: game.hints,
+      hintLevel1Count: game.hint_level1_count,
+      hintLevel2Count: game.hint_level2_count,
+      hintLevel3Count: game.hint_level3_count,
+      bonusType: game.bonus_type,
+      completedAt: game.completed_at
+    }));
+  } catch (error) {
+    console.error('Failed to get all games:', error);
     throw error;
   }
 }
@@ -176,8 +245,15 @@ module.exports = async function handler(req, res) {
   try {
     switch (req.method) {
       case 'GET':
-        const { date } = req.query;
+        const { date, all, player } = req.query;
 
+        // If 'all' parameter is present, return all games
+        if (all) {
+          const games = await getAllGames(player || null);
+          return res.status(200).json(games);
+        }
+
+        // Otherwise return today's progress
         // Validate date parameter
         try {
           validateDate(date);
