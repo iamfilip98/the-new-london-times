@@ -72,6 +72,10 @@
                 <div class="player-dropdown">
                     <span class="current-player" id="currentPlayerDisplay"></span>
                     <div class="dropdown-content">
+                        <a href="#" onclick="openGlobalSettings(event)">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
                         <a href="#" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i>
                             Logout
@@ -883,6 +887,22 @@
                 sessionStorage.removeItem('sudokuAuth');
                 sessionStorage.removeItem('currentPlayer');
                 window.location.href = 'auth.html';
+            }
+        }
+
+        // Open global settings from player dropdown
+        function openGlobalSettings(event) {
+            event.preventDefault();
+
+            // Close the player dropdown
+            const dropdown = document.querySelector('.player-dropdown');
+            if (dropdown) {
+                dropdown.classList.remove('active');
+            }
+
+            // Open settings modal (function defined later in the file)
+            if (window.showSettings) {
+                window.showSettings();
             }
         }
 
