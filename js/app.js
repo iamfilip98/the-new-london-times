@@ -1386,7 +1386,10 @@ class SudokuChampionship {
         // Try to load progress from database first
         let dbProgress = null;
         try {
-            const response = await fetch(`/api/games?date=${today}`);
+            // Force no-cache to ensure real-time battle updates across players
+            const response = await fetch(`/api/games?date=${today}`, {
+                cache: 'no-store'
+            });
             if (response.ok) {
                 dbProgress = await response.json();
 
