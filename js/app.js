@@ -47,6 +47,15 @@ class SudokuChampionship {
         // Track when we've determined today's battle winner to prevent polling from clearing it
         this.lastCompleteBattleDate = null;
 
+        // 🔧 MEMORY LEAK FIX: Store interval and event listener references for cleanup
+        this.intervals = {
+            dateChangeMonitor: null,
+            liveProgressPoll: null
+        };
+        this.eventListeners = {
+            visibilityChangeHandlers: []
+        };
+
         this.init();
     }
 
@@ -128,6 +137,13 @@ class SudokuChampionship {
     }
 
     init() {
+        // 🔧 MEMORY LEAK FIX: Prevent duplicate initialization
+        if (window.sudokuAppInitialized) {
+            console.warn('SudokuChampionship already initialized, skipping duplicate initialization');
+            return;
+        }
+        window.sudokuAppInitialized = true;
+
         // Ensure DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
@@ -136,6 +152,38 @@ class SudokuChampionship {
         } else {
             this.initialize();
         }
+    }
+
+    // 🔧 MEMORY LEAK FIX: Cleanup method to properly destroy all intervals and listeners
+    destroy() {
+        // Clear all intervals
+        if (this.intervals.dateChangeMonitor) {
+            clearInterval(this.intervals.dateChangeMonitor);
+            this.intervals.dateChangeMonitor = null;
+        }
+        if (this.intervals.liveProgressPoll) {
+            clearInterval(this.intervals.liveProgressPoll);
+            this.intervals.liveProgressPoll = null;
+        }
+
+        // Remove all event listeners
+        this.eventListeners.visibilityChangeHandlers.forEach(({ handler }) => {
+            document.removeEventListener('visibilitychange', handler);
+        });
+        this.eventListeners.visibilityChangeHandlers = [];
+
+        // Clear caches
+        this.cache.data = null;
+        this.todayProgressCache.data = null;
+        this.puzzleCache.puzzles = null;
+
+        // Clear in-memory stores
+        this.inMemoryStore.todayProgress.clear();
+        this.inMemoryStore.gameStates.clear();
+        this.inMemoryStore.settings.clear();
+        this.inMemoryStore.notifications.clear();
+
+        window.sudokuAppInitialized = false;
     }
 
     async initialize() {
@@ -356,22 +404,42 @@ class SudokuChampionship {
     }
 
     startDateChangeMonitoring() {
+        // 🔧 MEMORY LEAK FIX: Clear existing interval before creating new one
+        if (this.intervals.dateChangeMonitor) {
+            clearInterval(this.intervals.dateChangeMonitor);
+        }
+
         // Check for date changes every minute
-        setInterval(() => {
+        this.intervals.dateChangeMonitor = setInterval(() => {
             this.checkDateChange();
         }, 60000); // 1 minute
 
-        // Also check when page becomes visible (user returns to tab)
-        document.addEventListener('visibilitychange', () => {
+        // 🔧 MEMORY LEAK FIX: Remove existing event listener before adding new one
+        // Create a bound handler so we can remove it later
+        const visibilityHandler = () => {
             if (!document.hidden) {
                 this.checkDateChange();
             }
+        };
+
+        // Store reference for potential cleanup
+        this.eventListeners.visibilityChangeHandlers.push({
+            handler: visibilityHandler,
+            type: 'dateChange'
         });
+
+        // Also check when page becomes visible (user returns to tab)
+        document.addEventListener('visibilitychange', visibilityHandler);
     }
 
     startLiveProgressPolling() {
+        // 🔧 MEMORY LEAK FIX: Clear existing interval before creating new one
+        if (this.intervals.liveProgressPoll) {
+            clearInterval(this.intervals.liveProgressPoll);
+        }
+
         // Poll for live progress updates every 15 seconds for real-time battle updates
-        setInterval(async () => {
+        this.intervals.liveProgressPoll = setInterval(async () => {
             if (this.initializationComplete) {
                 // Poll regardless of active page to keep data fresh for when user switches to dashboard
                 // Invalidate cache and update progress for live updates
@@ -383,8 +451,8 @@ class SudokuChampionship {
             }
         }, 15000); // 15 seconds for live battle updates
 
-        // Also check immediately when page becomes visible (user returns to tab)
-        document.addEventListener('visibilitychange', async () => {
+        // 🔧 MEMORY LEAK FIX: Create a bound handler so we can track it
+        const visibilityHandler = async () => {
             if (!document.hidden && this.initializationComplete) {
                 // Force refresh when user returns to tab
                 this.todayProgressCache.data = null;
@@ -393,7 +461,16 @@ class SudokuChampionship {
 
                 await this.updateTodayProgress();
             }
+        };
+
+        // Store reference for potential cleanup
+        this.eventListeners.visibilityChangeHandlers.push({
+            handler: visibilityHandler,
+            type: 'liveProgress'
         });
+
+        // Also check immediately when page becomes visible (user returns to tab)
+        document.addEventListener('visibilitychange', visibilityHandler);
     }
 
 

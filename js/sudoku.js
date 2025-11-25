@@ -48,6 +48,13 @@ class SudokuEngine {
         };
         this.streakCount = 0;
         this.bestTime = { easy: null, medium: null, hard: null };
+
+        // 🔧 MEMORY LEAK FIX: Track event listeners for cleanup
+        this.eventListeners = {
+            visibilityChangeHandler: null,
+            keydownHandler: null,
+            resizeHandler: null
+        };
     }
 
     // Initialize Sudoku UI and game
@@ -3583,13 +3590,21 @@ class SudokuEngine {
             this.checkAndRefreshDailyPuzzles();
         }, 5 * 60 * 1000); // 5 minutes
 
-        // Also check immediately on visibility change (tab focus)
-        document.addEventListener('visibilitychange', () => {
+        // 🔧 MEMORY LEAK FIX: Remove existing visibility listener before adding new one
+        if (this.eventListeners.visibilityChangeHandler) {
+            document.removeEventListener('visibilitychange', this.eventListeners.visibilityChangeHandler);
+        }
+
+        // Create bound handler for proper removal later
+        this.eventListeners.visibilityChangeHandler = () => {
             if (!document.hidden) {
                 debugLog('🔄 Tab focused, checking for new daily puzzles...');
                 this.checkAndRefreshDailyPuzzles();
             }
-        });
+        };
+
+        // Also check immediately on visibility change (tab focus)
+        document.addEventListener('visibilitychange', this.eventListeners.visibilityChangeHandler);
 
         // Check on page load
         this.checkAndRefreshDailyPuzzles();

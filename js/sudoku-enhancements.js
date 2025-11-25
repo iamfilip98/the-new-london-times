@@ -7,6 +7,11 @@ class SudokuEnhancements {
     constructor(gameInstance) {
         this.game = gameInstance;
         this.toastContainer = null;
+        // 🔧 MEMORY LEAK FIX: Track event listeners
+        this.eventListeners = {
+            autoPauseHandler: null,
+            keydownHandler: null
+        };
         this.init();
     }
 
@@ -23,7 +28,13 @@ class SudokuEnhancements {
     setupAutoPause() {
         let wasPlayingBeforeHidden = false;
 
-        document.addEventListener('visibilitychange', () => {
+        // 🔧 MEMORY LEAK FIX: Remove existing listener before adding new one
+        if (this.eventListeners.autoPauseHandler) {
+            document.removeEventListener('visibilitychange', this.eventListeners.autoPauseHandler);
+        }
+
+        // Create bound handler
+        this.eventListeners.autoPauseHandler = () => {
             if (document.hidden) {
                 // Tab lost focus
                 if (this.game.gameStarted && !this.game.gameCompleted && !this.game.gamePaused) {
@@ -38,7 +49,9 @@ class SudokuEnhancements {
                     wasPlayingBeforeHidden = false;
                 }
             }
-        });
+        };
+
+        document.addEventListener('visibilitychange', this.eventListeners.autoPauseHandler);
     }
 
     // ===================================
@@ -93,7 +106,13 @@ class SudokuEnhancements {
     // 3. ENHANCED KEYBOARD SHORTCUTS
     // ===================================
     setupEnhancedKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
+        // 🔧 MEMORY LEAK FIX: Remove existing listener before adding new one
+        if (this.eventListeners.keydownHandler) {
+            document.removeEventListener('keydown', this.eventListeners.keydownHandler);
+        }
+
+        // Create bound handler
+        this.eventListeners.keydownHandler = (e) => {
             // Don't trigger if user is typing in an input
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
                 return;
@@ -166,7 +185,9 @@ class SudokuEnhancements {
                     });
                     break;
             }
-        });
+        };
+
+        document.addEventListener('keydown', this.eventListeners.keydownHandler);
     }
 
     // ===================================
