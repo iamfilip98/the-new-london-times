@@ -3,17 +3,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_PRISMA_URL,
-  ssl: {
-    rejectUnauthorized: false,
-    checkServerIdentity: () => undefined
-  },
-  max: 3,
-  idleTimeoutMillis: 5000,
-  connectionTimeoutMillis: 10000
-});
-
 module.exports = async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,6 +16,17 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const pool = new Pool({
+    connectionString: process.env.POSTGRES_PRISMA_URL,
+    ssl: {
+      rejectUnauthorized: false,
+      checkServerIdentity: () => undefined
+    },
+    max: 3,
+    idleTimeoutMillis: 5000,
+    connectionTimeoutMillis: 10000
+  });
 
   try {
     // Hash the password "sudoku2024"
