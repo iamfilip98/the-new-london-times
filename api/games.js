@@ -220,14 +220,6 @@ async function getAllGames(player) {
 }
 
 module.exports = async function handler(req, res) {
-  // Initialize database on first request
-  try {
-    await initDatabase();
-  } catch (error) {
-    console.error('Database initialization failed:', error);
-    return res.status(500).json({ error: 'Database initialization failed' });
-  }
-
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
