@@ -112,13 +112,14 @@ async function saveGame(player, date, difficulty, gameData) {
 
 async function getGamesByDate(date) {
   try {
-    const result = await sql`
-      SELECT player, difficulty, time, errors, score, hints, completed_at,
+    const result = await query(
+      `SELECT player, difficulty, time, errors, score, hints, completed_at,
              hint_level1_count, hint_level2_count, hint_level3_count, bonus_type
       FROM individual_games
-      WHERE date = ${date}
-      ORDER BY player, difficulty
-    `;
+      WHERE date = $1
+      ORDER BY player, difficulty`,
+      [date]
+    );
 
     return result.rows;
   } catch (error) {
