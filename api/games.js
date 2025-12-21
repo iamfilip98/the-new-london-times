@@ -16,29 +16,16 @@ const pool = new Pool({
   acquireTimeoutMillis: 5000
 });
 
-// Helper function to execute SQL queries using template literals
-async function sql(strings, ...values) {
-  let query = '';
-  const params = [];
-  let paramIndex = 1;
-
-  for (let i = 0; i < strings.length; i++) {
-    query += strings[i];
-    if (i < values.length) {
-      query += `$${paramIndex}`;
-      params.push(values[i]);
-      paramIndex++;
-    }
-  }
-
-  const result = await pool.query(query, params);
+// Helper function to execute SQL queries
+async function query(text, params = []) {
+  const result = await pool.query(text, params);
   return { rows: result.rows };
 }
 
 async function initDatabase() {
   try {
     // Create individual games table for daily progress tracking
-    await sql`
+    await query(`
       CREATE TABLE IF NOT EXISTS individual_games (
         id SERIAL PRIMARY KEY,
         player VARCHAR(50) NOT NULL,
@@ -57,23 +44,23 @@ async function initDatabase() {
         updated_at TIMESTAMP DEFAULT NOW(),
         UNIQUE(player, date, difficulty)
       )
-    `;
+    `);
 
     // ⚡ PERFORMANCE: Add indexes for frequently queried columns
-    await sql`
+    await query(`
       CREATE INDEX IF NOT EXISTS idx_games_player_date
       ON individual_games(player, date)
-    `;
+    `);
 
-    await sql`
+    await query(`
       CREATE INDEX IF NOT EXISTS idx_games_date
       ON individual_games(date)
-    `;
+    `);
 
-    await sql`
+    await query(`
       CREATE INDEX IF NOT EXISTS idx_games_player_difficulty
       ON individual_games(player, difficulty)
-    `;
+    `);
 
     return true;
   } catch (error) {
@@ -95,27 +82,26 @@ async function saveGame(player, date, difficulty, gameData) {
       bonusType
     } = gameData;
 
-    await sql`
-      INSERT INTO individual_games (
+    await query(
+      `INSERT INTO individual_games (
         player, date, difficulty, time, errors, score, hints,
         hint_level1_count, hint_level2_count, hint_level3_count, bonus_type
       )
-      VALUES (
-        ${player}, ${date}, ${difficulty}, ${time}, ${errors || 0}, ${score || 0}, ${hints || 0},
-        ${hintLevel1Count || 0}, ${hintLevel2Count || 0}, ${hintLevel3Count || 0}, ${bonusType || null}
-      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       ON CONFLICT (player, date, difficulty)
       DO UPDATE SET
-        time = ${time},
-        errors = ${errors || 0},
-        score = ${score || 0},
-        hints = ${hints || 0},
-        hint_level1_count = ${hintLevel1Count || 0},
-        hint_level2_count = ${hintLevel2Count || 0},
-        hint_level3_count = ${hintLevel3Count || 0},
-        bonus_type = ${bonusType || null},
-        updated_at = NOW()
-    `;
+        time = $4,
+        errors = $5,
+        score = $6,
+        hints = $7,
+        hint_level1_count = $8,
+        hint_level2_count = $9,
+        hint_level3_count = $10,
+        bonus_type = $11,
+        updated_at = NOW()`,
+      [player, date, difficulty, time, errors || 0, score || 0, hints || 0,
+       hintLevel1Count || 0, hintLevel2Count || 0, hintLevel3Count || 0, bonusType || null]
+    );
 
     return true;
   } catch (error) {
@@ -143,13 +129,14 @@ async function getGamesByDate(date) {
 
 async function getTodayProgress(date) {
   try {
-    const result = await sql`
-      SELECT player, difficulty, time, errors, score, hints,
+    const result = await query(
+      `SELECT player, difficulty, time, errors, score, hints,
              hint_level1_count, hint_level2_count, hint_level3_count, bonus_type
       FROM individual_games
-      WHERE date = ${date}
-      ORDER BY player, difficulty
-    `;
+      WHERE date = $1
+      ORDER BY player, difficulty`,
+      [date]
+    );
 
     // Transform to the format expected by the frontend
     const progress = {
@@ -183,20 +170,21 @@ async function getAllGames(player) {
   try {
     let result;
     if (player) {
-      result = await sql`
-        SELECT date, player, difficulty, time, errors, score, hints,
+      result = await query(
+        `SELECT date, player, difficulty, time, errors, score, hints,
                hint_level1_count, hint_level2_count, hint_level3_count, bonus_type, completed_at
         FROM individual_games
-        WHERE player = ${player}
-        ORDER BY date DESC, difficulty
-      `;
+        WHERE player = $1
+        ORDER BY date DESC, difficulty`,
+        [player]
+      );
     } else {
-      result = await sql`
-        SELECT date, player, difficulty, time, errors, score, hints,
+      result = await query(
+        `SELECT date, player, difficulty, time, errors, score, hints,
                hint_level1_count, hint_level2_count, hint_level3_count, bonus_type, completed_at
         FROM individual_games
-        ORDER BY date DESC, player, difficulty
-      `;
+        ORDER BY date DESC, player, difficulty`
+      );
     }
 
     return result.rows.map(game => ({
@@ -270,14 +258,14 @@ module.exports = async function handler(req, res) {
 
         if (all === 'true') {
           // Delete ALL games
-          await sql`DELETE FROM individual_games`;
+          await query('DELETE FROM individual_games');
           return res.status(200).json({
             success: true,
             message: 'All games deleted successfully'
           });
         } else if (deleteDate) {
           // Delete games for specific date
-          await sql`DELETE FROM individual_games WHERE date = ${deleteDate}`;
+          await query('DELETE FROM individual_games WHERE date = $1', [deleteDate]);
           return res.status(200).json({
             success: true,
             message: `Games for ${deleteDate} deleted successfully`
