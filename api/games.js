@@ -1,7 +1,4 @@
-require('dotenv').config({ path: '.env.local' });
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
-// Validation removed to fix Vercel deployment issues
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_PRISMA_URL,
