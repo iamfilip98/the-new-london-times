@@ -108,11 +108,43 @@ module.exports = async function handler(req, res) {
       ON CONFLICT (player) DO NOTHING
     `);
 
+    // Create individual games table for daily progress tracking
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS individual_games (
+        id SERIAL PRIMARY KEY,
+        player VARCHAR(50) NOT NULL,
+        date DATE NOT NULL,
+        difficulty VARCHAR(10) NOT NULL,
+        time INTEGER,
+        errors INTEGER DEFAULT 0,
+        score DECIMAL(10,2) DEFAULT 0,
+        hints INTEGER DEFAULT 0,
+        hint_level1_count INTEGER DEFAULT 0,
+        hint_level2_count INTEGER DEFAULT 0,
+        hint_level3_count INTEGER DEFAULT 0,
+        bonus_type VARCHAR(20),
+        completed_at TIMESTAMP DEFAULT NOW(),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(player, date, difficulty)
+      )
+    `);
+
+    // Add indexes for games table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_games_player_date
+      ON individual_games(player, date)
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_games_date
+      ON individual_games(date)
+    `);
 
     return res.status(200).json({
       success: true,
       message: 'Database and users initialized successfully',
-      tables: ['users', 'entries', 'achievements', 'streaks'],
+      tables: ['users', 'entries', 'achievements', 'streaks', 'individual_games'],
       users: ['faidao', 'filip']
     });
 
