@@ -3213,7 +3213,7 @@ class SudokuEngine {
 
     async saveGameToDatabase(gameData) {
         try {
-            const response = await fetch('/api/games', {
+            const response = await fetch('/api/games2', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

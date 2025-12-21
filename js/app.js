@@ -1386,7 +1386,7 @@ class SudokuChampionship {
         let dbProgress = null;
         try {
             // Force no-cache to ensure real-time battle updates across players
-            const response = await fetch(`/api/games?date=${today}`, {
+            const response = await fetch(`/api/games2?date=${today}`, {
                 cache: 'no-store'
             });
             if (response.ok) {
@@ -1704,7 +1704,7 @@ class SudokuChampionship {
 
         const endpoints = [
             `/api/puzzles?date=${today}&t=${Date.now()}`,
-            `/api/games?date=${today}`,
+            `/api/games2?date=${today}`,
             `/api/entries`,
             `/api/stats?type=all`
         ];
