@@ -6,7 +6,10 @@ function getPool() {
   if (!pool) {
     pool = new Pool({
       connectionString: process.env.POSTGRES_PRISMA_URL,
-      ssl: { rejectUnauthorized: false },
+      ssl: {
+        rejectUnauthorized: false,
+        checkServerIdentity: () => undefined
+      },
       max: 1
     });
   }
