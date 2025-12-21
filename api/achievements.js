@@ -49,7 +49,7 @@ module.exports = async function handler(req, res) {
 
   try {
     switch (req.method) {
-      case 'GET':
+      case 'GET': {
         const result = await sql`
           SELECT achievement_id, player, unlocked_at, data
           FROM achievements
@@ -64,8 +64,9 @@ module.exports = async function handler(req, res) {
         }));
 
         return res.status(200).json(achievements);
+      }
 
-      case 'POST':
+      case 'POST': {
         const { id, player, unlockedAt, ...data } = req.body;
 
         if (!id || !player || !unlockedAt) {
@@ -82,14 +83,16 @@ module.exports = async function handler(req, res) {
           success: true,
           message: 'Achievement saved successfully'
         });
+      }
 
-      case 'DELETE':
+      case 'DELETE': {
         await sql`DELETE FROM achievements`;
 
         return res.status(200).json({
           success: true,
           message: 'All achievements cleared successfully'
         });
+      }
 
       default:
         res.setHeader('Allow', ['GET', 'POST', 'DELETE']);

@@ -111,7 +111,7 @@ module.exports = async function handler(req, res) {
 
   try {
     switch (req.method) {
-      case 'GET':
+      case 'GET': {
         const { type } = req.query;
 
         if (type === 'streaks') {
@@ -181,8 +181,9 @@ module.exports = async function handler(req, res) {
 
         // Return empty for other types for now
         return res.status(200).json({});
+      }
 
-      case 'PUT':
+      case 'PUT': {
         const { type: putType, data: putData } = req.body;
 
         if (putType === 'streaks') {
@@ -208,6 +209,7 @@ module.exports = async function handler(req, res) {
         }
 
         return res.status(400).json({ error: 'Invalid type for PUT request' });
+      }
 
       default:
         res.setHeader('Allow', ['GET', 'PUT']);
