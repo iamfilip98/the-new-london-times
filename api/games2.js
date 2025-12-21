@@ -32,8 +32,7 @@ module.exports = async function handler(req, res) {
     const pool = getPool();
     
     const result = await pool.query(
-      `SELECT player, difficulty, time, errors, score, hints,
-             hint_level1_count, hint_level2_count, hint_level3_count, bonus_type
+      `SELECT player, difficulty, time, errors, score, hints
       FROM individual_games
       WHERE date = $1
       ORDER BY player, difficulty`,
@@ -51,11 +50,7 @@ module.exports = async function handler(req, res) {
           time: game.time,
           errors: game.errors,
           score: game.score,
-          hints: game.hints,
-          hintLevel1Count: game.hint_level1_count,
-          hintLevel2Count: game.hint_level2_count,
-          hintLevel3Count: game.hint_level3_count,
-          bonusType: game.bonus_type
+          hints: game.hints
         };
       }
     });
