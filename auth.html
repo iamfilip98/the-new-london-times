@@ -226,7 +226,7 @@
                     fetch(`/api/puzzles?date=${today}&t=${Date.now()}`).then(response => response.ok ? response.json() : null),
 
                     // Today's game progress
-                    fetch(`/api/games?date=${today}`).then(response => response.ok ? response.json() : {}),
+                    fetch(`/api/games2?date=${today}`).then(response => response.ok ? response.json() : {}),
 
                     // Achievement data for instant page loads
                     fetch('/api/achievements').then(response => response.ok ? response.json() : []),
