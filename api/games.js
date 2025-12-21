@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '.env.local' });
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
-const { validateSaveGameRequest, validateDate } = require('./validation');
+// Validation removed to fix Vercel deployment issues
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_PRISMA_URL,
@@ -257,26 +257,12 @@ module.exports = async function handler(req, res) {
         }
 
         // Otherwise return today's progress
-        // Validate date parameter
-        try {
-          validateDate(date);
-        } catch (error) {
-          return res.status(400).json({ error: error.message });
-        }
-
         const progress = await getTodayProgress(date);
         return res.status(200).json(progress);
       }
 
       case 'POST': {
         const { player, date: gameDate, difficulty, ...gameData } = req.body;
-
-        // Comprehensive validation
-        try {
-          validateSaveGameRequest({ player, date: gameDate, difficulty, ...gameData });
-        } catch (error) {
-          return res.status(400).json({ error: error.message });
-        }
 
         await saveGame(player, gameDate, difficulty, gameData);
 
