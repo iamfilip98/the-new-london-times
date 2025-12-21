@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '.env.local' });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Pool } = require('pg');
 
 // Use singleton pattern to avoid "too many clients" error
