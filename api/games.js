@@ -2,15 +2,9 @@ const { Pool } = require('pg');
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_PRISMA_URL,
-  ssl: {
-    rejectUnauthorized: false,
-    checkServerIdentity: () => undefined
-  },
-  max: 2,
-  idleTimeoutMillis: 5000,
-  connectionTimeoutMillis: 10000,
-  maxUses: 100,
-  acquireTimeoutMillis: 5000
+  ssl: { rejectUnauthorized: false },
+  max: 1,
+  connectionTimeoutMillis: 10000
 });
 
 // Helper function to execute SQL queries
