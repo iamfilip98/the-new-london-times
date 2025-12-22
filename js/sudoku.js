@@ -3869,35 +3869,6 @@ class SudokuEngine {
             difficulty: this.currentDifficulty
         };
 
-        // Use theme manager's achievement checking
-        const themeAchievements = window.themeManager.checkThemeAchievements(gameData);
-        achievements.push(...themeAchievements);
-
-        // Additional Sudoku-specific themed achievements
-        if (currentTheme === 'halloween' && this.errors === 0 && this.hints === 0) {
-            achievements.push({
-                id: 'spooky_master',
-                name: 'Spooky Master',
-                description: 'Complete a Halloween puzzle with no errors or hints'
-            });
-        }
-
-        if (currentTheme === 'christmas' && this.timer < 180) { // Under 3 minutes
-            achievements.push({
-                id: 'christmas_lightning',
-                name: 'Christmas Lightning',
-                description: 'Complete a Christmas puzzle in under 3 minutes'
-            });
-        }
-
-        if (currentTheme === 'newYear' && this.currentDifficulty === 'hard' && this.errors <= 1) {
-            achievements.push({
-                id: 'new_year_resolution',
-                name: 'New Year Resolution',
-                description: 'Complete a Hard New Year puzzle with minimal errors'
-            });
-        }
-
         return achievements;
     }
 
