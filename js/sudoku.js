@@ -3862,13 +3862,6 @@ class SudokuEngine {
         if (!window.themeManager) return achievements;
 
         const currentTheme = window.themeManager.currentTheme;
-        const gameData = {
-            time: this.timer,
-            errors: this.errors,
-            hints: this.hints,
-            difficulty: this.currentDifficulty
-        };
-
         return achievements;
     }
 

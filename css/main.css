@@ -6740,6 +6740,11 @@ select:focus-visible,
     color: var(--accent-orange);
 }
 
+.theme-bonus {
+    color: var(--theme-accent, var(--accent-purple));
+    font-weight: bold;
+    font-family: 'Orbitron', monospace;
+}
 
 .achievements-unlocked {
     margin-top: 1rem;
@@ -7883,6 +7888,294 @@ select:focus-visible,
     }
 }
 
+
+/* Special Events */
+.special-events-container {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 2px solid var(--theme-accent, rgba(255, 255, 255, 0.1));
+    box-shadow: var(--box-shadow);
+    animation: specialEventGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes specialEventGlow {
+    from {
+        box-shadow: var(--box-shadow);
+    }
+    to {
+        box-shadow: 0 0 30px var(--theme-accent, var(--accent-blue));
+    }
+}
+
+.special-events-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.special-events-header h3 {
+    font-family: 'Orbitron', monospace;
+    color: var(--theme-accent, var(--accent-blue));
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.event-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 2px solid var(--theme-accent, rgba(255, 255, 255, 0.2));
+    text-align: center;
+    transition: var(--transition);
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--theme-accent, rgba(74, 144, 226, 0.3));
+}
+
+.event-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--theme-accent, var(--text-primary));
+    margin-bottom: 0.5rem;
+}
+
+.event-description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.event-reward {
+    background: var(--theme-accent, var(--accent-blue));
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.event-multiplier {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    color: var(--accent-orange);
+    font-size: 1.1rem;
+}
+
+/* Theme-specific overrides */
+.theme-halloween .sudoku-grid {
+    border-color: #000000 !important;
+}
+
+.theme-halloween .sudoku-cell.selected {
+    background: var(--sudoku-cell-highlight, #ff9500) !important;
+}
+
+.theme-christmas .sudoku-grid {
+    border-color: #000000 !important;
+}
+
+.theme-christmas .sudoku-cell.selected {
+    background: var(--sudoku-cell-highlight, #ffd700) !important;
+}
+
+.theme-newYear .sudoku-grid {
+    border-color: #000000 !important;
+}
+
+.theme-newYear .sudoku-cell.selected {
+    background: var(--sudoku-cell-highlight, #ff69b4) !important;
+}
+
+.theme-valentines .sudoku-grid {
+    border-color: #000000 !important;
+}
+
+.theme-valentines .sudoku-cell.selected {
+    background: var(--sudoku-cell-highlight, #ffb6c1) !important;
+}
+
+.theme-spring .sudoku-grid {
+    border-color: #000000 !important;
+}
+
+.theme-spring .sudoku-cell.selected {
+    background: var(--sudoku-cell-highlight, #98fb98) !important;
+}
+
+.theme-summer .sudoku-grid {
+    border-color: #000000 !important;
+}
+
+.theme-summer .sudoku-cell.selected {
+    background: var(--sudoku-cell-highlight, #ff6347) !important;
+}
+
+/* Theme-specific animations */
+.theme-halloween .page-title {
+    animation: spookyGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes spookyGlow {
+    from { text-shadow: 0 0 10px #ff6b35; }
+    to { text-shadow: 0 0 20px #ff6b35, 0 0 30px #ff9500; }
+}
+
+.theme-christmas .page-title {
+    animation: christmasSparkle 3s ease-in-out infinite;
+}
+
+@keyframes christmasSparkle {
+    0%, 100% { text-shadow: 0 0 10px #c41e3a; }
+    50% { text-shadow: 0 0 20px #ffd700, 0 0 30px #c41e3a; }
+}
+
+.theme-newYear .page-title {
+    animation: newYearCelebration 2s ease-in-out infinite alternate;
+}
+
+@keyframes newYearCelebration {
+    from { text-shadow: 0 0 15px #ffd700; }
+    to { text-shadow: 0 0 25px #ff69b4, 0 0 35px #ffd700; }
+}
+
+/* Seasonal animation keyframes */
+@keyframes snowfall {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(50px);
+        opacity: 0;
+    }
+}
+
+@keyframes floatGhost {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+    50% {
+        transform: translateX(calc(100vw + 50px)) translateY(-20px);
+    }
+    100% {
+        transform: translateX(calc(100vw + 50px)) translateY(0);
+    }
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(30px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes petalFall {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(-30px) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5) rotate(180deg);
+    }
+}
+
+/* Error feedback animations */
+@keyframes errorFlash {
+    0% { background: #ffeeee; }
+    50% { background: #ff4444; }
+    100% { background: #ffeeee; }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.sudoku-cell.error-flash {
+    animation: errorFlash 0.5s ease-in-out;
+}
+
+.error-message {
+    pointer-events: none;
+    font-family: var(--font-display);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .special-events-container {
+        padding: 1rem;
+    }
+
+    .event-card {
+        padding: 1rem;
+    }
+
+    .event-name {
+        font-size: 1rem;
+    }
+
+    .special-events-header h3 {
+        font-size: 1.2rem;
+    }
+}
 
 /* Sudoku Game Selection Styles */
 .sudoku-game-selection {
