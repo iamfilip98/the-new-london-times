@@ -2686,6 +2686,7 @@ class AchievementPopup {
 
     initializePopup() {
         if (!this.popup || !this.closeBtn) {
+            console.log('Popup elements not found:', {
                 popup: !!this.popup,
                 closeBtn: !!this.closeBtn
             });
