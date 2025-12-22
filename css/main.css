@@ -4981,10 +4981,9 @@ select:focus-visible,
     padding: 0;
     background: transparent;
     margin: 0 auto;
-    width: 100%;
-    height: 100%;
+    width: 800px;
+    height: 800px;
     min-height: 0; /* Allow shrinking in grid */
-    max-height: 100%;
     overflow: hidden;
 }
 
@@ -4997,11 +4996,10 @@ select:focus-visible,
     border: 4px solid #000000;
     border-radius: 0;
     padding: 0;
-    /* Force square by using same value for both dimensions */
-    width: min(calc(100vh - 200px), calc(100vw - 40px), 700px);
-    height: min(calc(100vh - 200px), calc(100vw - 40px), 700px);
+    /* Force square */
+    width: 100%;
+    height: 100%;
     aspect-ratio: 1 / 1;
-    flex-shrink: 0;
     box-shadow: var(--shadow-md);
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     user-select: none;
@@ -7019,8 +7017,8 @@ select:focus-visible,
 
     /* Responsive Sudoku grid - fit screen with quality */
     .sudoku-grid-container {
-        width: 100%;
-        max-width: calc(100vw - 20px);
+        width: min(600px, 90vw);
+        height: min(600px, 90vw);
         padding: 0 10px;
         display: flex;
         justify-content: center;
@@ -7363,6 +7361,8 @@ select:focus-visible,
 @media (max-width: 768px) and (orientation: landscape) {
     .sudoku-grid-container {
         padding: 0 10px;
+        width: min(500px, 90vw);
+        height: min(500px, 90vw);
     }
 
     .sudoku-grid {
@@ -7488,9 +7488,14 @@ select:focus-visible,
 }
 
 @media (max-width: 480px) {
+    .sudoku-grid-container {
+        width: min(400px, 90vw);
+        height: min(400px, 90vw);
+    }
+
     .sudoku-grid {
-        width: min(320px, calc(100vw - 50px));
-        height: min(320px, calc(100vw - 50px));
+        width: 100%;
+        height: 100%;
         border: 3px solid #000000;
         aspect-ratio: 1;
         box-shadow: var(--shadow-md);
