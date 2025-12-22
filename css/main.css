@@ -4998,8 +4998,8 @@ select:focus-visible,
     border-radius: 0;
     padding: 0;
     /* Force square by using same value for both dimensions */
-    width: min(100%, calc(100vh - 200px), 700px);
-    height: min(100%, calc(100vh - 200px), 700px);
+    width: min(calc(100vh - 200px), calc(100vw - 40px), 700px);
+    height: min(calc(100vh - 200px), calc(100vw - 40px), 700px);
     aspect-ratio: 1 / 1;
     flex-shrink: 0;
     box-shadow: var(--shadow-md);
