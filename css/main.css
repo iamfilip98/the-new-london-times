@@ -4997,11 +4997,11 @@ select:focus-visible,
     border: 4px solid #000000;
     border-radius: 0;
     padding: 0;
-    /* Force square by using same value for both dimensions */
-    width: min(100%, calc(100vh - 200px), 700px);
-    height: min(100%, calc(100vh - 200px), 700px);
+    max-width: min(100%, 550px, 100vh - 250px);
+    max-height: min(100%, 550px, 100vh - 250px);
+    width: 100%;
+    height: 100%;
     aspect-ratio: 1 / 1;
-    flex-shrink: 0;
     box-shadow: var(--shadow-md);
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     user-select: none;
@@ -5087,7 +5087,7 @@ select:focus-visible,
 /* Accurate NYT typography */
 .cell-value {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    font-size: 3rem;
+    font-size: 2.8rem;
     font-weight: 500;
     color: #000000;
     line-height: 1;
