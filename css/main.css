@@ -3342,6 +3342,7 @@ body {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
+    pointer-events: auto; /* Ensure clickable */
 }
 
 .game-status .hint-message:hover {
@@ -3357,6 +3358,7 @@ body {
     margin-top: 0.3rem;
     opacity: 0.8;
     font-style: italic;
+    pointer-events: none; /* Don't block clicks on parent */
 }
 
 /* Challenges */
@@ -4895,9 +4897,24 @@ select:focus-visible,
         padding: 0.75rem;
     }
 
+    /* game-status stays at fixed 80px height - no overrides */
     .sudoku-controls-sidebar .game-status {
-        max-height: 150px;
-        overflow-y: auto;
+        height: 80px;
+        min-height: 80px;
+        max-height: 80px;
+        overflow: hidden; /* No scrolling, content must fit */
+        order: 2; /* Move below action-buttons on desktop */
+    }
+
+    /* Action buttons come first on desktop */
+    .sudoku-controls-sidebar .action-buttons {
+        order: 1;
+    }
+
+    /* Number input comes last */
+    .sudoku-controls-sidebar .number-input,
+    .sudoku-controls-sidebar .number-input-desktop {
+        order: 3;
     }
 
     /* Desktop sidebar: 3x3 number grid + undo */
