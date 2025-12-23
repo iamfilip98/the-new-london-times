@@ -3608,7 +3608,8 @@ class SudokuEngine {
             this.lastPuzzleDate = today;
 
             // If user has a game in progress for old date, handle it
-            if (this.gameStarted && this.lastPuzzleDate !== today) {
+            // BUT don't reload if the game is already completed - preserve completed state
+            if (this.gameStarted && !this.gameCompleted && this.lastPuzzleDate !== today) {
                 debugLog('🔄 New day detected, clearing old game state');
                 this.clearOldGameState();
                 // Auto-load easy difficulty for new day
@@ -4474,10 +4475,13 @@ class SudokuEngine {
         debugLog(`Attempting to load saved state for ${difficulty} difficulty`);
         await this.loadGameState();
 
-        // If no saved state was found or the game is completed, start a new game
-        if (!this.gameStarted || this.gameCompleted) {
-            debugLog(`No saved state found or game completed for ${difficulty}, loading fresh puzzle`);
+        // If no saved state was found, start a new game
+        // BUT if the game is completed, keep the completed state - don't reload
+        if (!this.gameStarted) {
+            debugLog(`No saved state found for ${difficulty}, loading fresh puzzle`);
             this.loadPuzzle(difficulty);
+        } else if (this.gameCompleted) {
+            debugLog(`Loaded completed game for ${difficulty}. Keeping completed state.`);
         } else {
             debugLog(`Loaded saved state for ${difficulty}. Completed: ${this.gameCompleted}`);
         }

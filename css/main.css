@@ -5086,7 +5086,7 @@ select:focus-visible,
 .cell-value {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 3rem;
-    font-weight: 500;
+    font-weight: 600;
     color: #000000;
     line-height: 1;
     text-align: center;
@@ -5118,12 +5118,12 @@ select:focus-visible,
 .candidate-num {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 1.32rem;
+    font-weight: 500;
     color: #333333;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    font-weight: 400;
 }
 
 /* 3x3 Candidates Grid Layout */
@@ -5153,7 +5153,7 @@ select:focus-visible,
 .candidate-cell {
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 0.99rem;
-    font-weight: 400;
+    font-weight: 500;
     color: #333333;
     display: flex;
     align-items: center;
@@ -7110,13 +7110,13 @@ select:focus-visible,
 
     .candidate-num {
         font-size: 0.6rem !important;
-        font-weight: 200 !important;
+        font-weight: 300 !important;
         color: #333333 !important;
     }
 
     .candidate-cell {
         font-size: 0.6rem !important;
-        font-weight: 200 !important;
+        font-weight: 300 !important;
         color: #333333 !important;
     }
 
@@ -7551,14 +7551,14 @@ select:focus-visible,
 
     .candidate-num {
         font-size: 0.4rem !important;
-        font-weight: 100 !important;
+        font-weight: 200 !important;
         color: #333333 !important;
     }
 
     /* Mobile responsiveness for 3x3 candidate grid */
     .candidate-cell {
         font-size: 0.4rem !important;
-        font-weight: 100 !important;
+        font-weight: 200 !important;
         color: #333333 !important;
     }
 
