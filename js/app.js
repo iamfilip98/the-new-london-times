@@ -373,7 +373,12 @@ class SudokuChampionship {
         // Poll for live progress updates every 15 seconds for real-time battle updates
         setInterval(async () => {
             if (this.initializationComplete) {
-                // Poll regardless of active page to keep data fresh for when user switches to dashboard
+                // Only poll when NOT on game page to avoid interrupting gameplay
+                const gamePageActive = document.getElementById('sudoku')?.classList.contains('active');
+                if (gamePageActive) {
+                    return; // Skip polling during active gameplay
+                }
+
                 // Invalidate cache and update progress for live updates
                 this.todayProgressCache.data = null;
                 this.todayProgressCache.lastUpdate = null;
@@ -386,6 +391,12 @@ class SudokuChampionship {
         // Also check immediately when page becomes visible (user returns to tab)
         document.addEventListener('visibilitychange', async () => {
             if (!document.hidden && this.initializationComplete) {
+                // Only update if NOT on game page
+                const gamePageActive = document.getElementById('sudoku')?.classList.contains('active');
+                if (gamePageActive) {
+                    return; // Skip polling during active gameplay
+                }
+
                 // Force refresh when user returns to tab
                 this.todayProgressCache.data = null;
                 this.todayProgressCache.lastUpdate = null;

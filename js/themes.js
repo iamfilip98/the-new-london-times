@@ -304,7 +304,7 @@ class ThemeManager {
     }
 
     createSnowfall(container) {
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 30; i++) {
             const snowflake = document.createElement('div');
             snowflake.textContent = '❄';
             snowflake.style.cssText = `
@@ -315,13 +315,15 @@ class ThemeManager {
                 color: rgba(255, 255, 255, 0.8);
                 animation: snowfall ${Math.random() * 3 + 2}s linear infinite;
                 animation-delay: ${Math.random() * 5}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
             `;
             container.appendChild(snowflake);
         }
     }
 
     createFloatingGhosts(container) {
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 15; i++) {
             const ghost = document.createElement('div');
             ghost.textContent = '👻';
             ghost.style.cssText = `
@@ -332,13 +334,15 @@ class ThemeManager {
                 opacity: 0.6;
                 animation: floatGhost ${Math.random() * 10 + 15}s linear infinite;
                 animation-delay: ${Math.random() * 10}s;
+                will-change: transform;
+                contain: layout style paint;
             `;
             container.appendChild(ghost);
         }
     }
 
     createFloatingHearts(container) {
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 20; i++) {
             const heart = document.createElement('div');
             heart.textContent = '💕';
             heart.style.cssText = `
@@ -348,6 +352,8 @@ class ThemeManager {
                 font-size: ${Math.random() * 15 + 15}px;
                 animation: floatUp ${Math.random() * 4 + 3}s ease-in infinite;
                 animation-delay: ${Math.random() * 5}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
             `;
             container.appendChild(heart);
         }
@@ -355,7 +361,7 @@ class ThemeManager {
 
     createFlowerPetals(container) {
         const petals = ['🌸', '🌺', '🌼', '🌻', '🌷'];
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 20; i++) {
             const petal = document.createElement('div');
             petal.textContent = petals[Math.floor(Math.random() * petals.length)];
             petal.style.cssText = `
@@ -365,13 +371,15 @@ class ThemeManager {
                 font-size: ${Math.random() * 15 + 10}px;
                 animation: petalFall ${Math.random() * 5 + 5}s ease-in infinite;
                 animation-delay: ${Math.random() * 5}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
             `;
             container.appendChild(petal);
         }
     }
 
     createSparkles(container) {
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 25; i++) {
             const sparkle = document.createElement('div');
             sparkle.textContent = '✨';
             sparkle.style.cssText = `
@@ -381,6 +389,8 @@ class ThemeManager {
                 font-size: ${Math.random() * 15 + 10}px;
                 animation: sparkle ${Math.random() * 2 + 1}s ease-in-out infinite;
                 animation-delay: ${Math.random() * 3}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
             `;
             container.appendChild(sparkle);
         }

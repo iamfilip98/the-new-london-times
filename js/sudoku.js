@@ -1057,6 +1057,9 @@ class SudokuEngine {
         // Don't allow changing given numbers or locked cells
         if (this.initialGrid[row][col] !== 0 || this.lockedGrid[row][col]) return;
 
+        // Clear hint indicators on any move (not just when solving the hinted cell)
+        this.clearHintIndicators();
+
         // Save current state for undo
         const previousValue = this.playerGrid[row][col];
         const previousCandidates = new Set(this.candidates[row][col]);
