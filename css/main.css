@@ -3343,6 +3343,8 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     pointer-events: auto; /* Ensure clickable */
+    width: 100%; /* Prevent width changes */
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .game-status .hint-message:hover {
@@ -4897,24 +4899,25 @@ select:focus-visible,
         padding: 0.75rem;
     }
 
-    /* game-status stays at fixed 80px height - no overrides */
+    /* Number input comes first on desktop */
+    .sudoku-controls-sidebar .number-input,
+    .sudoku-controls-sidebar .number-input-desktop {
+        order: 1;
+    }
+
+    /* Action buttons come second on desktop */
+    .sudoku-controls-sidebar .action-buttons {
+        order: 2;
+    }
+
+    /* game-status comes last - stays at fixed 80px height */
     .sudoku-controls-sidebar .game-status {
         height: 80px;
         min-height: 80px;
         max-height: 80px;
         overflow: hidden; /* No scrolling, content must fit */
-        order: 2; /* Move below action-buttons on desktop */
-    }
-
-    /* Action buttons come first on desktop */
-    .sudoku-controls-sidebar .action-buttons {
-        order: 1;
-    }
-
-    /* Number input comes last */
-    .sudoku-controls-sidebar .number-input,
-    .sudoku-controls-sidebar .number-input-desktop {
-        order: 3;
+        order: 3; /* Below action-buttons on desktop */
+        width: 100%; /* Prevent width changes */
     }
 
     /* Desktop sidebar: 3x3 number grid + undo */
