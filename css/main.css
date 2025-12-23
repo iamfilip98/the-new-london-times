@@ -3274,6 +3274,91 @@ body {
     }
 }
 
+/* Hint Modal */
+.hint-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.hint-modal.show {
+    display: flex;
+}
+
+.hint-modal-content {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--box-shadow);
+    position: relative;
+    box-sizing: border-box;
+}
+
+.hint-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.hint-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hint-modal-body {
+    padding-top: 1rem;
+}
+
+/* Hint message clickable indicator (only in game status box, not in modal) */
+.game-status .hint-message {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+}
+
+.game-status .hint-message:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.game-status .hint-message::after {
+    content: '👆 Click for full details';
+    display: block;
+    text-align: center;
+    font-size: 0.7rem;
+    margin-top: 0.3rem;
+    opacity: 0.8;
+    font-style: italic;
+}
+
 /* Challenges */
 .current-challenge {
     background: var(--card-bg);
