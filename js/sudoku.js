@@ -20,6 +20,7 @@ class SudokuEngine {
         this.currentHintCell = null; // Track which cell is being hinted
         this.hintState = 'none'; // 'none', 'direction', 'location', 'revealed'
         this.hintTimePenalty = 0; // Cumulative time penalty from hints
+        this.currentFullHintMessage = ''; // Store full hint message for modal
         this.currentDifficulty = 'easy';
         this.gameStarted = false;
         this.gameCompleted = false;
@@ -381,6 +382,22 @@ class SudokuEngine {
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
+
+        // Hint modal event listeners
+        const hintModal = document.getElementById('hintModal');
+        const hintModalClose = document.getElementById('hintModalClose');
+
+        // Close modal when clicking the close button
+        hintModalClose?.addEventListener('click', () => {
+            hintModal?.classList.remove('show');
+        });
+
+        // Close modal when clicking outside the modal content
+        hintModal?.addEventListener('click', (e) => {
+            if (e.target === hintModal) {
+                hintModal.classList.remove('show');
+            }
+        });
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
         document.getElementById('pausedLabel')?.addEventListener('click', () => this.togglePause());
 
@@ -1497,8 +1514,8 @@ class SudokuEngine {
                 // Get technique explanation
                 const techniqueInfo = this.getTechniqueExplanation(technique);
 
-                // Show improved Level 1 message
-                statusDiv.innerHTML = `
+                // Store full hint message for modal
+                this.currentFullHintMessage = `
                     <div class="hint-message direction">
                         <div class="hint-header">
                             <i class="fas fa-compass"></i>
@@ -1512,6 +1529,19 @@ class SudokuEngine {
                         </div>
                         <div class="hint-penalty">
                             💡 Penalty: 0.5% (keeps Perfect bonus!) | Click again for exact cell (+3%, breaks bonus)
+                        </div>
+                    </div>
+                `;
+
+                // Show shortened Level 1 message
+                statusDiv.innerHTML = `
+                    <div class="hint-message direction" onclick="window.sudokuEngine.showHintModal()">
+                        <div class="hint-header">
+                            <i class="fas fa-compass"></i>
+                            <strong>Level 1</strong>
+                        </div>
+                        <div class="hint-body">
+                            🔍 Check ${hintDirection.text}
                         </div>
                     </div>
                 `;
@@ -1547,8 +1577,8 @@ class SudokuEngine {
                 const possibleValues = this.getPossibleValues(row, col);
                 const rowNumbers = Array.from({length: 9}, (_, i) => i + 1).filter(n => !this.isNumberInRow(row, n));
 
-                // Show improved Level 2 message with logic
-                statusDiv.innerHTML = `
+                // Store full hint message for modal
+                this.currentFullHintMessage = `
                     <div class="hint-message location">
                         <div class="hint-header">
                             <i class="fas fa-map-marker-alt"></i>
@@ -1563,6 +1593,19 @@ class SudokuEngine {
                         </div>
                         <div class="hint-penalty">
                             ⚠️ Penalty: 3% + Lost Perfect/Flawless bonus | Click again to reveal answer (+10s)
+                        </div>
+                    </div>
+                `;
+
+                // Show shortened Level 2 message
+                statusDiv.innerHTML = `
+                    <div class="hint-message location" onclick="window.sudokuEngine.showHintModal()">
+                        <div class="hint-header">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong>Level 2</strong>
+                        </div>
+                        <div class="hint-body">
+                            🎯 Row ${row + 1}, Col ${col + 1}
                         </div>
                     </div>
                 `;
@@ -1603,8 +1646,8 @@ class SudokuEngine {
                 this.selectCell(row, col);
                 this.updateDisplay();
 
-                // Show educational reveal message
-                statusDiv.innerHTML = `
+                // Store full hint message for modal
+                this.currentFullHintMessage = `
                     <div class="hint-message revealed">
                         <div class="hint-header">
                             <i class="fas fa-lightbulb"></i>
@@ -1622,6 +1665,19 @@ class SudokuEngine {
                         </div>
                         <div class="hint-penalty">
                             ⚠️ Total penalty: 3% + Lost Perfect/Flawless bonus + Time penalty (15s)
+                        </div>
+                    </div>
+                `;
+
+                // Show shortened reveal message
+                statusDiv.innerHTML = `
+                    <div class="hint-message revealed" onclick="window.sudokuEngine.showHintModal()">
+                        <div class="hint-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>Level 3</strong>
+                        </div>
+                        <div class="hint-body">
+                            ✅ Answer: ${value} (R${row + 1}, C${col + 1})
                         </div>
                     </div>
                 `;
@@ -1847,6 +1903,17 @@ class SudokuEngine {
                 cell.classList.add('hint-area');
             }
         });
+    }
+
+    showHintModal() {
+        // Show the hint details modal with the full message
+        const modal = document.getElementById('hintModal');
+        const modalBody = document.getElementById('hintModalBody');
+
+        if (modal && modalBody && this.currentFullHintMessage) {
+            modalBody.innerHTML = this.currentFullHintMessage;
+            modal.classList.add('show');
+        }
     }
 
     findBestHint() {
