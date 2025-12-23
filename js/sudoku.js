@@ -1539,12 +1539,9 @@ class SudokuEngine {
                 // Show shortened Level 1 message
                 statusDiv.innerHTML = `
                     <div class="hint-message direction" onclick="window.sudokuEngine.showHintModal()">
-                        <div class="hint-header">
-                            <i class="fas fa-compass"></i>
-                            <strong>Level 1</strong>
-                        </div>
-                        <div class="hint-body">
-                            🔍 Check ${hintDirection.text}
+                        <div style="font-size: 0.85rem; font-weight: 500;">
+                            <i class="fas fa-compass" style="margin-right: 0.35rem;"></i>
+                            Level 1: Check ${hintDirection.text}
                         </div>
                     </div>
                 `;
@@ -1603,12 +1600,9 @@ class SudokuEngine {
                 // Show shortened Level 2 message
                 statusDiv.innerHTML = `
                     <div class="hint-message location" onclick="window.sudokuEngine.showHintModal()">
-                        <div class="hint-header">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <strong>Level 2</strong>
-                        </div>
-                        <div class="hint-body">
-                            🎯 Row ${row + 1}, Col ${col + 1}
+                        <div style="font-size: 0.85rem; font-weight: 500;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 0.35rem;"></i>
+                            Level 2: Row ${row + 1}, Col ${col + 1}
                         </div>
                     </div>
                 `;
@@ -1675,12 +1669,9 @@ class SudokuEngine {
                 // Show shortened reveal message
                 statusDiv.innerHTML = `
                     <div class="hint-message revealed" onclick="window.sudokuEngine.showHintModal()">
-                        <div class="hint-header">
-                            <i class="fas fa-lightbulb"></i>
-                            <strong>Level 3</strong>
-                        </div>
-                        <div class="hint-body">
-                            ✅ Answer: ${value} (R${row + 1}, C${col + 1})
+                        <div style="font-size: 0.85rem; font-weight: 500;">
+                            <i class="fas fa-lightbulb" style="margin-right: 0.35rem;"></i>
+                            Level 3: Answer is ${value}
                         </div>
                     </div>
                 `;
@@ -1693,59 +1684,11 @@ class SudokuEngine {
             }
         }
 
-        // Add hint message styling if not already present
+        // Minimal hint styling - most styling is in CSS now
         if (!document.querySelector('.hint-styles-added')) {
             const hintStyles = document.createElement('style');
             hintStyles.className = 'hint-styles-added';
             hintStyles.textContent = `
-                .hint-message {
-                    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-                    color: white;
-                    padding: 0.6rem 0.9rem;
-                    border-radius: 10px;
-                    margin: 0.3rem 0;
-                    box-shadow: var(--box-shadow);
-                    animation: hintAppear 0.4s ease-out;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    max-height: 70px; /* Fit within 80px game-status container */
-                    overflow: visible; /* Allow click indicator to show */
-                }
-                .hint-message.direction {
-                    background: linear-gradient(135deg, #9C27B0, #673AB7);
-                }
-                .hint-message.location {
-                    background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
-                }
-                .hint-message.revealed {
-                    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-                }
-                .hint-message.solved-manually {
-                    background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
-                }
-                .hint-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.4rem;
-                    font-size: 0.95rem;
-                    margin-bottom: 0.35rem;
-                }
-                .hint-body {
-                    font-size: 0.85rem;
-                    margin-bottom: 0.35rem;
-                    opacity: 0.95;
-                    line-height: 1.3;
-                }
-                .hint-penalty {
-                    font-family: 'Orbitron', monospace;
-                    font-weight: 600;
-                    font-size: 0.75rem;
-                    background: rgba(0, 0, 0, 0.2);
-                    padding: 0.2rem 0.4rem;
-                    border-radius: 4px;
-                    display: inline-block;
-                }
                 .cell.hint-location {
                     background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(255, 193, 7, 0.3)) !important;
                     border: 2px solid var(--accent-orange) !important;
@@ -1754,10 +1697,6 @@ class SudokuEngine {
                 .cell.hint-revealed {
                     background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(139, 195, 74, 0.3)) !important;
                     border: 2px solid var(--accent-green) !important;
-                }
-                @keyframes hintAppear {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
                 }
                 @keyframes hintPulse {
                     0%, 100% { transform: scale(1); }

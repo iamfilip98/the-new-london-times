@@ -3334,33 +3334,137 @@ body {
 }
 
 .hint-modal-body {
-    padding-top: 1rem;
+    padding-top: 0;
 }
 
-/* Hint message clickable indicator (only in game status box, not in modal) */
+/* Modal hint message styling */
+.hint-modal-body .hint-message {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border-left: 4px solid;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.hint-modal-body .hint-message.direction {
+    border-left-color: #9C27B0;
+}
+
+.hint-modal-body .hint-message.location {
+    border-left-color: var(--accent-orange);
+}
+
+.hint-modal-body .hint-message.revealed {
+    border-left-color: var(--accent-blue);
+}
+
+.hint-modal-body .hint-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: 'Orbitron', monospace;
+}
+
+.hint-modal-body .hint-message.direction .hint-header {
+    color: #9C27B0;
+}
+
+.hint-modal-body .hint-message.location .hint-header {
+    color: var(--accent-orange);
+}
+
+.hint-modal-body .hint-message.revealed .hint-header {
+    color: var(--accent-blue);
+}
+
+.hint-modal-body .hint-body {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.hint-modal-body .hint-body strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.hint-modal-body .hint-body em {
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.hint-modal-body .hint-penalty {
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+/* Hint message styling - matches difficulty cards */
 .game-status .hint-message {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    border-left: 4px solid;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease;
     position: relative;
-    pointer-events: auto; /* Ensure clickable */
-    width: 100%; /* Prevent width changes */
-    box-sizing: border-box; /* Include padding in width */
+    pointer-events: auto;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Hint level colors */
+.game-status .hint-message.direction {
+    border-left-color: #9C27B0; /* Purple for direction */
+}
+
+.game-status .hint-message.location {
+    border-left-color: var(--accent-orange); /* Orange for location */
+}
+
+.game-status .hint-message.revealed {
+    border-left-color: var(--accent-blue); /* Blue for revealed */
 }
 
 .game-status .hint-message:hover {
+    background: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.18),
+        0 4px 12px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .game-status .hint-message::after {
-    content: '👆 Click for full details';
+    content: '👆 Click for details';
     display: block;
     text-align: center;
-    font-size: 0.7rem;
-    margin-top: 0.3rem;
-    opacity: 0.8;
+    font-size: 0.65rem;
+    margin-top: 0.25rem;
+    opacity: 0.7;
     font-style: italic;
-    pointer-events: none; /* Don't block clicks on parent */
+    pointer-events: none;
+    color: var(--text-secondary);
 }
 
 /* Challenges */
@@ -6846,20 +6950,29 @@ select:focus-visible,
     min-height: 80px;
     max-height: 80px;
     overflow: hidden; /* Prevent content overflow */
+    padding: 0.5rem; /* Padding around content */
 }
 
 .status-message {
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius);
-    padding: 1rem 2rem;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1rem;
+    border-left: 4px solid var(--accent-blue);
     font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
     position: relative;
     z-index: 1001;
     width: 100%;
-    max-height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.9rem;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
     overflow-y: auto; /* Allow scrolling if message is too long */
     display: flex;
     align-items: center;
