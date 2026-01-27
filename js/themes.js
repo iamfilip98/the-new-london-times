@@ -2,8 +2,6 @@ class ThemeManager {
     constructor() {
         this.currentTheme = null;
         this.themes = this.initializeThemes();
-        this.specialEvents = this.initializeSpecialEvents();
-
         this.init();
     }
 
@@ -23,7 +21,6 @@ class ThemeManager {
                     accent: '#f0993e',
                     background: 'linear-gradient(135deg, #1c1f2e 0%, #2a1a3e 50%, #1c1f2e 100%)'
                 },
-                multiplier: 1.0,
                 icon: 'fas fa-puzzle-piece'
             },
 
@@ -35,7 +32,6 @@ class ThemeManager {
                     accent: '#ff9500',
                     background: 'linear-gradient(135deg, #1c1f2e 0%, #3a1a1e 50%, #1c1f2e 100%)'
                 },
-                multiplier: 1.1,
                 icon: 'fas fa-ghost',
                 active: this.isHalloweenSeason(),
                 sudokuStyle: {
@@ -52,7 +48,6 @@ class ThemeManager {
                     accent: '#ffd700',
                     background: 'linear-gradient(135deg, #0f7b0f 0%, #c41e3a 100%)'
                 },
-                multiplier: 1.2,
                 icon: 'fas fa-gift',
                 active: this.isChristmasSeason(),
                 sudokuStyle: {
@@ -69,7 +64,6 @@ class ThemeManager {
                     accent: '#ff69b4',
                     background: 'linear-gradient(135deg, #4b0082 0%, #ffd700 100%)'
                 },
-                multiplier: 1.2,
                 icon: 'fas fa-champagne-glasses',
                 active: this.isNewYearSeason(),
                 sudokuStyle: {
@@ -86,7 +80,6 @@ class ThemeManager {
                     accent: '#ffb6c1',
                     background: 'linear-gradient(135deg, #e91e63 0%, #ff69b4 100%)'
                 },
-                multiplier: 1.1,
                 icon: 'fas fa-heart',
                 active: this.isValentinesSeason(),
                 sudokuStyle: {
@@ -103,7 +96,6 @@ class ThemeManager {
                     accent: '#98fb98',
                     background: 'linear-gradient(135deg, #32cd32 0%, #ffb347 100%)'
                 },
-                multiplier: 1.1,
                 icon: 'fas fa-seedling',
                 active: this.isSpringSeason(),
                 sudokuStyle: {
@@ -120,7 +112,6 @@ class ThemeManager {
                     accent: '#ff6347',
                     background: 'linear-gradient(135deg, #ff4500 0%, #ffd700 100%)'
                 },
-                multiplier: 1.0,
                 icon: 'fas fa-sun',
                 active: this.isSummerSeason(),
                 sudokuStyle: {
@@ -131,33 +122,6 @@ class ThemeManager {
         };
     }
 
-    initializeSpecialEvents() {
-        return {
-            perfectMonth: {
-                name: 'Perfect Month Challenge',
-                description: 'Complete every puzzle in a month with zero errors',
-                reward: 'Perfect Champion Badge',
-                multiplier: 2.0,
-                achievementId: 'perfect_month'
-            },
-
-            speedWeek: {
-                name: 'Speed Week',
-                description: 'Beat your personal best times',
-                reward: 'Speed Demon Badge',
-                multiplier: 1.5,
-                achievementId: 'speed_week'
-            },
-
-            hintsChallenge: {
-                name: 'No Hints November',
-                description: 'Complete puzzles without using any hints',
-                reward: 'Pure Solver Badge',
-                multiplier: 1.8,
-                achievementId: 'no_hints_november'
-            }
-        };
-    }
 
     detectCurrentTheme() {
         // Check for active seasonal themes
@@ -199,6 +163,9 @@ class ThemeManager {
         // Update page title and icons
         this.updateThemeUI(theme);
 
+        // Add seasonal animations
+        this.addSeasonalAnimations();
+
         // Store current theme
         localStorage.setItem('currentTheme', this.currentTheme);
 
@@ -221,7 +188,6 @@ class ThemeManager {
             themeIndicator.innerHTML = `
                 <i class="${theme.icon}"></i>
                 <span>${theme.name}</span>
-                ${theme.multiplier > 1 ? `<span class="multiplier">×${theme.multiplier}</span>` : ''}
             `;
         }
     }
@@ -246,11 +212,6 @@ class ThemeManager {
         document.dispatchEvent(new CustomEvent('themeChange', {
             detail: { theme: themeKey }
         }));
-    }
-
-    getCurrentMultiplier() {
-        const theme = this.themes[this.currentTheme];
-        return theme ? theme.multiplier : 1.0;
     }
 
     getThemeInfo() {
@@ -295,99 +256,144 @@ class ThemeManager {
         return month >= 5 && month <= 7; // June-August
     }
 
-    // Special event methods
-    checkSpecialEvents() {
-        const activeEvents = [];
-        const now = new Date();
 
-        // Check for active special events
-        Object.entries(this.specialEvents).forEach(([key, event]) => {
-            if (this.isEventActive(key, now)) {
-                activeEvents.push({...event, id: key});
-            }
-        });
-
-        return activeEvents;
-    }
-
-    isEventActive(eventKey, date = new Date()) {
-        switch (eventKey) {
-            case 'perfectMonth':
-                return date.getDate() === 1; // Active on first day of each month
-
-            case 'speedWeek':
-                // Active first week of each month
-                return date.getDate() <= 7;
-
-            case 'hintsChallenge':
-                return date.getMonth() === 10; // November
-
-            default:
-                return false;
-        }
-    }
-
-    displayActiveEvents() {
-        const activeEvents = this.checkSpecialEvents();
-        if (activeEvents.length === 0) return;
-
-        // Create or update events display
-        let eventsContainer = document.getElementById('specialEventsContainer');
-        if (!eventsContainer) {
-            eventsContainer = document.createElement('div');
-            eventsContainer.id = 'specialEventsContainer';
-            eventsContainer.className = 'special-events-container';
-
-            const dashboard = document.getElementById('dashboard');
-            if (dashboard) {
-                dashboard.insertBefore(eventsContainer, dashboard.firstChild);
-            }
+    // Seasonal animations
+    addSeasonalAnimations() {
+        // Remove any existing seasonal animation container
+        const existing = document.getElementById('seasonal-animation-container');
+        if (existing) {
+            existing.remove();
         }
 
-        eventsContainer.innerHTML = `
-            <div class="special-events-header">
-                <h3><i class="fas fa-star"></i> Special Events Active!</h3>
-            </div>
-            <div class="events-grid">
-                ${activeEvents.map(event => `
-                    <div class="event-card">
-                        <div class="event-name">${event.name}</div>
-                        <div class="event-description">${event.description}</div>
-                        <div class="event-reward">
-                            <i class="fas fa-trophy"></i>
-                            ${event.reward}
-                        </div>
-                        <div class="event-multiplier">
-                            Score Multiplier: ×${event.multiplier}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
+        // Only add animations for seasonal themes
+        if (this.currentTheme === 'default') return;
+
+        const container = document.createElement('div');
+        container.id = 'seasonal-animation-container';
+        container.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
         `;
+
+        // Add theme-specific animations
+        switch (this.currentTheme) {
+            case 'christmas':
+                this.createSnowfall(container);
+                break;
+            case 'halloween':
+                this.createFloatingGhosts(container);
+                break;
+            case 'valentines':
+                this.createFloatingHearts(container);
+                break;
+            case 'spring':
+                this.createFlowerPetals(container);
+                break;
+            case 'newYear':
+                this.createSparkles(container);
+                break;
+        }
+
+        document.body.appendChild(container);
     }
 
-    // Achievement integration
-    checkThemeAchievements(gameData) {
-        const achievements = [];
-
-        // Theme-specific achievements
-        if (this.currentTheme === 'halloween' && gameData.errors === 0) {
-            achievements.push({
-                id: 'spooky_perfect',
-                name: 'Spooky Perfection',
-                description: 'Complete a Halloween puzzle with zero errors'
-            });
+    createSnowfall(container) {
+        for (let i = 0; i < 30; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.textContent = '❄';
+            snowflake.style.cssText = `
+                position: absolute;
+                top: -20px;
+                left: ${Math.random() * 100}%;
+                font-size: ${Math.random() * 10 + 10}px;
+                color: rgba(255, 255, 255, 0.8);
+                animation: snowfall ${Math.random() * 3 + 2}s linear infinite;
+                animation-delay: ${Math.random() * 5}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
+            `;
+            container.appendChild(snowflake);
         }
+    }
 
-        if (this.currentTheme === 'christmas' && gameData.time < 300) {
-            achievements.push({
-                id: 'christmas_speedster',
-                name: 'Christmas Speedster',
-                description: 'Complete a Christmas puzzle in under 5 minutes'
-            });
+    createFloatingGhosts(container) {
+        for (let i = 0; i < 15; i++) {
+            const ghost = document.createElement('div');
+            ghost.textContent = '👻';
+            ghost.style.cssText = `
+                position: absolute;
+                top: ${Math.random() * 100}%;
+                left: -50px;
+                font-size: ${Math.random() * 20 + 20}px;
+                opacity: 0.6;
+                animation: floatGhost ${Math.random() * 10 + 15}s linear infinite;
+                animation-delay: ${Math.random() * 10}s;
+                will-change: transform;
+                contain: layout style paint;
+            `;
+            container.appendChild(ghost);
         }
+    }
 
-        return achievements;
+    createFloatingHearts(container) {
+        for (let i = 0; i < 20; i++) {
+            const heart = document.createElement('div');
+            heart.textContent = '💕';
+            heart.style.cssText = `
+                position: absolute;
+                bottom: -20px;
+                left: ${Math.random() * 100}%;
+                font-size: ${Math.random() * 15 + 15}px;
+                animation: floatUp ${Math.random() * 4 + 3}s ease-in infinite;
+                animation-delay: ${Math.random() * 5}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
+            `;
+            container.appendChild(heart);
+        }
+    }
+
+    createFlowerPetals(container) {
+        const petals = ['🌸', '🌺', '🌼', '🌻', '🌷'];
+        for (let i = 0; i < 20; i++) {
+            const petal = document.createElement('div');
+            petal.textContent = petals[Math.floor(Math.random() * petals.length)];
+            petal.style.cssText = `
+                position: absolute;
+                top: -20px;
+                left: ${Math.random() * 100}%;
+                font-size: ${Math.random() * 15 + 10}px;
+                animation: petalFall ${Math.random() * 5 + 5}s ease-in infinite;
+                animation-delay: ${Math.random() * 5}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
+            `;
+            container.appendChild(petal);
+        }
+    }
+
+    createSparkles(container) {
+        for (let i = 0; i < 25; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.textContent = '✨';
+            sparkle.style.cssText = `
+                position: absolute;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                font-size: ${Math.random() * 15 + 10}px;
+                animation: sparkle ${Math.random() * 2 + 1}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 3}s;
+                will-change: transform, opacity;
+                contain: layout style paint;
+            `;
+            container.appendChild(sparkle);
+        }
     }
 }
 
@@ -397,11 +403,6 @@ window.themeManager = null;
 // Initialize theme manager when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     window.themeManager = new ThemeManager();
-
-    // Display active special events
-    setTimeout(() => {
-        window.themeManager.displayActiveEvents();
-    }, 1000);
 });
 
 // Export for use in other modules

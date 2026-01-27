@@ -441,7 +441,12 @@ class SudokuChampionship {
         // Poll for live progress updates every 15 seconds for real-time battle updates
         this.intervals.liveProgressPoll = setInterval(async () => {
             if (this.initializationComplete) {
-                // Poll regardless of active page to keep data fresh for when user switches to dashboard
+                // Only poll when NOT on game page to avoid interrupting gameplay
+                const gamePageActive = document.getElementById('sudoku')?.classList.contains('active');
+                if (gamePageActive) {
+                    return; // Skip polling during active gameplay
+                }
+
                 // Invalidate cache and update progress for live updates
                 this.todayProgressCache.data = null;
                 this.todayProgressCache.lastUpdate = null;
@@ -454,6 +459,12 @@ class SudokuChampionship {
         // 🔧 MEMORY LEAK FIX: Create a bound handler so we can track it
         const visibilityHandler = async () => {
             if (!document.hidden && this.initializationComplete) {
+                // Only update if NOT on game page
+                const gamePageActive = document.getElementById('sudoku')?.classList.contains('active');
+                if (gamePageActive) {
+                    return; // Skip polling during active gameplay
+                }
+
                 // Force refresh when user returns to tab
                 this.todayProgressCache.data = null;
                 this.todayProgressCache.lastUpdate = null;
@@ -1463,7 +1474,7 @@ class SudokuChampionship {
         let dbProgress = null;
         try {
             // Force no-cache to ensure real-time battle updates across players
-            const response = await fetch(`/api/games?date=${today}`, {
+            const response = await fetch(`/api/games2?date=${today}`, {
                 cache: 'no-store'
             });
             if (response.ok) {
@@ -1781,7 +1792,7 @@ class SudokuChampionship {
 
         const endpoints = [
             `/api/puzzles?date=${today}&t=${Date.now()}`,
-            `/api/games?date=${today}`,
+            `/api/games2?date=${today}`,
             `/api/entries`,
             `/api/stats?type=all`
         ];

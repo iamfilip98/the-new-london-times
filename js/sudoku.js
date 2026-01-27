@@ -20,6 +20,7 @@ class SudokuEngine {
         this.currentHintCell = null; // Track which cell is being hinted
         this.hintState = 'none'; // 'none', 'direction', 'location', 'revealed'
         this.hintTimePenalty = 0; // Cumulative time penalty from hints
+        this.currentFullHintMessage = ''; // Store full hint message for modal
         this.currentDifficulty = 'easy';
         this.gameStarted = false;
         this.gameCompleted = false;
@@ -388,6 +389,22 @@ class SudokuEngine {
         document.getElementById('candidateBtn')?.addEventListener('click', () => this.toggleCandidateMode());
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
+
+        // Hint modal event listeners
+        const hintModal = document.getElementById('hintModal');
+        const hintModalClose = document.getElementById('hintModalClose');
+
+        // Close modal when clicking the close button
+        hintModalClose?.addEventListener('click', () => {
+            hintModal?.classList.remove('show');
+        });
+
+        // Close modal when clicking outside the modal content
+        hintModal?.addEventListener('click', (e) => {
+            if (e.target === hintModal) {
+                hintModal.classList.remove('show');
+            }
+        });
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
         document.getElementById('pausedLabel')?.addEventListener('click', () => this.togglePause());
 
@@ -1064,6 +1081,9 @@ class SudokuEngine {
         // Don't allow changing given numbers or locked cells
         if (this.initialGrid[row][col] !== 0 || this.lockedGrid[row][col]) return;
 
+        // Clear hint indicators on any move (not just when solving the hinted cell)
+        this.clearHintIndicators();
+
         // Save current state for undo
         const previousValue = this.playerGrid[row][col];
         const previousCandidates = new Set(this.candidates[row][col]);
@@ -1504,8 +1524,8 @@ class SudokuEngine {
                 // Get technique explanation
                 const techniqueInfo = this.getTechniqueExplanation(technique);
 
-                // Show improved Level 1 message
-                statusDiv.innerHTML = `
+                // Store full hint message for modal
+                this.currentFullHintMessage = `
                     <div class="hint-message direction">
                         <div class="hint-header">
                             <i class="fas fa-compass"></i>
@@ -1519,6 +1539,16 @@ class SudokuEngine {
                         </div>
                         <div class="hint-penalty">
                             💡 Penalty: 0.5% (keeps Perfect bonus!) | Click again for exact cell (+3%, breaks bonus)
+                        </div>
+                    </div>
+                `;
+
+                // Show shortened Level 1 message
+                statusDiv.innerHTML = `
+                    <div class="hint-message direction" onclick="window.sudokuEngine.showHintModal()">
+                        <div style="font-size: 0.85rem; font-weight: 500;">
+                            <i class="fas fa-compass" style="margin-right: 0.35rem;"></i>
+                            Level 1: Check ${hintDirection.text}
                         </div>
                     </div>
                 `;
@@ -1554,8 +1584,8 @@ class SudokuEngine {
                 const possibleValues = this.getPossibleValues(row, col);
                 const rowNumbers = Array.from({length: 9}, (_, i) => i + 1).filter(n => !this.isNumberInRow(row, n));
 
-                // Show improved Level 2 message with logic
-                statusDiv.innerHTML = `
+                // Store full hint message for modal
+                this.currentFullHintMessage = `
                     <div class="hint-message location">
                         <div class="hint-header">
                             <i class="fas fa-map-marker-alt"></i>
@@ -1570,6 +1600,16 @@ class SudokuEngine {
                         </div>
                         <div class="hint-penalty">
                             ⚠️ Penalty: 3% + Lost Perfect/Flawless bonus | Click again to reveal answer (+10s)
+                        </div>
+                    </div>
+                `;
+
+                // Show shortened Level 2 message
+                statusDiv.innerHTML = `
+                    <div class="hint-message location" onclick="window.sudokuEngine.showHintModal()">
+                        <div style="font-size: 0.85rem; font-weight: 500;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 0.35rem;"></i>
+                            Level 2: Row ${row + 1}, Col ${col + 1}
                         </div>
                     </div>
                 `;
@@ -1610,8 +1650,8 @@ class SudokuEngine {
                 this.selectCell(row, col);
                 this.updateDisplay();
 
-                // Show educational reveal message
-                statusDiv.innerHTML = `
+                // Store full hint message for modal
+                this.currentFullHintMessage = `
                     <div class="hint-message revealed">
                         <div class="hint-header">
                             <i class="fas fa-lightbulb"></i>
@@ -1633,6 +1673,16 @@ class SudokuEngine {
                     </div>
                 `;
 
+                // Show shortened reveal message
+                statusDiv.innerHTML = `
+                    <div class="hint-message revealed" onclick="window.sudokuEngine.showHintModal()">
+                        <div style="font-size: 0.85rem; font-weight: 500;">
+                            <i class="fas fa-lightbulb" style="margin-right: 0.35rem;"></i>
+                            Level 3: Answer is ${value}
+                        </div>
+                    </div>
+                `;
+
                 // Reset hint state for next hint
                 this.currentHintCell = null;
                 this.hintState = 'none';
@@ -1641,7 +1691,7 @@ class SudokuEngine {
             }
         }
 
-        // Add hint message styling if not already present
+        // Minimal hint styling - most styling is in CSS now
         if (!document.querySelector('.hint-styles-added')) {
             const hintStyles = document.createElement('style');
             hintStyles.className = 'hint-styles-added';
@@ -1701,10 +1751,6 @@ class SudokuEngine {
                 .cell.hint-revealed {
                     background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(139, 195, 74, 0.3)) !important;
                     border: 2px solid var(--accent-green) !important;
-                }
-                @keyframes hintAppear {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
                 }
                 @keyframes hintPulse {
                     0%, 100% { transform: scale(1); }
@@ -1854,6 +1900,17 @@ class SudokuEngine {
                 cell.classList.add('hint-area');
             }
         });
+    }
+
+    showHintModal() {
+        // Show the hint details modal with the full message
+        const modal = document.getElementById('hintModal');
+        const modalBody = document.getElementById('hintModalBody');
+
+        if (modal && modalBody && this.currentFullHintMessage) {
+            modalBody.innerHTML = this.currentFullHintMessage;
+            modal.classList.add('show');
+        }
     }
 
     findBestHint() {
@@ -2151,7 +2208,7 @@ class SudokuEngine {
             // Check for theme-specific achievements
             const themeAchievements = this.checkThemeAchievements();
 
-            document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
+            // Keep status message visible - don't hide it
             this.saveCompletedGame(score);
         }
     }
@@ -3220,7 +3277,7 @@ class SudokuEngine {
 
     async saveGameToDatabase(gameData) {
         try {
-            const response = await fetch('/api/games', {
+            const response = await fetch('/api/games2', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -3620,7 +3677,8 @@ class SudokuEngine {
             this.lastPuzzleDate = today;
 
             // If user has a game in progress for old date, handle it
-            if (this.gameStarted && this.lastPuzzleDate !== today) {
+            // BUT don't reload if the game is already completed - preserve completed state
+            if (this.gameStarted && !this.gameCompleted && this.lastPuzzleDate !== today) {
                 debugLog('🔄 New day detected, clearing old game state');
                 this.clearOldGameState();
                 // Auto-load easy difficulty for new day
@@ -3877,42 +3935,6 @@ class SudokuEngine {
         if (!window.themeManager) return achievements;
 
         const currentTheme = window.themeManager.currentTheme;
-        const gameData = {
-            time: this.timer,
-            errors: this.errors,
-            hints: this.hints,
-            difficulty: this.currentDifficulty
-        };
-
-        // Use theme manager's achievement checking
-        const themeAchievements = window.themeManager.checkThemeAchievements(gameData);
-        achievements.push(...themeAchievements);
-
-        // Additional Sudoku-specific themed achievements
-        if (currentTheme === 'halloween' && this.errors === 0 && this.hints === 0) {
-            achievements.push({
-                id: 'spooky_master',
-                name: 'Spooky Master',
-                description: 'Complete a Halloween puzzle with no errors or hints'
-            });
-        }
-
-        if (currentTheme === 'christmas' && this.timer < 180) { // Under 3 minutes
-            achievements.push({
-                id: 'christmas_lightning',
-                name: 'Christmas Lightning',
-                description: 'Complete a Christmas puzzle in under 3 minutes'
-            });
-        }
-
-        if (currentTheme === 'newYear' && this.currentDifficulty === 'hard' && this.errors <= 1) {
-            achievements.push({
-                id: 'new_year_resolution',
-                name: 'New Year Resolution',
-                description: 'Complete a Hard New Year puzzle with minimal errors'
-            });
-        }
-
         return achievements;
     }
 
@@ -4206,8 +4228,7 @@ class SudokuEngine {
     }
 
     showStats() {
-        // Close completion modal
-        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
+        // Keep status message visible - don't hide it
 
         // Show comprehensive stats
         const modal = document.createElement('div');
@@ -4310,7 +4331,7 @@ class SudokuEngine {
     startNewGame() {
         // Close any modals
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
-        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
+        document.getElementById('gameStatus').innerHTML = '<div class="status-message">Ready to play! Select a difficulty to start.</div>';
 
         // Navigate back to dashboard
         const navLinks = document.querySelectorAll('.nav-link');
@@ -4472,9 +4493,8 @@ class SudokuEngine {
             notification.remove();
         }
 
-        // Close any modals and clear game status
+        // Close any modals
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
-        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
         // Use navigateToDifficulty to properly load saved state or fresh puzzle
         this.navigateToDifficulty('medium');
@@ -4490,9 +4510,8 @@ class SudokuEngine {
             notification.remove();
         }
 
-        // Close any modals and clear game status
+        // Close any modals
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
-        document.getElementById('gameStatus').innerHTML = '<div class="status-message hidden">&nbsp;</div>';
 
         // Use navigateToDifficulty to properly load saved state or fresh puzzle
         this.navigateToDifficulty('hard');
@@ -4522,10 +4541,13 @@ class SudokuEngine {
         debugLog(`Attempting to load saved state for ${difficulty} difficulty`);
         await this.loadGameState();
 
-        // If no saved state was found or the game is completed, start a new game
-        if (!this.gameStarted || this.gameCompleted) {
-            debugLog(`No saved state found or game completed for ${difficulty}, loading fresh puzzle`);
+        // If no saved state was found, start a new game
+        // BUT if the game is completed, keep the completed state - don't reload
+        if (!this.gameStarted) {
+            debugLog(`No saved state found for ${difficulty}, loading fresh puzzle`);
             this.loadPuzzle(difficulty);
+        } else if (this.gameCompleted) {
+            debugLog(`Loaded completed game for ${difficulty}. Keeping completed state.`);
         } else {
             debugLog(`Loaded saved state for ${difficulty}. Completed: ${this.gameCompleted}`);
         }
@@ -4576,7 +4598,7 @@ class SudokuEngine {
         document.querySelectorAll('.stats-modal').forEach(modal => modal.remove());
         const gameStatus = document.getElementById('gameStatus');
         if (gameStatus) {
-            gameStatus.innerHTML = '<div class="status-message hidden">&nbsp;</div>';
+            gameStatus.innerHTML = '<div class="status-message">Ready to play! Select a difficulty to start.</div>';
         }
 
         // Navigate to dashboard page

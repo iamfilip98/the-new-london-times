@@ -347,11 +347,12 @@ module.exports = async function handler(req, res) {
 
   try {
     switch (req.method) {
-      case 'GET':
+      case 'GET': {
         const entries = await getAllEntries();
         return res.status(200).json(entries);
+      }
 
-      case 'POST':
+      case 'POST': {
         const { date, faidao, filip, migrate, migrationData } = req.body;
 
         // Handle migration request
@@ -385,8 +386,9 @@ module.exports = async function handler(req, res) {
           message: 'Entry saved successfully',
           entry: { date, ...entryData }
         });
+      }
 
-      case 'DELETE':
+      case 'DELETE': {
         const { date: deleteDate } = req.query;
 
         if (!deleteDate) {
@@ -398,6 +400,7 @@ module.exports = async function handler(req, res) {
           success: true,
           message: 'Entry deleted successfully'
         });
+      }
 
       default:
         res.setHeader('Allow', ['GET', 'POST', 'DELETE']);

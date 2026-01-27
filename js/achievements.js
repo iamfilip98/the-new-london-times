@@ -1559,7 +1559,7 @@ class AchievementsManager {
 
     async fetchPlayerGames(player) {
         try {
-            const response = await fetch(`/api/games?all=true&player=${player}`);
+            const response = await fetch(`/api/games2?all=true&player=${player}`);
             if (!response.ok) return [];
             return await response.json();
         } catch (error) {
@@ -2686,6 +2686,7 @@ class AchievementPopup {
 
     initializePopup() {
         if (!this.popup || !this.closeBtn) {
+            console.log('Popup elements not found:', {
                 popup: !!this.popup,
                 closeBtn: !!this.closeBtn
             });
