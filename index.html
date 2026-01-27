@@ -129,194 +129,194 @@
                     </div>
                 </section>
 
-                <!-- Win Streaks Display -->
-                <section class="win-streaks-section">
-                    <div class="streak-cards">
-                        <div class="streak-card faidao">
-                            <div class="streak-header">
-                                <h3><i class="fas fa-fire"></i> Faidao</h3>
-                                <div class="player-avatar faidao-avatar">F</div>
-                            </div>
-                            <div class="streak-stats">
-                                <div class="current-streak">
-                                    <span class="streak-number" id="faidaoCurrentStreak">0</span>
-                                    <span class="streak-label">Current Streak</span>
+                <!-- Bento Grid Dashboard -->
+                <div class="bento-grid">
+                    <!-- Row 1: VS / Win Streaks (full width) -->
+                    <section class="win-streaks-section bento-item bento-full">
+                        <div class="streak-cards">
+                            <div class="streak-card faidao">
+                                <div class="streak-header">
+                                    <h3><i class="fas fa-fire"></i> Faidao</h3>
+                                    <div class="player-avatar faidao-avatar">F</div>
                                 </div>
-                                <div class="best-streak">
-                                    <span class="streak-number" id="faidaoBestStreak">0</span>
-                                    <span class="streak-label">Best Streak</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="vs-divider">
-                            <div class="vs-circle-container">
-                                <span class="vs-circle-shine"></span>
-                                VS
-                            </div>
-                            <div class="overall-record" id="overallRecord">0 - 0</div>
-                        </div>
-
-                        <div class="streak-card filip">
-                            <div class="streak-header">
-                                <h3><i class="fas fa-fire"></i> Filip</h3>
-                                <div class="player-avatar filip-avatar">F</div>
-                            </div>
-                            <div class="streak-stats">
-                                <div class="current-streak">
-                                    <span class="streak-number" id="filipCurrentStreak">0</span>
-                                    <span class="streak-label">Current Streak</span>
-                                </div>
-                                <div class="best-streak">
-                                    <span class="streak-number" id="filipBestStreak">0</span>
-                                    <span class="streak-label">Best Streak</span>
+                                <div class="streak-stats">
+                                    <div class="current-streak">
+                                        <span class="streak-number" id="faidaoCurrentStreak">0</span>
+                                        <span class="streak-label">Current Streak</span>
+                                    </div>
+                                    <div class="best-streak">
+                                        <span class="streak-number" id="faidaoBestStreak">0</span>
+                                        <span class="streak-label">Best Streak</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
 
-                <!-- Sudoku Game Selection -->
-                <section class="sudoku-game-selection">
-                    <div class="game-selection-header">
-                        <h2><i class="fas fa-puzzle-piece"></i> Choose Your Challenge</h2>
-                        <p>Select a difficulty level to start playing today's Sudoku puzzle</p>
-                    </div>
-
-                    <!-- Desktop difficulty grid -->
-                    <div class="difficulty-selection-grid desktop-only">
-                        <div class="difficulty-option easy" data-difficulty="easy">
-                            <div class="difficulty-icon">
-                                <i class="fas fa-seedling"></i>
-                            </div>
-                            <h3>EASY</h3>
-                            <button class="play-button" onclick="startSudokuGame('easy')">
-                                <i class="fas fa-play"></i>
-                                Play Easy
-                            </button>
-                        </div>
-
-                        <div class="difficulty-option medium" data-difficulty="medium">
-                            <div class="difficulty-icon">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <h3>MEDIUM</h3>
-                            <button class="play-button" onclick="startSudokuGame('medium')">
-                                <i class="fas fa-play"></i>
-                                Play Medium
-                            </button>
-                        </div>
-
-                        <div class="difficulty-option hard" data-difficulty="hard">
-                            <div class="difficulty-icon">
-                                <i class="fas fa-fire"></i>
-                            </div>
-                            <h3>HARD</h3>
-                            <button class="play-button" onclick="startSudokuGame('hard')">
-                                <i class="fas fa-play"></i>
-                                Play Hard
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mobile unified difficulty selector -->
-                    <div class="mobile-difficulty-selector">
-                        <div class="mobile-difficulty-buttons">
-                            <button class="mobile-play-button easy" onclick="startSudokuGame('easy')">
-                                <i class="fas fa-play"></i>
-                                <span>Play Easy</span>
-                            </button>
-                            <button class="mobile-play-button medium" onclick="startSudokuGame('medium')">
-                                <i class="fas fa-play"></i>
-                                <span>Play Medium</span>
-                            </button>
-                            <button class="mobile-play-button hard" onclick="startSudokuGame('hard')">
-                                <i class="fas fa-play"></i>
-                                <span>Play Hard</span>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Battle Results -->
-                <section class="battle-results">
-                    <div class="results-header">
-                        <h3><i class="fas fa-trophy"></i> Today's Battle</h3>
-                        <div class="winner-announcement" id="winnerAnnouncement">
-                            <span class="winner-text">Play Sudoku to compete!</span>
-                        </div>
-                    </div>
-                    <div class="score-comparison">
-                        <div class="score-bar faidao-bar">
-                            <div class="score-fill" id="faidaoScoreBar"></div>
-                            <span class="score-text" id="faidaoScoreText">0</span>
-                        </div>
-                        <div class="score-bar filip-bar">
-                            <div class="score-fill" id="filipScoreBar"></div>
-                            <span class="score-text" id="filipScoreText">0</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Real-time Progress Notifications -->
-                <section class="progress-notifications" id="progressNotifications">
-                    <h3><i class="fas fa-bell"></i> Live Updates</h3>
-                    <div class="notifications-container" id="notificationsContainer">
-                        <div class="no-notifications">
-                            Complete puzzles to see live updates from your opponent!
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Today's Progress -->
-                <section class="today-progress">
-                    <h3><i class="fas fa-puzzle-piece"></i> Today's Progress</h3>
-                    <div class="progress-grid">
-                        <div class="player-progress faidao-progress">
-                            <h4>Faidao</h4>
-                            <div class="difficulty-progress">
-                                <div class="progress-item" id="faidao-easy-progress">
-                                    <span class="difficulty-label">Easy</span>
-                                    <span class="progress-status">Not started</span>
+                            <div class="vs-divider">
+                                <div class="vs-circle-container">
+                                    <span class="vs-circle-shine"></span>
+                                    VS
                                 </div>
-                                <div class="progress-item" id="faidao-medium-progress">
-                                    <span class="difficulty-label">Medium</span>
-                                    <span class="progress-status">Not started</span>
+                                <div class="overall-record" id="overallRecord">0 - 0</div>
+                            </div>
+
+                            <div class="streak-card filip">
+                                <div class="streak-header">
+                                    <h3><i class="fas fa-fire"></i> Filip</h3>
+                                    <div class="player-avatar filip-avatar">F</div>
                                 </div>
-                                <div class="progress-item" id="faidao-hard-progress">
-                                    <span class="difficulty-label">Hard</span>
-                                    <span class="progress-status">Not started</span>
+                                <div class="streak-stats">
+                                    <div class="current-streak">
+                                        <span class="streak-number" id="filipCurrentStreak">0</span>
+                                        <span class="streak-label">Current Streak</span>
+                                    </div>
+                                    <div class="best-streak">
+                                        <span class="streak-number" id="filipBestStreak">0</span>
+                                        <span class="streak-label">Best Streak</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="player-progress filip-progress">
-                            <h4>Filip</h4>
-                            <div class="difficulty-progress">
-                                <div class="progress-item" id="filip-easy-progress">
-                                    <span class="difficulty-label">Easy</span>
-                                    <span class="progress-status">Not started</span>
+                    </section>
+
+                    <!-- Row 2: Difficulty Select (7col) + Battle Results (5col) -->
+                    <section class="sudoku-game-selection bento-item bento-major">
+                        <div class="game-selection-header">
+                            <h2><i class="fas fa-puzzle-piece"></i> Choose Your Challenge</h2>
+                            <p>Select a difficulty level to start playing today's Sudoku puzzle</p>
+                        </div>
+
+                        <!-- Desktop difficulty grid -->
+                        <div class="difficulty-selection-grid desktop-only">
+                            <div class="difficulty-option easy" data-difficulty="easy">
+                                <div class="difficulty-icon">
+                                    <i class="fas fa-seedling"></i>
                                 </div>
-                                <div class="progress-item" id="filip-medium-progress">
-                                    <span class="difficulty-label">Medium</span>
-                                    <span class="progress-status">Not started</span>
+                                <h3>EASY</h3>
+                                <button class="play-button" onclick="startSudokuGame('easy')">
+                                    <i class="fas fa-play"></i>
+                                    Play Easy
+                                </button>
+                            </div>
+
+                            <div class="difficulty-option medium" data-difficulty="medium">
+                                <div class="difficulty-icon">
+                                    <i class="fas fa-bolt"></i>
                                 </div>
-                                <div class="progress-item" id="filip-hard-progress">
-                                    <span class="difficulty-label">Hard</span>
-                                    <span class="progress-status">Not started</span>
+                                <h3>MEDIUM</h3>
+                                <button class="play-button" onclick="startSudokuGame('medium')">
+                                    <i class="fas fa-play"></i>
+                                    Play Medium
+                                </button>
+                            </div>
+
+                            <div class="difficulty-option hard" data-difficulty="hard">
+                                <div class="difficulty-icon">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <h3>HARD</h3>
+                                <button class="play-button" onclick="startSudokuGame('hard')">
+                                    <i class="fas fa-play"></i>
+                                    Play Hard
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Mobile unified difficulty selector -->
+                        <div class="mobile-difficulty-selector">
+                            <div class="mobile-difficulty-buttons">
+                                <button class="mobile-play-button easy" onclick="startSudokuGame('easy')">
+                                    <i class="fas fa-play"></i>
+                                    <span>Play Easy</span>
+                                </button>
+                                <button class="mobile-play-button medium" onclick="startSudokuGame('medium')">
+                                    <i class="fas fa-play"></i>
+                                    <span>Play Medium</span>
+                                </button>
+                                <button class="mobile-play-button hard" onclick="startSudokuGame('hard')">
+                                    <i class="fas fa-play"></i>
+                                    <span>Play Hard</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="battle-results bento-item bento-minor">
+                        <div class="results-header">
+                            <h3><i class="fas fa-trophy"></i> Today's Battle</h3>
+                            <div class="winner-announcement" id="winnerAnnouncement">
+                                <span class="winner-text">Play Sudoku to compete!</span>
+                            </div>
+                        </div>
+                        <div class="score-comparison">
+                            <div class="score-bar faidao-bar">
+                                <div class="score-fill" id="faidaoScoreBar"></div>
+                                <span class="score-text" id="faidaoScoreText">0</span>
+                            </div>
+                            <div class="score-bar filip-bar">
+                                <div class="score-fill" id="filipScoreBar"></div>
+                                <span class="score-text" id="filipScoreText">0</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Row 3: Live Updates (4col) + Today's Progress (8col) -->
+                    <section class="progress-notifications bento-item bento-aside" id="progressNotifications">
+                        <h3><i class="fas fa-bell"></i> Live Updates</h3>
+                        <div class="notifications-container" id="notificationsContainer">
+                            <div class="no-notifications">
+                                Complete puzzles to see live updates from your opponent!
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="today-progress bento-item bento-wide">
+                        <h3><i class="fas fa-puzzle-piece"></i> Today's Progress</h3>
+                        <div class="progress-grid">
+                            <div class="player-progress faidao-progress">
+                                <h4>Faidao</h4>
+                                <div class="difficulty-progress">
+                                    <div class="progress-item" id="faidao-easy-progress">
+                                        <span class="difficulty-label">Easy</span>
+                                        <span class="progress-status">Not started</span>
+                                    </div>
+                                    <div class="progress-item" id="faidao-medium-progress">
+                                        <span class="difficulty-label">Medium</span>
+                                        <span class="progress-status">Not started</span>
+                                    </div>
+                                    <div class="progress-item" id="faidao-hard-progress">
+                                        <span class="difficulty-label">Hard</span>
+                                        <span class="progress-status">Not started</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="player-progress filip-progress">
+                                <h4>Filip</h4>
+                                <div class="difficulty-progress">
+                                    <div class="progress-item" id="filip-easy-progress">
+                                        <span class="difficulty-label">Easy</span>
+                                        <span class="progress-status">Not started</span>
+                                    </div>
+                                    <div class="progress-item" id="filip-medium-progress">
+                                        <span class="difficulty-label">Medium</span>
+                                        <span class="progress-status">Not started</span>
+                                    </div>
+                                    <div class="progress-item" id="filip-hard-progress">
+                                        <span class="difficulty-label">Hard</span>
+                                        <span class="progress-status">Not started</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-
-                <!-- Recent History -->
-                <section class="recent-history">
-                    <h3><i class="fas fa-history"></i> Recent Battles</h3>
-                    <div class="history-cards" id="historyCards">
-                        <!-- History cards will be populated by JavaScript -->
-                    </div>
-                </section>
+                    <!-- Row 4: Recent History (full width) -->
+                    <section class="recent-history bento-item bento-full">
+                        <h3><i class="fas fa-history"></i> Recent Battles</h3>
+                        <div class="history-cards" id="historyCards">
+                            <!-- History cards will be populated by JavaScript -->
+                        </div>
+                    </section>
+                </div>
             </div>
 
             <!-- Analytics Page -->

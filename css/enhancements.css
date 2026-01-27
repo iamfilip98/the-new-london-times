@@ -35,6 +35,21 @@
 .toast-show {
     opacity: 1;
     transform: translateX(0);
+    animation: toastBounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes toastBounceIn {
+    0% {
+        opacity: 0;
+        transform: translateX(120px) scale(0.9);
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(-8px) scale(1.02);
+    }
+    100% {
+        transform: translateX(0) scale(1);
+    }
 }
 
 .toast-icon {
@@ -82,14 +97,36 @@
     color: var(--accent-blue, #3498db);
 }
 
-/* Cell Fill Animation */
-@keyframes cellFill {
+/* Cell Fill Animation — spring overshoot */
+@keyframes cellFillSpring {
     0% {
-        transform: scale(0.8);
-        opacity: 0.5;
+        transform: scale(0.6);
+        opacity: 0;
     }
     50% {
-        transform: scale(1.1);
+        transform: scale(1.15);
+        opacity: 1;
+    }
+    75% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes cellFill {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+    75% {
+        transform: scale(0.95);
     }
     100% {
         transform: scale(1);
@@ -98,10 +135,28 @@
 }
 
 .cell-fill-animation {
-    animation: cellFill 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: cellFillSpring 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Cell Error Shake Animation */
+/* Cell Error — RGB glitch effect */
+@keyframes rgbGlitch {
+    0% {
+        text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
+    }
+    25% {
+        text-shadow: -2px 1px #ff0000, 2px -1px #00ffff;
+    }
+    50% {
+        text-shadow: 1px -2px #ff0000, -1px 2px #00ffff;
+    }
+    75% {
+        text-shadow: -1px 0 #ff0000, 1px 0 #00ffff;
+    }
+    100% {
+        text-shadow: none;
+    }
+}
+
 @keyframes errorShake {
     0%, 100% { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -109,8 +164,36 @@
 }
 
 .cell-error-shake {
-    animation: errorShake 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(231, 76, 60, 0.2) !important;
+    animation: errorShake 0.5s cubic-bezier(0.4, 0, 0.2, 1), rgbGlitch 0.4s steps(4) 1;
+    background: rgba(231, 76, 60, 0.15) !important;
+}
+
+/* Completion Burst — radial expansion from grid center */
+.grid-completion-burst {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91, 141, 239, 0.3) 0%, rgba(52, 199, 123, 0.15) 40%, transparent 70%);
+    transform: translate(-50%, -50%);
+    animation: completionBurst 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes completionBurst {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        width: 200%;
+        height: 200%;
+        opacity: 0;
+    }
 }
 
 /* Cell Hint Glow Animation */
@@ -583,4 +666,57 @@
 
 .technique-item strong {
     color: var(--accent-blue, #3498db);
+}
+
+/* =========================================
+   ACHIEVEMENT PARTICLE EFFECTS
+   ========================================= */
+.achievement-badge.just-unlocked {
+    position: relative;
+}
+
+.achievement-badge.just-unlocked::before,
+.achievement-badge.just-unlocked::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.achievement-badge.just-unlocked::before {
+    background: var(--accent-gold);
+    top: 20%;
+    left: -5px;
+    animation: particleShootLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.achievement-badge.just-unlocked::after {
+    background: var(--accent-purple);
+    top: 30%;
+    right: -5px;
+    animation: particleShootRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes particleShootLeft {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-30px, -20px) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes particleShootRight {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(30px, -25px) scale(0);
+        opacity: 0;
+    }
 }

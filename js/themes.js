@@ -21,6 +21,11 @@ class ThemeManager {
                     accent: '#f0993e',
                     background: 'linear-gradient(135deg, #1c1f2e 0%, #2a1a3e 50%, #1c1f2e 100%)'
                 },
+                aurora: {
+                    color1: '#1a1035',
+                    color2: '#0d2137',
+                    color3: '#1f0a2e'
+                },
                 icon: 'fas fa-puzzle-piece'
             },
 
@@ -31,6 +36,11 @@ class ThemeManager {
                     secondary: '#1c1f2e',
                     accent: '#ff9500',
                     background: 'linear-gradient(135deg, #1c1f2e 0%, #3a1a1e 50%, #1c1f2e 100%)'
+                },
+                aurora: {
+                    color1: '#2e0a0a',
+                    color2: '#1a0d00',
+                    color3: '#2e1500'
                 },
                 icon: 'fas fa-ghost',
                 active: this.isHalloweenSeason(),
@@ -48,6 +58,11 @@ class ThemeManager {
                     accent: '#ffd700',
                     background: 'linear-gradient(135deg, #0f7b0f 0%, #c41e3a 100%)'
                 },
+                aurora: {
+                    color1: '#1a0a0f',
+                    color2: '#0a1f0a',
+                    color3: '#1f0a15'
+                },
                 icon: 'fas fa-gift',
                 active: this.isChristmasSeason(),
                 sudokuStyle: {
@@ -63,6 +78,11 @@ class ThemeManager {
                     secondary: '#4b0082',
                     accent: '#ff69b4',
                     background: 'linear-gradient(135deg, #4b0082 0%, #ffd700 100%)'
+                },
+                aurora: {
+                    color1: '#1a0d35',
+                    color2: '#2e1a00',
+                    color3: '#2e0a2e'
                 },
                 icon: 'fas fa-champagne-glasses',
                 active: this.isNewYearSeason(),
@@ -80,6 +100,11 @@ class ThemeManager {
                     accent: '#ffb6c1',
                     background: 'linear-gradient(135deg, #e91e63 0%, #ff69b4 100%)'
                 },
+                aurora: {
+                    color1: '#2e0a1a',
+                    color2: '#1a0d15',
+                    color3: '#2e0a25'
+                },
                 icon: 'fas fa-heart',
                 active: this.isValentinesSeason(),
                 sudokuStyle: {
@@ -96,6 +121,11 @@ class ThemeManager {
                     accent: '#98fb98',
                     background: 'linear-gradient(135deg, #32cd32 0%, #ffb347 100%)'
                 },
+                aurora: {
+                    color1: '#0a1f0d',
+                    color2: '#1a2e0a',
+                    color3: '#0d2e1a'
+                },
                 icon: 'fas fa-seedling',
                 active: this.isSpringSeason(),
                 sudokuStyle: {
@@ -111,6 +141,11 @@ class ThemeManager {
                     secondary: '#ffd700',
                     accent: '#ff6347',
                     background: 'linear-gradient(135deg, #ff4500 0%, #ffd700 100%)'
+                },
+                aurora: {
+                    color1: '#2e1500',
+                    color2: '#2e2200',
+                    color3: '#2e0d00'
                 },
                 icon: 'fas fa-sun',
                 active: this.isSummerSeason(),
@@ -153,6 +188,13 @@ class ThemeManager {
         root.style.setProperty('--theme-secondary', theme.colors.secondary);
         root.style.setProperty('--theme-accent', theme.colors.accent);
         root.style.setProperty('--primary-gradient', theme.colors.background);
+
+        // Apply aurora colors if available
+        if (theme.aurora) {
+            root.style.setProperty('--aurora-1', theme.aurora.color1);
+            root.style.setProperty('--aurora-2', theme.aurora.color2);
+            root.style.setProperty('--aurora-3', theme.aurora.color3);
+        }
 
         // Apply Sudoku-specific styling if available
         if (theme.sudokuStyle) {

@@ -284,9 +284,27 @@ class SudokuEnhancements {
     // 6. COMPLETION CELEBRATION
     // ===================================
     showCompletionCelebration() {
-        // Simple confetti effect
+        this.createCompletionBurst();
         this.createConfetti();
         this.showToast('🎉 Puzzle completed!', 'success', 4000);
+    }
+
+    createCompletionBurst() {
+        const grid = document.querySelector('.sudoku-grid');
+        if (!grid) return;
+
+        // Ensure grid is positioned for absolute children
+        const gridPos = window.getComputedStyle(grid).position;
+        if (gridPos === 'static') {
+            grid.style.position = 'relative';
+        }
+
+        const burst = document.createElement('div');
+        burst.className = 'grid-completion-burst';
+        grid.appendChild(burst);
+
+        // Remove after animation completes
+        setTimeout(() => burst.remove(), 1000);
     }
 
     createConfetti() {

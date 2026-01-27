@@ -38,7 +38,7 @@ class AnalyticsManager {
                         }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.06)'
+                        color: 'rgba(124, 108, 240, 0.08)'
                     }
                 },
                 y: {
@@ -50,7 +50,7 @@ class AnalyticsManager {
                         }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.06)'
+                        color: 'rgba(124, 108, 240, 0.08)'
                     }
                 }
             }
