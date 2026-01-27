@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku Championship - Login</title>
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .auth-container {
@@ -22,7 +22,7 @@
             border-radius: var(--border-radius);
             padding: 3rem;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--card-border);
             box-shadow: var(--shadow-2xl);
             max-width: 400px;
             width: 90%;
@@ -35,11 +35,12 @@
         }
 
         .auth-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 2rem;
+            font-family: var(--font-family);
+            font-size: 1.75rem;
             font-weight: 700;
+            letter-spacing: -0.025em;
             margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #ff6b35, #ff9500);
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -57,18 +58,19 @@
         }
 
         .auth-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            color: white;
+            background: var(--bg-surface);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 0.875rem 1rem;
+            color: var(--text-primary);
             font-size: 1rem;
+            font-family: var(--font-family);
             transition: var(--transition);
         }
 
         .auth-input:focus {
             outline: none;
-            border-color: #ff9500;
+            border-color: var(--accent-blue);
             box-shadow: var(--shadow-focus);
         }
 
@@ -77,16 +79,16 @@
         }
 
         .auth-button {
-            background: linear-gradient(135deg, #2d1b69, #ff6b35);
+            background: var(--success-gradient);
             border: none;
-            border-radius: var(--border-radius);
-            padding: 1rem 2rem;
+            border-radius: var(--radius-sm);
+            padding: 0.875rem 2rem;
             color: white;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            font-family: 'Orbitron', monospace;
+            font-family: var(--font-family);
         }
 
         .auth-button:hover {

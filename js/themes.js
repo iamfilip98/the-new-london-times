@@ -18,10 +18,10 @@ class ThemeManager {
             default: {
                 name: 'Classic',
                 colors: {
-                    primary: '#ff6b35',
-                    secondary: '#2d1b69',
-                    accent: '#ff9500',
-                    background: 'linear-gradient(135deg, #2d1b69 0%, #ff6b35 100%)'
+                    primary: '#5b8def',
+                    secondary: '#1c1f2e',
+                    accent: '#f0993e',
+                    background: 'linear-gradient(135deg, #1c1f2e 0%, #2a1a3e 50%, #1c1f2e 100%)'
                 },
                 multiplier: 1.0,
                 icon: 'fas fa-puzzle-piece'
@@ -31,9 +31,9 @@ class ThemeManager {
                 name: 'Halloween Spooky',
                 colors: {
                     primary: '#ff6b35',
-                    secondary: '#2d1b69',
+                    secondary: '#1c1f2e',
                     accent: '#ff9500',
-                    background: 'linear-gradient(135deg, #2d1b69 0%, #ff6b35 100%)'
+                    background: 'linear-gradient(135deg, #1c1f2e 0%, #3a1a1e 50%, #1c1f2e 100%)'
                 },
                 multiplier: 1.1,
                 icon: 'fas fa-ghost',

@@ -290,7 +290,7 @@ class SudokuEnhancements {
     }
 
     createConfetti() {
-        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731', '#5f27cd'];
+        const colors = ['#5b8def', '#34c77b', '#e85d75', '#e8b84b', '#7c6cf0'];
         const confettiCount = 50;
 
         for (let i = 0; i < confettiCount; i++) {

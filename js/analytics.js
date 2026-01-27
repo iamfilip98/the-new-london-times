@@ -19,7 +19,7 @@ class AnalyticsManager {
             plugins: {
                 legend: {
                     labels: {
-                        color: '#ffffff',
+                        color: '#f0f0f5',
                         usePointStyle: true,
                         padding: 15,
                         font: {
@@ -31,26 +31,26 @@ class AnalyticsManager {
             scales: {
                 x: {
                     ticks: {
-                        color: '#b0b8c1',
+                        color: '#a0a4b8',
                         maxTicksLimit: window.innerWidth < 768 ? 5 : 10,
                         font: {
                             size: window.innerWidth < 768 ? 9 : 11
                         }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(255, 255, 255, 0.06)'
                     }
                 },
                 y: {
                     ticks: {
-                        color: '#b0b8c1',
+                        color: '#a0a4b8',
                         maxTicksLimit: window.innerWidth < 768 ? 4 : 6,
                         font: {
                             size: window.innerWidth < 768 ? 9 : 11
                         }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(255, 255, 255, 0.06)'
                     }
                 }
             }
@@ -92,16 +92,16 @@ class AnalyticsManager {
                     {
                         label: 'Faidao',
                         data: faidaoScores,
-                        borderColor: '#ff6b6b',
-                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         tension: 0.4,
                         fill: true
                     },
                     {
                         label: 'Filip',
                         data: filipScores,
-                        borderColor: '#4ecdc4',
-                        backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
                         tension: 0.4,
                         fill: true
                     }
@@ -114,7 +114,7 @@ class AnalyticsManager {
                     title: {
                         display: true,
                         text: 'Score Trends Over Time',
-                        color: '#ffffff'
+                        color: '#f0f0f5'
                     }
                 }
             }
@@ -154,15 +154,15 @@ class AnalyticsManager {
                     {
                         label: 'Faidao (minutes)',
                         data: difficulties.map(diff => Math.round(avgTimes.faidao[diff] / 60 * 100) / 100),
-                        backgroundColor: 'rgba(255, 107, 107, 0.8)',
-                        borderColor: '#ff6b6b',
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderColor: '#ef4444',
                         borderWidth: 2
                     },
                     {
                         label: 'Filip (minutes)',
                         data: difficulties.map(diff => Math.round(avgTimes.filip[diff] / 60 * 100) / 100),
-                        backgroundColor: 'rgba(78, 205, 196, 0.8)',
-                        borderColor: '#4ecdc4',
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderColor: '#f59e0b',
                         borderWidth: 2
                     }
                 ]
@@ -174,7 +174,7 @@ class AnalyticsManager {
                     title: {
                         display: true,
                         text: 'Average Completion Times',
-                        color: '#ffffff'
+                        color: '#f0f0f5'
                     }
                 }
             }
@@ -212,15 +212,15 @@ class AnalyticsManager {
                     {
                         label: 'Faidao Errors',
                         data: faidaoErrors,
-                        borderColor: '#fee140',
-                        backgroundColor: 'rgba(254, 225, 64, 0.1)',
+                        borderColor: '#e8b84b',
+                        backgroundColor: 'rgba(232, 184, 75, 0.1)',
                         tension: 0.4
                     },
                     {
                         label: 'Filip Errors',
                         data: filipErrors,
-                        borderColor: '#f093fb',
-                        backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                        borderColor: '#7c6cf0',
+                        backgroundColor: 'rgba(124, 108, 240, 0.1)',
                         tension: 0.4
                     }
                 ]
@@ -232,7 +232,7 @@ class AnalyticsManager {
                     title: {
                         display: true,
                         text: 'Error Trends Over Time',
-                        color: '#ffffff'
+                        color: '#f0f0f5'
                     }
                 },
                 scales: {

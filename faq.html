@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAQ & Guide - Sudoku Championship Arena</title>
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .faq-container {
@@ -21,12 +21,12 @@
         }
 
         .faq-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 3rem;
-            font-weight: 900;
+            font-family: var(--font-family);
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
             margin-bottom: 1rem;
-            color: #ffffff;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            color: var(--text-primary);
         }
 
         .faq-subtitle {
@@ -44,18 +44,18 @@
         }
 
         .back-button {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-pink));
-            border: none;
-            border-radius: var(--border-radius);
-            padding: 1rem 2rem;
-            color: white;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1.5rem;
+            color: var(--text-primary);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             font-weight: 600;
             transition: var(--transition);
-            font-family: 'Orbitron', monospace;
+            font-family: var(--font-family);
         }
 
         .back-button:hover {
@@ -72,17 +72,18 @@
 
         .faq-section {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border-radius: var(--border-radius);
+            backdrop-filter: blur(var(--card-blur));
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md);
         }
 
         .section-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.8rem;
+            font-family: var(--font-family);
+            font-size: 1.5rem;
             font-weight: 700;
+            letter-spacing: -0.025em;
             margin-bottom: 1.5rem;
             color: var(--text-primary);
             display: flex;

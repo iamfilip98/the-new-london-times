@@ -447,7 +447,7 @@ the-new-london-times/
 - **Modern Glassmorphism**: Translucent cards with backdrop blur effects
 - **Vibrant Gradients**: Purple-blue themes with dynamic accent colors
 - **Smooth Animations**: Subtle transitions and engaging hover effects
-- **Professional Typography**: Orbitron headings with Roboto body text
+- **Professional Typography**: Inter font family with refined weight hierarchy
 - **Responsive Design**: Perfect experience across all devices
 
 ### **User Experience**

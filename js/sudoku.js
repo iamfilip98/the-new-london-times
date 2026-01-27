@@ -1685,7 +1685,7 @@ class SudokuEngine {
                     line-height: 1.3;
                 }
                 .hint-penalty {
-                    font-family: 'Orbitron', monospace;
+                    font-family: var(--font-family);
                     font-weight: 600;
                     font-size: 0.75rem;
                     background: rgba(0, 0, 0, 0.2);
