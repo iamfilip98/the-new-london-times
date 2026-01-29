@@ -229,16 +229,29 @@
   .number-input {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
     gap: var(--space-2);
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
   }
 
   .number-input.number-input-desktop {
     grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
   }
 
   /* Undo button spans full width below 3x3 grid */
   .number-input .undo-btn {
     grid-column: span 3;
+  }
+
+  /* Ensure all number buttons are perfectly square and equal */
+  .number-input .number-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    min-width: 52px;
+    min-height: 52px;
   }
 
   .number-btn {
@@ -320,6 +333,18 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    width: 100%;
+  }
+
+  /* When only 2 action buttons, use grid to fill width evenly */
+  .action-buttons:has(:nth-child(2):last-child) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* When only 1 action button, full width */
+  .action-buttons:has(:nth-child(1):last-child) {
+    display: flex;
   }
 
   .action-btn {
@@ -336,6 +361,8 @@
     font-weight: var(--font-medium);
     cursor: pointer;
     transition: var(--transition-fast);
+    flex: 1;
+    width: 100%;
   }
 
   .action-btn:hover {

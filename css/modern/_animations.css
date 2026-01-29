@@ -923,3 +923,190 @@
 .number-btn.active-glow {
   animation: numberGlow 0.5s ease-out;
 }
+
+/* ==========================================
+   GRID SCAN BACKGROUND
+   ReactBits-inspired animated grid effect
+   ========================================== */
+.grid-scan-bg {
+  position: relative;
+  background-color: var(--surface-primary, #0a0a14);
+  background-image:
+    linear-gradient(rgba(102, 126, 234, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.grid-scan-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(102, 126, 234, 0.15) 0%,
+    transparent 15%,
+    transparent 85%,
+    rgba(102, 126, 234, 0.15) 100%
+  );
+  background-size: 100% 200%;
+  animation: gridScan 4s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes gridScan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 200%;
+  }
+}
+
+/* Variant with purple accent */
+.grid-scan-bg.purple::before {
+  background: linear-gradient(
+    180deg,
+    rgba(167, 139, 250, 0.15) 0%,
+    transparent 15%,
+    transparent 85%,
+    rgba(167, 139, 250, 0.15) 100%
+  );
+  background-size: 100% 200%;
+}
+
+/* Variant with cyan accent */
+.grid-scan-bg.cyan::before {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 242, 254, 0.12) 0%,
+    transparent 15%,
+    transparent 85%,
+    rgba(0, 242, 254, 0.12) 100%
+  );
+  background-size: 100% 200%;
+}
+
+/* ==========================================
+   CIRCULAR TEXT ANIMATION
+   ReactBits-inspired rotating text effect
+   ========================================== */
+.circular-text-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circular-text {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: rotateCircularText 12s linear infinite;
+}
+
+@keyframes rotateCircularText {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.circular-text span {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  font-size: 8px;
+  font-family: var(--font-display, 'Orbitron', monospace);
+  font-weight: var(--font-bold, 700);
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transform-origin: 0 30px;
+}
+
+/* Center icon/text inside circular text */
+.circular-text-center {
+  position: relative;
+  z-index: 1;
+  font-size: 1.5rem;
+  color: var(--accent-cyan, #00f2fe);
+}
+
+/* ==========================================
+   GLASSMORPHISM CARD EFFECT
+   Modern frosted glass aesthetic
+   ========================================== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-2xl, 16px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+/* Premium glass card with glow */
+.glass-card.premium {
+  border-color: rgba(102, 126, 234, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(102, 126, 234, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================
+   DOCK-STYLE HOVER EFFECT
+   ReactBits-inspired navigation enhancement
+   ========================================== */
+.dock-nav-item {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dock-nav-item:hover {
+  transform: scale(1.15) translateY(-4px);
+}
+
+.dock-nav-item:hover + .dock-nav-item,
+.dock-nav-item:has(+ .dock-nav-item:hover) {
+  transform: scale(1.05) translateY(-2px);
+}
+
+/* Dock background bubble */
+.dock-bubble {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 48px;
+  height: 48px;
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: 50%;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.dock-nav-item:hover .dock-bubble {
+  transform: translate(-50%, -50%) scale(1);
+}

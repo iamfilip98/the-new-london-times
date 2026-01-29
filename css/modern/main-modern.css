@@ -1448,10 +1448,40 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--card-gradient);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
   gap: var(--space-4);
   align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .achievement-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .achievement-filters .filter-tabs {
+    grid-column: 1 / -1;
+  }
+
+  .achievement-filters .search-container {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .achievement-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .achievement-filters .category-filters {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .achievement-filters .category-select,
+  .achievement-filters .rarity-select {
+    width: 100%;
+  }
 }
 
 .filter-tabs {
@@ -1779,4 +1809,142 @@ select {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+/* ==========================================
+   HISTORY CARDS - Card Layout Fix
+   Override main.css 4-column grid with modern card layout
+   ========================================== */
+.history-cards {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: var(--space-4) !important;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: var(--space-2);
+}
+
+.history-card {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: unset !important;
+  gap: var(--space-3) !important;
+  padding: var(--space-4) !important;
+  background: var(--card-gradient) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-left: 4px solid var(--accent-primary) !important;
+  border-radius: var(--radius-xl) !important;
+  min-height: auto !important;
+  transition: var(--transition-normal) !important;
+}
+
+.history-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-card-hover) !important;
+  border-color: var(--glass-border-hover) !important;
+}
+
+.history-card .history-date {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--accent-cyan);
+  letter-spacing: var(--tracking-wide);
+}
+
+.history-card .history-scores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.history-card .history-score {
+  text-align: center;
+  flex: 1;
+}
+
+.history-card .history-score .player-name {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  margin-bottom: var(--space-1);
+}
+
+.history-card .history-score .score-value {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--font-black);
+  color: var(--text-primary);
+}
+
+.history-card .score-vs {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--accent-purple);
+  padding: 0 var(--space-2);
+}
+
+.history-card .history-winner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  text-align: center;
+  margin-top: var(--space-2);
+}
+
+.history-card .history-winner.faidao-winner {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.1) 100%);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  color: var(--faidao-color);
+}
+
+.history-card .history-winner.filip-winner {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 152, 0, 0.1) 100%);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  color: var(--filip-color);
+}
+
+.history-card .history-winner.tie {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(102, 126, 234, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: var(--accent-primary);
+}
+
+.history-card .history-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+.history-card .history-btn {
+  padding: var(--space-2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.history-card .history-btn:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .history-cards {
+    grid-template-columns: 1fr !important;
+    max-height: none;
+    padding-right: 0;
+  }
 }
