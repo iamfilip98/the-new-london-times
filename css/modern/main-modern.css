@@ -1,0 +1,308 @@
+/* ============================================
+   MODERN UI SYSTEM - MAIN ENTRY POINT
+   Mobile-First Sudoku Redesign 2025
+
+   This file imports all modular CSS components.
+   Import this single file into your HTML.
+   ============================================ */
+
+/* Design Tokens & Variables */
+@import '_variables.css';
+
+/* Core Components */
+@import '_grid.css';
+@import '_number-pad.css';
+@import '_navigation.css';
+@import '_components.css';
+
+/* Animations & Interactions */
+@import '_animations.css';
+
+/* ==========================================
+   GLOBAL OVERRIDES
+   Apply modern design system to existing app
+   ========================================== */
+
+/* Base styles */
+body {
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App container */
+.app-container {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--surface-primary) 0%, #0d0d16 100%);
+}
+
+/* Main content area */
+.main-content {
+  flex: 1;
+  padding: var(--space-4);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding: var(--space-6);
+  }
+}
+
+/* ==========================================
+   TYPOGRAPHY OVERRIDES
+   ========================================== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+}
+
+.page-title {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-6);
+  background: var(--premium-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: var(--text-2xl);
+    text-align: center;
+  }
+}
+
+/* ==========================================
+   PAGE SYSTEM
+   ========================================== */
+.page {
+  display: none;
+  opacity: 0;
+}
+
+.page.active {
+  display: block;
+  opacity: 1;
+  animation: fadeInUp 0.4s var(--ease-out);
+}
+
+/* ==========================================
+   FORM ELEMENTS
+   ========================================== */
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  transition: var(--transition-fast);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ==========================================
+   SCROLLBAR STYLING
+   ========================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* ==========================================
+   SELECTION STYLING
+   ========================================== */
+::selection {
+  background: rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+::-moz-selection {
+  background: rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+/* ==========================================
+   FOCUS VISIBLE
+   ========================================== */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   UTILITY CLASSES
+   ========================================== */
+
+/* Text utilities */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--accent-primary); }
+.text-success { color: var(--accent-green); }
+.text-warning { color: var(--accent-orange); }
+.text-error { color: var(--accent-red); }
+
+/* Background utilities */
+.bg-glass {
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+.bg-elevated { background: var(--surface-elevated); }
+.bg-primary { background: var(--surface-primary); }
+
+/* Spacing utilities */
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+
+.m-auto { margin: auto; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+.gap-6 { gap: var(--space-6); }
+
+/* Flexbox utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.flex-1 { flex: 1; }
+.flex-wrap { flex-wrap: wrap; }
+
+/* Grid utilities */
+.grid { display: grid; }
+
+/* Display utilities */
+.hidden { display: none !important; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+
+/* Border radius utilities */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* Shadow utilities */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-glass { box-shadow: var(--shadow-glass); }
+
+/* Transition utilities */
+.transition-fast { transition: var(--transition-fast); }
+.transition-normal { transition: var(--transition-normal); }
+
+/* ==========================================
+   RESPONSIVE UTILITIES
+   ========================================== */
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+}
+
+@media (min-width: 769px) {
+  .mobile-only { display: none !important; }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-primary);
+  color: white;
+  padding: var(--space-2) var(--space-4);
+  z-index: var(--z-toast);
+  transition: var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Ensure minimum touch targets */
+button,
+a,
+input[type="checkbox"],
+input[type="radio"],
+select {
+  min-height: var(--touch-target-min);
+}
+
+@media (pointer: coarse) {
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: var(--touch-target-comfortable);
+  }
+}

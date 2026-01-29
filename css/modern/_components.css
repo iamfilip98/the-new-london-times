@@ -1,0 +1,701 @@
+/* ============================================
+   MODERN UI COMPONENTS
+   Cards, Buttons, Forms, etc.
+   ============================================ */
+
+/* ==========================================
+   GLASS CARD - Base Component
+   ========================================== */
+.glass-card {
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  transition: var(--transition-normal);
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Card variants */
+.glass-card--elevated {
+  background: var(--surface-elevated);
+}
+
+.glass-card--interactive {
+  cursor: pointer;
+}
+
+.glass-card--interactive:hover {
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   MODERN BUTTONS
+   ========================================== */
+.btn-modern {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  min-height: var(--touch-target-min);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-modern:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.btn-modern:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary button */
+.btn-modern--primary {
+  background: var(--accent-gradient);
+  color: white;
+  box-shadow: var(--shadow-md), var(--shadow-glow-purple);
+}
+
+.btn-modern--primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-purple);
+}
+
+.btn-modern--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary button */
+.btn-modern--secondary {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  border-color: var(--glass-border);
+}
+
+.btn-modern--secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-primary);
+}
+
+/* Ghost button */
+.btn-modern--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-modern--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+/* Icon button */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.btn-icon:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ==========================================
+   STAT CARDS
+   ========================================== */
+.stat-card-modern {
+  padding: var(--space-4);
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-normal);
+}
+
+.stat-card-modern:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.stat-card-modern__label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+}
+
+.stat-card-modern__value {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-card-modern__value--gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-card-modern__footer {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ==========================================
+   DIFFICULTY CARDS
+   ========================================== */
+.difficulty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-6);
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-align: center;
+}
+
+.difficulty-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-xl);
+}
+
+.difficulty-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-full);
+  font-size: 1.5rem;
+  margin-bottom: var(--space-4);
+  transition: var(--transition-normal);
+}
+
+.difficulty-card__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-4);
+}
+
+.difficulty-card--easy {
+  --card-color: var(--accent-green);
+  --card-color-rgb: var(--accent-green-rgb);
+}
+
+.difficulty-card--easy .difficulty-card__icon {
+  background: rgba(0, 217, 165, 0.15);
+  color: var(--accent-green);
+}
+
+.difficulty-card--easy:hover {
+  border-color: var(--accent-green);
+  box-shadow: var(--shadow-xl), var(--shadow-glow-green);
+}
+
+.difficulty-card--medium {
+  --card-color: #a78bfa;
+  --card-color-rgb: 167, 139, 250;
+}
+
+.difficulty-card--medium .difficulty-card__icon {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+.difficulty-card--medium:hover {
+  border-color: #a78bfa;
+  box-shadow: var(--shadow-xl), 0 0 20px rgba(167, 139, 250, 0.4);
+}
+
+.difficulty-card--hard {
+  --card-color: #f472b6;
+  --card-color-rgb: 244, 114, 182;
+}
+
+.difficulty-card--hard .difficulty-card__icon {
+  background: rgba(244, 114, 182, 0.15);
+  color: #f472b6;
+}
+
+.difficulty-card--hard:hover {
+  border-color: #f472b6;
+  box-shadow: var(--shadow-xl), 0 0 20px rgba(244, 114, 182, 0.4);
+}
+
+/* Play button inside difficulty card */
+.difficulty-card .play-btn {
+  padding: var(--space-3) var(--space-6);
+  background: transparent;
+  border: 2px solid var(--card-color);
+  border-radius: var(--radius-full);
+  color: var(--card-color);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.difficulty-card:hover .play-btn {
+  background: var(--card-color);
+  color: var(--surface-primary);
+}
+
+/* ==========================================
+   STREAK CARDS
+   ========================================== */
+.streak-card-modern {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5);
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  transition: var(--transition-normal);
+}
+
+.streak-card-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.streak-card-modern--faidao {
+  border-left: 3px solid var(--faidao-color);
+}
+
+.streak-card-modern--filip {
+  border-left: 3px solid var(--filip-color);
+}
+
+.streak-card-modern__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.streak-card-modern__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-bold);
+  color: white;
+}
+
+.streak-card-modern--faidao .streak-card-modern__avatar {
+  background: var(--faidao-gradient);
+}
+
+.streak-card-modern--filip .streak-card-modern__avatar {
+  background: var(--filip-gradient);
+}
+
+.streak-card-modern__name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.streak-card-modern__stats {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.streak-card-modern__stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.streak-card-modern__stat-value {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.streak-card-modern__stat-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ==========================================
+   VS DIVIDER
+   ========================================== */
+.vs-divider-modern {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.vs-circle-modern {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--accent-gradient);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: white;
+  box-shadow: var(--shadow-glow-purple);
+}
+
+.vs-record {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+}
+
+/* ==========================================
+   PROGRESS BAR
+   ========================================== */
+.progress-bar-modern {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-modern__fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.6s var(--ease-out);
+}
+
+.progress-bar-modern__fill--gradient {
+  background: var(--accent-gradient);
+}
+
+.progress-bar-modern__fill--faidao {
+  background: var(--faidao-gradient);
+}
+
+.progress-bar-modern__fill--filip {
+  background: var(--filip-gradient);
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+.badge-modern {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-modern--easy {
+  background: rgba(0, 217, 165, 0.15);
+  color: var(--accent-green);
+}
+
+.badge-modern--medium {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+.badge-modern--hard {
+  background: rgba(244, 114, 182, 0.15);
+  color: #f472b6;
+}
+
+.badge-modern--success {
+  background: rgba(0, 217, 165, 0.15);
+  color: var(--accent-green);
+}
+
+.badge-modern--warning {
+  background: rgba(255, 140, 0, 0.15);
+  color: var(--accent-orange);
+}
+
+.badge-modern--error {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--accent-red);
+}
+
+/* ==========================================
+   TABS
+   ========================================== */
+.tabs-modern {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-lg);
+}
+
+.tab-modern {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.tab-modern:hover {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tab-modern.active {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   GAME INFO PANEL
+   ========================================== */
+.game-info-panel-modern {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-4);
+}
+
+.game-info-panel-modern__timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-info-panel-modern__timer-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.game-info-panel-modern__timer-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.game-info-panel-modern__stats {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.game-info-panel-modern__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-info-panel-modern__stat-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.game-info-panel-modern__stat-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.game-info-panel-modern__controls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ==========================================
+   ACHIEVEMENT CARD
+   ========================================== */
+.achievement-card-modern {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-normal);
+}
+
+.achievement-card-modern:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.achievement-card-modern.unlocked {
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.achievement-card-modern.locked {
+  opacity: 0.6;
+}
+
+.achievement-card-modern__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: var(--space-3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.achievement-card-modern.unlocked .achievement-card-modern__icon {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.achievement-card-modern__title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.achievement-card-modern__description {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+/* ==========================================
+   LEADERBOARD ROW
+   ========================================== */
+.leaderboard-row-modern {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface-glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-fast);
+}
+
+.leaderboard-row-modern:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.leaderboard-row-modern__rank {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: var(--font-bold);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.leaderboard-row-modern__rank--1 {
+  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+  color: #1a1a2e;
+}
+
+.leaderboard-row-modern__rank--2 {
+  background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
+  color: #1a1a2e;
+}
+
+.leaderboard-row-modern__rank--3 {
+  background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%);
+  color: white;
+}
+
+.leaderboard-row-modern__info {
+  flex: 1;
+}
+
+.leaderboard-row-modern__name {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.leaderboard-row-modern__meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.leaderboard-row-modern__value {
+  font-family: var(--font-display);
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
+  color: var(--accent-primary);
+}

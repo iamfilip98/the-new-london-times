@@ -1,0 +1,378 @@
+/* ============================================
+   MODERN SUDOKU GRID STYLES
+   Mobile-First Design
+   ============================================ */
+
+/* ==========================================
+   GRID CONTAINER
+   ========================================== */
+.sudoku-grid-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-2);
+}
+
+/* ==========================================
+   SUDOKU GRID
+   Fluid responsive sizing
+   ========================================== */
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  gap: 0;
+  width: var(--grid-max-width);
+  aspect-ratio: 1 / 1;
+  background: var(--grid-bg);
+  border: 2px solid var(--grid-border-thick);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  touch-action: manipulation;
+}
+
+/* Grid inner lines using pseudo-elements for crisp 3x3 box borders */
+.sudoku-grid::before,
+.sudoku-grid::after {
+  content: '';
+  position: absolute;
+  background: var(--grid-border-thick);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Vertical thick borders */
+.sudoku-grid::before {
+  top: 0;
+  bottom: 0;
+  left: calc(33.333% - 1px);
+  width: 2px;
+  box-shadow: calc(33.333% + 1px) 0 0 0 var(--grid-border-thick);
+}
+
+/* Horizontal thick borders */
+.sudoku-grid::after {
+  left: 0;
+  right: 0;
+  top: calc(33.333% - 1px);
+  height: 2px;
+  box-shadow: 0 calc(33.333% + 1px) 0 0 var(--grid-border-thick);
+}
+
+/* ==========================================
+   SUDOKU CELL
+   Touch-optimized with modern styling
+   ========================================== */
+.sudoku-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cell-bg);
+  border: 1px solid var(--grid-border);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  min-height: var(--touch-target-min);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+
+/* Alternating 3x3 box background for visual distinction */
+.sudoku-cell[data-row="0"][data-col="3"],
+.sudoku-cell[data-row="0"][data-col="4"],
+.sudoku-cell[data-row="0"][data-col="5"],
+.sudoku-cell[data-row="1"][data-col="3"],
+.sudoku-cell[data-row="1"][data-col="4"],
+.sudoku-cell[data-row="1"][data-col="5"],
+.sudoku-cell[data-row="2"][data-col="3"],
+.sudoku-cell[data-row="2"][data-col="4"],
+.sudoku-cell[data-row="2"][data-col="5"],
+.sudoku-cell[data-row="3"][data-col="0"],
+.sudoku-cell[data-row="3"][data-col="1"],
+.sudoku-cell[data-row="3"][data-col="2"],
+.sudoku-cell[data-row="4"][data-col="0"],
+.sudoku-cell[data-row="4"][data-col="1"],
+.sudoku-cell[data-row="4"][data-col="2"],
+.sudoku-cell[data-row="5"][data-col="0"],
+.sudoku-cell[data-row="5"][data-col="1"],
+.sudoku-cell[data-row="5"][data-col="2"],
+.sudoku-cell[data-row="3"][data-col="6"],
+.sudoku-cell[data-row="3"][data-col="7"],
+.sudoku-cell[data-row="3"][data-col="8"],
+.sudoku-cell[data-row="4"][data-col="6"],
+.sudoku-cell[data-row="4"][data-col="7"],
+.sudoku-cell[data-row="4"][data-col="8"],
+.sudoku-cell[data-row="5"][data-col="6"],
+.sudoku-cell[data-row="5"][data-col="7"],
+.sudoku-cell[data-row="5"][data-col="8"],
+.sudoku-cell[data-row="6"][data-col="3"],
+.sudoku-cell[data-row="6"][data-col="4"],
+.sudoku-cell[data-row="6"][data-col="5"],
+.sudoku-cell[data-row="7"][data-col="3"],
+.sudoku-cell[data-row="7"][data-col="4"],
+.sudoku-cell[data-row="7"][data-col="5"],
+.sudoku-cell[data-row="8"][data-col="3"],
+.sudoku-cell[data-row="8"][data-col="4"],
+.sudoku-cell[data-row="8"][data-col="5"] {
+  background: var(--cell-bg-alt);
+}
+
+/* Cell value styling */
+.cell-value {
+  font-family: var(--font-body);
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: var(--font-semibold);
+  line-height: 1;
+  color: var(--cell-given);
+  transition: var(--transition-fast);
+  z-index: 2;
+}
+
+/* Cell candidates (pencil marks) */
+.cell-candidates {
+  position: absolute;
+  inset: 2px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  font-family: var(--font-mono);
+  font-size: clamp(0.5rem, 1.5vw, 0.625rem);
+  font-weight: var(--font-medium);
+  color: var(--cell-candidate);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cell-candidates span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ==========================================
+   CELL STATES
+   ========================================== */
+
+/* Given cells (pre-filled) */
+.sudoku-cell.given .cell-value {
+  color: var(--cell-given);
+  font-weight: var(--font-bold);
+}
+
+/* User input cells */
+.sudoku-cell.user-input .cell-value {
+  color: var(--cell-user);
+  font-weight: var(--font-semibold);
+}
+
+/* Selected cell - prominent highlight */
+.sudoku-cell.selected {
+  background: var(--cell-selected) !important;
+  z-index: 10;
+}
+
+.sudoku-cell.selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--cell-selected-border);
+  border-radius: 2px;
+  pointer-events: none;
+  animation: cellSelectPulse 0.3s var(--ease-out);
+}
+
+@keyframes cellSelectPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Highlighted cells (same row/col/box) */
+.sudoku-cell.highlighted {
+  background: var(--cell-highlighted);
+}
+
+/* Same number highlighting */
+.sudoku-cell.same-number {
+  background: var(--cell-same-number);
+}
+
+.sudoku-cell.same-number .cell-value {
+  color: var(--accent-primary);
+}
+
+/* Error state */
+.sudoku-cell.error {
+  background: var(--cell-error) !important;
+}
+
+.sudoku-cell.error .cell-value {
+  color: var(--cell-error-text) !important;
+}
+
+/* Conflict state */
+.sudoku-cell.conflict {
+  background: var(--cell-conflict) !important;
+}
+
+.sudoku-cell.conflict .cell-value {
+  color: var(--cell-error-text) !important;
+}
+
+/* Hint state */
+.sudoku-cell.hint-location {
+  background: var(--cell-hint) !important;
+  animation: hintPulse 1s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% {
+    box-shadow: inset 0 0 0 2px rgba(255, 200, 100, 0.4);
+  }
+  50% {
+    box-shadow: inset 0 0 0 3px rgba(255, 200, 100, 0.8);
+  }
+}
+
+/* Hover state */
+.sudoku-cell:hover:not(.selected):not(.given) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Focus state for keyboard navigation */
+.sudoku-cell:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  z-index: 5;
+}
+
+.sudoku-cell:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+/* Locked cells (validated) */
+.sudoku-cell.locked .cell-value {
+  color: var(--accent-green);
+}
+
+/* ==========================================
+   DIFFICULTY-BASED STYLING
+   ========================================== */
+.sudoku-grid-container[data-difficulty="easy"] .sudoku-grid {
+  --cell-user: #4facfe;
+}
+
+.sudoku-grid-container[data-difficulty="medium"] .sudoku-grid {
+  --cell-user: #a78bfa;
+}
+
+.sudoku-grid-container[data-difficulty="hard"] .sudoku-grid {
+  --cell-user: #f472b6;
+}
+
+/* ==========================================
+   PAUSED STATE
+   ========================================== */
+.sudoku-grid.paused .sudoku-cell {
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.sudoku-paused-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 20, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius-lg);
+  z-index: 20;
+  cursor: pointer;
+}
+
+.sudoku-grid.paused ~ .sudoku-paused-overlay,
+.sudoku-paused-overlay.show {
+  display: flex;
+}
+
+.paused-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.paused-label .main-text {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.1em;
+}
+
+.paused-label .sub-text {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ==========================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================== */
+
+/* Small phones */
+@media (max-width: 375px) {
+  .sudoku-grid {
+    --grid-max-width: min(92vw, calc(100dvh - 320px), 320px);
+  }
+
+  .cell-value {
+    font-size: clamp(1rem, 5vw, 1.25rem);
+  }
+
+  .cell-candidates {
+    font-size: 0.45rem;
+  }
+}
+
+/* Tablets and larger phones */
+@media (min-width: 768px) {
+  .sudoku-grid {
+    --grid-max-width: min(80vw, calc(100dvh - 200px), 480px);
+  }
+
+  .cell-value {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .cell-candidates {
+    font-size: 0.7rem;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .sudoku-grid {
+    --grid-max-width: min(50vw, calc(100dvh - 200px), 500px);
+  }
+}
+
+/* Landscape mobile - reduce grid size to fit */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sudoku-grid {
+    --grid-max-width: min(40vh, 300px);
+  }
+}
