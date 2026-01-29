@@ -576,3 +576,350 @@
 .animate-none {
   animation: none !important;
 }
+
+/* ==========================================
+   AURORA BACKGROUND EFFECT
+   Dramatic animated gradient mesh
+   ========================================== */
+@keyframes auroraShift {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(15deg);
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+}
+
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(102, 126, 234, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(118, 75, 162, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 60% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 10% 90%, rgba(244, 114, 182, 0.12) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: auroraShift 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ==========================================
+   FLOATING PARTICLES
+   Premium ambient effect
+   ========================================== */
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(var(--tx, 100px), var(--ty, -100px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.floating-particle {
+  position: fixed;
+  width: var(--size, 4px);
+  height: var(--size, 4px);
+  background: var(--color, rgba(102, 126, 234, 0.6));
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: particleFloat var(--duration, 15s) linear infinite;
+}
+
+/* ==========================================
+   GRADIENT TEXT ANIMATION
+   Eye-catching text effects
+   ========================================== */
+@keyframes gradientTextShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-text-animated {
+  background: linear-gradient(
+    90deg,
+    var(--accent-cyan) 0%,
+    var(--accent-primary) 25%,
+    var(--accent-purple) 50%,
+    var(--accent-pink) 75%,
+    var(--accent-cyan) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientTextShift 4s linear infinite;
+}
+
+/* ==========================================
+   GLOW PULSE EFFECT
+   Premium accent animations
+   ========================================== */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(102, 126, 234, 0.3),
+      0 0 40px rgba(102, 126, 234, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(102, 126, 234, 0.5),
+      0 0 60px rgba(102, 126, 234, 0.2),
+      0 0 80px rgba(102, 126, 234, 0.1);
+  }
+}
+
+.glow-pulse {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* ==========================================
+   BORDER GRADIENT ANIMATION
+   Animated border effect
+   ========================================== */
+@keyframes borderRotate {
+  0% {
+    --angle: 0deg;
+  }
+  100% {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-border {
+  position: relative;
+  background: var(--surface-elevated);
+  border-radius: var(--radius-xl);
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    var(--accent-cyan),
+    var(--accent-primary),
+    var(--accent-purple),
+    var(--accent-pink),
+    var(--accent-cyan)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderRotate 4s linear infinite;
+}
+
+/* ==========================================
+   SPOTLIGHT EFFECT
+   Cursor-following highlight
+   ========================================== */
+.spotlight-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-container::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.spotlight-container:hover::before {
+  opacity: 1;
+}
+
+/* ==========================================
+   SHIMMER HIGHLIGHT
+   Premium loading/accent effect
+   ========================================== */
+@keyframes shimmerHighlight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer-highlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-highlight::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  animation: shimmerHighlight 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ==========================================
+   FLOATING CARD EFFECT
+   Subtle hover animation
+   ========================================== */
+@keyframes floatSubtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float-subtle {
+  animation: floatSubtle 4s ease-in-out infinite;
+}
+
+/* ==========================================
+   SCALE ENTRANCE
+   Premium reveal effect
+   ========================================== */
+@keyframes scaleEntrance {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scale-entrance {
+  animation: scaleEntrance 0.5s var(--ease-spring) forwards;
+}
+
+/* ==========================================
+   TYPEWRITER EFFECT
+   Text reveal animation
+   ========================================== */
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blinkCaret {
+  0%, 100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: var(--accent-cyan);
+  }
+}
+
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--accent-cyan);
+  animation:
+    typewriter 2s steps(40) forwards,
+    blinkCaret 0.75s step-end infinite;
+}
+
+/* ==========================================
+   MORPHING BLOB
+   Background decoration
+   ========================================== */
+@keyframes morphBlob {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  25% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  50% {
+    border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%;
+  }
+  75% {
+    border-radius: 60% 40% 60% 30% / 70% 30% 50% 60%;
+  }
+}
+
+.morph-blob {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
+  filter: blur(60px);
+  animation: morphBlob 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ==========================================
+   NUMBER BUTTON EFFECTS
+   Premium interaction states
+   ========================================== */
+@keyframes numberGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 15px 5px rgba(102, 126, 234, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+  }
+}
+
+.number-btn.active-glow {
+  animation: numberGlow 0.5s ease-out;
+}
