@@ -1838,17 +1838,9 @@ select {
 .history-cards {
   display: flex !important;
   flex-direction: column !important;
-  gap: var(--space-4) !important;
+  gap: var(--space-3) !important;
   overflow-y: auto;
-  padding-right: var(--space-2);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-@media (min-width: 769px) {
-  .history-cards {
-    max-height: none;
-  }
+  width: 100%;
 }
 
 .history-card {
