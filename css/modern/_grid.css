@@ -182,7 +182,6 @@
   color: var(--cell-candidate);
   z-index: 1;
   pointer-events: none;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 .cell-candidates span {
@@ -190,6 +189,18 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
+}
+
+/* Override main.css candidate styling */
+.candidate-cell,
+.candidate-num,
+.candidates-grid span {
+  color: var(--cell-user) !important;
+  font-weight: var(--font-medium) !important;
+}
+
+.candidates-grid {
+  font-family: var(--font-mono);
 }
 
 /* ==========================================
