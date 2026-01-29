@@ -1,0 +1,313 @@
+/* ============================================
+   PREMIUM DESIGN SYSTEM - CSS VARIABLES
+   Gaming-Grade UI - Valorant/LoL meets NYT
+   ============================================ */
+
+:root {
+  /* ==========================================
+     SURFACES - Deep, rich dark theme
+     ========================================== */
+  --surface-primary: #06060c;        /* Near black - main background */
+  --surface-secondary: #0d0d18;      /* Slightly elevated */
+  --surface-elevated: #141424;       /* Cards base */
+  --surface-elevated-hover: #1a1a32; /* Cards hover */
+  --surface-glass: rgba(14, 14, 28, 0.92);
+  --surface-overlay: rgba(6, 6, 12, 0.98);
+
+  /* Glass effects - refined */
+  --glass-blur: 24px;
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-border-hover: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.03);
+
+  /* ==========================================
+     PREMIUM GRADIENTS - Dramatic, eye-catching
+     ========================================== */
+  /* Background gradient mesh */
+  --bg-gradient: radial-gradient(ellipse at 20% 0%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                 radial-gradient(ellipse at 80% 100%, rgba(118, 75, 162, 0.12) 0%, transparent 50%),
+                 radial-gradient(ellipse at 50% 50%, rgba(79, 172, 254, 0.05) 0%, transparent 70%),
+                 linear-gradient(180deg, #06060c 0%, #0a0a14 100%);
+
+  /* Animated border gradients */
+  --border-gradient-cyan: linear-gradient(135deg, #00f2fe, #4facfe, #667eea);
+  --border-gradient-green: linear-gradient(135deg, #00d9a5, #4facfe, #00f2fe);
+  --border-gradient-purple: linear-gradient(135deg, #a78bfa, #667eea, #764ba2);
+  --border-gradient-pink: linear-gradient(135deg, #f472b6, #f5576c, #fa709a);
+  --border-gradient-orange: linear-gradient(135deg, #FF8C00, #ffc107, #fa709a);
+
+  /* Card gradients */
+  --card-gradient: linear-gradient(145deg, rgba(20, 20, 36, 0.9) 0%, rgba(14, 14, 28, 0.95) 100%);
+  --card-gradient-hover: linear-gradient(145deg, rgba(26, 26, 50, 0.95) 0%, rgba(18, 18, 36, 0.98) 100%);
+
+  /* Accent gradients - vibrant */
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #00d9a5 0%, #4facfe 100%);
+  --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --premium-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --cyan-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+
+  /* Difficulty gradients - bold */
+  --easy-gradient: linear-gradient(135deg, #00d9a5 0%, #00f2a5 50%, #4facfe 100%);
+  --medium-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #667eea 100%);
+  --hard-gradient: linear-gradient(135deg, #f472b6 0%, #f5576c 50%, #fa709a 100%);
+
+  /* ==========================================
+     PRIMARY ACCENT COLORS
+     ========================================== */
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  --accent-blue: #4facfe;
+  --accent-cyan: #00f2fe;
+  --accent-pink: #f5576c;
+  --accent-orange: #FF8C00;
+  --accent-green: #00d9a5;
+  --accent-red: #ff4757;
+  --accent-purple: #a78bfa;
+  --accent-gold: #ffd700;
+
+  /* RGB values for alpha usage */
+  --accent-primary-rgb: 102, 126, 234;
+  --accent-blue-rgb: 79, 172, 254;
+  --accent-cyan-rgb: 0, 242, 254;
+  --accent-pink-rgb: 245, 87, 108;
+  --accent-orange-rgb: 255, 140, 0;
+  --accent-green-rgb: 0, 217, 165;
+  --accent-red-rgb: 255, 71, 87;
+  --accent-purple-rgb: 167, 139, 250;
+
+  /* Player colors */
+  --faidao-color: #F44336;
+  --faidao-gradient: linear-gradient(135deg, #F44336 0%, #ff6b6b 100%);
+  --filip-color: #FF9800;
+  --filip-gradient: linear-gradient(135deg, #FF9800 0%, #ffc107 100%);
+
+  /* ==========================================
+     SUDOKU GRID COLORS
+     ========================================== */
+  --grid-bg: #0a0a14;
+  --grid-border: rgba(255, 255, 255, 0.18);
+  --grid-border-thick: rgba(255, 255, 255, 0.35);
+
+  --cell-bg: transparent;
+  --cell-bg-alt: rgba(255, 255, 255, 0.015);
+  --cell-selected: rgba(255, 140, 0, 0.35);
+  --cell-selected-border: #FF8C00;
+  --cell-highlighted: rgba(79, 172, 254, 0.12);
+  --cell-same-number: rgba(102, 126, 234, 0.2);
+  --cell-error: rgba(255, 71, 87, 0.25);
+  --cell-hint: rgba(255, 200, 100, 0.25);
+  --cell-conflict: rgba(255, 71, 87, 0.35);
+
+  /* Cell text colors */
+  --cell-given: #ffffff;
+  --cell-user: #4facfe;
+  --cell-error-text: #ff4757;
+  --cell-candidate: #b8d4ff;
+
+  /* ==========================================
+     TEXT COLORS - High contrast
+     ========================================== */
+  --text-primary: #ffffff;
+  --text-secondary: #d0dce8;
+  --text-muted: #a0b0c0;
+  --text-disabled: #5a6a78;
+  --text-accent: var(--accent-cyan);
+
+  /* ==========================================
+     TYPOGRAPHY
+     ========================================== */
+  --font-display: 'Orbitron', system-ui, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Type scale using clamp for fluid sizing */
+  --text-xs: clamp(0.65rem, 0.6rem + 0.12vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.7rem + 0.15vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.82rem + 0.18vw, 1rem);
+  --text-lg: clamp(1rem, 0.92rem + 0.25vw, 1.125rem);
+  --text-xl: clamp(1.125rem, 1rem + 0.35vw, 1.25rem);
+  --text-2xl: clamp(1.25rem, 1.1rem + 0.45vw, 1.5rem);
+  --text-3xl: clamp(1.5rem, 1.3rem + 0.55vw, 1.875rem);
+  --text-4xl: clamp(1.875rem, 1.6rem + 0.75vw, 2.25rem);
+  --text-5xl: clamp(2.25rem, 1.9rem + 0.95vw, 3rem);
+
+  /* Font weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-black: 900;
+
+  /* Line heights */
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ==========================================
+     SPACING SCALE (8px grid)
+     ========================================== */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+
+  /* ==========================================
+     BORDER RADIUS
+     ========================================== */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 36px;
+  --radius-full: 9999px;
+
+  /* ==========================================
+     SHADOWS - Premium, layered
+     ========================================== */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.6);
+
+  /* Glow shadows for accents - more dramatic */
+  --shadow-glow-blue: 0 0 30px rgba(79, 172, 254, 0.5), 0 0 60px rgba(79, 172, 254, 0.2);
+  --shadow-glow-cyan: 0 0 30px rgba(0, 242, 254, 0.5), 0 0 60px rgba(0, 242, 254, 0.2);
+  --shadow-glow-purple: 0 0 30px rgba(102, 126, 234, 0.5), 0 0 60px rgba(102, 126, 234, 0.2);
+  --shadow-glow-orange: 0 0 30px rgba(255, 140, 0, 0.5), 0 0 60px rgba(255, 140, 0, 0.2);
+  --shadow-glow-green: 0 0 30px rgba(0, 217, 165, 0.5), 0 0 60px rgba(0, 217, 165, 0.2);
+  --shadow-glow-pink: 0 0 30px rgba(244, 114, 182, 0.5), 0 0 60px rgba(244, 114, 182, 0.2);
+
+  /* Inner glows for cards */
+  --shadow-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 20px rgba(102, 126, 234, 0.03);
+
+  /* Glass shadow - premium */
+  --shadow-glass:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Elevated card shadow */
+  --shadow-card:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(102, 126, 234, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  --shadow-card-hover:
+    0 8px 40px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(102, 126, 234, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* Focus shadow */
+  --shadow-focus: 0 0 0 3px rgba(102, 126, 234, 0.5);
+
+  /* ==========================================
+     TRANSITIONS - Smooth, premium feel
+     ========================================== */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+
+  --transition-fast: all 150ms var(--ease-default);
+  --transition-normal: all 250ms var(--ease-default);
+  --transition-slow: all 400ms var(--ease-default);
+  --transition-transform: transform 250ms var(--ease-spring);
+  --transition-colors: color 150ms var(--ease-default), background-color 150ms var(--ease-default), border-color 150ms var(--ease-default);
+
+  /* ==========================================
+     Z-INDEX SCALE
+     ========================================== */
+  --z-base: 0;
+  --z-above: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 500;
+  --z-modal-backdrop: 900;
+  --z-modal: 1000;
+  --z-popover: 1100;
+  --z-tooltip: 1200;
+  --z-toast: 1300;
+
+  /* ==========================================
+     LAYOUT - Safe areas & sizing
+     ========================================== */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+
+  /* Touch targets - WCAG minimum */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+
+  /* Navigation heights */
+  --nav-height-mobile: 56px;
+  --nav-height-desktop: 72px;
+  --bottom-nav-height: 72px;
+
+  /* Content widths */
+  --content-max-width: 1280px;
+  --content-narrow: 800px;
+  --grid-max-width: min(95vw, calc(100dvh - 280px), 450px);
+
+  /* Card dimensions */
+  --card-padding: var(--space-6);
+  --card-padding-sm: var(--space-4);
+  --card-gap: var(--space-4);
+}
+
+/* ==========================================
+   REDUCED MOTION
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+  }
+}
+
+/* ==========================================
+   HIGH CONTRAST MODE
+   ========================================== */
+@media (prefers-contrast: high) {
+  :root {
+    --text-secondary: #e8e8e8;
+    --text-muted: #d0d0d0;
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-border-hover: rgba(255, 255, 255, 0.35);
+    --grid-border: rgba(255, 255, 255, 0.25);
+    --grid-border-thick: rgba(255, 255, 255, 0.5);
+  }
+}
