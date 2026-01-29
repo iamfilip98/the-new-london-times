@@ -33,6 +33,42 @@
   box-shadow: var(--shadow-lg);
   position: relative;
   touch-action: manipulation;
+  z-index: 1;
+}
+
+/* Electric border effect - on container to avoid pseudo-element conflicts */
+.sudoku-grid-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--grid-max-width) + 6px);
+  height: calc(var(--grid-max-width) + 6px);
+  transform: translate(-50%, -50%);
+  border-radius: calc(var(--radius-lg) + 3px);
+  background: linear-gradient(90deg,
+    var(--accent-cyan), var(--accent-primary),
+    var(--accent-purple), var(--accent-pink),
+    var(--accent-cyan));
+  background-size: 300% 100%;
+  animation: electricPulse 10s linear infinite;
+  z-index: 0;
+  opacity: 0.6;
+  will-change: background-position;
+  pointer-events: none;
+}
+
+@keyframes electricPulse {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .sudoku-grid-container::before {
+    animation: none;
+    background: var(--accent-gradient);
+  }
 }
 
 /* Grid inner lines using pseudo-elements for crisp 3x3 box borders */
@@ -141,11 +177,12 @@
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   font-family: var(--font-mono);
-  font-size: clamp(0.5rem, 1.5vw, 0.625rem);
-  font-weight: var(--font-medium);
+  font-size: clamp(0.55rem, 1.6vw, 0.7rem);
+  font-weight: var(--font-semibold);
   color: var(--cell-candidate);
   z-index: 1;
   pointer-events: none;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 .cell-candidates span {
@@ -313,7 +350,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  color: var(--text-primary);
+  color: #ffffff !important;
   text-align: center;
 }
 
@@ -322,11 +359,14 @@
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   letter-spacing: 0.1em;
+  color: #ffffff !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(102, 126, 234, 0.5);
 }
 
 .paused-label .sub-text {
   font-size: var(--text-sm);
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 /* ==========================================

@@ -401,7 +401,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .streak-label {
   font-size: var(--text-xs);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
   margin-top: var(--space-1);
@@ -1097,7 +1097,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .progress-status {
   font-size: var(--text-xs);
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
 }
 
 /* ==========================================
@@ -1160,7 +1161,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .no-notifications {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: var(--text-sm);
   text-align: center;
   padding: var(--space-6);
@@ -1235,7 +1236,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .stat-label {
   font-size: var(--text-sm);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .stat-value {
@@ -1253,7 +1254,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .footer-text {
   font-size: var(--text-xs);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* ==========================================
@@ -1378,18 +1379,28 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
 .summary-card {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-8);
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 640px) {
+  .summary-card {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
 }
 
 .player-summary {
   text-align: center;
+  flex: 1;
+  min-width: 120px;
 }
 
 .player-summary .player-name {
@@ -1397,6 +1408,22 @@ h1, h2, h3, h4, h5, h6 {
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
   margin-bottom: var(--space-2);
+}
+
+/* Compact VS divider for achievements summary */
+.summary-card .vs-divider {
+  flex-shrink: 0;
+  padding: var(--space-2);
+}
+
+.summary-card .vs-circle-container {
+  width: 50px;
+  height: 50px;
+  font-size: var(--text-sm);
+}
+
+.summary-card .vs-circle-container::before {
+  display: none;
 }
 
 .faidao-themed .player-name {
@@ -1423,7 +1450,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .count-label {
   font-size: var(--text-xs);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
 }
@@ -1434,7 +1461,7 @@ h1, h2, h3, h4, h5, h6 {
   padding-top: var(--space-4);
   border-top: 1px solid var(--glass-border);
   font-size: var(--text-sm);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .total-summary span {
@@ -1444,33 +1471,37 @@ h1, h2, h3, h4, h5, h6 {
 
 .achievement-filters {
   margin-bottom: var(--space-6);
-  padding: var(--space-4);
+  padding: var(--space-5);
   background: var(--card-gradient);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  display: grid;
-  grid-template-columns: auto auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-4);
   align-items: center;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 
 @media (max-width: 1024px) {
   .achievement-filters {
-    grid-template-columns: 1fr 1fr;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .achievement-filters .filter-tabs {
-    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: center;
   }
 
   .achievement-filters .search-container {
-    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 
 @media (max-width: 640px) {
   .achievement-filters {
-    grid-template-columns: 1fr;
+    padding: var(--space-4);
   }
 
   .achievement-filters .category-filters {
@@ -1514,6 +1545,7 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--surface-elevated);
   border-color: var(--accent-primary);
   color: var(--text-primary);
+  box-shadow: inset 0 0 8px rgba(102, 126, 234, 0.3);
 }
 
 .filter-tab .count {
@@ -1814,14 +1846,22 @@ select {
 /* ==========================================
    HISTORY CARDS - Card Layout Fix
    Override main.css 4-column grid with modern card layout
+   Stacked vertical layout on desktop for better readability
    ========================================== */
 .history-cards {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  display: flex !important;
+  flex-direction: column !important;
   gap: var(--space-4) !important;
-  max-height: 400px;
   overflow-y: auto;
   padding-right: var(--space-2);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  .history-cards {
+    max-height: none;
+  }
 }
 
 .history-card {
@@ -1943,7 +1983,7 @@ select {
 
 @media (max-width: 768px) {
   .history-cards {
-    grid-template-columns: 1fr !important;
+    max-width: none;
     max-height: none;
     padding-right: 0;
   }

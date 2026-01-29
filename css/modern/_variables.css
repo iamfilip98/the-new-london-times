@@ -86,8 +86,8 @@
      SUDOKU GRID COLORS
      ========================================== */
   --grid-bg: #0a0a14;
-  --grid-border: rgba(255, 255, 255, 0.1);
-  --grid-border-thick: rgba(255, 255, 255, 0.22);
+  --grid-border: rgba(255, 255, 255, 0.18);
+  --grid-border-thick: rgba(255, 255, 255, 0.35);
 
   --cell-bg: transparent;
   --cell-bg-alt: rgba(255, 255, 255, 0.015);
@@ -103,15 +103,15 @@
   --cell-given: #ffffff;
   --cell-user: #4facfe;
   --cell-error-text: #ff4757;
-  --cell-candidate: rgba(255, 255, 255, 0.5);
+  --cell-candidate: rgba(180, 200, 230, 0.9);
 
   /* ==========================================
      TEXT COLORS - High contrast
      ========================================== */
   --text-primary: #ffffff;
-  --text-secondary: #c4d0e0;
-  --text-muted: #8896a8;
-  --text-disabled: #4a5568;
+  --text-secondary: #d0dce8;
+  --text-muted: #a0b0c0;
+  --text-disabled: #5a6a78;
   --text-accent: var(--accent-cyan);
 
   /* ==========================================
