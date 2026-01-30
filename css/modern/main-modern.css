@@ -2036,13 +2036,6 @@ select {
 /* ==========================================
    GRID SIZING FIX - Single Source of Truth
    Override all main.css conflicts for square grid
-
-   Layout budget (mobile portrait):
-   - Top header/timer: ~60px
-   - Action buttons + hint: ~100px
-   - Bottom number pad: ~180px (includes safe area)
-   - Padding/margins: ~40px
-   Total UI: ~380px, leaving dvh - 380px for grid
    ========================================== */
 .sudoku-grid-container {
   display: flex !important;
@@ -2052,12 +2045,11 @@ select {
   height: auto !important;
   max-height: none !important;
   overflow: visible !important;
-  padding: var(--space-2) !important;
+  padding: 8px !important;
 }
 
-/* Desktop: larger grid, more space available */
 .sudoku-grid {
-  --grid-size: min(90vw, calc(100dvh - 200px), 500px);
+  --grid-size: min(85vw, 400px);
   width: var(--grid-size) !important;
   height: var(--grid-size) !important;
   max-width: var(--grid-size) !important;
@@ -2066,15 +2058,10 @@ select {
   flex-shrink: 0 !important;
 }
 
-/* Mobile portrait: account for fixed bottom number pad */
+/* Mobile */
 @media (max-width: 768px) {
-  .sudoku-grid-container {
-    padding: var(--space-1) !important;
-  }
-
   .sudoku-grid {
-    /* 100dvh - 380px for UI, capped at 95vw to not overflow width */
-    --grid-size: min(95vw, calc(100dvh - 380px), 450px);
+    --grid-size: min(88vw, calc(100dvh - 450px), 360px);
     width: var(--grid-size) !important;
     height: var(--grid-size) !important;
     max-width: var(--grid-size) !important;
@@ -2082,10 +2069,10 @@ select {
   }
 }
 
-/* Small phones need more room for UI */
+/* Small phones */
 @media (max-width: 375px) {
   .sudoku-grid {
-    --grid-size: min(92vw, calc(100dvh - 400px), 320px);
+    --grid-size: min(85vw, calc(100dvh - 480px), 300px);
     width: var(--grid-size) !important;
     height: var(--grid-size) !important;
     max-width: var(--grid-size) !important;
@@ -2093,21 +2080,10 @@ select {
   }
 }
 
-/* Landscape: height is limited, use that */
-@media (max-height: 500px) and (orientation: landscape) {
+/* Landscape */
+@media (orientation: landscape) and (max-height: 500px) {
   .sudoku-grid {
-    --grid-size: min(50vh, 60vw, 300px);
-    width: var(--grid-size) !important;
-    height: var(--grid-size) !important;
-    max-width: var(--grid-size) !important;
-    max-height: var(--grid-size) !important;
-  }
-}
-
-/* Large tablets / iPad */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .sudoku-grid {
-    --grid-size: min(70vw, calc(100dvh - 250px), 480px);
+    --grid-size: min(45vh, 280px);
     width: var(--grid-size) !important;
     height: var(--grid-size) !important;
     max-width: var(--grid-size) !important;
