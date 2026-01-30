@@ -3429,25 +3429,24 @@ body {
     display: none;
 }
 
-/* Hint message clickable indicator (only in game status box) */
-.game-status .hint-message {
+/* Inline hint clickable area */
+.inline-hint .hint-message {
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.2s ease;
     position: relative;
 }
 
-.game-status .hint-message:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.inline-hint .hint-message:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.game-status .hint-message::after {
+.inline-hint .hint-message::after {
     content: '👆 Tap for details';
     display: block;
     text-align: center;
-    font-size: 0.7rem;
-    margin-top: 0.3rem;
-    opacity: 0.8;
+    font-size: 0.65rem;
+    margin-top: 0.25rem;
+    opacity: 0.7;
     font-style: italic;
 }
 

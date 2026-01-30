@@ -1531,15 +1531,15 @@ class SudokuEngine {
                     </div>
                 `;
 
-                // Show shortened Level 1 message
-                statusDiv.innerHTML = `
+                // Show shortened Level 1 message in action buttons area
+                this.showInlineHint(`
                     <div class="hint-message direction" onclick="window.sudokuEngine.showHintModal()">
                         <div style="font-size: 0.85rem; font-weight: 500;">
                             <i class="fas fa-compass" style="margin-right: 0.35rem;"></i>
                             Level 1: Check ${hintDirection.text}
                         </div>
                     </div>
-                `;
+                `);
             } else {
                 statusDiv.innerHTML = '<div class="status-message">No hints available right now.</div>';
             }
@@ -1592,15 +1592,15 @@ class SudokuEngine {
                     </div>
                 `;
 
-                // Show shortened Level 2 message
-                statusDiv.innerHTML = `
+                // Show shortened Level 2 message in action buttons area
+                this.showInlineHint(`
                     <div class="hint-message location" onclick="window.sudokuEngine.showHintModal()">
                         <div style="font-size: 0.85rem; font-weight: 500;">
                             <i class="fas fa-map-marker-alt" style="margin-right: 0.35rem;"></i>
                             Level 2: Row ${row + 1}, Col ${col + 1}
                         </div>
                     </div>
-                `;
+                `);
             }
         } else if (this.hintState === 'location') {
             // 💡 LEVEL 3: Answer Reveal with Educational Reasoning
@@ -1661,15 +1661,15 @@ class SudokuEngine {
                     </div>
                 `;
 
-                // Show shortened reveal message
-                statusDiv.innerHTML = `
+                // Show shortened reveal message in action buttons area
+                this.showInlineHint(`
                     <div class="hint-message revealed" onclick="window.sudokuEngine.showHintModal()">
                         <div style="font-size: 0.85rem; font-weight: 500;">
                             <i class="fas fa-lightbulb" style="margin-right: 0.35rem;"></i>
                             Level 3: Answer is ${value}
                         </div>
                     </div>
-                `;
+                `);
 
                 // Reset hint state for next hint
                 this.currentHintCell = null;
@@ -1843,16 +1843,25 @@ class SudokuEngine {
         });
     }
 
-    showHintModal() {
-        // Show the hint inline in the action buttons area
+    showInlineHint(shortMessage) {
+        // Show hint in the action buttons area (replaces Notes/Show All buttons)
         const actionButtons = document.getElementById('actionButtons');
         const inlineHint = document.getElementById('inlineHint');
         const inlineHintContent = document.getElementById('inlineHintContent');
 
-        if (actionButtons && inlineHint && inlineHintContent && this.currentFullHintMessage) {
-            inlineHintContent.innerHTML = this.currentFullHintMessage;
+        if (actionButtons && inlineHint && inlineHintContent) {
+            inlineHintContent.innerHTML = shortMessage;
             actionButtons.classList.add('hidden');
             inlineHint.classList.add('show');
+        }
+    }
+
+    showHintModal() {
+        // Expand to show full hint details in the inline area
+        const inlineHintContent = document.getElementById('inlineHintContent');
+
+        if (inlineHintContent && this.currentFullHintMessage) {
+            inlineHintContent.innerHTML = this.currentFullHintMessage;
         }
     }
 
