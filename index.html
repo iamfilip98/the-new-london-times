@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#0a0a14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon.svg">
     <title>Sudoku Championship Arena - Faidao vs Filip</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/enhancements.css">
@@ -15,6 +17,153 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- PWA Auth Overlay - shown when not authenticated -->
+    <div id="pwaAuthOverlay" class="pwa-auth-overlay">
+        <style>
+            .pwa-auth-overlay {
+                position: fixed;
+                inset: 0;
+                z-index: 99999;
+                background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 50%, #0a0a14 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+            .pwa-auth-overlay.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .pwa-auth-overlay .auth-aurora {
+                position: absolute;
+                inset: 0;
+                background:
+                    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(167, 139, 250, 0.1) 0%, transparent 50%),
+                    radial-gradient(ellipse 50% 30% at 50% 80%, rgba(244, 114, 182, 0.08) 0%, transparent 50%);
+                animation: auroraShift 15s ease-in-out infinite;
+            }
+            @keyframes auroraShift {
+                0%, 100% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.8; transform: scale(1.1); }
+            }
+            .pwa-auth-card {
+                position: relative;
+                background: rgba(10, 10, 20, 0.95);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 24px;
+                padding: 2.5rem;
+                width: 90%;
+                max-width: 380px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+            .pwa-auth-logo {
+                text-align: center;
+                font-size: 3.5rem;
+                margin-bottom: 1rem;
+                background: linear-gradient(135deg, #00f2fe 0%, #667eea 50%, #f472b6 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .pwa-auth-title {
+                text-align: center;
+                font-family: 'Orbitron', monospace;
+                font-size: 1.5rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.5rem;
+            }
+            .pwa-auth-subtitle {
+                text-align: center;
+                color: rgba(255, 255, 255, 0.5);
+                margin-bottom: 2rem;
+                font-size: 0.95rem;
+            }
+            .pwa-auth-form {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .pwa-auth-input {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 12px;
+                padding: 1rem 1.25rem;
+                color: white;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+            .pwa-auth-input:focus {
+                outline: none;
+                border-color: #667eea;
+                background: rgba(102, 126, 234, 0.1);
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+            }
+            .pwa-auth-input option {
+                background: #1a1a2e;
+                color: white;
+            }
+            .pwa-auth-button {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                border-radius: 12px;
+                padding: 1rem 2rem;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: 'Orbitron', monospace;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                transition: all 0.3s ease;
+            }
+            .pwa-auth-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            }
+            .pwa-auth-button:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+                transform: none;
+            }
+            .pwa-auth-error {
+                color: #f472b6;
+                padding: 0.75rem 1rem;
+                background: rgba(244, 114, 182, 0.1);
+                border: 1px solid rgba(244, 114, 182, 0.2);
+                border-radius: 8px;
+                font-size: 0.9rem;
+                display: none;
+            }
+        </style>
+        <div class="auth-aurora"></div>
+        <div class="pwa-auth-card">
+            <div class="pwa-auth-logo"><i class="fas fa-trophy"></i></div>
+            <h1 class="pwa-auth-title">Championship Arena</h1>
+            <p class="pwa-auth-subtitle">Choose your champion</p>
+            <form class="pwa-auth-form" id="pwaAuthForm">
+                <select class="pwa-auth-input" id="pwaPlayerSelect" required>
+                    <option value="">Select Player</option>
+                    <option value="faidao">Faidao - The Queen</option>
+                    <option value="filip">Filip - The Champion</option>
+                </select>
+                <input type="password" class="pwa-auth-input" id="pwaPasswordInput" placeholder="Enter password" required autocomplete="current-password">
+                <button type="submit" class="pwa-auth-button" id="pwaAuthButton">
+                    <i class="fas fa-gamepad"></i> Enter Battle Arena
+                </button>
+            </form>
+            <div class="pwa-auth-error" id="pwaAuthError">
+                <i class="fas fa-exclamation-triangle"></i> Invalid credentials. Try again.
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Navigation -->
         <nav class="main-nav">
@@ -699,21 +848,36 @@
                     <i class="fas fa-home" aria-hidden="true"></i>
                     <span>Home</span>
                 </a>
-                <a href="#" class="bottom-nav-item play-btn" data-page="sudoku" aria-label="Play">
-                    <i class="fas fa-play" aria-hidden="true"></i>
-                    <span>Play</span>
-                </a>
-                <a href="#" class="bottom-nav-item" data-page="analytics" aria-label="Stats">
-                    <i class="fas fa-chart-line" aria-hidden="true"></i>
-                    <span>Stats</span>
-                </a>
                 <a href="#" class="bottom-nav-item" data-page="achievements" aria-label="Achievements">
                     <i class="fas fa-trophy" aria-hidden="true"></i>
                     <span>Trophies</span>
                 </a>
+                <a href="#" class="bottom-nav-item play-btn" data-page="sudoku" aria-label="Play">
+                    <i class="fas fa-play" aria-hidden="true"></i>
+                    <span>Play</span>
+                </a>
                 <a href="#" class="bottom-nav-item" data-page="leaderboards" aria-label="Leaderboards">
                     <i class="fas fa-medal" aria-hidden="true"></i>
                     <span>Ranks</span>
+                </a>
+                <a href="#" class="bottom-nav-item bottom-nav-profile" aria-label="Profile" id="bottomNavProfile">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+            <!-- Profile Menu Popup -->
+            <div class="bottom-nav-profile-menu" id="bottomNavProfileMenu">
+                <a href="#" class="profile-menu-item" data-page="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Stats</span>
+                </a>
+                <a href="settings.html" class="profile-menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="profile-menu-item" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
                 </a>
             </div>
         </nav>
@@ -721,10 +885,68 @@
 
     <!-- Authentication Check -->
     <script>
-        // Check authentication before loading the app
-        if (sessionStorage.getItem('sudokuAuth') !== 'authenticated') {
-            window.location.href = 'auth.html';
+        // PWA-friendly auth: show overlay instead of redirect to preserve standalone mode
+        const pwaAuthOverlay = document.getElementById('pwaAuthOverlay');
+
+        function showAuthOverlay() {
+            pwaAuthOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
+
+        function hideAuthOverlay() {
+            pwaAuthOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            initializePlayerSession();
+            initializeDropdown();
+        }
+
+        // Check authentication - show overlay instead of redirect
+        if (sessionStorage.getItem('sudokuAuth') !== 'authenticated') {
+            showAuthOverlay();
+        } else {
+            hideAuthOverlay();
+        }
+
+        // PWA Auth form handler
+        document.getElementById('pwaAuthForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const player = document.getElementById('pwaPlayerSelect').value;
+            const password = document.getElementById('pwaPasswordInput').value;
+            const errorDiv = document.getElementById('pwaAuthError');
+            const submitBtn = document.getElementById('pwaAuthButton');
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: player, password })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    sessionStorage.setItem('sudokuAuth', 'authenticated');
+                    sessionStorage.setItem('currentPlayer', result.player);
+                    sessionStorage.setItem('displayName', result.displayName);
+                    if (result.avatar) sessionStorage.setItem('avatar', result.avatar);
+                    hideAuthOverlay();
+                } else {
+                    errorDiv.style.display = 'block';
+                    document.getElementById('pwaPasswordInput').value = '';
+                    document.getElementById('pwaPasswordInput').focus();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-gamepad"></i> Enter Battle Arena';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Authentication failed. Please try again.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-gamepad"></i> Enter Battle Arena';
+            }
+        });
 
         // Display current player and add logout functionality
         function initializePlayerSession() {
@@ -768,12 +990,20 @@
             }
         }
 
-        // Logout function
+        // Logout function - show overlay instead of redirect for PWA
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 sessionStorage.removeItem('sudokuAuth');
                 sessionStorage.removeItem('currentPlayer');
-                window.location.href = 'auth.html';
+                sessionStorage.removeItem('displayName');
+                sessionStorage.removeItem('avatar');
+                // Reset form and show auth overlay
+                document.getElementById('pwaPlayerSelect').value = '';
+                document.getElementById('pwaPasswordInput').value = '';
+                document.getElementById('pwaAuthError').style.display = 'none';
+                document.getElementById('pwaAuthButton').disabled = false;
+                document.getElementById('pwaAuthButton').innerHTML = '<i class="fas fa-gamepad"></i> Enter Battle Arena';
+                showAuthOverlay();
             }
         }
 
@@ -1101,6 +1331,9 @@
                     e.preventDefault();
                     const targetPage = this.dataset.page;
 
+                    // Skip if no target page (e.g., profile button)
+                    if (!targetPage) return;
+
                     // Update bottom nav active state
                     bottomNavItems.forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
@@ -1203,6 +1436,58 @@
             // Initial state
             if (window.innerWidth > 768 && bottomNav) {
                 bottomNav.style.display = 'none';
+            }
+
+            // Profile menu handler
+            const profileBtn = document.getElementById('bottomNavProfile');
+            const profileMenu = document.getElementById('bottomNavProfileMenu');
+
+            if (profileBtn && profileMenu) {
+                profileBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    profileMenu.classList.toggle('active');
+                    profileBtn.classList.toggle('menu-open');
+                });
+
+                // Handle profile menu item clicks with data-page
+                const profileMenuItems = profileMenu.querySelectorAll('.profile-menu-item[data-page]');
+                profileMenuItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetPage = this.dataset.page;
+
+                        // Close profile menu
+                        profileMenu.classList.remove('active');
+                        profileBtn.classList.remove('menu-open');
+
+                        // Update active states
+                        bottomNavItems.forEach(i => i.classList.remove('active'));
+                        desktopNavLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.dataset.page === targetPage) {
+                                link.classList.add('active');
+                            }
+                        });
+
+                        // Switch pages
+                        pages.forEach(page => page.classList.remove('active'));
+                        const targetElement = document.getElementById(targetPage);
+                        if (targetElement) {
+                            targetElement.classList.add('active');
+                        }
+
+                        window.scrollTo(0, 0);
+                    });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+                        profileMenu.classList.remove('active');
+                        profileBtn.classList.remove('menu-open');
+                    }
+                });
             }
         });
 
@@ -1312,6 +1597,12 @@
         //console.log('🎯 Hint penalty test functions loaded!');
         //console.log('Run testHintPenalties() to automatically test hint penalties');
         //console.log('Run manualHintPenaltyTest() for manual testing');
+    </script>
+    <script>
+        // Register service worker for PWA support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
     </script>
 </body>
 </html>

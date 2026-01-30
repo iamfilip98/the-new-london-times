@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon.svg">
     <title>Settings - Sudoku Championship</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/modern/main-modern.css">
@@ -391,10 +395,10 @@
     </div>
 
     <script>
-        // Check authentication
+        // Check authentication - redirect to index (PWA entry) if not authenticated
         const auth = sessionStorage.getItem('sudokuAuth');
         if (auth !== 'authenticated') {
-            window.location.href = 'auth.html';
+            window.location.href = '/';
         }
 
         // Load saved settings
@@ -456,6 +460,11 @@
 
         // Load settings on page load
         loadSettings();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
     </script>
 </body>
 </html>

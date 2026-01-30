@@ -20,6 +20,10 @@
    ========================================== */
 
 /* Base styles */
+html {
+  background: var(--surface-primary);
+}
+
 body {
   background: var(--surface-primary);
   color: var(--text-primary);
