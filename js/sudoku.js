@@ -391,8 +391,32 @@ class SudokuEngine {
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
 
-        // Inline hint close button listener
+        // Inline hint close button and swipe-to-dismiss
         document.getElementById('inlineHintClose')?.addEventListener('click', () => this.hideInlineHint());
+
+        // Swipe to dismiss inline hint
+        const inlineHint = document.getElementById('inlineHint');
+        if (inlineHint) {
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            inlineHint.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            inlineHint.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+
+                // Swipe threshold of 50px in any direction
+                if (Math.abs(deltaX) > 50 || Math.abs(deltaY) > 50) {
+                    this.hideInlineHint();
+                }
+            }, { passive: true });
+        }
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
         document.getElementById('pausedLabel')?.addEventListener('click', () => this.togglePause());
 
