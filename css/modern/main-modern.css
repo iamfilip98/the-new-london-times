@@ -2035,8 +2035,13 @@ select {
 
 /* ==========================================
    GRID SIZING FIX - Single Source of Truth
-   Override all main.css conflicts for square grid
+   Uses --dynamic-grid-size set by JavaScript
+   Falls back to CSS calculation if JS hasn't run
    ========================================== */
+:root {
+  --dynamic-grid-size: min(85vw, calc(100dvh - 350px), 420px);
+}
+
 .sudoku-grid-container {
   display: flex !important;
   justify-content: center !important;
@@ -2049,44 +2054,10 @@ select {
 }
 
 .sudoku-grid {
-  --grid-size: min(85vw, 400px);
-  width: var(--grid-size) !important;
-  height: var(--grid-size) !important;
-  max-width: var(--grid-size) !important;
-  max-height: var(--grid-size) !important;
+  width: var(--dynamic-grid-size) !important;
+  height: var(--dynamic-grid-size) !important;
+  max-width: var(--dynamic-grid-size) !important;
+  max-height: var(--dynamic-grid-size) !important;
   aspect-ratio: 1 / 1 !important;
   flex-shrink: 0 !important;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .sudoku-grid {
-    --grid-size: min(88vw, calc(100dvh - 450px), 360px);
-    width: var(--grid-size) !important;
-    height: var(--grid-size) !important;
-    max-width: var(--grid-size) !important;
-    max-height: var(--grid-size) !important;
-  }
-}
-
-/* Small phones */
-@media (max-width: 375px) {
-  .sudoku-grid {
-    --grid-size: min(85vw, calc(100dvh - 480px), 300px);
-    width: var(--grid-size) !important;
-    height: var(--grid-size) !important;
-    max-width: var(--grid-size) !important;
-    max-height: var(--grid-size) !important;
-  }
-}
-
-/* Landscape */
-@media (orientation: landscape) and (max-height: 500px) {
-  .sudoku-grid {
-    --grid-size: min(45vh, 280px);
-    width: var(--grid-size) !important;
-    height: var(--grid-size) !important;
-    max-width: var(--grid-size) !important;
-    max-height: var(--grid-size) !important;
-  }
 }

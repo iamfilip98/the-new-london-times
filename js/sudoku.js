@@ -433,14 +433,67 @@ class SudokuEngine {
             }
         }, 10000);
 
-        // Handle window resize for responsive number input
+        // Handle window resize for responsive number input and grid sizing
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
                 this.updateNumberInputLayout();
+                this.updateGridSize();
             }, 150);
         });
+
+        // Initial grid size calculation
+        this.updateGridSize();
+    }
+
+    updateGridSize() {
+        const grid = document.getElementById('sudokuGrid');
+        if (!grid) return;
+
+        const isMobile = window.innerWidth <= 768;
+        const isLandscape = window.innerWidth > window.innerHeight;
+
+        // Get actual viewport dimensions
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        // Calculate available space
+        let availableHeight, availableWidth;
+
+        if (isMobile && !isLandscape) {
+            // Mobile portrait: account for fixed bottom number pad + header
+            const numberPad = document.querySelector('.sudoku-controls-sidebar');
+            const header = document.querySelector('.game-info-panel');
+            const bottomNav = document.querySelector('.bottom-nav');
+
+            const numberPadHeight = numberPad ? numberPad.offsetHeight : 180;
+            const headerHeight = header ? header.offsetHeight : 60;
+            const bottomNavHeight = bottomNav ? bottomNav.offsetHeight : 0;
+            const padding = 40;
+
+            availableHeight = vh - numberPadHeight - headerHeight - bottomNavHeight - padding;
+            availableWidth = vw - 20; // 10px padding on each side
+        } else if (isLandscape && isMobile) {
+            // Mobile landscape
+            availableHeight = vh * 0.7;
+            availableWidth = vw * 0.5;
+        } else {
+            // Desktop
+            availableHeight = vh - 200;
+            availableWidth = vw * 0.5;
+        }
+
+        // Grid must be square, so use the smaller dimension
+        let gridSize = Math.min(availableWidth, availableHeight);
+
+        // Apply reasonable bounds
+        const minSize = 250;
+        const maxSize = isMobile ? 400 : 500;
+        gridSize = Math.max(minSize, Math.min(maxSize, gridSize));
+
+        // Set the CSS custom property
+        document.documentElement.style.setProperty('--dynamic-grid-size', `${gridSize}px`);
     }
 
     updateNumberInputLayout() {
