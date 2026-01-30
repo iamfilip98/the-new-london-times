@@ -1868,14 +1868,12 @@ class SudokuEngine {
     }
 
     showInlineHint(shortMessage) {
-        // Show hint in the action buttons area (replaces Notes/Show All buttons)
-        const actionButtons = document.getElementById('actionButtons');
+        // Show hint above the action buttons (buttons remain visible)
         const inlineHint = document.getElementById('inlineHint');
         const inlineHintContent = document.getElementById('inlineHintContent');
 
-        if (actionButtons && inlineHint && inlineHintContent) {
+        if (inlineHint && inlineHintContent) {
             inlineHintContent.innerHTML = shortMessage;
-            actionButtons.classList.add('hidden');
             inlineHint.classList.add('show');
         }
     }
@@ -1890,12 +1888,10 @@ class SudokuEngine {
     }
 
     hideInlineHint() {
-        const actionButtons = document.getElementById('actionButtons');
         const inlineHint = document.getElementById('inlineHint');
 
-        if (actionButtons && inlineHint) {
+        if (inlineHint) {
             inlineHint.classList.remove('show');
-            actionButtons.classList.remove('hidden');
         }
     }
 

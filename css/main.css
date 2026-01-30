@@ -3349,10 +3349,6 @@ body {
     min-height: 50px;
 }
 
-.action-buttons.hidden {
-    display: none !important;
-}
-
 .inline-hint {
     display: none;
     position: relative;
@@ -3364,6 +3360,7 @@ body {
     border: 2px solid var(--accent-blue);
     max-height: 200px;
     overflow-y: auto;
+    margin-bottom: 0.75rem;
 }
 
 .inline-hint.show {
