@@ -79,6 +79,17 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes circularRotateReverse {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+/* Inner rotating circle */
+.inner-circle-group {
+  transform-origin: 50px 50px;
+  animation: circularRotateReverse 15s linear infinite;
+}
+
 /* Enhanced hover effects for logo */
 .nav-brand.circular-logo:hover .circular-text-svg {
   animation-play-state: paused;
