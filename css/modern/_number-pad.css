@@ -208,12 +208,9 @@
     box-shadow: var(--shadow-glass);
   }
 
-  /* Game status in sidebar */
+  /* Hide game status completely */
   .game-status {
-    padding: var(--space-3);
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--glass-border);
+    display: none !important;
   }
 
   .status-message {
