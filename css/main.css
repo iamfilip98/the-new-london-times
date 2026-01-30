@@ -5010,11 +5010,12 @@ select:focus-visible,
     }
 
     /* Desktop grid sizing - ensure square, use more vertical space */
+    /* Desktop grid sizing - fill container width, maintain square */
     .sudoku-grid {
-        height: min(calc(100vh - 200px), 100%) !important;
+        width: 100% !important;
+        height: auto !important;
         aspect-ratio: 1 / 1 !important;
         max-height: calc(100vh - 200px) !important;
-        width: auto !important;
     }
 }
 
@@ -5181,9 +5182,9 @@ select:focus-visible,
     border: 3px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius);
     padding: 0;
-    /* Force square by using same value for both dimensions */
-    width: min(95%, calc(100vh - 280px), 480px);
-    height: min(95%, calc(100vh - 280px), 480px);
+    /* Fill container width, maintain square via aspect-ratio */
+    width: 100%;
+    height: auto;
     aspect-ratio: 1 / 1;
     flex-shrink: 0;
     box-shadow: var(--shadow-lg);
@@ -7199,11 +7200,11 @@ select:focus-visible,
     }
 
 
-    /* Responsive Sudoku grid - fit screen with quality */
+    /* Responsive Sudoku grid - fill container */
     .sudoku-grid-container {
         width: 100%;
-        max-width: calc(100vw - 20px);
-        padding: 0 10px;
+        max-width: none;
+        padding: 0;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -7213,10 +7214,10 @@ select:focus-visible,
     }
 
     .sudoku-grid {
-        max-width: min(100%, calc(100vw - 40px), 600px);
-        max-height: min(100%, calc(100vw - 40px), 600px);
         width: 100%;
         height: auto;
+        max-width: none;
+        max-height: none;
         border: 3px solid #000000;
         aspect-ratio: 1 / 1;
         box-shadow: var(--shadow-md);
@@ -7355,10 +7356,10 @@ select:focus-visible,
     }
 
     .sudoku-grid {
-        max-width: min(calc(100vw - 20px), 500px);
-        max-height: min(calc(100vw - 20px), 500px);
         width: 100%;
         height: auto;
+        max-width: none;
+        max-height: none;
         border: 3px solid #000000 !important;
         aspect-ratio: 1;
         margin-bottom: 0;
@@ -7507,13 +7508,13 @@ select:focus-visible,
     }
 
     .sudoku-game {
-        max-width: min(600px, calc(100vw - 64px));
+        max-width: none;
         gap: 1.5rem;
     }
 
     .sudoku-grid-container {
-        max-width: min(600px, calc(100vw - 64px));
-        max-height: min(600px, calc(100vh - 200px));
+        max-width: none;
+        max-height: none;
     }
 
     .game-info-panel {
@@ -7544,14 +7545,14 @@ select:focus-visible,
 /* Landscape orientation for mobile */
 @media (max-width: 768px) and (orientation: landscape) {
     .sudoku-grid-container {
-        padding: 0 10px;
+        padding: 0;
     }
 
     .sudoku-grid {
-        max-width: min(70vh, calc(100vw - 40px), 500px);
-        max-height: min(70vh, calc(100vw - 40px), 500px);
         width: 100%;
         height: auto;
+        max-width: none;
+        max-height: none;
         border: 3px solid #000000;
         aspect-ratio: 1;
         box-shadow: var(--shadow-md);
@@ -7711,8 +7712,8 @@ select:focus-visible,
 
 @media (max-width: 480px) {
     .sudoku-grid {
-        width: min(320px, calc(100vw - 50px));
-        height: min(320px, calc(100vw - 50px));
+        width: 100%;
+        height: auto;
         border: 3px solid #000000;
         aspect-ratio: 1;
         box-shadow: var(--shadow-md);
