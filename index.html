@@ -165,6 +165,9 @@
     </div>
 
     <div class="app-container">
+        <!-- Interactive Background Effects -->
+        <div class="mouse-glow" id="mouseGlow"></div>
+        <div class="particles-container" id="particlesContainer"></div>
         <!-- Navigation -->
         <nav class="main-nav">
             <div class="nav-brand circular-logo" onclick="navigateToDashboard()" style="cursor: pointer;" title="The New London Times">
@@ -1603,6 +1606,85 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
+    </script>
+    <script>
+        // Interactive Background Effects
+        (function() {
+            const mouseGlow = document.getElementById('mouseGlow');
+            const particlesContainer = document.getElementById('particlesContainer');
+
+            // Mouse follow effect with smooth interpolation
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let currentX = mouseX;
+            let currentY = mouseY;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function animateGlow() {
+                // Smooth interpolation for fluid movement
+                currentX += (mouseX - currentX) * 0.08;
+                currentY += (mouseY - currentY) * 0.08;
+
+                if (mouseGlow) {
+                    mouseGlow.style.left = currentX + 'px';
+                    mouseGlow.style.top = currentY + 'px';
+                }
+
+                requestAnimationFrame(animateGlow);
+            }
+            animateGlow();
+
+            // Floating particles system
+            const colors = [
+                'rgba(102, 126, 234, 0.6)',  // Primary blue
+                'rgba(167, 139, 250, 0.5)',  // Purple
+                'rgba(79, 172, 254, 0.5)',   // Cyan
+                'rgba(244, 114, 182, 0.4)',  // Pink
+                'rgba(0, 242, 254, 0.5)'     // Bright cyan
+            ];
+
+            function createParticle() {
+                if (!particlesContainer) return;
+
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                const size = Math.random() * 6 + 2;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const duration = Math.random() * 15 + 10;
+                const left = Math.random() * 100;
+                const delay = Math.random() * 5;
+
+                particle.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    box-shadow: 0 0 ${size * 2}px ${color};
+                    left: ${left}%;
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                `;
+
+                particlesContainer.appendChild(particle);
+
+                // Remove particle after animation completes
+                setTimeout(() => {
+                    particle.remove();
+                }, (duration + delay) * 1000);
+            }
+
+            // Create initial batch of particles
+            for (let i = 0; i < 15; i++) {
+                setTimeout(createParticle, i * 200);
+            }
+
+            // Continuously spawn new particles
+            setInterval(createParticle, 800);
+        })();
     </script>
 </body>
 </html>
