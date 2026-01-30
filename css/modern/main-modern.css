@@ -1967,3 +1967,52 @@ select {
     padding-right: 0;
   }
 }
+
+/* ==========================================
+   CRITICAL OVERRIDES - MUST BE LAST
+   Override main.css styles that conflict with dark theme
+   ========================================== */
+
+/* Fix black grid borders */
+.sudoku-cell.right-thick {
+  border-right-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.sudoku-cell.bottom-thick {
+  border-bottom-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.sudoku-cell.left-thick {
+  border-left-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.sudoku-cell.top-thick {
+  border-top-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Fix hover state - dark background instead of white */
+.sudoku-cell:hover:not(.selected) {
+  background: rgba(102, 126, 234, 0.15) !important;
+}
+
+.sudoku-cell:hover:not(.selected).given,
+.sudoku-cell:hover:not(.selected).user-input {
+  background: rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Ensure text visible on hover */
+.sudoku-cell:hover .cell-value {
+  color: #ffffff !important;
+}
+
+.sudoku-cell.user-input:hover .cell-value {
+  color: #4facfe !important;
+}
+
+/* Fix candidate colors - match cell numbers */
+.candidate-cell,
+.candidate-num,
+.candidates-grid span,
+.cell-candidates span {
+  color: #4facfe !important;
+}
