@@ -2036,6 +2036,13 @@ select {
 /* ==========================================
    GRID SIZING FIX - Single Source of Truth
    Override all main.css conflicts for square grid
+
+   Layout budget (mobile portrait):
+   - Top header/timer: ~60px
+   - Action buttons + hint: ~100px
+   - Bottom number pad: ~180px (includes safe area)
+   - Padding/margins: ~40px
+   Total UI: ~380px, leaving dvh - 380px for grid
    ========================================== */
 .sudoku-grid-container {
   display: flex !important;
@@ -2048,28 +2055,62 @@ select {
   padding: var(--space-2) !important;
 }
 
+/* Desktop: larger grid, more space available */
 .sudoku-grid {
-  width: var(--grid-max-width) !important;
-  height: var(--grid-max-width) !important;
-  max-width: var(--grid-max-width) !important;
-  max-height: var(--grid-max-width) !important;
-  min-width: var(--grid-max-width) !important;
-  min-height: var(--grid-max-width) !important;
+  --grid-size: min(90vw, calc(100dvh - 200px), 500px);
+  width: var(--grid-size) !important;
+  height: var(--grid-size) !important;
+  max-width: var(--grid-size) !important;
+  max-height: var(--grid-size) !important;
   aspect-ratio: 1 / 1 !important;
   flex-shrink: 0 !important;
 }
 
+/* Mobile portrait: account for fixed bottom number pad */
 @media (max-width: 768px) {
   .sudoku-grid-container {
     padding: var(--space-1) !important;
   }
 
   .sudoku-grid {
-    width: var(--grid-max-width) !important;
-    height: var(--grid-max-width) !important;
-    max-width: var(--grid-max-width) !important;
-    max-height: var(--grid-max-width) !important;
-    min-width: var(--grid-max-width) !important;
-    min-height: var(--grid-max-width) !important;
+    /* 100dvh - 380px for UI, capped at 95vw to not overflow width */
+    --grid-size: min(95vw, calc(100dvh - 380px), 450px);
+    width: var(--grid-size) !important;
+    height: var(--grid-size) !important;
+    max-width: var(--grid-size) !important;
+    max-height: var(--grid-size) !important;
+  }
+}
+
+/* Small phones need more room for UI */
+@media (max-width: 375px) {
+  .sudoku-grid {
+    --grid-size: min(92vw, calc(100dvh - 400px), 320px);
+    width: var(--grid-size) !important;
+    height: var(--grid-size) !important;
+    max-width: var(--grid-size) !important;
+    max-height: var(--grid-size) !important;
+  }
+}
+
+/* Landscape: height is limited, use that */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sudoku-grid {
+    --grid-size: min(50vh, 60vw, 300px);
+    width: var(--grid-size) !important;
+    height: var(--grid-size) !important;
+    max-width: var(--grid-size) !important;
+    max-height: var(--grid-size) !important;
+  }
+}
+
+/* Large tablets / iPad */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sudoku-grid {
+    --grid-size: min(70vw, calc(100dvh - 250px), 480px);
+    width: var(--grid-size) !important;
+    height: var(--grid-size) !important;
+    max-width: var(--grid-size) !important;
+    max-height: var(--grid-size) !important;
   }
 }
