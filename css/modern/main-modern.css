@@ -2037,23 +2037,39 @@ select {
    GRID SIZING FIX - Single Source of Truth
    Override all main.css conflicts for square grid
    ========================================== */
-.sudoku-grid {
-  width: var(--grid-max-width) !important;
-  max-width: var(--grid-max-width) !important;
-  height: auto !important;
-  max-height: var(--grid-max-width) !important;
-  aspect-ratio: 1 / 1 !important;
-}
-
-@media (max-width: 768px) {
-  .sudoku-grid {
-    width: var(--grid-max-width) !important;
-    max-width: var(--grid-max-width) !important;
-  }
-}
-
 .sudoku-grid-container {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: var(--space-2) !important;
+}
+
+.sudoku-grid {
+  width: var(--grid-max-width) !important;
+  height: var(--grid-max-width) !important;
+  max-width: var(--grid-max-width) !important;
+  max-height: var(--grid-max-width) !important;
+  min-width: var(--grid-max-width) !important;
+  min-height: var(--grid-max-width) !important;
+  aspect-ratio: 1 / 1 !important;
+  flex-shrink: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .sudoku-grid-container {
+    padding: var(--space-1) !important;
+  }
+
+  .sudoku-grid {
+    width: var(--grid-max-width) !important;
+    height: var(--grid-max-width) !important;
+    max-width: var(--grid-max-width) !important;
+    max-height: var(--grid-max-width) !important;
+    min-width: var(--grid-max-width) !important;
+    min-height: var(--grid-max-width) !important;
+  }
 }
