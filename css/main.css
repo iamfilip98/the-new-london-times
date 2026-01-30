@@ -3343,70 +3343,93 @@ body {
     }
 }
 
-/* Hint Modal */
-.hint-modal {
+/* Inline Hint Display (replaces action buttons temporarily) */
+.action-buttons-container {
+    position: relative;
+    min-height: 50px;
+}
+
+.action-buttons.hidden {
+    display: none !important;
+}
+
+.inline-hint {
     display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 10000;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    box-sizing: border-box;
-}
-
-.hint-modal.show {
-    display: flex;
-}
-
-.hint-modal-content {
+    position: relative;
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
-    padding: 2rem;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
+    padding: 0.75rem;
+    padding-right: 2.5rem;
+    border: 2px solid var(--accent-blue);
+    max-height: 200px;
     overflow-y: auto;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    box-shadow: var(--box-shadow);
-    position: relative;
-    box-sizing: border-box;
 }
 
-.hint-modal-close {
+.inline-hint.show {
+    display: block;
+}
+
+.inline-hint-content {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.inline-hint-content .hint-message {
+    padding: 0.5rem;
+    margin: 0;
+    border-radius: 6px;
+}
+
+.inline-hint-content .hint-header {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.inline-hint-content .hint-body {
+    font-size: 0.8rem;
+}
+
+.inline-hint-content .hint-penalty {
+    font-size: 0.75rem;
+    margin-top: 0.3rem;
+}
+
+.inline-hint-close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     color: var(--text-primary);
-    font-size: 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.3rem;
     border-radius: 50%;
     transition: background-color 0.2s ease;
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
 }
 
-.hint-modal-close:hover {
-    background: rgba(255, 255, 255, 0.1);
+.inline-hint-close:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
+/* Legacy Hint Modal (keeping for reference, no longer used) */
+.hint-modal {
+    display: none;
+}
+
+.hint-modal-content,
+.hint-modal-close,
 .hint-modal-body {
-    padding-top: 1rem;
+    display: none;
 }
 
-/* Hint message clickable indicator (only in game status box, not in modal) */
+/* Hint message clickable indicator (only in game status box) */
 .game-status .hint-message {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -3419,7 +3442,7 @@ body {
 }
 
 .game-status .hint-message::after {
-    content: '👆 Click for full details';
+    content: '👆 Tap for details';
     display: block;
     text-align: center;
     font-size: 0.7rem;
@@ -7588,6 +7611,46 @@ select:focus-visible,
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .action-buttons-container {
+        min-height: 50px;
+        margin-bottom: 0.5rem;
+    }
+
+    .inline-hint {
+        padding: 0.5rem;
+        padding-right: 2rem;
+        max-height: 120px;
+        font-size: 0.8rem;
+    }
+
+    .inline-hint-content {
+        font-size: 0.75rem;
+    }
+
+    .inline-hint-content .hint-message {
+        padding: 0.3rem;
+    }
+
+    .inline-hint-content .hint-header {
+        font-size: 0.7rem;
+    }
+
+    .inline-hint-content .hint-body {
+        font-size: 0.7rem;
+    }
+
+    .inline-hint-content .hint-penalty {
+        font-size: 0.65rem;
+    }
+
+    .inline-hint-close {
+        top: 0.3rem;
+        right: 0.3rem;
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
     }
 
     .number-input {

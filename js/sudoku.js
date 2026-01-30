@@ -266,15 +266,23 @@ class SudokuEngine {
                     ${this.generateNumberInputHTML()}
 
                     <!-- Action Buttons in Sidebar -->
-                    <div class="action-buttons">
-                        <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode" aria-label="Toggle pencil notes mode (press C key)">
-                            <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-                            <span>Notes</span>
-                        </button>
-                        <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility" aria-label="Toggle visibility of all pencil notes">
-                            <i class="fas fa-eye" aria-hidden="true"></i>
-                            <span>Show All</span>
-                        </button>
+                    <div class="action-buttons-container">
+                        <div class="action-buttons" id="actionButtons">
+                            <button class="action-btn candidate-btn" id="candidateBtn" title="Toggle pencil mode" aria-label="Toggle pencil notes mode (press C key)">
+                                <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+                                <span>Notes</span>
+                            </button>
+                            <button class="action-btn toggle-candidates-btn" id="toggleCandidatesBtn" title="Toggle all candidates visibility" aria-label="Toggle visibility of all pencil notes">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                <span>Show All</span>
+                            </button>
+                        </div>
+                        <div class="inline-hint" id="inlineHint">
+                            <div class="inline-hint-content" id="inlineHintContent"></div>
+                            <button class="inline-hint-close" id="inlineHintClose" title="Close hint">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -383,21 +391,8 @@ class SudokuEngine {
         document.getElementById('toggleCandidatesBtn')?.addEventListener('click', () => this.toggleAllCandidates());
         document.getElementById('pauseBtn')?.addEventListener('click', () => this.togglePause());
 
-        // Hint modal event listeners
-        const hintModal = document.getElementById('hintModal');
-        const hintModalClose = document.getElementById('hintModalClose');
-
-        // Close modal when clicking the close button
-        hintModalClose?.addEventListener('click', () => {
-            hintModal?.classList.remove('show');
-        });
-
-        // Close modal when clicking outside the modal content
-        hintModal?.addEventListener('click', (e) => {
-            if (e.target === hintModal) {
-                hintModal.classList.remove('show');
-            }
-        });
+        // Inline hint close button listener
+        document.getElementById('inlineHintClose')?.addEventListener('click', () => this.hideInlineHint());
         document.getElementById('settingsBtn')?.addEventListener('click', () => this.showSettings());
         document.getElementById('pausedLabel')?.addEventListener('click', () => this.togglePause());
 
@@ -1849,13 +1844,25 @@ class SudokuEngine {
     }
 
     showHintModal() {
-        // Show the hint details modal with the full message
-        const modal = document.getElementById('hintModal');
-        const modalBody = document.getElementById('hintModalBody');
+        // Show the hint inline in the action buttons area
+        const actionButtons = document.getElementById('actionButtons');
+        const inlineHint = document.getElementById('inlineHint');
+        const inlineHintContent = document.getElementById('inlineHintContent');
 
-        if (modal && modalBody && this.currentFullHintMessage) {
-            modalBody.innerHTML = this.currentFullHintMessage;
-            modal.classList.add('show');
+        if (actionButtons && inlineHint && inlineHintContent && this.currentFullHintMessage) {
+            inlineHintContent.innerHTML = this.currentFullHintMessage;
+            actionButtons.classList.add('hidden');
+            inlineHint.classList.add('show');
+        }
+    }
+
+    hideInlineHint() {
+        const actionButtons = document.getElementById('actionButtons');
+        const inlineHint = document.getElementById('inlineHint');
+
+        if (actionButtons && inlineHint) {
+            inlineHint.classList.remove('show');
+            actionButtons.classList.remove('hidden');
         }
     }
 
