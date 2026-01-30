@@ -191,16 +191,35 @@
   line-height: 1;
 }
 
-/* Override main.css candidate styling */
+/* Override main.css candidate styling - match cell number color */
 .candidate-cell,
 .candidate-num,
 .candidates-grid span {
-  color: var(--cell-user) !important;
+  color: #4facfe !important;
   font-weight: var(--font-medium) !important;
 }
 
 .candidates-grid {
   font-family: var(--font-mono);
+}
+
+/* ==========================================
+   OVERRIDE MAIN.CSS BLACK BORDERS
+   ========================================== */
+.sudoku-cell.right-thick {
+  border-right: 3px solid var(--grid-border-thick) !important;
+}
+
+.sudoku-cell.bottom-thick {
+  border-bottom: 3px solid var(--grid-border-thick) !important;
+}
+
+.sudoku-cell.left-thick {
+  border-left: 3px solid var(--grid-border-thick) !important;
+}
+
+.sudoku-cell.top-thick {
+  border-top: 3px solid var(--grid-border-thick) !important;
 }
 
 /* ==========================================
@@ -293,9 +312,24 @@
   }
 }
 
-/* Hover state */
-.sudoku-cell:hover:not(.selected):not(.given) {
-  background: rgba(255, 255, 255, 0.04);
+/* Hover state - override main.css white background */
+.sudoku-cell:hover:not(.selected) {
+  background: rgba(102, 126, 234, 0.15) !important;
+}
+
+.sudoku-cell:hover:not(.selected).given,
+.sudoku-cell:hover:not(.selected).user-input {
+  background: rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Ensure number visibility on hover - given cells stay white */
+.sudoku-cell:hover .cell-value {
+  color: var(--cell-given) !important;
+}
+
+/* User input cells keep their blue color on hover */
+.sudoku-cell.user-input:hover .cell-value {
+  color: var(--cell-user) !important;
 }
 
 /* Focus state for keyboard navigation */
