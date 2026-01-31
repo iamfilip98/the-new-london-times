@@ -4,9 +4,47 @@
    ============================================ */
 
 /* ==========================================
-   MOBILE NUMBER PAD - Fixed Bottom
+   MOBILE FIXED LAYOUT
    ========================================== */
 @media (max-width: 768px) {
+  /* Game info panel - fixed at top */
+  .game-info-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-fixed);
+    background: rgba(6, 6, 12, 0.95);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--glass-border);
+    padding: var(--space-3) var(--space-4);
+    padding-top: calc(var(--space-3) + var(--safe-area-inset-top, 0px));
+  }
+
+  /* Sudoku grid - fixed in middle */
+  .sudoku-grid-container {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 160px;
+    z-index: var(--z-fixed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2);
+  }
+
+  .sudoku-grid {
+    width: 100%;
+    height: 100%;
+    max-width: min(100%, calc(100vh - 240px));
+    max-height: min(100%, calc(100vh - 240px));
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Number pad - fixed at bottom */
   .sudoku-controls-sidebar {
     position: fixed;
     bottom: 0;
